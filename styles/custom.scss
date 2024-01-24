@@ -1,0 +1,229 @@
+.table-padding .table-card {
+
+    th,
+    td {
+        &:first-child {
+            padding-left: 40px;
+        }
+
+        &:last-child {
+            padding-right: 40px;
+        }
+    }
+}
+
+.first-child-max-width-100 .table-card {
+
+    th,
+    td {
+        &:first-child {
+            max-width: 100px;
+        }
+    }
+}
+
+
+.tk-date-select-field {
+    padding-right: calc(1.5em + 1rem);
+    background-image: url("data:image/svg+xml,%3Csvg width='18' height='18' viewBox='0 0 18 18' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2.36154 18H14.9576C15.584 18 16.1846 17.7514 16.6277 17.3085C17.0706 16.8658 17.3193 16.2655 17.3193 15.6393V4.22948C17.3193 3.60348 17.0706 3.00299 16.6277 2.5603C16.1847 2.1175 15.584 1.86882 14.9576 1.86882H13.383V0.786817C13.383 0.505649 13.233 0.245902 12.9894 0.105387C12.7459 -0.0351289 12.4458 -0.0351289 12.2023 0.105387C11.9587 0.245902 11.8087 0.50568 11.8087 0.786817V1.86882H5.51066V0.786817C5.51066 0.505649 5.3606 0.245902 5.11707 0.105387C4.87352 -0.0351289 4.57341 -0.0351289 4.32988 0.105387C4.08634 0.245902 3.93629 0.50568 3.93629 0.786817V1.86882H2.36176C1.73533 1.86882 1.1347 2.11747 0.691657 2.5603C0.248757 3.00299 0 3.60345 0 4.22948V15.6393C0 16.2655 0.248761 16.8658 0.691657 17.3085C1.13466 17.7513 1.73529 18 2.36176 18H2.36154ZM14.9576 16.4262H2.36154C2.15273 16.4262 1.95242 16.3433 1.80485 16.1958C1.65726 16.0481 1.5742 15.8481 1.5742 15.6394V9.14754H15.7447V15.6394C15.7447 15.8481 15.6617 16.0481 15.5141 16.1958C15.3665 16.3433 15.1662 16.4262 14.9574 16.4262H14.9576ZM2.36154 3.44256H3.93608V4.32791C3.93608 4.60908 4.08614 4.86883 4.32967 5.00934C4.57322 5.14986 4.87333 5.14986 5.11686 5.00934C5.3604 4.86883 5.51045 4.60905 5.51045 4.32791V3.4427H11.8085V4.32791C11.8085 4.60908 11.9585 4.86883 12.2021 5.00934C12.4456 5.14986 12.7457 5.14986 12.9892 5.00934C13.2328 4.86883 13.3828 4.60905 13.3828 4.32791V3.4427H14.9574C15.1662 3.4427 15.3665 3.52558 15.5141 3.6731C15.6616 3.82075 15.7447 4.02082 15.7447 4.22954V7.57377H1.57417V4.22954C1.57417 4.02082 1.65723 3.82074 1.80481 3.6731C1.95239 3.52558 2.15269 3.4427 2.36151 3.4427L2.36154 3.44256Z' fill='%230093FF'/%3E%3C/svg%3E%0A");
+    background-repeat: no-repeat;
+    background-position: right calc(0.375em + 0.25rem) center;
+    background-size: calc(0.75em + 0.5rem) calc(0.75em + 0.5rem);
+}
+
+// dark mode
+[data-layout-mode="dark"] {
+    .logo-text {
+        color: var(--vz-gray-700) !important;
+    }
+
+    .tkloader {
+        border-color: #929294 #0000;
+    }
+
+    // making the color of calenedr icon light in dark mode
+    .tk-date-select-field {
+        background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnN2Z2pzPSJodHRwOi8vc3ZnanMuY29tL3N2Z2pzIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgd2lkdGg9IjI4OCIgaGVpZ2h0PSIyODgiPjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMjg4IiBoZWlnaHQ9IjI4OCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBmaWxsPSJub25lIiBkPSJNMCAwaDI0djI0SDB6Ii8+PHBhdGggZmlsbD0iI2ExYWJiOSIgZD0iTTE3IDNoNGExIDEgMCAwIDEgMSAxdjE2YTEgMSAwIDAgMS0xIDFIM2ExIDEgMCAwIDEtMS0xVjRhMSAxIDAgMCAxIDEtMWg0VjFoMnYyaDZWMWgydjJ6bS0yIDJIOXYySDdWNUg0djRoMTZWNWgtM3YyaC0yVjV6bTUgNkg0djhoMTZ2LTh6IiBjbGFzcz0iY29sb3IwMDAgc3ZnU2hhcGUiLz48L3N2Zz48L3N2Zz4=);
+    }
+
+}
+
+.react-window-list {
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+#clientList {
+    tr {
+        .client-list-menu {
+            opacity: 0;
+        }
+
+        &:hover {
+            .client-list-menu {
+                opacity: 1;
+            }
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+// below is the css for toggle switch
+
+// Colors
+$label-colour: #bbb;
+$disabled-colour: #ddd;
+$toggle-colour: #0093FF;
+$white: #fff;
+$focus-color: #ff0;
+
+.toggle-switch {
+    position: relative;
+    margin-right: 10px;
+    width: 65px;
+    display: inline-block;
+    vertical-align: middle;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    text-align: left;
+
+    &-checkbox {
+        display: none;
+    }
+
+    &-label {
+        display: block;
+        overflow: hidden;
+        cursor: pointer;
+        border: 0 solid $label-colour;
+        border-radius: 20px;
+        margin: 0;
+
+        &:focus {
+            outline: none;
+
+            >span {
+                box-shadow: 0 0 2px 5px red;
+            }
+        }
+
+        >span:focus {
+            outline: none;
+        }
+    }
+
+    &-inner {
+        display: block;
+        width: 200%;
+        margin-left: -100%;
+        transition: margin 0.3s ease-in 0s;
+
+        &:before,
+        &:after {
+            display: block;
+            float: left;
+            width: 50%;
+            height: 30px;
+            padding: 0;
+            line-height: 31px;
+            font-size: 12px;
+            color: white;
+            font-weight: bold;
+            box-sizing: border-box;
+        }
+
+        &:before {
+            content: attr(data-yes);
+            text-transform: uppercase;
+            padding-left: 10px;
+            background-color: $toggle-colour;
+            color: $white;
+        }
+    }
+
+    &-disabled {
+        background-color: $disabled-colour;
+        cursor: not-allowed;
+
+        &:before {
+            background-color: $disabled-colour;
+            cursor: not-allowed;
+        }
+    }
+
+    &-inner:after {
+        content: attr(data-no);
+        text-transform: uppercase;
+        padding-right: 10px;
+        background-color: $label-colour;
+        color: $white;
+        text-align: right;
+    }
+
+    &-switch {
+        display: block;
+        width: 20px;
+        margin: 5px;
+        background: $white;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 36px;
+        border: 0 solid $label-colour;
+        border-radius: 20px;
+        transition: all 0.3s ease-in 0s;
+    }
+
+    &-checkbox:checked+&-label {
+        .toggle-switch-inner {
+            margin-left: 0;
+        }
+
+        .toggle-switch-switch {
+            right: 0px;
+        }
+    }
+
+    &.small-switch {
+        width: 40px;
+
+        .toggle-switch-inner {
+
+            &:after,
+            &:before {
+                content: "";
+                height: 20px;
+                line-height: 20px;
+            }
+        }
+
+        .toggle-switch-switch {
+            width: 16px;
+            right: 20px;
+            margin: 2px;
+        }
+    }
+
+    @media screen and (max-width: 991px) {
+        transform: scale(0.9);
+    }
+
+    @media screen and (max-width: 767px) {
+        transform: scale(0.825);
+    }
+
+    @media screen and (max-width: 575px) {
+        transform: scale(0.75);
+    }
+}

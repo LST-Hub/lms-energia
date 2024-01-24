@@ -1,0 +1,807 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = []
+}
+
+datasource db {
+  provider          = "mysql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+// next auth tables
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String  @unique @map("user_id") //we need to map this beacause it is there in the next auth doc
+  type               String
+  provider           String
+  providerAccountId  String  @map("provider_account_id")
+  refresh_token      String?
+  access_token       String? @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String? @db.Text
+  id_token           String? @db.Text
+  session_state      String? @db.Text
+  oauth_token_secret String? @db.Text
+  oauth_token        String? @db.Text
+
+  //this relations are managed at app level, insted of workspace level, hence referring to globalId
+  user User @relation(fields: [userId], references: [globalId], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id")
+  expires      DateTime
+  //this relations are managed at app level, insted of workspace level, hence referring to globalId
+  user         User     @relation(fields: [userId], references: [globalId], onDelete: Cascade)
+}
+
+// globalId for user table is string but for all other tables its integer, we have made it string now as currently we have used a library called next-auth for authentication
+// and next-auth needs id column as string, so we have kept it as string
+// it need id column name to be string, but we have used globalId insted of id, for consistencyt reason
+// for more info how we used globalid column insted of id column see customPrismaAdapter.js file
+model User {
+  globalId        String        @id @default(cuid())
+  id              Int
+  name            String? // because we will have first name and last name, we ahev kept this because Next-auth requires this
+  email           String        @unique
+  emailVerified   DateTime?     @map("email_verified")
+  image           String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  hashedPassword  String?
+  firstName       String?
+  lastName        String?
+  designation     String?
+  phoneNumber     String?
+  supervisorId    Int?
+  supervisor      User?         @relation("supervisor", fields: [workspaceId, supervisorId], references: [workspaceId, id], onDelete: Restrict)
+  supervisorOf    User[]        @relation("supervisor") // this field id for assign foreign key to supervisorId,  I also didnt understand why it needs but accordign to the docs it needs this in self relational table
+  type            employeeType?
+  roleId          Int? //role should be mandatory to everybody, but it is not required in Database as the admin when signup, but still not created workspace, then he dotn have role till he creates workspace
+  role            Role?         @relation(fields: [workspaceId, roleId], references: [workspaceId, id], onDelete: Restrict)
+  zipCode         String?
+  country         String?
+  address         String?       @db.VarChar(2000)
+  gender          Gender?
+  notes           String?       @db.VarChar(2000)
+  canBePM         Boolean?
+  canBeSupervisor Boolean?
+  invited         Boolean? // this fieds are to check if user is invited by someone to a workspace
+  acceptedinvite  Boolean?      @default(false)
+  accounts        Account[]
+  sessions        Session[]
+
+  departmentId              Int?
+  department                Department?          @relation(fields: [workspaceId, departmentId], references: [workspaceId, id], onDelete: Restrict)
+  // teams                   TeamUsers[]
+  // teamLeads               Team[]
+  workspaceId               Int?
+  workspace                 Workspace?           @relation("workspace", fields: [workspaceId], references: [id], onDelete: Restrict)
+  active                    Boolean              @default(true)
+  workCalendarId            Int? // workCalendar should be mandatory to everybody, but it is not required in Database as the admin when signup, but still not created workspace, then he dotn have workCalendar till he creates workspace
+  workCalendar              WorkCalendar?        @relation(fields: [workspaceId, workCalendarId], references: [workspaceId, id], onDelete: Restrict)
+  pmOf                      Project[]
+  assignedProjects          ProjectUser[]
+  assignedTasks             TaskUser[]
+  createdById               Int? // made this field optional, very first user (admin) will not have this field, as he is not created by any user
+  createdBy                 User?                @relation("createdUsers", fields: [workspaceId, createdById], references: [workspaceId, id], onDelete: Restrict)
+  createdUsers              User[]               @relation("createdUsers")
+  createdClients            Client[]
+  createdAttachments        Attachment[]
+  createdWorkspace          Workspace[]          @relation("workspaceCreatedBy") // one user can create only one workspace, but suppose a user created workspace, and then due to failue DB query failed to add default values to that, then user need to create new workspace, chances are less but just for completness
+  createdProjects           Project[]            @relation("projectCreatedBy")
+  createdDepartments        Department[]         @relation("deptCreatedBy")
+  // createdTeams            Team[]                 @relation("teamCreatedBy")
+  createdRoles              Role[]               @relation("roleCreatedBy")
+  createdWorkCals           WorkCalendar[]       @relation("wcalCreatedBy")
+  createdtasks              Task[]               @relation("taskCreatedBy")
+  createdTimesheets         Timesheet[]          @relation("timesheetCreatedBy") // how many timesheets this user has created
+  approvedTimesheets        Timesheet[]          @relation("timesheetApprovedBy") // how many timesheets this user has approved
+  rejectedTimesheets        Timesheet[]          @relation("timesheetRejectedBy") // how many timesheets this user has rejected
+  createdTodaysTasks        TodaysTask[]         @relation("todaysTaskCreatedBy") // how many TodaysTasks reports this user has created
+  approvedTodaysTasks       TodaysTask[]         @relation("todaysTaskApprovedBy") // how many TodaysTasks reports this user has approved
+  rejectedTodaysTasks       TodaysTask[]         @relation("todaysTaskRejectedBy") // how many TodaysTasks reports this user has rejected
+  createdCurrencies         Currency[]           @relation("currencyCreatedBy")
+  createdExpenseCategorys   ExpenseCategory[]
+  createdExpenses           Expense[]            @relation("expenseCreatedBy")
+  approvedExpense           Expense[]            @relation("expenseApprovedBy")
+  rejectedExpenses          Expense[]            @relation("expenseRejectedBy")
+  createdstatus             Status[]
+  createdpriorities         Priority[]
+  createdResourceAllocation ResourceAllocation[] @relation("resourceAllocationCreatedBy")
+  deleted                   Boolean              @default(false) // kept this field for future use, rahul sir said to show the names of deleted users on the activities they performed, like suraj created a project XYZ, if user deleted then we need to show name of taht user on that activity, if need to do like this, then make this field true and remove other fields of user like address, and other details, only keep name and id
+  ResourceAllocation        ResourceAllocation[]
+  // @@index([email], type: Hash)
+  // @@index([workspaceId], type: Hash)
+
+  @@unique([workspaceId, email])
+  @@unique([workspaceId, id])
+}
+
+// we use this table to store token for forgot password
+model VerificationToken {
+  identifier String //this will be used to keep email, we have kept this name as next-auth requires it as it is
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// the above tabels are aldso used in app but nextauuth requires sepcific structure of tabels so we have copied them their documentation website
+// we have only added columsn to user table, annd chnaged @id to autoincrement
+
+enum Gender {
+  Male
+  Female
+  Other
+}
+
+enum employeeType {
+  Contractor
+  Employee
+}
+
+model Workspace {
+  id                   Int                    @id @default(autoincrement())
+  name                 String
+  image                String?
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  createdByGlobalId    String // making this reference to globalId as we cannot get user's Id at workspace level as workspace does not exist while creating workspace
+  createdBy            User                   @relation("workspaceCreatedBy", fields: [createdByGlobalId], references: [globalId], onDelete: Restrict)
+  workspaceTypeId      Int?
+  workspaceType        WorkspaceType?         @relation(fields: [workspaceTypeId], references: [id], onDelete: Restrict)
+  companySize          String? // question for how large is your company
+  estimatedUsers       String? // question for how many users you want to onbaord on this worksapce
+  // timeZone       String?
+  // other fields will also be there here like default work calender or others
+  active               Boolean                @default(true) // this field is to check if workspace is active or not, we have just given this and not used anywhere yet may be we need this in future
+  users                User[]                 @relation("workspace")
+  departments          Department[]
+  // teams                Team[]
+  roles                Role[]
+  questionsAfterSignup QuestionsAfterSignup[]
+  workCalendars        WorkCalendar[]
+  clients              Client[]
+  projects             Project[]
+  tasks                Task[]
+  timesheets           Timesheet[]
+  todaysTasks          TodaysTask[]
+  currencies           Currency[]
+  expenseCategories    ExpenseCategory[]
+  expenses             Expense[]
+  status               Status[]
+  priorities           Priority[]
+  todayTaskSettings    TodaysTaskSettings?
+  timesheetSettings    TimesheetSettings?
+  workspaceSettings    WorkspaceSettings?
+  attachments          Attachment[]
+  rolePermissions      RolePermissions[]
+  projectUsers         ProjectUser[]
+  taskUsers            TaskUser[]
+  recordCounts         RecordCounts?
+  nonWorkingDays       NonWorkingDays[]
+  weeklyWorkingDays    WeeklyWorkingDays[]
+  ResourceAllocation   ResourceAllocation[]
+}
+
+model WorkspaceType {
+  id         Int         @id
+  name       String
+  workspaces Workspace[]
+}
+
+model Department {
+  globalId    Int       @id @default(autoincrement())
+  id          Int
+  name        String
+  workspaceId Int
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  active      Boolean   @default(true)
+  createdById Int
+  createdBy   User      @relation("deptCreatedBy", fields: [workspaceId, createdById], references: [workspaceId, id], onDelete: Restrict)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  users       User[]
+  // @@index([workspaceId], type: Hash)
+
+  @@unique([workspaceId, id])
+}
+
+// model Team {
+//   id          Int         @id @default(autoincrement())
+//   name        String
+//   teamLeadId  String?
+//   active      Boolean?    @default(true)
+//   teamLead    User?       @relation(fields: [teamLeadId], references: [globalId])
+//   createdById String
+//   createdBy   User        @relation("teamCreatedBy", fields: [createdById], references: [globalId], onDelete: Restrict)
+//   createdAt   DateTime    @default(now())
+//   updatedAt   DateTime    @updatedAt
+//   users       TeamUsers[]
+//   workspaceId Int
+//   workspace   Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+
+// @@index([workspaceId], type: Hash)
+// }
+
+// model TeamUsers {
+//   teamId Int
+//   userId String
+//   user   User   @relation(fields: [userId], references: [globalId], onDelete: Restrict)
+//   team   Team   @relation(fields: [teamId], references: [id], onDelete: Restrict)
+
+//   @@id([teamId, userId]) // tells prisma that this is a composite primary key ie, combination of teamId and userId must be unique
+// }
+
+// the roleRestriction will be predefined in the tabel
+model roleRestriction {
+  id    Int    @id
+  name  String
+  roles Role[]
+}
+
+// the permissions will be predefined in the tabel
+model Permission {
+  id              Int               @id
+  name            String
+  rolePermissions RolePermissions[]
+}
+
+// the permissionAccess will be predefined in the tabel
+model permissionAccess {
+  id              Int               @id
+  name            String
+  rolePermissions RolePermissions[]
+}
+
+model Role {
+  globalId        Int               @id @default(autoincrement())
+  id              Int
+  name            String
+  description     String            @db.VarChar(2000)
+  restrictionId   Int //@db.SmallInt //  this will specify the restriction level of the role, like own access or all acces, as commented above
+  restriction     roleRestriction   @relation(fields: [restrictionId], references: [id], onDelete: Restrict)
+  permissions     RolePermissions[]
+  users           User[]
+  active          Boolean           @default(true)
+  isAdmin         Boolean           @default(false)
+  createdById     Int? // for ssytem generated roles this will be null
+  createdBy       User?             @relation("roleCreatedBy", fields: [workspaceId, createdById], references: [workspaceId, id], onDelete: Restrict)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  systemGenerated Boolean           @default(false)
+  workspaceId     Int
+  workspace       Workspace         @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  // @@index([workspaceId], type: Hash)
+
+  @@unique([workspaceId, id])
+}
+
+model RolePermissions {
+  roleId       Int
+  permissionId Int
+  accessLevel  Int // @db.SmallInt // this will specify the access level of the permission, like create, view, edit, etc
+  workspaceId  Int
+  access       permissionAccess @relation(fields: [accessLevel], references: [id], onDelete: Restrict)
+  permission   Permission       @relation(fields: [permissionId], references: [id], onDelete: Restrict)
+  role         Role             @relation(fields: [workspaceId, roleId], references: [workspaceId, id], onDelete: Cascade)
+  workspace    Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+
+  @@id([workspaceId, roleId, permissionId])
+}
+
+model QuestionsAfterSignup {
+  id          Int       @id @default(autoincrement())
+  answer      String
+  questionId  Int
+  workspaceId Int
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  // a question should be answered only once for a workspace
+  @@unique([questionId, workspaceId])
+}
+
+model WorkCalendar {
+  globalId          Int                 @id @default(autoincrement())
+  id                Int
+  name              String
+  description       String?             @db.VarChar(2000)
+  startTime         Int // we store time in seconds
+  active            Boolean             @default(true)
+  // default           Boolean             @default(false)
+  users             User[]
+  createdById       Int?
+  createdBy         User?               @relation("wcalCreatedBy", fields: [workspaceId, createdById], references: [workspaceId, id], onDelete: Restrict)
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  nonWorkingDays    NonWorkingDays[]
+  weeklyWorkingDays WeeklyWorkingDays[]
+  systemGenerated   Boolean             @default(false)
+  workspaceId       Int
+  workspace         Workspace           @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  workspaceSettings WorkspaceSettings?
+  // @@index([workspaceId], type: Hash)
+
+  @@unique([workspaceId, id])
+}
+
+model NonWorkingDays {
+  id             Int          @id @default(autoincrement())
+  date           DateTime     @db.Date
+  description    String?      @db.VarChar(2000)
+  workCalendarId Int
+  workCalendar   WorkCalendar @relation(fields: [workspaceId, workCalendarId], references: [workspaceId, id], onDelete: Cascade)
+
+  workspaceId Int
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+
+  @@index([workCalendarId])
+}
+
+enum WeeklyDays {
+  Monday
+  Tuesday
+  Wednesday
+  Thursday
+  Friday
+  Saturday
+  Sunday
+}
+
+model WeeklyWorkingDays {
+  id             Int          @id @default(autoincrement())
+  time           Int // we store time in seconds
+  day            WeeklyDays
+  workCalendarId Int
+  workCalendar   WorkCalendar @relation(fields: [workspaceId, workCalendarId], references: [workspaceId, id], onDelete: Cascade)
+
+  workspaceId Int
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+
+  @@index([workCalendarId])
+}
+
+model CurrencyLists {
+  id         Int        @id
+  code       String     @unique
+  country    String
+  currencies Currency[]
+}
+
+model Currency {
+  globalId        Int           @id @default(autoincrement())
+  id              Int
+  currencyId      Int
+  currency        CurrencyLists @relation(fields: [currencyId], references: [id], onDelete: Restrict)
+  createdById     Int? // optional for system generate currencies
+  createdBy       User?         @relation("currencyCreatedBy", fields: [workspaceId, createdById], references: [workspaceId, id], onDelete: Restrict)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  active          Boolean       @default(true)
+  systemGenerated Boolean       @default(false)
+  workspaceId     Int
+  workspace       Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  Expense         Expense[]
+  // @@index([workspaceId], type: Hash)
+
+  @@unique([workspaceId, id])
+  @@unique([workspaceId, currencyId])
+}
+
+model Client {
+  globalId    Int       @id @default(autoincrement())
+  id          Int
+  name        String
+  email       String?
+  phone       String?
+  notes       String?   @db.VarChar(2000)
+  createdById Int
+  active      Boolean   @default(true)
+  createdBy   User      @relation(fields: [workspaceId, createdById], references: [workspaceId, id], onDelete: Restrict)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  workspaceId Int
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  projects    Project[]
+  // @@index([workspaceId], type: Hash)
+
+  @@unique([workspaceId, id])
+}
+
+model Status {
+  globalId        Int       @id @default(autoincrement())
+  id              Int
+  name            String
+  active          Boolean   @default(true)
+  createdById     Int? // optional for system generated statuses 
+  createdBy       User?     @relation(fields: [workspaceId, createdById], references: [workspaceId, id], onDelete: Restrict)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  systemGenerated Boolean   @default(false)
+  workspaceId     Int
+  workspace       Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  projects        Project[]
+  tasks           Task[]
+  // @@index([workspaceId], type: Hash)
+
+  @@unique([workspaceId, id])
+}
+
+model Priority {
+  globalId        Int       @id @default(autoincrement())
+  id              Int
+  name            String
+  active          Boolean   @default(true)
+  createdById     Int?
+  createdBy       User?     @relation(fields: [workspaceId, createdById], references: [workspaceId, id], onDelete: Restrict)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  systemGenerated Boolean   @default(false)
+  workspaceId     Int
+  workspace       Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  projects        Project[]
+  tasks           Task[]
+  // @@index([workspaceId], type: Hash)
+
+  @@unique([workspaceId, id])
+}
+
+model Attachment {
+  id          Int       @id @default(autoincrement())
+  name        String
+  url         String?
+  sizeInKb    Int
+  key         String    @unique
+  createdById Int
+  createdBy   User      @relation(fields: [workspaceId, createdById], references: [workspaceId, id], onDelete: Restrict)
+  projects    Project[]
+  tasks       Task[]
+  expenses    Expense[]
+  expenseId   Int?
+  workspaceId Int
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  // @@index([workspaceId], type: Hash)
+
+  @@unique([workspaceId, id])
+}
+
+enum projectType {
+  fixed
+  timeAndMaterial
+  ongoing
+  inhouse
+}
+
+model Project {
+  globalId                 Int                  @id @default(autoincrement())
+  id                       Int
+  name                     String
+  description              String?              @db.VarChar(2000)
+  clientId                 Int
+  client                   Client               @relation(fields: [workspaceId, clientId], references: [workspaceId, id], onDelete: Restrict)
+  pmId                     Int
+  pm                       User                 @relation(fields: [workspaceId, pmId], references: [workspaceId, id], onDelete: Restrict)
+  statusId                 Int?
+  status                   Status?              @relation(fields: [workspaceId, statusId], references: [workspaceId, id], onDelete: Restrict)
+  priorityId               Int?
+  priority                 Priority?            @relation(fields: [workspaceId, priorityId], references: [workspaceId, id], onDelete: Restrict)
+  startDate                DateTime?            @db.Date
+  estimatedTime            Int? // we store time in seconds
+  estimatedEndDate         DateTime?            @db.Date
+  actualEndDate            DateTime?            @db.Date
+  canSupervisorApproveTime Boolean              @default(false)
+  active                   Boolean              @default(true)
+  attachments              Attachment[]
+  // emailsCC                 String[]
+  projectUsers             ProjectUser[]
+  projectType              projectType?
+  createdById              Int
+  createdBy                User                 @relation("projectCreatedBy", fields: [workspaceId, createdById], references: [workspaceId, id], onDelete: Restrict)
+  createdAt                DateTime             @default(now())
+  updatedAt                DateTime             @updatedAt
+  ticket                   Boolean              @default(false)
+  workspaceId              Int
+  workspace                Workspace            @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  tasks                    Task[]
+  timesheets               Timesheet[]
+  todaysTasks              TodaysTask[]
+  ResourceAllocation       ResourceAllocation[]
+  Expense                  Expense[]
+  // @@index([workspaceId], type: Hash)
+
+  @@unique([workspaceId, id])
+}
+
+model ProjectUser {
+  projectId   Int
+  userId      Int
+  user        User      @relation(fields: [workspaceId, userId], references: [workspaceId, id], onDelete: Restrict)
+  project     Project   @relation(fields: [workspaceId, projectId], references: [workspaceId, id], onDelete: Cascade)
+  workspaceId Int
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+
+  @@id([workspaceId, projectId, userId])
+}
+
+model Task {
+  globalId         Int          @id @default(autoincrement())
+  id               Int
+  name             String
+  description      String?      @db.VarChar(2000)
+  projectId        Int
+  project          Project      @relation(fields: [workspaceId, projectId], references: [workspaceId, id], onDelete: Restrict)
+  statusId         Int?
+  status           Status?      @relation(fields: [workspaceId, statusId], references: [workspaceId, id], onDelete: Restrict)
+  priorityId       Int?
+  priority         Priority?    @relation(fields: [workspaceId, priorityId], references: [workspaceId, id], onDelete: Restrict)
+  startDate        DateTime?    @db.Date
+  estimatedTime    Int? // we store time in seconds
+  estimatedEndDate DateTime?    @db.Date
+  actualEndDate    DateTime?    @db.Date
+  active           Boolean      @default(true)
+  billable         Boolean?     @default(false)
+  attachments      Attachment[]
+  taskUsers        TaskUser[]
+  createdById      Int
+  createdBy        User         @relation("taskCreatedBy", fields: [workspaceId, createdById], references: [workspaceId, id], onDelete: Restrict)
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  workspaceId        Int
+  workspace          Workspace            @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  timesheets         Timesheet[]
+  todaysTasks        TodaysTask[]
+  ResourceAllocation ResourceAllocation[]
+  // @@index([workspaceId], type: Hash)
+
+  @@unique([workspaceId, id])
+}
+
+model TaskUser {
+  taskId      Int
+  userId      Int
+  user        User      @relation(fields: [workspaceId, userId], references: [workspaceId, id], onDelete: Restrict)
+  task        Task      @relation(fields: [workspaceId, taskId], references: [workspaceId, id], onDelete: Cascade)
+  workspaceId Int
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+
+  @@id([workspaceId, taskId, userId])
+}
+
+// don't chnage below ApprovalStatus values, because they are used in the backend code, if you want to chnage them, then change them in the backend code constants as well (variable name is timeEntryStatus)
+enum ApprovalStatus {
+  Draft
+  Pending
+  Approved
+  Rejected
+}
+
+model Timesheet {
+  globalId             Int                 @id @default(autoincrement())
+  id                   Int
+  date                 DateTime            @db.Date
+  duration             Int // we store time in seconds
+  description          String?             @db.VarChar(2000)
+  taskId               Int
+  task                 Task                @relation(fields: [workspaceId, taskId], references: [workspaceId, id], onDelete: Restrict)
+  ticket               String?             @db.VarChar(2000)
+  projectId            Int
+  project              Project             @relation(fields: [workspaceId, projectId], references: [workspaceId, id], onDelete: Restrict)
+  createdById          Int
+  createdBy            User                @relation("timesheetCreatedBy", fields: [workspaceId, createdById], references: [workspaceId, id], onDelete: Restrict)
+  approved             Boolean             @default(false)
+  approvedById         Int?
+  approvedBy           User?               @relation("timesheetApprovedBy", fields: [workspaceId, approvedById], references: [workspaceId, id], onDelete: Restrict)
+  approvedAt           DateTime?
+  rejected             Boolean             @default(false)
+  rejectedById         Int?
+  rejectedBy           User?               @relation("timesheetRejectedBy", fields: [workspaceId, rejectedById], references: [workspaceId, id], onDelete: Restrict)
+  rejectedAt           DateTime?
+  rejectionNote        String?             @db.VarChar(2000)
+  submittedForApproval Boolean?
+  status               ApprovalStatus      @default(Draft) // after saving or updating a timesheet it will be Drafted and when it goes for approval it will be pending
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+  workspaceId          Int
+  workspace            Workspace           @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  // @@index([workspaceId], type: Hash)
+  resourceAllocationId Int?
+  resourceAllocation   ResourceAllocation? @relation(fields: [workspaceId, resourceAllocationId], references: [workspaceId, id], onDelete: Restrict)
+
+  @@unique([workspaceId, id])
+}
+
+// Todays Tasks report tables are same but the concept is different so different table
+model TodaysTask {
+  globalId             Int                 @id @default(autoincrement())
+  id                   Int
+  date                 DateTime            @db.Date
+  duration             Int // we store time in seconds
+  description          String?             @db.VarChar(2000)
+  taskId               Int
+  task                 Task                @relation(fields: [workspaceId, taskId], references: [workspaceId, id], onDelete: Restrict)
+  ticket               String?             @db.VarChar(2000)
+  projectId            Int
+  project              Project             @relation(fields: [workspaceId, projectId], references: [workspaceId, id], onDelete: Restrict)
+  createdById          Int
+  createdBy            User                @relation("todaysTaskCreatedBy", fields: [workspaceId, createdById], references: [workspaceId, id], onDelete: Restrict)
+  approved             Boolean             @default(false)
+  approvedById         Int?
+  approvedBy           User?               @relation("todaysTaskApprovedBy", fields: [workspaceId, approvedById], references: [workspaceId, id], onDelete: Restrict)
+  approvedAt           DateTime?
+  rejected             Boolean             @default(false)
+  rejectedById         Int?
+  rejectedBy           User?               @relation("todaysTaskRejectedBy", fields: [workspaceId, rejectedById], references: [workspaceId, id], onDelete: Restrict)
+  rejectedAt           DateTime?
+  rejectionNote        String?             @db.VarChar(2000)
+  submittedForApproval Boolean?
+  status               ApprovalStatus      @default(Draft)
+  convertedToTimesheet Boolean             @default(false)
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+  workspaceId          Int
+  workspace            Workspace           @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  // @@index([workspaceId], type: Hash)
+  resourceAllocationId Int?
+  resourceAllocation   ResourceAllocation? @relation(fields: [workspaceId, resourceAllocationId], references: [workspaceId, id], onDelete: Restrict)
+
+  @@unique([workspaceId, id])
+}
+
+model ExpenseCategory {
+  globalId        Int       @id @default(autoincrement())
+  id              Int
+  name            String
+  description     String?   @db.VarChar(2000)
+  active          Boolean   @default(true)
+  createdById     Int?
+  createdBy       User?     @relation(fields: [workspaceId, createdById], references: [workspaceId, id], onDelete: Restrict)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  systemGenerated Boolean   @default(false)
+  workspaceId     Int
+  workspace       Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  expenses        Expense[]
+  // @@index([workspaceId], type: Hash)
+
+  @@unique([workspaceId, id])
+}
+
+model Expense {
+  globalId             Int             @id @default(autoincrement())
+  id                   Int
+  date                 DateTime        @db.Date
+  currencyId           Int
+  currency             Currency        @relation(fields: [workspaceId, currencyId], references: [workspaceId, id], onDelete: Restrict)
+  expenseCategoryId    Int
+  expenseCategory      ExpenseCategory @relation(fields: [workspaceId, expenseCategoryId], references: [workspaceId, id], onDelete: Restrict)
+  amount               Float
+  projectId            Int
+  project              Project         @relation(fields: [workspaceId, projectId], references: [workspaceId, id], onDelete: Restrict)
+  memo                 String?         @db.VarChar(2000)
+  createdById          Int
+  createdBy            User            @relation("expenseCreatedBy", fields: [workspaceId, createdById], references: [workspaceId, id], onDelete: Restrict)
+  approved             Boolean?        @default(false)
+  approvedById         Int?
+  approvedBy           User?           @relation("expenseApprovedBy", fields: [workspaceId, approvedById], references: [workspaceId, id], onDelete: Restrict)
+  approvedAt           DateTime?
+  rejected             Boolean?        @default(false)
+  rejectedById         Int?
+  rejectedBy           User?           @relation("expenseRejectedBy", fields: [workspaceId, rejectedById], references: [workspaceId, id], onDelete: Restrict)
+  rejectedAt           DateTime?
+  rejectionNote        String?         @db.VarChar(2000)
+  submittedForApproval Boolean?
+  status               ApprovalStatus  @default(Draft) // after saving or updating a expense it will be Drafted and when it goes for approval it will be pending
+  attachments          Attachment[]
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+  workspaceId          Int
+  workspace            Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  // @@index([workspaceId], type: Hash)
+
+  @@unique([workspaceId, id])
+}
+
+enum RepetationTypes {
+  DontRepeat // we cant give space in enum name
+  Daily
+  Weekly
+  Monthly
+
+  @@map("RecursionTypes")
+}
+
+model ResourceAllocation {
+  globalId        Int             @id @default(autoincrement())
+  id              Int
+  repeatId        String? // if date is null then it is a recurring allocation
+  projectId       Int
+  project         Project         @relation(fields: [workspaceId, projectId], references: [workspaceId, id], onDelete: Restrict)
+  taskId          Int
+  task            Task            @relation(fields: [workspaceId, taskId], references: [workspaceId, id], onDelete: Restrict)
+  allocatedUserId Int
+  allocatedUser   User            @relation(fields: [workspaceId, allocatedUserId], references: [workspaceId, id], onDelete: Restrict)
+  date            DateTime?       @db.Date // if date is null then it is a recurring allocation
+  duration        Int // we store time in seconds
+  startDate       DateTime?       @db.Date
+  endDate         DateTime?       @db.Date
+  repetationType  RepetationTypes @default(DontRepeat)
+  createdById     Int
+  createdBy       User            @relation("resourceAllocationCreatedBy", fields: [workspaceId, createdById], references: [workspaceId, id], onDelete: Restrict)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  workspaceId     Int
+  workspace       Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  userGlobalId    String
+  // @@index([workspaceId], type: Hash)
+  todaysTasks     TodaysTask[]
+  timesheets      Timesheet[]
+
+  @@unique([workspaceId, id])
+}
+
+// model ResourceAllocationUser {
+//   resourceAllocationId Int
+//   userId               Int
+//   resourceAllocation   ResourceAllocation @relation(fields: [workspaceId, resourceAllocationId], references: [workspaceId, id], onDelete: Cascade)
+//   user                 User               @relation(fields: [workspaceId, userId], references: [workspaceId, id], onDelete: Cascade)
+//   workspaceId          Int
+//   workspace            Workspace          @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+
+//   @@id([resourceAllocationId, userId, workspaceId])
+// }
+
+model TodaysTaskSettings {
+  workspaceId         Int       @id
+  workspace           Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  approvalEnabled     Boolean   @default(false)
+  sendMailForApproval Boolean   @default(false)
+}
+
+model TimesheetSettings {
+  workspaceId            Int       @id
+  workspace              Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  approvalEnabled        Boolean   @default(true)
+  sendMailForApproval    Boolean   @default(false)
+  addPendingInActualTime Boolean   @default(false)
+  // isAddApprovedInActualTime Boolean   @default(false) // we always include approved time currently, if later chnaged then u can uncomment this
+  emailReminderEnabled   Boolean   @default(false)
+  emailRreminderTime     DateTime?
+}
+
+model WorkspaceSettings {
+  workspaceId       Int           @id
+  workspace         Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  todaysTaskEnabled Boolean       @default(false)
+  defaultWorkCalId  Int?
+  defaultWorkCal    WorkCalendar? @relation(fields: [workspaceId, defaultWorkCalId], references: [workspaceId, id], onDelete: Cascade)
+
+  @@unique([workspaceId, defaultWorkCalId])
+}
+
+model RecordCounts {
+  workspaceId        Int       @id
+  workspace          Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user               Int       @default(0)
+  project            Int       @default(0)
+  task               Int       @default(0)
+  client             Int       @default(0)
+  role               Int       @default(0)
+  department         Int       @default(0)
+  workCalendar       Int       @default(0)
+  timesheet          Int       @default(0)
+  todaysTask         Int       @default(0)
+  expense            Int       @default(0)
+  expenseCategory    Int       @default(0)
+  status             Int       @default(0)
+  priority           Int       @default(0)
+  currency           Int       @default(0)
+  resourceAllocation Int       @default(0)
+}

@@ -1,0 +1,217 @@
+// .css-b62m3t-container{
+//     .css-1s2u09g-control{
+//         background-color: var(--#{$prefix}gray-200);
+//         border-color: var(--#{$prefix}border-color);
+//         &:hover {
+//             border-color: var(--#{$prefix}border-color);
+//         }
+//     }
+//     .css-1pahdxg-control{
+//         background-color: var(--#{$prefix}gray-200);
+//         border-color: var(--#{$prefix}border-color);
+//         box-shadow: none;
+//         &:hover {
+//             border-color: var(--#{$prefix}border-color) !important;
+//         }
+//     }
+//     .css-26l3qy-menu {
+//         background-color: $dropdown-bg;
+//         .css-1n7v3ny-option{
+//             cursor: pointer;
+//             background-color: $dropdown-link-hover-bg;
+//             &:active {
+//                 background-color: $dropdown-link-hover-bg;
+//             }
+//         }
+//     }
+//     .css-1rhbuit-multiValue{
+//         background-color: var(--#{$variable-prefix}light);
+
+//     }
+//     .css-12jo7m5{
+//         color:$heading-color;
+//     }
+//     .css-6j8wv5-Input,  .css-qc6sy-singleValue{ 
+//         color:$heading-color;
+//     }
+// }
+
+// .css-26l3qy-menu{
+//     background-color: var(--#{$prefix}gray-200) !important;
+//     border-color: var(--#{$prefix}border-color) !important;
+//   }
+
+//   .css-1n7v3ny-option{
+//     background-color: var(--#{$prefix}gray-300) !important;
+//     border-color: var(--#{$prefix}border-color) !important;
+//   }
+
+.react-select__control {
+    border-color: var(--#{$prefix}border-color);
+    box-shadow: none;
+    border-radius: var(--#{$prefix}border-radius);
+    background-color: var(--#{$prefix}body-color);
+    color: var(--#{$prefix}body-color);
+
+    &:hover {
+        cursor: "pointer";
+        border-color: var(--#{$prefix}border-color) !important;
+    }
+
+    .react-select__multi-value {
+        background-color: var(--#{$prefix}body-bg);
+    }
+}
+
+.react-select__control--is-disabled {
+    background-color: var(--#{$prefix}input-disabled-bg) !important;
+
+    .react-select__multi-value {
+        background-color: var(--#{$prefix}gray-400) !important;
+    }
+}
+
+
+.react-select__single-value,
+.react-select__input-container {
+    color: var(--#{$prefix}heading-color) !important;
+}
+
+.react-select__menu-list {
+    background-color: $white;
+}
+
+.react-select__menu {
+    .react-select__option {
+        cursor: pointer;
+        background-color: $white;
+        color: var(--#{$prefix}body-color);
+
+        // &:active,
+        // &:hover {
+        //     background-color: $dropdown-link-hover-bg;
+        // }
+        &.react-select__option--is-focused {
+            background-color: $dropdown-link-hover-bg;
+        }
+        &.react-select__option--is-selected {
+            background-color: $dropdown-dark-color;
+        }
+    }
+}
+
+// for making font color light in dark mode
+[data-layout-mode="dark"] {
+    .react-select__control {
+        background-color: var(--#{$prefix}gray-200) !important;
+        border-color: var(--#{$prefix}border-color) !important;
+        color: var(--#{$prefix}body-color);
+    }
+
+    .react-select__control--is-disabled {
+        background-color: #4d4e4f !important;
+    }
+
+    .react-select__multi-value {
+        background-color: var(--#{$prefix}gray-300);
+    }
+
+    .react-select__multi-value__label {
+        color: var(--#{$prefix}body-color);
+    }
+
+    .react-select__menu-list {
+        background-color: var(--#{$prefix}gray-300);
+    }
+
+    .react-select__menu {
+        .react-select__option {
+            cursor: pointer;
+            background-color: var(--#{$prefix}gray-300);
+            color: var(--#{$prefix}body-color);
+
+            // &:active,
+            // &:hover {
+            //     background-color: var(--#{$prefix}gray-200) !important;
+            // }
+
+            &.react-select__option--is-focused {
+                background-color: var(--#{$prefix}gray-100) !important;
+            }
+            &.react-select__option--is-selected {
+                background-color: var(--#{$prefix}gray-300) !important;
+            }
+        }
+    }
+
+    .form-control:disabled {
+        background-color: #4d4e4f !important;
+        border-color: var(--#{$prefix}border-color) !important;
+    }
+}
+
+.color-primary {
+    color: $primary;
+}
+
+.color-secondary {
+    color: $secondary;
+}
+
+.color-success {
+    color: $success;
+}
+
+.color-info {
+    color: $info;
+}
+
+.color-warning {
+    color: $warning;
+}
+
+.color-danger {
+    color: $danger;
+}
+
+
+
+
+
+// .marketplace-swiper .swiper-button-next,
+// .marketplace-swiper .swiper-button-prev {
+//     top: 24px;
+// }
+
+
+// .marquee {
+//     width: 100%;
+//     overflow: hidden;
+//     position: relative;
+//     height: 22px;
+//     line-height: 2;
+// }
+
+// .marquee div {
+//     display: block;
+//     width: 200%;
+//     height: 30px;
+//     position: absolute;
+//     overflow: hidden;
+//     animation: marquee 35s linear infinite;
+// }
+
+// .marquee span {
+//     float: left;
+//     width: 50%;
+// }
+
+// @keyframes marquee {
+//     0% {
+//         left: 0;
+//     }
+
+//     100% {
+//         left: -100%;
+//     }
+// }
