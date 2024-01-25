@@ -126,7 +126,7 @@ const AllPhoneCall = () => {
               
               <ul className="ps-0 mb-0">
                 <li className="list-inline-item">
-                  <Link href={`${urls.phoneCallEdit}/${cellProps.value}`}>
+                  <Link href={`${urls.phoneCallAdd}`}>
                     <a>
                       <TkButton color="none">
                         <TkIcon className="ri-edit-line fs-4 -fill align-bottom me-2 text-muted"></TkIcon>
@@ -148,7 +148,7 @@ const AllPhoneCall = () => {
             <>
               <div className="d-flex align-items-center">
                 <Link
-                  href={`${urls.phoneCallView}/${cellProps.row.original.id}`}
+                  href={`${urls.phoneCallAdd}`}
                 >
                   <a className="fw-medium table-link text-primary">
                     <div>

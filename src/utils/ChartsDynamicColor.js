@@ -3,6 +3,10 @@ const getChartColorsArray = (colorsStr) => {
   if (!Array.isArray(colors)) return [];
   return colors.map(function (value) {
     var newValue = value.replace(" ", "");
+    if (typeof getComputedStyle !== "function") {
+      // Fallback for non-browser environments
+      return colors.map((value) => value.trim()); // Basic example, adjust as needed
+    }
     if (newValue.indexOf(",") === -1) {
       var color = getComputedStyle(document.documentElement).getPropertyValue(newValue);
 

@@ -385,17 +385,17 @@ const UserDetails = ({ mode }) => {
 
   //IMP: if readign fr reference, then try not to use useLayoutEffect, try always using useEffect instead
   // used layout effect because we need to get the tab from url, and settab before rendering the component
-  useLayoutEffect(() => {
-    // did not use router.query.tab because it was not updating the state, before component is rendered
-    // const tab = router.query.tab;
-    const params = new URLSearchParams(window.location.search);
-    const tab = params.get("tab");
-    if (tabValues.includes(tab)) {
-      setActiveTab(tab);
-    } else {
-      setActiveTab(tabs.projects);
-    }
-  }, []);
+  // useLayoutEffect(() => {
+  //   // did not use router.query.tab because it was not updating the state, before component is rendered
+  //   // const tab = router.query.tab;
+  //   const params = new URLSearchParams(window.location.search);
+  //   const tab = params.get("tab");
+  //   if (tabValues.includes(tab)) {
+  //     setActiveTab(tab);
+  //   } else {
+  //     setActiveTab(tabs.projects);
+  //   }
+  // }, []);
 
   const handelProfileImg = async (imageFile) => {
     if (imageFile.size >= 10606316) {

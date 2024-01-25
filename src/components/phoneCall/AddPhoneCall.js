@@ -750,7 +750,7 @@ const AddPhoneCall = () => {
                   <TkButton
                     //keep it disabled dont give loading to it
                     disabled={inviteUser.isLoading || uploadingImage}
-                    onClick={() => router.push(`${urls.users}`)}
+                    onClick={() => router.push(`${urls.phoneCall}`)}
                     color="secondary"
                     type="button"
                     className="ms-auto"

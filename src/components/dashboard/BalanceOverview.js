@@ -16,7 +16,7 @@ import { BalanceOverviewCharts } from "./DashboardCrmCharts";
 const BalanceOverview = () => {
   // const dispatch = useDispatch();
 
-  const [chartData, setchartData] = useState([]);
+  // const [chartData, setchartData] = useState([]);
 
   // const { balanceOverviewData } = useSelector(state => ({
   //     balanceOverviewData: state.DashboardCRM.balanceOverviewData
@@ -36,18 +36,29 @@ const BalanceOverview = () => {
   //     dispatch(getBalanceOverviewChartsData("today"));
   // }, [dispatch]);
 
-  useEffect(() => {
-    setchartData([
-      {
-        name: "Revenue",
-        data: [10, 41, 35, 51, 49, 62, 69, 91, 148],
-      },
-      {
-        name: "Expenses",
-        data: [10, 15, 21, 18, 17, 26, 34, 32, 42],
-      },
-    ]);
-  }, [chartData]);
+  // useEffect(() => {
+  //   setchartData([
+  //     {
+  //       name: "Revenue",
+  //       data: [10, 41, 35, 51, 49, 62, 69, 91, 148],
+  //     },
+  //     {
+  //       name: "Expenses",
+  //       data: [10, 15, 21, 18, 17, 26, 34, 32, 42],
+  //     },
+  //   ]);
+  // }, [chartData]);
+
+  const chartData = [
+    {
+      name: "Revenue",
+      data: [30, 50, 35, 55, 80, 90, 100, 150, 200],
+    },
+    {
+      name: "Expenses",
+      data: [10, 15, 30, 52, 66, 70, 80, 130, 150],
+    },
+  ]
 
   return (
     <React.Fragment>

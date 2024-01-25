@@ -748,7 +748,7 @@ const EditMeeting = () => {
                   <TkButton
                     //keep it disabled dont give loading to it
                     disabled={inviteUser.isLoading || uploadingImage}
-                    onClick={() => router.push(`${urls.users}`)}
+                    onClick={() => router.push(`${urls.meeting}`)}
                     color="secondary"
                     type="button"
                     className="ms-auto"
