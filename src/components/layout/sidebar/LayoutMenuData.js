@@ -281,12 +281,6 @@ function sidebarOptions(user, sessionData) {
       link: `${urls.leads}`,
     },
     {
-      id: "users",
-      label: "Users",
-      icon: "ri-group-line",
-      link: `${urls.users}`,
-    },
-    {
       id: "phone call",
       label: "Phone Call",
       icon: "ri-phone-fill",
@@ -303,6 +297,12 @@ function sidebarOptions(user, sessionData) {
       label: "Meeting",
       icon: "ri-calendar-line",
       link: `${urls.meeting}`,
+    },
+    {
+      id: "users",
+      label: "Users",
+      icon: "ri-group-line",
+      link: `${urls.users}`,
     },
   ];
 
