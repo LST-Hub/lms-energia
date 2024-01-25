@@ -1,33 +1,30 @@
 import React from "react";
-import AddTask from "../../../src/components/tasks/Add";
-
-import Layout from "../../../src/components/layout";
 import BreadCrumb from "../../../src/utils/BreadCrumb";
-
 import TkPageHead from "../../../src/components/TkPageHead";
 import TkContainer from "../../../src/components/TkContainer";
 import { urls } from "../../../src/utils/Constants";
+import AddTask from "../../../src/components/task/AddTask";
 
-const AddTaskPage = () => {
+const TaskDetailsPage = () => {
   return (
     <>
       <TkPageHead>
-        <title>{"Add Task"}</title>
+        <title>{`Add Task`}</title>
       </TkPageHead>
 
       <div className="page-content">
-        <BreadCrumb pageTitle={"Add Task"} parentTitle="Tasks" parentLink={`${urls.tasks}`} />
+        <BreadCrumb pageTitle={"Add Task"} parentTitle="Task" parentLink={`${urls.taskk}`} />
         <TkContainer>
-          <AddTask />
+            <AddTask />
         </TkContainer>
       </div>
     </>
   );
 };
 
-export default AddTaskPage;
+export default TaskDetailsPage;
 
-AddTaskPage.options = {
+TaskDetailsPage.options = {
   layout: true,
   auth: false,
 };

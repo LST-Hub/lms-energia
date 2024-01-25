@@ -39,5 +39,5 @@ export default TaskList;
 
 TaskList.options = {
   layout: true,
-  auth: true,
+  auth: false,
 };

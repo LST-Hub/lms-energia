@@ -1,33 +1,31 @@
 import React from "react";
-import AddTask from "../../../src/components/tasks/Add";
-
-import Layout from "../../../src/components/layout";
 import BreadCrumb from "../../../src/utils/BreadCrumb";
-
 import TkPageHead from "../../../src/components/TkPageHead";
+import AddUser from "../../../src/components/users/AddUser";
 import TkContainer from "../../../src/components/TkContainer";
 import { urls } from "../../../src/utils/Constants";
+import AddPhoneCall from "../../../src/components/phoneCall/AddPhoneCall";
 
-const AddTaskPage = () => {
+const PhoneCallDetailsPage = () => {
   return (
     <>
       <TkPageHead>
-        <title>{"Add Task"}</title>
+        <title>{`Add Phone Call`}</title>
       </TkPageHead>
 
       <div className="page-content">
-        <BreadCrumb pageTitle={"Add Task"} parentTitle="Tasks" parentLink={`${urls.tasks}`} />
+        <BreadCrumb pageTitle={"Add Phone Call"} parentTitle="Phone Call" parentLink={`${urls.phoneCall}`} />
         <TkContainer>
-          <AddTask />
+            <AddPhoneCall />
         </TkContainer>
       </div>
     </>
   );
 };
 
-export default AddTaskPage;
+export default PhoneCallDetailsPage;
 
-AddTaskPage.options = {
+PhoneCallDetailsPage.options = {
   layout: true,
   auth: false,
 };

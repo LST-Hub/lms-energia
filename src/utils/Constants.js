@@ -51,6 +51,41 @@ const employeeTypes = [
   { value: "Contractor", label: "Contractor" },
 ];
 
+const customFormTypes = [
+  { value: "standard form", label: "Standard Form" },
+  { value: "customized form", label: "Customized Form" },
+ 
+];
+const organizerTypes = [
+  { value: "john doe", label: "John Doe" },
+  { value: "Joe marry", label: "Joe Marry" },
+  { value: "jane pope", label: "Jane Pope" },
+  { value: "steve smith", label: "Steve Smith" },
+];
+const stausTypes = [
+  { value: "confirmed", label: "Confirmed" },
+  { value: "completed", label: "Completed" },
+];
+const eventAcessTypes = [
+  { value: "public", label: "Public" },
+  { value: "private", label: "Private" },
+  { value: "showAsBusy", label: "Show as Busy" },
+];
+const remindersTypes = [
+  { value: "none", label: "None" },
+  { value: "0 min", label: "0 Min" },
+  { value: "5 min", label: "5 Min" },
+  { value: "10 min", label: "10 Min" },
+  { value: "15 min", label: "15 Min" },
+  { value: "30 min", label: "30 Min" },
+  { value: "1 hour", label: "1 Hour" },
+];
+
+const reminderTypes = [
+  { value: "none", label: "None" },
+  { value: "browser", label: "Browser" },
+  { value: "email", label: "Email" },
+];
 // same as above  we have created a enum in Db  for employee type
 const genderTypes = [
   { value: "Male", label: "Male" },
@@ -426,6 +461,18 @@ const RQ = {
 const ws = "/ws";
 
 const urls = {
+  phoneCall : `${ws}/call`,
+  phoneCallAdd : `${ws}/call/add`,
+  phoneCallEdit : `${ws}/call/edit`,
+  phoneCallView : `${ws}/call/view`,
+  taskk: `${ws}/task`,
+  taskkAdd: `${ws}/task/add`,
+  taskkEdit: `${ws}/task/edit`,
+  taskkView: `${ws}/task/view`,
+  meeting: `${ws}/meeting`,
+  meetingAdd: `${ws}/meeting/add`,
+  meetingEdit: `${ws}/meeting/edit`,
+  meetingView: `${ws}/meeting/view`,
   dashboard: `${ws}/dashboard`,
   workCalendar: `${ws}/work-calendar`,
   workCalendarView: `${ws}/work-calendar/view`,
@@ -1092,6 +1139,12 @@ export {
   bigInpuMaxLength,
   bigInpuMinLength,
   employeeTypes,
+  customFormTypes,
+  organizerTypes,
+  stausTypes,
+  eventAcessTypes,
+  remindersTypes,
+  reminderTypes,
   genderTypes,
   projectTypes,
   countries,

@@ -286,6 +286,24 @@ function sidebarOptions(user, sessionData) {
       icon: "ri-group-line",
       link: `${urls.users}`,
     },
+    {
+      id: "phone call",
+      label: "Phone Call",
+      icon: "ri-phone-fill",
+      link: `${urls.phoneCall}`,
+    },
+    {
+      id: "task",
+      label: "Task",
+      icon: "ri-task-line",
+      link: `${urls.taskk}`,
+    },
+    {
+      id: "meeting",
+      label: "Meeting",
+      icon: "ri-calendar-line",
+      link: `${urls.meeting}`,
+    },
   ];
 
   return menuItemsForAll;
