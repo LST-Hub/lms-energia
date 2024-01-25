@@ -2,7 +2,7 @@ import React from "react";
 import { Container, Row } from "reactstrap";
 // import BreadCrumb from '../../Components/Common/BreadCrumb';
 import BalanceOverview from "./BalanceOverview";
-import ClosingDeals from './ClosingDetails';
+// import ClosingDeals from './ClosingDetails';
 import DealsStatus from "./DealStatus";
 import DealType from "./DealType";
 import MyTasks from "./MyTasks";
@@ -33,7 +33,7 @@ const DashboardCrm = () => {
         </Row>
         <Row>
           <MyTasks />
-          <ClosingDeals />
+          {/* <ClosingDeals /> */}
         </Row>
       </Container>
       {/* </div> */}
