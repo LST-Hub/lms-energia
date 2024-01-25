@@ -495,6 +495,8 @@ const urls = {
   inviteSignup: "/invite-signup",
   inviteUserDetails: "/invite-user-details",
   idleHours: "/idle-hours",
+  leads: `${ws}/leads`,
+  leadAdd: `${ws}/leads/add`,
 };
 
 const SSNames = {

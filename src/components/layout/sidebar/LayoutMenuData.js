@@ -275,6 +275,12 @@ function sidebarOptions(user, sessionData) {
       link: `${urls.dashboard}`,
     },
     {
+      id: "leads",
+      label: "Leads",
+      icon: "ri-links-line",
+      link: `${urls.leads}`,
+    },
+    {
       id: "users",
       label: "Users",
       icon: "ri-group-line",
