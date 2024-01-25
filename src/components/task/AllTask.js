@@ -55,19 +55,19 @@ function TableToolBar() {
           <TkCol lg={2}>
             <TkInput
               // onChange={onSearchChange}
-              placeholder="Search Users"
+              placeholder="Search"
               isSearchField={true}
             />
           </TkCol>
 
-          <TkCol lg={2}>
+          {/* <TkCol lg={2}>
             <TkSelect
               placeholder="Select Role"
               // loading={isRoleLoading}
               options={[]}
               // onChange={onRoleChange}
             />
-          </TkCol>
+          </TkCol> */}
           <TkCol lg={2}>
             <TkSelect
               placeholder="Active/Inactive"
