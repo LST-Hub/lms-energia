@@ -17,7 +17,6 @@ const taskData = [
     id: 1,
     dueDate: "2021-06-01",
     taskTitle: "Test Subject",
-    priority: "High",
     status: "Open",
     date: "2021-06-01",
   },
@@ -25,7 +24,6 @@ const taskData = [
     id: 2,
     dueDate: "2021-14-01",
     taskTitle: "Demo",
-    priority: "Low",
     status: "Close",
     date: "2021-06-01",
   },
@@ -33,7 +31,6 @@ const taskData = [
     id: 3,
     dueDate: "2021-06-01",
     taskTitle: "Test Subject",
-    priority: "High",
     status: "Open",
     date: "2021-06-01",
   },
@@ -41,7 +38,6 @@ const taskData = [
     id: 4,
     dueDate: "2021-06-01",
     taskTitle: "Test Subject",
-    priority: "High",
     status: "Open",
     date: "2021-06-01",
   },
@@ -139,14 +135,14 @@ const AllTask = () => {
           return <div className="table-text">{cellProps.value}</div>;
         },
       },
-      {
-        Header: "Priority",
-        accessor: "priority",
-        filterable: false,
-        Cell: (cellProps) => {
-          return <div className="table-text">{cellProps.value}</div>;
-        },
-      },
+      // {
+      //   Header: "Priority",
+      //   accessor: "priority",
+      //   filterable: false,
+      //   Cell: (cellProps) => {
+      //     return <div className="table-text">{cellProps.value}</div>;
+      //   },
+      // },
       {
         Header: "Status",
         accessor: "status",

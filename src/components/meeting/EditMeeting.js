@@ -31,6 +31,7 @@ import {
   PUBLIC_BUCKET_BASE_URL,
   urls,
   countries,
+  leadTypes,
 } from "../../utils/Constants";
 import tkFetch from "../../utils/fetch";
 import { useMutation, useQueries } from "@tanstack/react-query";
@@ -481,11 +482,11 @@ const EditMeeting = () => {
                       render={({ field }) => (
                         <TkSelect
                           {...field}
-                          labelName="Custom Form"
+                          labelName="Leads"
                           labelId={"_type"}
                           id="type"
-                          options={employeeTypes}
-                          placeholder="Select Type"
+                          options={leadTypes}
+                          placeholder="Select Leads"
                           requiredStarOnLabel={true}
                         />
                       )}
@@ -583,7 +584,7 @@ const EditMeeting = () => {
                           labelId={"_type"}
                           id="type"
                           options={employeeTypes}
-                          placeholder="Select Type"
+                          placeholder="Select Organizer"
                           requiredStarOnLabel={true}
                         />
                       )}
@@ -636,7 +637,7 @@ const EditMeeting = () => {
                     ) : null}
                   </TkCol>
 
-                  <TkCol lg={4}>
+                  {/* <TkCol lg={4}>
                     <Controller
                       name="type"
                       control={control}
@@ -687,7 +688,7 @@ const EditMeeting = () => {
                     {errors.type && (
                       <FormErrorText>{errors.type.message}</FormErrorText>
                     )}
-                  </TkCol>
+                  </TkCol> */}
 
                   <TkCol lg={4}>
                     {/* add checkbox that user can be project manager */}

@@ -37,6 +37,7 @@ import {
   stausTypes,
   organizerTypes,
   customFormTypes,
+  leadTypes,
 } from "../../utils/Constants";
 import tkFetch from "../../utils/fetch";
 import { useMutation, useQueries } from "@tanstack/react-query";
@@ -487,11 +488,11 @@ const AddMeeting = () => {
                       render={({ field }) => (
                         <TkSelect
                           {...field}
-                          labelName="Custom Form"
+                          labelName="Leads"
                           labelId={"_type"}
                           id="type"
-                          options={customFormTypes}
-                          placeholder="Select Type"
+                          options={leadTypes}
+                          placeholder="Select Leads"
                           requiredStarOnLabel={true}
                         />
                       )}
@@ -587,7 +588,7 @@ const AddMeeting = () => {
                           labelId={"_type"}
                           id="type"
                           options={organizerTypes}
-                          placeholder="Select Type"
+                          placeholder="Select Organizer"
                           requiredStarOnLabel={true}
                         />
                       )}
@@ -640,7 +641,7 @@ const AddMeeting = () => {
                     ) : null}
                   </TkCol>
 
-                  <TkCol lg={4}>
+                  {/* <TkCol lg={4}>
                     <Controller
                       name="reminderType"
                       control={control}
@@ -691,7 +692,7 @@ const AddMeeting = () => {
                     {errors.type && (
                       <FormErrorText>{errors.type.message}</FormErrorText>
                     )}
-                  </TkCol>
+                  </TkCol> */}
 
                   <TkCol lg={4}>
                     {/* add checkbox that user can be project manager */}

@@ -51,9 +51,10 @@ const employeeTypes = [
   { value: "Contractor", label: "Contractor" },
 ];
 
-const customFormTypes = [
-  { value: "standard form", label: "Standard Form" },
-  { value: "customized form", label: "Customized Form" },
+const leadTypes = [
+  { value: "lead1", label: "Lead1" },
+  { value: "lead2", label: "Lead2" },
+  { value: "lead3", label: "Lead3" },
  
 ];
 const organizerTypes = [
@@ -1139,7 +1140,7 @@ export {
   bigInpuMaxLength,
   bigInpuMinLength,
   employeeTypes,
-  customFormTypes,
+  leadTypes,
   organizerTypes,
   stausTypes,
   eventAcessTypes,

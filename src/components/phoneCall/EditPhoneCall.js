@@ -32,6 +32,7 @@ import {
   urls,
   countries,
   customFormTypes,
+  leadTypes,
 } from "../../utils/Constants";
 import tkFetch from "../../utils/fetch";
 import { useMutation, useQueries } from "@tanstack/react-query";
@@ -522,11 +523,11 @@ const EditPhoneCall = () => {
                       render={({ field }) => (
                         <TkSelect
                           {...field}
-                          labelName="Custom Form"
+                          labelName="Leads"
                           labelId={"_type"}
                           id="type"
-                          options={customFormTypes}
-                          placeholder="Select Type"
+                          options={leadTypes}
+                          placeholder="Select Leads"
                           requiredStarOnLabel={true}
                         />
                       )}
@@ -581,17 +582,17 @@ const EditPhoneCall = () => {
 
                   <TkCol lg={4}>
                     <TkInput
-                      {...register("subject")}
-                      labelName="Subject"
-                      tooltip="Enter Subject"
-                      labelId={"_subject"}
-                      id="subject"
+                      {...register("comments")}
+                      labelName="Comments"
+                      tooltip="Enter Comments"
+                      labelId={"_comments"}
+                      id="comments"
                       type="text"
-                      placeholder="Enter Subject"
+                      placeholder="Enter Comments"
                       requiredStarOnLabel={true}
                     />
-                    {errors.subject && (
-                      <FormErrorText>{errors.subject.message}</FormErrorText>
+                    {errors.comments && (
+                      <FormErrorText>{errors.comments.message}</FormErrorText>
                     )}
                   </TkCol>
 
@@ -676,7 +677,7 @@ const EditPhoneCall = () => {
                     ) : null}
                   </TkCol>
 
-                  <TkCol lg={4}>
+                  {/* <TkCol lg={4}>
                     <Controller
                       name="type"
                       control={control}
@@ -695,9 +696,9 @@ const EditPhoneCall = () => {
                     {errors.type && (
                       <FormErrorText>{errors.type.message}</FormErrorText>
                     )}
-                  </TkCol>
+                  </TkCol> */}
 
-                  <TkCol lg={4}>
+                  {/* <TkCol lg={4}>
                     <Controller
                       name="date"
                       control={control}
@@ -724,7 +725,7 @@ const EditPhoneCall = () => {
                     {errors.date?.message ? (
                       <FormErrorText>{errors.date?.message}</FormErrorText>
                     ) : null}
-                  </TkCol>
+                  </TkCol> */}
 
                   <TkCol lg={4}>
                     <TkInput
@@ -794,7 +795,7 @@ const EditPhoneCall = () => {
                           labelId={"_type"}
                           id="type"
                           options={employeeTypes}
-                          placeholder="Select Type"
+                          placeholder="Select Reminder"
                           requiredStarOnLabel={true}
                         />
                       )}

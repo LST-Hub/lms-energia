@@ -35,6 +35,7 @@ import {
   remindersTypes,
   stausTypes,
   customFormTypes,
+  leadTypes,
 } from "../../utils/Constants";
 import tkFetch from "../../utils/fetch";
 import { useMutation, useQueries } from "@tanstack/react-query";
@@ -485,11 +486,11 @@ const AddTask = () => {
                       render={({ field }) => (
                         <TkSelect
                           {...field}
-                          labelName="Custom Form"
+                          labelName="Leads"
                           labelId={"_type"}
                           id="type"
-                          options={customFormTypes}
-                          placeholder="Select Type"
+                          options={leadTypes}
+                          placeholder="Select Leads"
                           requiredStarOnLabel={true}
                         />
                       )}
@@ -499,7 +500,7 @@ const AddTask = () => {
                     )}
                   </TkCol>
 
-                  <TkCol lg={4}>
+                  {/* <TkCol lg={4}>
                     <Controller
                       name="type"
                       control={control}
@@ -518,7 +519,7 @@ const AddTask = () => {
                     {errors.type && (
                       <FormErrorText>{errors.type.message}</FormErrorText>
                     )}
-                  </TkCol>
+                  </TkCol> */}
 
                   <TkCol lg={4}>
                     <Controller
@@ -556,7 +557,7 @@ const AddTask = () => {
                     )}
                   </TkCol>
 
-                  <TkCol lg={4}>
+                  {/* <TkCol lg={4}>
                     <Controller
                       name="type"
                       control={control}
@@ -575,7 +576,7 @@ const AddTask = () => {
                     {errors.type && (
                       <FormErrorText>{errors.type.message}</FormErrorText>
                     )}
-                  </TkCol>
+                  </TkCol> */}
 
                   <TkCol lg={4}>
                     {/* add checkbox that user can be project manager */}
@@ -638,7 +639,7 @@ const AddTask = () => {
                     ) : null}
                   </TkCol>
 
-                  <TkCol>
+                  {/* <TkCol>
                     <TkInput
                       labelName="Start Time"
                       id={"startTime"}
@@ -759,7 +760,7 @@ const AddTask = () => {
                     {errors.date?.message ? (
                       <FormErrorText>{errors.date?.message}</FormErrorText>
                     ) : null}
-                  </TkCol>
+                  </TkCol> */}
                   <TkCol lg={6}>
                     {/* add checkbox that user can be project manager */}
                     <TkRow className="justify-content-start mt-4">
