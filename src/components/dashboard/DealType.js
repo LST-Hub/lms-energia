@@ -1,12 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Card,
-  Col,
-  DropdownItem,
-  DropdownMenu,
-  DropdownToggle,
-  UncontrolledDropdown,
-} from "reactstrap";
+import { Card, Col, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from "reactstrap";
 // import { useSelector, useDispatch } from "react-redux";
 import { DealTypeCharts } from "./DashboardCrmCharts";
 // import { getDialTypeChartsData } from '../../store/actions';
@@ -14,7 +7,7 @@ import { DealTypeCharts } from "./DashboardCrmCharts";
 const DealType = () => {
   // const dispatch = useDispatch();
 
-  const [chartData, setchartData] = useState([]);
+  // const [chartData, setchartData] = useState([]);
 
   // const { dialTypeData } = useSelector(state => ({
   //     dialTypeData: state.DashboardCRM.dialTypeData
@@ -30,22 +23,37 @@ const DealType = () => {
     // dispatch(getDialTypeChartsData(pType));
   };
 
-  useEffect(() => {
-    setchartData([
-      {
-        name: "Pending",
-        data: [88, 41, 50, 66, 49, 62, 69, 91, 148],
-      },
-      {
-        name: "Won",
-        data: [65, 111, 21, 200, 50, 75, 34, 32, 42],
-      },
-      {
-        name: "Loss",
-        data: [50, 60, 80, 90, 110, 150, 34, 32, 42],
-      },
-    ]);
-  }, [chartData]);
+  // useEffect(() => {
+  //   setchartData([
+  //     {
+  //       name: "Pending",
+  //       data: [88, 41, 50, 66, 49, 62, 69, 91, 148],
+  //     },
+  //     {
+  //       name: "Won",
+  //       data: [65, 111, 21, 200, 50, 75, 34, 32, 42],
+  //     },
+  //     {
+  //       name: "Loss",
+  //       data: [50, 60, 80, 90, 110, 150, 34, 32, 42],
+  //     },
+  //   ]);
+  // }, [chartData]);
+
+  const chartData = [
+    {
+      name: "Pending",
+      data: [88, 41, 50, 66, 49, 62, 69, 91, 148],
+    },
+    {
+      name: "Won",
+      data: [65, 111, 21, 200, 50, 75, 34, 32, 42],
+    },
+    {
+      name: "Loss",
+      data: [50, 60, 80, 90, 110, 150, 34, 32, 42],
+    },
+  ];
 
   // useEffect(() => {
   //     dispatch(getDialTypeChartsData("monthly"));
@@ -59,17 +67,10 @@ const DealType = () => {
             <h4 className="card-title mb-0 flex-grow-1">Deal Type</h4>
             <div className="flex-shrink-0">
               <UncontrolledDropdown className="card-header-dropdown">
-                <DropdownToggle
-                  tag="a"
-                  className="text-reset dropdown-btn"
-                  role="button"
-                >
-                  <span className="fw-semibold text-uppercase fs-12">
-                    Sort by:{" "}
-                  </span>
+                <DropdownToggle tag="a" className="text-reset dropdown-btn" role="button">
+                  <span className="fw-semibold text-uppercase fs-12">Sort by: </span>
                   <span className="text-muted">
-                    {seletedMonth.charAt(0).toUpperCase() +
-                      seletedMonth.slice(1)}
+                    {seletedMonth.charAt(0).toUpperCase() + seletedMonth.slice(1)}
                     <i className="mdi mdi-chevron-down ms-1"></i>
                   </span>
                 </DropdownToggle>
@@ -112,10 +113,7 @@ const DealType = () => {
           </div>
           <div lass="card-body pb-0">
             <div id="deal-type-charts" dir="ltr">
-              <DealTypeCharts
-                series={chartData}
-                dataColors='["--vz-warning", "--vz-danger", "--vz-success"]'
-              />
+              <DealTypeCharts series={chartData} dataColors='["--vz-warning", "--vz-danger", "--vz-success"]' />
             </div>
           </div>
         </Card>

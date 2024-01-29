@@ -1,13 +1,13 @@
 import React from "react";
 import { Container, Row } from "reactstrap";
 // import BreadCrumb from '../../Components/Common/BreadCrumb';
-// import BalanceOverview from './BalanceOverview';
-// import ClosingDeals from './ClosingDeals';
-// import DealsStatus from './DealsStatus';
-// import DealType from './DealType';
-// import MyTasks from './MyTasks';
-// import SalesForecast from './SalesForecast';
-// import UpcomingActivities from './UpcomingActivities';
+import BalanceOverview from "./BalanceOverview";
+// import ClosingDeals from './ClosingDetails';
+import DealsStatus from "./DealStatus";
+import DealType from "./DealType";
+import MyTasks from "./MyTasks";
+import SalesForecast from "./SalesForecast";
+import UpcomingActivities from "./UpcomingActivities";
 import Widget from "./Widget";
 // import SalesForecast from './SalesForecast';
 
@@ -22,18 +22,19 @@ const DashboardCrm = () => {
           <Widget />
         </Row>
         <Row>
-          {/* <SalesForecast /> */}
-          {/* <DealType /> */}
-          {/* <BalanceOverview /> */}
+          <SalesForecast />
+          <DealType />
+          <BalanceOverview />
         </Row>
-        {/* <Row>
-                        <DealsStatus />
-                        <MyTasks />
-                    </Row>
-                    <Row>
-                        <UpcomingActivities />
-                        <ClosingDeals />
-                    </Row> */}
+        <Row>
+          <UpcomingActivities />
+          <DealsStatus />
+
+        </Row>
+        <Row>
+          <MyTasks />
+          {/* <ClosingDeals /> */}
+        </Row>
       </Container>
       {/* </div> */}
     </React.Fragment>

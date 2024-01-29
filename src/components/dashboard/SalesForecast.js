@@ -1,13 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Card,
-  CardHeader,
-  Col,
-  DropdownItem,
-  DropdownMenu,
-  DropdownToggle,
-  UncontrolledDropdown,
-} from "reactstrap";
+import { Card, CardHeader, Col, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from "reactstrap";
 import { SalesForecastCharts } from "./DashboardCrmCharts";
 // import { useSelector, useDispatch } from "react-redux";
 // import { getSalesForecastChartsData } from "../../store/dashboardCRM/action";
@@ -15,7 +7,7 @@ import { SalesForecastCharts } from "./DashboardCrmCharts";
 const SalesForecast = () => {
   // const dispatch = useDispatch();
 
-  const [chartData, setchartData] = useState([]);
+  // const [chartData, setchartData] = useState([]);
 
   // const { salesForecastData } = useSelector(state => ({
   //     salesForecastData: state.DashboardCRM.salesForecastData
@@ -25,22 +17,37 @@ const SalesForecast = () => {
   //     setchartData(salesForecastData);
   // }, [salesForecastData]);
 
-  useEffect(() => {
-    setchartData([
-      {
-        name: "Goal",
-        data: [10, 41, 35],
-      },
-      {
-        name: "Revenue",
-        data: [10, 15, 21],
-      },
-      {
-        name: "Pending Forcast",
-        data: [10, 15, 21],
-      },
-    ]);
-  }, [chartData]);
+  // useEffect(() => {
+  //   setchartData([
+  //     {
+  //       name: "Goal",
+  //       data: [35],
+  //     },
+  //     {
+  //       name: "Revenue",
+  //       data: [21],
+  //     },
+  //     {
+  //       name: "Pending Forcast",
+  //       data: [50],
+  //     },
+  //   ]);
+  // }, [chartData]);
+
+  const chartData = [
+    {
+      name: "Goal",
+      data: [35],
+    },
+    {
+      name: "Revenue",
+      data: [21],
+    },
+    {
+      name: "Pending Forcast",
+      data: [50],
+    },
+  ];
 
   const [seletedMonth, setSeletedMonth] = useState("Nov 2021");
   const onChangeChartPeriod = (pType) => {
@@ -60,17 +67,10 @@ const SalesForecast = () => {
             <h4 className="card-title mb-0 flex-grow-1">Sales Forecast</h4>
             <div className="flex-shrink-0">
               <UncontrolledDropdown className="card-header-dropdown">
-                <DropdownToggle
-                  tag="a"
-                  className="text-reset dropdown-btn"
-                  role="button"
-                >
-                  <span className="fw-semibold text-uppercase fs-12">
-                    Sort by:{" "}
-                  </span>
+                <DropdownToggle tag="a" className="text-reset dropdown-btn" role="button">
+                  <span className="fw-semibold text-uppercase fs-12">Sort by: </span>
                   <span className="text-muted">
-                    {seletedMonth.charAt(0).toUpperCase() +
-                      seletedMonth.slice(1)}
+                    {seletedMonth.charAt(0).toUpperCase() + seletedMonth.slice(1)}
                     <i className="mdi mdi-chevron-down ms-1"></i>
                   </span>
                 </DropdownToggle>
@@ -113,10 +113,7 @@ const SalesForecast = () => {
           </CardHeader>
           <div className="card-body pb-0">
             <div id="sales-forecast-chart" className="apex-charts" dir="ltr">
-              <SalesForecastCharts
-                series={chartData}
-                dataColors='["--vz-primary", "--vz-success", "--vz-warning"]'
-              />
+              <SalesForecastCharts series={chartData} dataColors='["--vz-primary", "--vz-success", "--vz-warning"]' />
             </div>
           </div>
         </Card>

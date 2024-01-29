@@ -59,19 +59,11 @@ function TableToolBar() {
           <TkCol lg={2}>
             <TkInput
               // onChange={onSearchChange}
-              placeholder="Search Users"
+              placeholder="Search"
               isSearchField={true}
             />
           </TkCol>
 
-          <TkCol lg={2}>
-            <TkSelect
-              placeholder="Select Role"
-              // loading={isRoleLoading}
-              options={[]}
-              // onChange={onRoleChange}
-            />
-          </TkCol>
           <TkCol lg={2}>
             <TkSelect
               placeholder="Active/Inactive"
@@ -123,10 +115,10 @@ const AllPhoneCall = () => {
                   </Link>
                 </li>
               </ul> */}
-              
+
               <ul className="ps-0 mb-0">
                 <li className="list-inline-item">
-                  <Link href={`${urls.phoneCallEdit}/${cellProps.value}`}>
+                  <Link href={`${urls.phoneCallAdd}`}>
                     <a>
                       <TkButton color="none">
                         <TkIcon className="ri-edit-line fs-4 -fill align-bottom me-2 text-muted"></TkIcon>
@@ -147,14 +139,10 @@ const AllPhoneCall = () => {
           return (
             <>
               <div className="d-flex align-items-center">
-                <Link
-                  href={`${urls.phoneCallView}/${cellProps.row.original.id}`}
-                >
+                <Link href={`${urls.phoneCallAdd}`}>
                   <a className="fw-medium table-link text-primary">
                     <div>
-                      {cellProps.value.length > 17
-                        ? cellProps.value.substring(0, 17) + "..."
-                        : cellProps.value}
+                      {cellProps.value.length > 17 ? cellProps.value.substring(0, 17) + "..." : cellProps.value}
                     </div>
                   </a>
                 </Link>
@@ -220,16 +208,11 @@ const AllPhoneCall = () => {
                   data={usersData || []}
                   Toolbar={
                     <TableToolBar
-                      onSearchChange={searchDebounce(
-                        updateSearchText,
-                        searchOnUI
-                      )}
+                      onSearchChange={searchDebounce(updateSearchText, searchOnUI)}
                       // accessLevel={accessLevel}
                       onSupervisorChange={(item) => {
                         updateFilters({
-                          [filterFields.users.supervisor]: item
-                            ? item.value
-                            : null,
+                          [filterFields.users.supervisor]: item ? item.value : null,
                         });
                       }}
                       onRoleChange={(item) => {

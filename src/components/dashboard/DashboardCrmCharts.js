@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 // import ReactApexChart from "react-apexcharts";
-// import getChartColorsArray from "../../utils/ChartsDynamicColor";
+import getChartColorsArray from "../../utils/ChartsDynamicColor";
 import dynamic from "next/dynamic";
 
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
