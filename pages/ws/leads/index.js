@@ -11,6 +11,10 @@ import Link from "next/link";
 
 const tabs = {
   directCall: "directCall",
+  email: "email",
+  socialMedia: "socialMedia",
+  portals: "portals",
+  directMarketing: "directMarketing",
   leadAssigning: "leadAssigning",
   leadNurutring: "leadNurutring",
 };

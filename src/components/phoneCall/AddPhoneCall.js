@@ -469,7 +469,7 @@ const AddPhoneCall = () => {
 
   return (
     <>
-      <TkRow className="justify-content-center">
+      <TkRow className="g-3 gx-4 gy-4">
         <TkCol lg={12}>
           <TkCard className="time-entry-card">
             <TkCardHeader>

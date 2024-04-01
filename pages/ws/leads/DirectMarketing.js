@@ -2,30 +2,75 @@ import React, { useState } from "react";
 import { Button, ButtonGroup } from "reactstrap";
 import TkInput from "../../../src/components/forms/TkInput";
 import TkRow, { TkCol } from "../../../src/components/TkRow";
-import TkCard, { TkCardBody, TkCardHeader } from "../../../src/components/TkCard";
+import TkCard, {
+  TkCardBody,
+  TkCardHeader,
+} from "../../../src/components/TkCard";
 import TkButton from "../../../src/components/TkButton";
 import TkSelect from "../../../src/components/forms/TkSelect";
 import TkDate from "../../../src/components/forms/TkDate";
 
-function DirectCall({ toggleTab, tabs }) {
+function DirectMarketing({ toggleTab, tabs }) {
   const [rSelected, setRSelected] = useState(1);
 
   return (
     <div>
       <ButtonGroup>
-        <Button color="primary" outline onClick={() => setRSelected(1)} active={rSelected === 1}>
+      {/* <Button color="primary" outline onClick={() => setRSelected(1)} active={rSelected === 1}>
           Direct
         </Button>
         <Button color="primary" outline onClick={() => setRSelected(2)} active={rSelected === 2}>
           Refferal
         </Button>
         <Button color="primary" outline onClick={() => setRSelected(3)} active={rSelected === 3}>
+          Portal
+        </Button> */}
+        <Button color="primary" outline onClick={() => setRSelected(1)} active={rSelected === 1}>
           New
         </Button>
-        <Button color="primary" outline onClick={() => setRSelected(4)} active={rSelected === 4}>
+        <Button color="primary" outline onClick={() => setRSelected(2)} active={rSelected === 2}>
           Existing
         </Button>
       </ButtonGroup>
+
+      <TkRow className="mt-3">
+        <TkCol>
+          <TkCard>
+            <TkCardBody>
+              <div>
+                <TkRow className="g-3">
+                  <TkCol lg={4}>
+                    <TkSelect
+                      id="visitDate"
+                      name="visitDate"
+                      labelName="Date Of Visit"
+                      options={[]}
+                    />
+                  </TkCol>
+
+                  <TkCol lg={4}>
+                    <TkSelect
+                      id="visitTime"
+                      name="visitTime"
+                      labelName="Time Of Visit"
+                      options={[]}
+                    />
+                  </TkCol>
+
+                  <TkCol lg={4}>
+                    <TkSelect
+                      id="visitUpdate"
+                      name="visitUpdate"
+                      labelName="Visit Update"
+                      options={[]}
+                    />
+                  </TkCol>
+                </TkRow>
+              </div>
+            </TkCardBody>
+          </TkCard>
+        </TkCol>
+      </TkRow>
 
       <TkRow className="mt-3">
         <TkCol>
@@ -48,10 +93,20 @@ function DirectCall({ toggleTab, tabs }) {
                     <TkInput id="name" type="text" labelName="Name" />
                   </TkCol>
                   <TkCol lg={4}>
-                    <TkInput id="mobileNo" name="mobileNo" type="text" labelName="Mobile No" />
+                    <TkInput
+                      id="mobileNo"
+                      name="mobileNo"
+                      type="text"
+                      labelName="Mobile No"
+                    />
                   </TkCol>
                   <TkCol lg={4}>
-                    <TkInput id="email" name="email" type="text" labelName="Email" />
+                    <TkInput
+                      id="email"
+                      name="email"
+                      type="text"
+                      labelName="Email"
+                    />
                   </TkCol>
                 </TkRow>
               </div>
@@ -73,23 +128,53 @@ function DirectCall({ toggleTab, tabs }) {
                     <TkInput id="name" type="text" labelName="Company Name" />
                   </TkCol>
                   <TkCol lg={4}>
-                    <TkInput id="contactNo" name="contactNo" type="text" labelName="Contact No" />
+                    <TkInput
+                      id="contactNo"
+                      name="contactNo"
+                      type="text"
+                      labelName="Contact No"
+                    />
                   </TkCol>
                   <TkCol lg={4}>
-                    <TkInput id="email" name="email" type="text" labelName="Email" />
+                    <TkInput
+                      id="email"
+                      name="email"
+                      type="text"
+                      labelName="Email"
+                    />
                   </TkCol>
                   <TkRow className="mt-3">
                     <TkCol lg={3}>
-                      <TkInput id="address" name="address" type="text" labelName="Address" />
+                      <TkInput
+                        id="address"
+                        name="address"
+                        type="text"
+                        labelName="Address"
+                      />
                     </TkCol>
                     <TkCol lg={3}>
-                      <TkInput id="region" name="region" type="text" labelName="Region" />
+                      <TkInput
+                        id="region"
+                        name="region"
+                        type="text"
+                        labelName="Region"
+                      />
                     </TkCol>
                     <TkCol lg={3}>
-                      <TkInput id="crno" name="crno" type="text" labelName="CR No" />
+                      <TkInput
+                        id="crno"
+                        name="crno"
+                        type="text"
+                        labelName="CR No"
+                      />
                     </TkCol>
                     <TkCol lg={3}>
-                      <TkInput id="vatNo" name="vatNo" type="text" labelName="VAT No" />
+                      <TkInput
+                        id="vatNo"
+                        name="vatNo"
+                        type="text"
+                        labelName="VAT No"
+                      />
                     </TkCol>
                   </TkRow>
                   <TkRow className="mt-3">
@@ -147,24 +232,54 @@ function DirectCall({ toggleTab, tabs }) {
                     />
                   </TkCol>
                   <TkCol lg={6}>
-                    <TkSelect id="requirement" name="requirement" labelName="Requirement" options={[]} />
+                    <TkSelect
+                      id="requirement"
+                      name="requirement"
+                      labelName="Requirement"
+                      options={[]}
+                    />
                   </TkCol>
                 </TkRow>
                 <TkRow className="mt-3">
                   <TkCol>
-                    <TkInput id="projectName" name="projectName" type="text" labelName="Project Name" />
+                    <TkInput
+                      id="projectName"
+                      name="projectName"
+                      type="text"
+                      labelName="Project Name"
+                    />
                   </TkCol>
                   <TkCol>
-                    <TkInput id="duration" name="duration" type="text" labelName="Duration" />
+                    <TkInput
+                      id="duration"
+                      name="duration"
+                      type="text"
+                      labelName="Duration"
+                    />
                   </TkCol>
                   <TkCol>
-                    <TkDate id="delivory" name="delivory" type="text" labelName="Expected Delivery Date" />
+                    <TkDate
+                      id="delivory"
+                      name="delivory"
+                      type="text"
+                      labelName="Expected Delivery Date"
+                    />
                   </TkCol>
                   <TkCol>
-                    <TkInput id="location" name="location" type="text" labelName="Location" />
+                    <TkInput
+                      id="location"
+                      name="location"
+                      type="text"
+                      labelName="Location"
+                    />
                   </TkCol>
                   <TkCol>
-                    <TkInput id="location" name="location" type="text" labelName="Location Contact person" />
+                    <TkInput
+                      id="location"
+                      name="location"
+                      type="text"
+                      labelName="Location Contact person"
+                    />
                   </TkCol>
                 </TkRow>
               </div>
@@ -179,7 +294,7 @@ function DirectCall({ toggleTab, tabs }) {
             type="button"
             color="primary"
             onClick={() => {
-              toggleTab(tabs.email);
+              toggleTab(tabs.leadAssigning);
             }}
           >
             Next
@@ -190,4 +305,4 @@ function DirectCall({ toggleTab, tabs }) {
   );
 }
 
-export default DirectCall;
+export default DirectMarketing;
