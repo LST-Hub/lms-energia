@@ -33,6 +33,7 @@ import {
   countries,
   customFormTypes,
   leadTypes,
+  organizerTypes,
 } from "../../utils/Constants";
 import tkFetch from "../../utils/fetch";
 import { useMutation, useQueries } from "@tanstack/react-query";
