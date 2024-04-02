@@ -43,30 +43,30 @@ function TableToolBar({ onSearchChange, onProjectChange, onStatusChange, onPrior
   const [allPriority, setAllPriority] = React.useState([]);
   const [allStatus, setAllStatus] = React.useState([]);
 
-  const resuls = useQueries({
-    queries: [
-      {
-        queryKey: [RQ.allProjectList],
-        queryFn: tkFetch.get(
-          `${API_BASE_URL}/project/list${
-            sessionData.user.roleId === perDefinedProjectManagerRoleID
-              ? `?PMprojects=true&indexFilter=true`
-              : sessionData.user.roleId === perDefinedEmployeeRoleID
-              ? `?myProjects=true&indexFilter=true`
-              : `?indexFilter=true`
-          }`
-        ),
-      },
-      {
-        queryKey: [RQ.allPriority],
-        queryFn: tkFetch.get(`${API_BASE_URL}/priority/list?indexFilter=true`),
-      },
-      {
-        queryKey: [RQ.allStatus],
-        queryFn: tkFetch.get(`${API_BASE_URL}/status/list?indexFilter=true`),
-      },
-    ],
-  });
+  // const resuls = useQueries({
+  //   queries: [
+  //     {
+  //       queryKey: [RQ.allProjectList],
+  //       queryFn: tkFetch.get(
+  //         `${API_BASE_URL}/project/list${
+  //           sessionData.user.roleId === perDefinedProjectManagerRoleID
+  //             ? `?PMprojects=true&indexFilter=true`
+  //             : sessionData.user.roleId === perDefinedEmployeeRoleID
+  //             ? `?myProjects=true&indexFilter=true`
+  //             : `?indexFilter=true`
+  //         }`
+  //       ),
+  //     },
+  //     {
+  //       queryKey: [RQ.allPriority],
+  //       queryFn: tkFetch.get(`${API_BASE_URL}/priority/list?indexFilter=true`),
+  //     },
+  //     {
+  //       queryKey: [RQ.allStatus],
+  //       queryFn: tkFetch.get(`${API_BASE_URL}/status/list?indexFilter=true`),
+  //     },
+  //   ],
+  // });
   const [project, priority, status] = resuls;
   const { isLoading: isProjectLoading, isError: isProjectError, error: projectError, data: projectData } = project;
   const { isLoading: isPriorityLoading, isError: isPriorityError, error: priorityError, data: priorityData } = priority;
