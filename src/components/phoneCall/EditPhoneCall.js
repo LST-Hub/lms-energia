@@ -566,7 +566,7 @@ const EditPhoneCall = () => {
                   tooltip="Enter comments"
                   labelId={"_comments"}
                   id="comments"
-                  type="text"
+                  type="textarea"
                   placeholder="Enter Comments"
                   requiredStarOnLabel={true}
                 />
