@@ -34,6 +34,8 @@ import {
   customFormTypes,
   leadTypes,
   organizerTypes,
+  stausTypes,
+  remindersTypes,
 } from "../../utils/Constants";
 import tkFetch from "../../utils/fetch";
 import { useMutation, useQueries } from "@tanstack/react-query";
