@@ -276,7 +276,7 @@ function sidebarOptions(user, sessionData) {
     },
     {
       id: "leads",
-      label: "Leads",
+      label: "Lead",
       icon: "ri-links-line",
       link: `${urls.leads}`,
     },

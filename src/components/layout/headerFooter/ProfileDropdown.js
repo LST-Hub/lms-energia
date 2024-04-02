@@ -69,7 +69,7 @@ const ProfileDropdown = () => {
   };
   return (
     <>
-      {!isLoading && !isError && (
+      {/* {!isLoading && !isError && ( */}
         <TkDropdown
           isOpen={isProfileDropdown}
           toggle={toggleProfileDropdown}
@@ -87,9 +87,9 @@ const ProfileDropdown = () => {
 
           <TkDropdownToggle tag="button" type="button" className="btn">
             <span className="d-flex align-items-center">
-              {user?.image ? (
+              {/* {user?.image ? ( */}
                 <Image
-                  src={user.image}
+                  src="/images/users/avatar-3.jpg"
                   alt="user avatar"
                   height={22}
                   width={22}
@@ -97,16 +97,16 @@ const ProfileDropdown = () => {
                   // placeholder="blur"
                   layout="responsive"
                 />
-              ) : (
-                <div className="header-avatar text-uppercase border rounded-circle bg-light text-primary">
+              {/* ) : ( */}
+                {/* <div className="header-avatar text-uppercase border rounded-circle bg-light text-primary">
                   {String(user?.firstName ?? "").charAt(0) + String(user?.lastName ?? "").charAt(0)}
-                </div>
-              )}
+                </div> */}
+              {/* )} */}
               <span className="text-start ms-xl-2">
                 <span className="d-none d-xl-inline-block ms-1 fw-medium user-name-text">
-                  {user?.firstName} {user?.lastName}
+                 John Doe
                 </span>
-                <span className="d-none d-xl-block ms-1 fs-12 text-muted user-name-sub-text">{user?.role?.name}</span>
+                <span className="d-none d-xl-block ms-1 fs-12 text-muted user-name-sub-text">System Admin</span>
               </span>
             </span>
           </TkDropdownToggle>
@@ -179,7 +179,7 @@ const ProfileDropdown = () => {
           </Link> */}
           </TkDropdownMenu>
         </TkDropdown>
-      )}
+      {/* )} */}
     </>
   );
 };

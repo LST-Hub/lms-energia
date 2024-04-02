@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, ButtonGroup } from "reactstrap";
 import TkInput from "../../../src/components/forms/TkInput";
 import TkRow, { TkCol } from "../../../src/components/TkRow";
@@ -9,35 +9,61 @@ import TkCard, {
 import TkButton from "../../../src/components/TkButton";
 import TkSelect from "../../../src/components/forms/TkSelect";
 import TkDate from "../../../src/components/forms/TkDate";
+import TkIcon from "../../../src/components/TkIcon";
 
 function LeadPortals({ toggleTab, tabs }) {
   const [rSelected, setRSelected] = useState(1);
+  const [isLeadPortals, setIsLeadPortals] = useState(false);
+  useEffect(() => {
+    setIsLeadPortals(true);
+  }, []);
 
+  const [requirementDetailsSections, setRequirementDetailsSections] = useState([
+    { id: 1, isVisible: true },
+  ]);
+
+  const handleAddSection = () => {
+    const newId = requirementDetailsSections.length + 1;
+    setRequirementDetailsSections([
+      ...requirementDetailsSections,
+      { id: newId, isVisible: true },
+    ]);
+  };
+
+  const handleToggleVisibility = (id) => {
+    setRequirementDetailsSections((prevSections) =>
+      prevSections.map((section) =>
+        section.id === id
+          ? { ...section, isVisible: !section.isVisible }
+          : section
+      )
+    );
+  };
   return (
-    <div>
-      <ButtonGroup>
-        <Button
-          color="primary"
-          outline
-          onClick={() => setRSelected(1)}
-          active={rSelected === 1}
-        >
-          New
-        </Button>
-        <Button
-          color="primary"
-          outline
-          onClick={() => setRSelected(2)}
-          active={rSelected === 2}
-        >
-          Existing
-        </Button>
-      </ButtonGroup>
+    <>
+      {isLeadPortals && (
+        <div>
+          <ButtonGroup>
+            <Button
+              color="primary"
+              outline
+              onClick={() => setRSelected(1)}
+              active={rSelected === 1}
+            >
+              New
+            </Button>
+            <Button
+              color="primary"
+              outline
+              onClick={() => setRSelected(2)}
+              active={rSelected === 2}
+            >
+              Existing
+            </Button>
+          </ButtonGroup>
 
-      <TkRow className="mt-3">
-        <TkCol>
-          <TkCard>
-            <TkCardBody>
+          <TkRow className="mt-5">
+            <TkCol>
               <div>
                 <TkRow className="g-3">
                   <TkCol lg={4}>
@@ -45,6 +71,7 @@ function LeadPortals({ toggleTab, tabs }) {
                       id="portalType"
                       name="portalType"
                       labelName="Name Of Portal"
+                      placeholder="Select Portal"
                       options={[
                         { value: "1", label: "Direct Marketing" },
                         { value: "2", label: "Social Media" },
@@ -57,30 +84,35 @@ function LeadPortals({ toggleTab, tabs }) {
                   </TkCol>
                 </TkRow>
               </div>
-            </TkCardBody>
-          </TkCard>
-        </TkCol>
-      </TkRow>
+            </TkCol>
+          </TkRow>
 
-      <TkRow className="mt-3">
-        <TkCol>
-          <div className="d-flex justify-content-center">
-            <TkInput type="text" placeholder="Search" isSearchField="true" />
-          </div>
-        </TkCol>
-      </TkRow>
+          <TkRow className="mt-5">
+            <TkCol>
+              <div className="d-flex justify-content-center">
+                <TkInput
+                  type="text"
+                  placeholder="Search"
+                  isSearchField="true"
+                />
+              </div>
+            </TkCol>
+          </TkRow>
 
-      <TkRow className="mt-3">
-        <TkCol>
-          <TkCard>
-            <TkCardHeader>
-              <h4 className="card-title">Personal Details</h4>
-            </TkCardHeader>
-            <TkCardBody>
+          <TkRow className="mt-3">
+            <TkCol>
+              <TkCardHeader tag="h5" className="mb-4">
+                <h4 className="card-title">Personal Details</h4>
+              </TkCardHeader>
               <div>
                 <TkRow className="g-3">
                   <TkCol lg={4}>
-                    <TkInput id="name" type="text" labelName="Name" />
+                    <TkInput
+                      id="name"
+                      type="text"
+                      labelName="Name"
+                      placeholder="Enter Name"
+                    />
                   </TkCol>
                   <TkCol lg={4}>
                     <TkInput
@@ -88,6 +120,7 @@ function LeadPortals({ toggleTab, tabs }) {
                       name="mobileNo"
                       type="text"
                       labelName="Mobile No"
+                      placeholder="Enter Mobile No"
                     />
                   </TkCol>
                   <TkCol lg={4}>
@@ -96,26 +129,30 @@ function LeadPortals({ toggleTab, tabs }) {
                       name="email"
                       type="text"
                       labelName="Email"
+                      placeholder="Enter Email"
                     />
                   </TkCol>
                 </TkRow>
               </div>
-            </TkCardBody>
-          </TkCard>
-        </TkCol>
-      </TkRow>
+              {/* </TkCardBody>
+              </TkCard> */}
+            </TkCol>
+          </TkRow>
 
-      <TkRow className="mt-3">
-        <TkCol>
-          <TkCard>
-            <TkCardHeader>
-              <h4 className="card-title">Company Details</h4>
-            </TkCardHeader>
-            <TkCardBody>
+          <TkRow className="mt-5">
+            <TkCol>
+              <TkCardHeader tag="h5" className="mb-4">
+                <h4 className="card-title">Company Details</h4>
+              </TkCardHeader>
               <div>
-                <TkRow className="g-3">
+                <TkRow className="mt-3">
                   <TkCol lg={4}>
-                    <TkInput id="name" type="text" labelName="Company Name" />
+                    <TkInput
+                      id="name"
+                      type="text"
+                      labelName="Company Name"
+                      placeholder="Enter Name"
+                    />
                   </TkCol>
                   <TkCol lg={4}>
                     <TkInput
@@ -123,6 +160,7 @@ function LeadPortals({ toggleTab, tabs }) {
                       name="contactNo"
                       type="text"
                       labelName="Contact No"
+                      placeholder="Enter Contact No"
                     />
                   </TkCol>
                   <TkCol lg={4}>
@@ -131,167 +169,230 @@ function LeadPortals({ toggleTab, tabs }) {
                       name="email"
                       type="text"
                       labelName="Email"
-                    />
-                  </TkCol>
-                  <TkRow className="mt-3">
-                    <TkCol lg={3}>
-                      <TkInput
-                        id="address"
-                        name="address"
-                        type="text"
-                        labelName="Address"
-                      />
-                    </TkCol>
-                    <TkCol lg={3}>
-                      <TkInput
-                        id="region"
-                        name="region"
-                        type="text"
-                        labelName="Region"
-                      />
-                    </TkCol>
-                    <TkCol lg={3}>
-                      <TkInput
-                        id="crno"
-                        name="crno"
-                        type="text"
-                        labelName="CR No"
-                      />
-                    </TkCol>
-                    <TkCol lg={3}>
-                      <TkInput
-                        id="vatNo"
-                        name="vatNo"
-                        type="text"
-                        labelName="VAT No"
-                      />
-                    </TkCol>
-                  </TkRow>
-                  <TkRow className="mt-3">
-                    <TkCol lg={6}>
-                      <TkSelect
-                        id="clientType"
-                        name="clientType"
-                        labelName="Client Type"
-                        options={[
-                          { value: "1", label: "Gov" },
-                          { value: "2", label: "Semi Gov" },
-                          { value: "3", label: "Privet" },
-                        ]}
-                      />
-                    </TkCol>
-                    <TkCol lg={6}>
-                      <TkSelect
-                        id="segment"
-                        name="segment"
-                        labelName="Segment"
-                        options={[
-                          { value: "1", label: "O&G" },
-                          { value: "2", label: "Construction" },
-                          { value: "3", label: "Industry" },
-                        ]}
-                      />
-                    </TkCol>
-                  </TkRow>
-                </TkRow>
-              </div>
-            </TkCardBody>
-          </TkCard>
-        </TkCol>
-      </TkRow>
-
-      <TkRow className="mt-3">
-        <TkCol>
-          <TkCard>
-            <TkCardHeader>
-              <h4 className="card-title">Requirement Details</h4>
-            </TkCardHeader>
-            <TkCardBody>
-              <div>
-                <TkRow>
-                  <TkCol lg={6}>
-                    <TkSelect
-                      id="division"
-                      name="division"
-                      labelName="Division"
-                      options={[
-                        { value: "1", label: "Energy" },
-                        { value: "2", label: "Cooling" },
-                        { value: "3", label: "Welding" },
-                      ]}
-                    />
-                  </TkCol>
-                  <TkCol lg={6}>
-                    <TkSelect
-                      id="requirement"
-                      name="requirement"
-                      labelName="Requirement"
-                      options={[]}
+                      placeholder="Enter Email"
                     />
                   </TkCol>
                 </TkRow>
                 <TkRow className="mt-3">
-                  <TkCol>
+                  <TkCol lg={4}>
                     <TkInput
-                      id="projectName"
-                      name="projectName"
+                      id="address"
+                      name="address"
                       type="text"
-                      labelName="Project Name"
+                      labelName="Address"
+                      placeholder="Enter Address"
                     />
                   </TkCol>
-                  <TkCol>
+                  <TkCol lg={4}>
                     <TkInput
-                      id="duration"
-                      name="duration"
+                      id="region"
+                      name="region"
                       type="text"
-                      labelName="Duration"
+                      labelName="Region"
+                      placeholder="Enter Region"
                     />
                   </TkCol>
-                  <TkCol>
-                    <TkDate
-                      id="delivory"
-                      name="delivory"
+                  <TkCol lg={4}>
+                    <TkInput
+                      id="crno"
+                      name="crno"
                       type="text"
-                      labelName="Expected Delivery Date"
+                      labelName="CR No"
+                      placeholder="Enter CR No"
                     />
                   </TkCol>
-                  <TkCol>
+                </TkRow>
+                <TkRow className="mt-3">
+                  <TkCol lg={4}>
                     <TkInput
-                      id="location"
-                      name="location"
+                      id="vatNo"
+                      name="vatNo"
                       type="text"
-                      labelName="Location"
+                      labelName="VAT No"
+                      placeholder="Enter VAT No"
                     />
                   </TkCol>
-                  <TkCol>
-                    <TkInput
-                      id="location"
-                      name="location"
-                      type="text"
-                      labelName="Location Contact person"
+                  <TkCol lg={4}>
+                    <TkSelect
+                      id="clientType"
+                      name="clientType"
+                      labelName="Client Type"
+                      placeholder="Select Client Type"
+                      options={[
+                        { value: "1", label: "Gov" },
+                        { value: "2", label: "Semi Gov" },
+                        { value: "3", label: "Privet" },
+                      ]}
+                    />
+                  </TkCol>
+                  <TkCol lg={4}>
+                    <TkSelect
+                      id="segment"
+                      name="segment"
+                      labelName="Segment"
+                      placeholder="Select Segment"
+                      options={[
+                        { value: "1", label: "O&G" },
+                        { value: "2", label: "Construction" },
+                        { value: "3", label: "Industry" },
+                      ]}
                     />
                   </TkCol>
                 </TkRow>
               </div>
-            </TkCardBody>
-          </TkCard>
-        </TkCol>
-      </TkRow>
+            </TkCol>
+          </TkRow>
 
-      <div className="d-flex mt-4 space-childern">
-        <div className="ms-auto" id="update-form-btns">
-          <TkButton
-            type="button"
-            color="primary"
-            onClick={() => {
-              toggleTab(tabs.directMarketing);
-            }}
-          >
-            Next
-          </TkButton>
+          <TkRow className="mt-5">
+            <TkCol>
+              <TkCardHeader tag="h5" className="mb-2">
+                <h4 className="card-title">Requirement Details</h4>
+              </TkCardHeader>
+            </TkCol>
+          </TkRow>
+          {requirementDetailsSections.map((section) => (
+            <div key={section.id}>
+              {section.isVisible && (
+                <TkRow className=" mb-4">
+                  <TkCol>
+                    <div>
+                      <>
+                        <TkRow className="mt-3">
+                          <TkCol lg={4}>
+                            <TkSelect
+                              id="division"
+                              name="division"
+                              labelName="Division"
+                              placeholder="Select Division"
+                              options={[
+                                { value: "1", label: "Energy" },
+                                { value: "2", label: "Cooling" },
+                                { value: "3", label: "Welding" },
+                              ]}
+                            />
+                          </TkCol>
+                          <TkCol lg={4}>
+                            <TkSelect
+                              id="requirement"
+                              name="requirement"
+                              labelName="Requirement"
+                              placeholder="Select Requirement"
+                              options={[]}
+                            />
+                          </TkCol>
+                          <TkCol lg={4}>
+                            <TkInput
+                              id="projectName"
+                              name="projectName"
+                              type="text"
+                              labelName="Project Name"
+                              placeholder="Enter Project Name"
+                            />
+                          </TkCol>
+                        </TkRow>
+                        <TkRow className="mt-3">
+                          <TkCol lg={4}>
+                            <TkInput
+                              id="projectName"
+                              name="projectName"
+                              type="text"
+                              labelName="Project Name"
+                              placeholder="Enter Project Name"
+                            />
+                          </TkCol>
+                          <TkCol lg={4}>
+                            <TkInput
+                              id="duration"
+                              name="duration"
+                              type="text"
+                              labelName="Duration"
+                              placeholder="Enter Duration"
+                            />
+                          </TkCol>
+                          <TkCol lg={4}>
+                            <TkDate
+                              id="delivery"
+                              name="delivery"
+                              type="text"
+                              labelName="Expected Delivery Date"
+                              placeholder="Enter Expected Date"
+                            />
+                          </TkCol>
+                        </TkRow>
+                        <TkRow className="mt-3">
+                          <TkCol lg={4}>
+                            <TkInput
+                              id="location"
+                              name="location"
+                              type="text"
+                              labelName="Location"
+                              placeholder="Enter Location"
+                            />
+                          </TkCol>
+                          <TkCol lg={4}>
+                            <TkInput
+                              id="locationContactPerson"
+                              name="locationContactPerson"
+                              type="text"
+                              labelName="Location Contact person"
+                              placeholder="Enter Location Contact Person"
+                            />
+                          </TkCol>
+                        </TkRow>
+                      </>
+                    </div>
+
+                    <TkRow className="mt-3">
+                      <TkCol>
+                        <TkButton
+                          type="button"
+                          onClick={() => handleToggleVisibility(section.id)}
+                          className="bg-transparent border-0 ps-0 ms-0 text-center"
+                        >
+                          {section.isVisible ? (
+                            <span className="ms-auto badge p-1 rounded-circle badge-soft-danger fs-4 me-3">
+                              <TkIcon className="ri-delete-bin-6-line"></TkIcon>
+                            </span>
+                          ) : (
+                            <TkIcon className="ri-add-line"></TkIcon>
+                          )}
+                        </TkButton>
+                      </TkCol>
+                    </TkRow>
+                  </TkCol>
+                </TkRow>
+              )}
+            </div>
+          ))}
+
+          <TkCol md={1} lg={5} className="text-center text-md-end">
+            <TkButton
+              type="button"
+              className="bg-transparent border-0 ps-0 ms-0 text-center"
+              onClick={handleAddSection}
+            >
+              <span className="add-timsheet-btn badge p-1 rounded-circle badge-soft-dark fs-4">
+                <TkIcon className="ri-add-line"></TkIcon>
+              </span>
+            </TkButton>
+          </TkCol>
+
+          <div className="d-flex mt-4 space-childern">
+            <div className="ms-auto" id="update-form-btns">
+              <TkButton
+                type="button"
+                color="primary"
+                onClick={() => {
+                  toggleTab(tabs.directMarketing);
+                }}
+              >
+                Next
+              </TkButton>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 }
 

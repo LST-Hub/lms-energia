@@ -468,7 +468,161 @@ const AddTask = () => {
 
   return (
     <>
-      <TkRow className="justify-content-center">
+      <TkRow className="mt-3">
+        <TkCol>
+          <TkCardHeader tag="h5" className="mb-4">
+            <h4>Primary Information</h4>
+          </TkCardHeader>
+          <div>
+            <TkRow className="g-3">
+              <TkCol lg={4}>
+                <Controller
+                  name="type"
+                  control={control}
+                  render={({ field }) => (
+                    <TkSelect
+                      {...field}
+                      labelName="Leads"
+                      labelId={"_type"}
+                      id="type"
+                      options={leadTypes}
+                      placeholder="Select Leads"
+                      requiredStarOnLabel={true}
+                    />
+                  )}
+                />
+              </TkCol>
+              <TkCol lg={4}>
+                <Controller
+                  name="type"
+                  control={control}
+                  render={({ field }) => (
+                    <TkSelect
+                      {...field}
+                      labelName="Status"
+                      labelId={"_type"}
+                      id="type"
+                      options={stausTypes}
+                      placeholder="Select Type"
+                      requiredStarOnLabel={true}
+                    />
+                  )}
+                />
+              </TkCol>
+
+              <TkCol lg={4}>
+                <TkInput
+                  {...register("title")}
+                  labelName="Title"
+                  labelId={"_title"}
+                  id="title"
+                  type="text"
+                  placeholder="Enter Title"
+                  requiredStarOnLabel={true}
+                />
+              </TkCol>
+            </TkRow>
+          </div>
+          <div>
+            <TkRow className="mt-3">
+              <TkCol lg={4}>
+                {/* add checkbox that user can be project manager */}
+                <TkRow className="justify-content-start mt-4">
+                  <TkCol xs={"auto"}>
+                    <TkCheckBox
+                      {...register("canBeSupervisor")}
+                      id="canBeSupervisor"
+                      type="checkbox"
+                      disabled={isAdminRole}
+                    />
+                    <TkLabel className="ms-3 me-lg-5" id="supervisor">
+                      Notify Assign By Email
+                    </TkLabel>
+                  </TkCol>
+
+                  <TkCol xs={"auto"}>
+                    <TkCheckBox
+                      {...register("privatePhoenCall")}
+                      id="privatePhoenCall"
+                      type="checkbox"
+                      disabled={isAdminRole}
+                    />
+                    <TkLabel className="ms-3 me-lg-5" id="privatePhoenCall">
+                      Private Task
+                    </TkLabel>
+                  </TkCol>
+                </TkRow>
+              </TkCol>
+            </TkRow>
+          </div>
+        </TkCol>
+      </TkRow>
+
+      <TkRow className="mt-5">
+        <TkCol>
+          <TkCardHeader tag="h5" className="mb-4">
+            <h4>Date and Time</h4>
+          </TkCardHeader>
+          <div>
+            <TkRow className="g-3">
+              <TkCol lg={4}>
+                <Controller
+                  name="date"
+                  control={control}
+                  rules={{ required: "Date is required" }}
+                  render={({ field }) => (
+                    <TkDate
+                      {...field}
+                      labelName="Date"
+                      id={"date"}
+                      placeholder="Select Date"
+                      options={{
+                        altInput: true,
+                        dateFormat: "d M, Y",
+                      }}
+                      requiredStarOnLabel={true}
+                    />
+                  )}
+                />
+                {errors.date?.message ? (
+                  <FormErrorText>{errors.date?.message}</FormErrorText>
+                ) : null}
+              </TkCol>
+
+              <TkCol lg={6}>
+                <TkRow className="justify-content-start mt-4">
+                  <TkCol xs={"auto"}>
+                    <TkCheckBox
+                      {...register("canBeSupervisor")}
+                      id="canBeSupervisor"
+                      type="checkbox"
+                      disabled={isAdminRole}
+                    />
+                    <TkLabel className="ms-3 me-lg-5" id="supervisor">
+                      Notify Assign By Email
+                    </TkLabel>
+                  </TkCol>
+                </TkRow>
+              </TkCol>
+            </TkRow>
+          </div>
+        </TkCol>
+      </TkRow>
+      <div className="d-flex mt-4 space-childern">
+        <div className="ms-auto" id="update-form-btns">
+          <TkButton
+            color="secondary"
+            type="button"
+            onClick={() => router.push(`${urls.taskk}`)}
+          >
+            Cancel
+          </TkButton>{" "}
+          <TkButton type="submit" color="primary">
+            Save
+          </TkButton>
+        </div>
+      </div>
+      {/* <TkRow className="justify-content-center">
         <TkCol lg={12}>
           <TkCard className="time-entry-card">
             <TkCardHeader>
@@ -500,26 +654,7 @@ const AddTask = () => {
                     )}
                   </TkCol>
 
-                  {/* <TkCol lg={4}>
-                    <Controller
-                      name="type"
-                      control={control}
-                      render={({ field }) => (
-                        <TkSelect
-                          {...field}
-                          labelName="Priority"
-                          labelId={"_type"}
-                          id="type"
-                          options={employeeTypes}
-                          placeholder="Select Type"
-                          requiredStarOnLabel={true}
-                        />
-                      )}
-                    />
-                    {errors.type && (
-                      <FormErrorText>{errors.type.message}</FormErrorText>
-                    )}
-                  </TkCol> */}
+                 
 
                   <TkCol lg={4}>
                     <Controller
@@ -557,29 +692,9 @@ const AddTask = () => {
                     )}
                   </TkCol>
 
-                  {/* <TkCol lg={4}>
-                    <Controller
-                      name="type"
-                      control={control}
-                      render={({ field }) => (
-                        <TkSelect
-                          {...field}
-                          labelName="Insert Before"
-                          labelId={"_type"}
-                          id="type"
-                          options={employeeTypes}
-                          placeholder="Select Type"
-                          requiredStarOnLabel={true}
-                        />
-                      )}
-                    />
-                    {errors.type && (
-                      <FormErrorText>{errors.type.message}</FormErrorText>
-                    )}
-                  </TkCol> */}
+                 
 
                   <TkCol lg={4}>
-                    {/* add checkbox that user can be project manager */}
                     <TkRow className="justify-content-start mt-4">
                       <TkCol xs={"auto"}>
                         <TkCheckBox
@@ -639,130 +754,8 @@ const AddTask = () => {
                     ) : null}
                   </TkCol>
 
-                  {/* <TkCol>
-                    <TkInput
-                      labelName="Start Time"
-                      id={"startTime"}
-                      type="text"
-                      placeholder="Enter Start Time"
-                    />
-                    {errors.duration?.message ? (
-                      <FormErrorText>{errors.duration?.message}</FormErrorText>
-                    ) : null}
-                  </TkCol>
-
-                  <TkCol lg={4}>
-                    <Controller
-                      name="type"
-                      control={control}
-                      render={({ field }) => (
-                        <TkSelect
-                          {...field}
-                          labelName="Reminder Type"
-                          labelId={"_type"}
-                          id="type"
-                          options={reminderTypes}
-                          placeholder="Select Type"
-                          //   requiredStarOnLabel={true}
-                        />
-                      )}
-                    />
-                    {errors.type && (
-                      <FormErrorText>{errors.type.message}</FormErrorText>
-                    )}
-                  </TkCol>
-
-                  <TkCol lg={4}>
-                    <Controller
-                      name="date"
-                      control={control}
-                      rules={{ required: "Date is required" }}
-                      render={({ field }) => (
-                        <TkDate
-                          {...field}
-                          labelName="Due Date"
-                          id={"date"}
-                          placeholder="Select Due Date"
-                          options={{
-                            altInput: true,
-                            dateFormat: "d M, Y",
-                          }}
-                          onChange={(e) => {
-                            field.onChange(e);
-                            setSelectedDate(e);
-                            setAllDurations({});
-                          }}
-                          requiredStarOnLabel={true}
-                        />
-                      )}
-                    />
-                    {errors.date?.message ? (
-                      <FormErrorText>{errors.date?.message}</FormErrorText>
-                    ) : null}
-                  </TkCol>
-
-                  <TkCol lg={4}>
-                    <TkInput
-                      labelName="End Time"
-                      id={"endTime"}
-                      type="text"
-                      placeholder="Enter End Time"
-                    />
-                    {errors.duration?.message ? (
-                      <FormErrorText>{errors.duration?.message}</FormErrorText>
-                    ) : null}
-                  </TkCol>
-                  <TkCol lg={4}>
-                    <Controller
-                      name="reminderType"
-                      control={control}
-                      render={({ field }) => (
-                        <TkSelect
-                          {...field}
-                          labelName="Reminder"
-                          labelId={"_reminderType"}
-                          id="reminderType"
-                          options={remindersTypes}
-                          placeholder="Select Type"
-                          //   requiredStarOnLabel={true}
-                        />
-                      )}
-                    />
-                    {errors.type && (
-                      <FormErrorText>{errors.type.message}</FormErrorText>
-                    )}
-                  </TkCol>
-
-                  <TkCol lg={4}>
-                    <Controller
-                      name="date"
-                      control={control}
-                      rules={{ required: "Date is required" }}
-                      render={({ field }) => (
-                        <TkDate
-                          {...field}
-                          labelName="Date Completed"
-                          id={"date"}
-                          placeholder="Select Date Completed"
-                          options={{
-                            altInput: true,
-                            dateFormat: "d M, Y",
-                          }}
-                          //   onChange={(e) => {
-                          //     field.onChange(e);
-                          //     setSelectedDate(e);
-                          //     setAllDurations({});
-                          //   }}
-                          //   requiredStarOnLabel={true}
-                        />
-                      )}
-                    />
-                    {errors.date?.message ? (
-                      <FormErrorText>{errors.date?.message}</FormErrorText>
-                    ) : null}
-                  </TkCol> */}
+                  
                   <TkCol lg={6}>
-                    {/* add checkbox that user can be project manager */}
                     <TkRow className="justify-content-start mt-4">
                       <TkCol xs={"auto"}>
                         <TkCheckBox
@@ -778,35 +771,12 @@ const AddTask = () => {
                     </TkRow>
                   </TkCol>
 
-                  {/* <Nav className="nav-tabs dropdown-tabs nav-tabs-custom mb-3">
-                    <NavItem>
-                      <NavLink href="#" className={classNames({})}>
-                        Message
-                      </NavLink>
-                    </NavItem>
-                    <NavItem>
-                      <NavLink href="#" className={classNames({})}>
-                        Related Records
-                      </NavLink>
-                    </NavItem>
-                    <NavItem>
-                      <NavLink href="#" className={classNames({})}>
-                        Availability
-                      </NavLink>
-                    </NavItem>
-                    <NavItem>
-                      <NavLink href="#" className={classNames({})}>
-                        Communication
-                      </NavLink>
-                    </NavItem>
-                  </Nav> */}
                 </TkRow>
                 {inviteUser.isError ? (
                   <FormErrorBox errMessage={inviteUser.error.message} />
                 ) : null}
                 <div className="d-flex mt-4 space-childern">
                   <TkButton
-                    //keep it disabled dont give loading to it
                     disabled={inviteUser.isLoading || uploadingImage}
                     onClick={() => router.push(`${urls.taskk}`)}
                     color="secondary"
@@ -827,7 +797,7 @@ const AddTask = () => {
             </TkCardBody>
           </TkCard>
         </TkCol>
-      </TkRow>
+      </TkRow> */}
     </>
   );
 };

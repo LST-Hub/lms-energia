@@ -469,308 +469,195 @@ const AddPhoneCall = () => {
 
   return (
     <>
-      <TkRow className="g-3 gx-4 gy-4">
-        <TkCol lg={12}>
-          <TkCard className="time-entry-card">
-            <TkCardHeader>
-              <h4>Primary Information</h4>
-            </TkCardHeader>
-            <TkCardBody>
-              <TkForm onSubmit={handleSubmit(onSubmit)}>
-                <TkRow className="g-3 gx-4 gy-4">
-                  <div id="teamlist"></div>
+      <TkRow className="mt-3">
+        <TkCol>
+          <TkCardHeader tag="h5" className="mb-4">
+            <h4>Primary Information</h4>
+          </TkCardHeader>
+          <div>
+            <TkRow className="g-3">
+              <TkCol lg={4}>
+                <TkSelect
+                  labelName="Leads"
+                  labelId={"_type"}
+                  id="type"
+                  options={leadTypes}
+                  placeholder="Select Leads"
+                  requiredStarOnLabel={true}
+                />
+              </TkCol>
 
-                  <TkCol lg={4}>
-                    <Controller
-                      name="type"
-                      control={control}
-                      render={({ field }) => (
-                        <TkSelect
-                          {...field}
-                          labelName="Leads"
-                          labelId={"_type"}
-                          id="type"
-                          options={leadTypes}
-                          placeholder="Select Leads"
-                          requiredStarOnLabel={true}
-                        />
-                      )}
-                    />
-                    {errors.type && (
-                      <FormErrorText>{errors.type.message}</FormErrorText>
-                    )}
-                  </TkCol>
+              <TkCol lg={4}>
+                <TkInput
+                  labelName=" Phone Number"
+                  labelId={"phoneNumber"}
+                  id="phoneNumber"
+                  type="text"
+                  placeholder="Enter Phone Number"
+                  requiredStarOnLabel={true}
+                />
+              </TkCol>
 
-                  <TkCol lg={4}>
-                    <TkInput
-                      {...register("phoneNumber")}
-                      labelName=" Phone Number"
-                      labelId={"phoneNumber"}
-                      id="phoneNumber"
-                      type="text"
-                      placeholder="Enter Phone Number"
+              <TkCol lg={4}>
+                <Controller
+                  name="organizer"
+                  control={control}
+                  render={({ field }) => (
+                    <TkSelect
+                      {...field}
+                      labelName="Organizer"
+                      tooltip="Select Organizer"
+                      labelId={"organizer"}
+                      id="organizer"
+                      options={organizerTypes}
+                      placeholder="Select Organizer"
                       requiredStarOnLabel={true}
                     />
-                    {errors.phoneNumber && (
-                      <FormErrorText>
-                        {errors.phoneNumber.message}
-                      </FormErrorText>
-                    )}
-                  </TkCol>
+                  )}
+                />
+              </TkCol>
+            </TkRow>
+          </div>
+          <div>
+            <TkRow className="mt-3">
+              <TkCol lg={4}>
+                <TkInput
+                  {...register("comments")}
+                  labelName="Comments"
+                  tooltip="Enter comments"
+                  labelId={"_comments"}
+                  id="comments"
+                  type="text"
+                  placeholder="Enter Comments"
+                  requiredStarOnLabel={true}
+                />
+              </TkCol>
 
-                  <TkCol lg={4}>
-                    <Controller
-                      name="organizer"
-                      control={control}
-                      render={({ field }) => (
-                        <TkSelect
-                          {...field}
-                          labelName="Organizer"
-                          tooltip="Select Organizer"
-                          labelId={"organizer"}
-                          id="organizer"
-                          // isLoading={isSupervisorLoading}
-                          options={organizerTypes}
-                          placeholder="Select Organizer"
-                          // if role is Admin then we supervisor is not mandatory
-                          requiredStarOnLabel={true}
-                        />
-                      )}
-                    />
-                    {errors.organizer && (
-                      <FormErrorText>{errors.organizer.message}</FormErrorText>
-                    )}
-                  </TkCol>
-
-                  <TkCol lg={4}>
-                    <TkInput
-                      {...register("comments")}
-                      labelName="Comments"
-                      tooltip="Enter comments"
-                      labelId={"_comments"}
-                      id="comments"
-                      type="text"
-                      placeholder="Enter Comments"
+              <TkCol lg={4}>
+                <Controller
+                  name="type"
+                  control={control}
+                  render={({ field }) => (
+                    <TkSelect
+                      {...field}
+                      labelName="Status"
+                      labelId={"_type"}
+                      id="type"
+                      options={stausTypes}
+                      placeholder="Select Status"
                       requiredStarOnLabel={true}
                     />
-                    {errors.comments && (
-                      <FormErrorText>{errors.comments.message}</FormErrorText>
-                    )}
-                  </TkCol>
+                  )}
+                />
+              </TkCol>
 
-                  <TkCol lg={4}>
-                    <Controller
-                      name="type"
-                      control={control}
-                      render={({ field }) => (
-                        <TkSelect
-                          {...field}
-                          labelName="Status"
-                          labelId={"_type"}
-                          id="type"
-                          options={stausTypes}
-                          placeholder="Select Status"
-                          requiredStarOnLabel={true}
-                        />
-                      )}
+              <TkCol lg={4}>
+                <TkRow className="justify-content-start mt-4">
+                  <TkCol xs={"auto"}>
+                    <TkCheckBox
+                      {...register("privatePhoenCall")}
+                      id="privatePhoenCall"
+                      type="checkbox"
+                      disabled={isAdminRole}
                     />
-                    {errors.type && (
-                      <FormErrorText>{errors.type.message}</FormErrorText>
-                    )}
+                    <TkLabel className="ms-3 me-lg-5" id="privatePhoenCall">
+                      Private Phone Call
+                    </TkLabel>
                   </TkCol>
-
-                  <TkCol lg={4}>
-                    {/* add checkbox that user can be project manager */}
-                    <TkRow className="justify-content-start mt-4">
-                      <TkCol xs={"auto"}>
-                        <TkCheckBox
-                          {...register("privatePhoenCall")}
-                          id="privatePhoenCall"
-                          type="checkbox"
-                          disabled={isAdminRole}
-                        />
-                        <TkLabel className="ms-3 me-lg-5" id="privatePhoenCall">
-                          Private Phone Call
-                        </TkLabel>
-                      </TkCol>
-                    </TkRow>
-                  </TkCol>
-                  <TkCardHeader>
-                    <h4>Date and Time</h4>
-                  </TkCardHeader>
-                  <TkCol lg={4}>
-                    <Controller
-                      name="date"
-                      control={control}
-                      rules={{ required: "Date is required" }}
-                      render={({ field }) => (
-                        <TkDate
-                          {...field}
-                          labelName="Date"
-                          id={"date"}
-                          placeholder="Select Date"
-                          options={{
-                            altInput: true,
-                            dateFormat: "d M, Y",
-                          }}
-                          onChange={(e) => {
-                            field.onChange(e);
-                            setSelectedDate(e);
-                            setAllDurations({});
-                          }}
-                          requiredStarOnLabel={true}
-                        />
-                      )}
-                    />
-                    {errors.date?.message ? (
-                      <FormErrorText>{errors.date?.message}</FormErrorText>
-                    ) : null}
-                  </TkCol>
-
-                  <TkCol>
-                    <TkInput
-                      labelName="Start Time"
-                      id={"startTime"}
-                      type="text"
-                      placeholder="Enter Start Time"
-                    />
-                    {errors.duration?.message ? (
-                      <FormErrorText>{errors.duration?.message}</FormErrorText>
-                    ) : null}
-                  </TkCol>
-
-                  {/* <TkCol lg={4}>
-                    <Controller
-                      name="type"
-                      control={control}
-                      render={({ field }) => (
-                        <TkSelect
-                          {...field}
-                          labelName="Reminder Type"
-                          labelId={"_type"}
-                          id="type"
-                          options={reminderTypes}
-                          placeholder="Select Type"
-                          requiredStarOnLabel={true}
-                        />
-                      )}
-                    />
-                    {errors.type && (
-                      <FormErrorText>{errors.type.message}</FormErrorText>
-                    )}
-                  </TkCol> */}
-
-                  {/* <TkCol lg={4}>
-                    <Controller
-                      name="date"
-                      control={control}
-                      rules={{ required: "Date is required" }}
-                      render={({ field }) => (
-                        <TkDate
-                          {...field}
-                          labelName="Date Completed"
-                          id={"date"}
-                          placeholder="Select Date Completed"
-                          options={{
-                            altInput: true,
-                            dateFormat: "d M, Y",
-                          }}
-                          onChange={(e) => {
-                            field.onChange(e);
-                            setSelectedDate(e);
-                            setAllDurations({});
-                          }}
-                          requiredStarOnLabel={true}
-                        />
-                      )}
-                    />
-                    {errors.date?.message ? (
-                      <FormErrorText>{errors.date?.message}</FormErrorText>
-                    ) : null}
-                  </TkCol> */}
-
-                  <TkCol lg={4}>
-                    <TkInput
-                      labelName="End Time"
-                      id={"endTime"}
-                      type="text"
-                      placeholder="Enter End Time"
-                    />
-                    {errors.duration?.message ? (
-                      <FormErrorText>{errors.duration?.message}</FormErrorText>
-                    ) : null}
-                  </TkCol>
-                  <TkCol lg={4}>
-                    <Controller
-                      name="reminder"
-                      control={control}
-                      render={({ field }) => (
-                        <TkSelect
-                          {...field}
-                          labelName="Reminder"
-                          labelId={"_reminder"}
-                          id="reminder"
-                          options={remindersTypes}
-                          placeholder="Select Reminder"
-                          requiredStarOnLabel={true}
-                        />
-                      )}
-                    />
-                    {errors.type && (
-                      <FormErrorText>{errors.type.message}</FormErrorText>
-                    )}
-                  </TkCol>
-
-                  {/* <Nav className="nav-tabs dropdown-tabs nav-tabs-custom mb-3">
-                    <NavItem>
-                      <NavLink href="#" className={classNames({})}>
-                        Message
-                      </NavLink>
-                    </NavItem>
-                    <NavItem>
-                      <NavLink href="#" className={classNames({})}>
-                        Related Records
-                      </NavLink>
-                    </NavItem>
-                    <NavItem>
-                      <NavLink href="#" className={classNames({})}>
-                        Availability
-                      </NavLink>
-                    </NavItem>
-                    <NavItem>
-                      <NavLink href="#" className={classNames({})}>
-                        Communication
-                      </NavLink>
-                    </NavItem>
-                  </Nav> */}
                 </TkRow>
-                {inviteUser.isError ? (
-                  <FormErrorBox errMessage={inviteUser.error.message} />
-                ) : null}
-                <div className="d-flex mt-4 space-childern">
-                  <TkButton
-                    //keep it disabled dont give loading to it
-                    disabled={inviteUser.isLoading || uploadingImage}
-                    onClick={() => router.push(`${urls.phoneCall}`)}
-                    color="secondary"
-                    type="button"
-                    className="ms-auto"
-                  >
-                    Cancel
-                  </TkButton>
-                  <TkButton
-                    loading={inviteUser.isLoading || uploadingImage}
-                    color="primary"
-                    type="submit"
-                  >
-                    Save
-                  </TkButton>
-                </div>
-              </TkForm>
-            </TkCardBody>
-          </TkCard>
+              </TkCol>
+            </TkRow>
+          </div>
         </TkCol>
       </TkRow>
+
+      <TkRow className="mt-3">
+        <TkCol>
+          <TkCardHeader tag="h5" className="mb-4">
+            <h4>Date and Time</h4>
+          </TkCardHeader>
+          <div>
+            <TkRow className="g-3">
+              <TkCol lg={4}>
+                <Controller
+                  name="date"
+                  control={control}
+                  rules={{ required: "Date is required" }}
+                  render={({ field }) => (
+                    <TkDate
+                      {...field}
+                      labelName="Date"
+                      id={"date"}
+                      placeholder="Select Date"
+                      options={{
+                        altInput: true,
+                        dateFormat: "d M, Y",
+                      }}
+                      requiredStarOnLabel={true}
+                    />
+                  )}
+                />
+                {errors.date?.message ? (
+                  <FormErrorText>{errors.date?.message}</FormErrorText>
+                ) : null}
+              </TkCol>
+
+              <TkCol>
+                <TkInput
+                  labelName="Start Time"
+                  id={"startTime"}
+                  type="text"
+                  placeholder="Enter Start Time"
+                />
+              </TkCol>
+
+              <TkCol lg={4}>
+                <TkInput
+                  labelName="End Time"
+                  id={"endTime"}
+                  type="text"
+                  placeholder="Enter End Time"
+                />
+              </TkCol>
+            </TkRow>
+          </div>
+          <div>
+            <TkRow className="mt-3">
+              <TkCol lg={4}>
+                <Controller
+                  name="reminder"
+                  control={control}
+                  render={({ field }) => (
+                    <TkSelect
+                      {...field}
+                      labelName="Reminder"
+                      labelId={"_reminder"}
+                      id="reminder"
+                      options={remindersTypes}
+                      placeholder="Select Reminder"
+                      requiredStarOnLabel={true}
+                    />
+                  )}
+                />
+              </TkCol>
+            </TkRow>
+          </div>
+        </TkCol>
+      </TkRow>
+      <div className="d-flex mt-4 space-childern">
+        <div className="ms-auto" id="update-form-btns">
+          <TkButton
+            color="secondary"
+            type="button"
+            onClick={() => router.push(`${urls.phoneCall}`)}
+          >
+            Cancel
+          </TkButton>{" "}
+          <TkButton type="submit" color="primary">
+            Save
+          </TkButton>
+        </div>
+      </div>
     </>
   );
 };
