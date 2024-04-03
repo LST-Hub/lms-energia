@@ -103,6 +103,7 @@ function DirectCall({ toggleTab, tabs }) {
                       type="text"
                       labelName="Name"
                       placeholder="Enter Name"
+                      requiredStarOnLabel="true"
                     />
                   </TkCol>
                   <TkCol lg={4}>
@@ -110,8 +111,9 @@ function DirectCall({ toggleTab, tabs }) {
                       id="mobileNo"
                       name="mobileNo"
                       type="text"
-                      labelName="Mobile No"
-                      placeholder="Enter Mobile No"
+                      labelName="Phone No"
+                      placeholder="Enter Phone No"
+                      requiredStarOnLabel="true"
                     />
                   </TkCol>
                   <TkCol lg={4}>
@@ -121,6 +123,7 @@ function DirectCall({ toggleTab, tabs }) {
                       type="text"
                       labelName="Email"
                       placeholder="Enter Email"
+                      requiredStarOnLabel="true"
                     />
                   </TkCol>
                 </TkRow>
