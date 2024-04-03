@@ -92,7 +92,7 @@ function DirectMarketing({ toggleTab, tabs }) {
                       name="visitUpdate"
                       labelName="Visit Update"
                       options={[]}
-                      pla
+                      placeholder="Select Visit Update"
                     />
                   </TkCol>
                 </TkRow>
@@ -164,7 +164,7 @@ function DirectMarketing({ toggleTab, tabs }) {
                       id="name"
                       type="text"
                       labelName="Company Name"
-                      placeholder="Enter Name"
+                      placeholder="Enter Company Name"
                     />
                   </TkCol>
                   <TkCol lg={4}>
@@ -306,15 +306,6 @@ function DirectMarketing({ toggleTab, tabs }) {
                         <TkRow className="mt-3">
                           <TkCol lg={4}>
                             <TkInput
-                              id="projectName"
-                              name="projectName"
-                              type="text"
-                              labelName="Project Name"
-                              placeholder="Enter Project Name"
-                            />
-                          </TkCol>
-                          <TkCol lg={4}>
-                            <TkInput
                               id="duration"
                               name="duration"
                               type="text"
@@ -328,11 +319,9 @@ function DirectMarketing({ toggleTab, tabs }) {
                               name="delivery"
                               type="text"
                               labelName="Expected Delivery Date"
-                              placeholder="Enter Expected Date"
+                              placeholder="Enter Expected Delivery Date"
                             />
                           </TkCol>
-                        </TkRow>
-                        <TkRow className="mt-3">
                           <TkCol lg={4}>
                             <TkInput
                               id="location"
@@ -342,12 +331,14 @@ function DirectMarketing({ toggleTab, tabs }) {
                               placeholder="Enter Location"
                             />
                           </TkCol>
+                        </TkRow>
+                        <TkRow className="mt-3">
                           <TkCol lg={4}>
                             <TkInput
                               id="locationContactPerson"
                               name="locationContactPerson"
                               type="text"
-                              labelName="Location Contact person"
+                              labelName="Location Contact Person"
                               placeholder="Enter Location Contact Person"
                             />
                           </TkCol>
