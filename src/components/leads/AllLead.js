@@ -12,44 +12,43 @@ import { useMemo } from "react";
 import TkButton from "../TkButton";
 import TkIcon from "../TkIcon";
 
-const taskData = [
-  {
-    id: 1,
-    lead: "John Doe",
-    status: "Active",
-    title: "Task 1",
-    date: "2021-09-01",
-  },
-  {
-    id: 2,
-    lead: "Steave Smith",
-    status: "Inactive",
-    title: "Task 2",
-    date: "2021-09-01",
-  },
-  {
-    id: 3,
-    lead: "Will Smith",
-    status: "Active",
-    title: "Task 3",
-    date: "2021-09-01",
-  },
-  {
-    id: 4,
-    lead: "Adam Miller",
-    status: "Inactive",
-    title: "Task 4",
-    date: "2021-09-01",
-  },
-  {
-    id: 5,
-    lead: "Tom Riddle",
-    status: "Active",
-    title: "Task 5",
-    date: "2021-09-01",
-  },
-
-];
+  const data = [
+    {
+      id: 1,
+      name: "John Doe",
+      companyName: "PointsBet",
+      region: "Region 1",
+      crNo: "105",
+    },
+    {
+      id: 2,
+      name: "Steave Smith",
+      companyName: "LexisNexis",
+      region: "Region 2",
+      crNo: "845",
+    },
+    {
+      id: 3,
+      name: "Will Smith",
+      companyName: "Infosys",
+      region: "Region 3",
+      crNo: "954",
+    },
+    {
+      id: 4,
+      name: "Adam Miller",
+      companyName: "TCS Consultancy Services",
+      region: "Region 4",
+      crNo: "974",
+    },
+    {
+      id: 5,
+      name: "Tom Riddle",
+      companyName: "Mindtree",
+      region: "Region 5",
+      crNo: "325",
+    },
+  ];
 
 function TableToolBar() {
   return (
@@ -77,7 +76,7 @@ function TableToolBar() {
   );
 }
 
-const AllTask = () => {
+const AllLead = () => {
   const searchOnUI = isSearchonUI([]);
 
   const updateSearchText = (e) => {
@@ -93,6 +92,7 @@ const AllTask = () => {
   useEffect(() => {
     setIsClient(true);
   }, []);
+
   const columns = useMemo(
     () => [
       {
@@ -105,7 +105,7 @@ const AllTask = () => {
             <div className="d-flex align-items-center">
               <ul className="ps-0 mb-0">
                 <li className="list-inline-item">
-                  <Link href={`${urls.taskkView}/${cellProps.value}`}>
+                  <Link href={`${urls.leadView}/${cellProps.value}`}>
                     <a>
                       <TkButton color="none">
                         <TkIcon className="ri-eye-fill align-bottom me-2 text-muted"></TkIcon>
@@ -117,7 +117,7 @@ const AllTask = () => {
               |
               <ul className="ps-0 mb-0">
                 <li className="list-inline-item">
-                  <Link href={`${urls.taskkEdit}/${cellProps.value}`}>
+                  <Link href={`${urls.leadEdit}/${cellProps.value}`}>
                     <a>
                       <TkButton color="none">
                         <TkIcon className="ri-edit-line fs-4 -fill align-bottom me-2 text-muted"></TkIcon>
@@ -131,34 +131,30 @@ const AllTask = () => {
         },
       },
       {
-        Header: "Lead",
-        accessor: "lead",
-        filterable: false,
-        Cell: (cellProps) => {
-          return <div className="table-text">{cellProps.value}</div>;
-        },
-      },
-      
-      {
-        Header: "Status",
-        accessor: "status",
+        Header: "Name",
+        accessor: "name",
         filterable: false,
         Cell: (cellProps) => {
           return <div className="table-text">{cellProps.value}</div>;
         },
       },
       {
-        Header: "Title",
-        accessor: "title",
-        filterable: false,
+        Header: "Company Name",
+        accessor: "companyName",
         Cell: (cellProps) => {
           return <div className="table-text">{cellProps.value}</div>;
         },
       },
       {
-        Header: "Date",
-        accessor: "date",
-        filterable: false,
+        Header: "Region",
+        accessor: "region",
+        Cell: (cellProps) => {
+          return <div className="table-text">{cellProps.value}</div>;
+        },
+      },
+      {
+        Header: "CR No",
+        accessor: "crNo",
         Cell: (cellProps) => {
           return <div className="table-text">{cellProps.value}</div>;
         },
@@ -176,7 +172,7 @@ const AllTask = () => {
               <TkCardBody className="pt-0">
                 <TkTableContainer
                   columns={columns}
-                  data={taskData || []}
+                  data={data || []}
                   Toolbar={
                     <TableToolBar
                       onSearchChange={searchDebounce(
@@ -218,4 +214,4 @@ const AllTask = () => {
   );
 };
 
-export default AllTask;
+export default AllLead;

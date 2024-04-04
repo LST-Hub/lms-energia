@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import imageCompression from "browser-image-compression";
 import TkButton from "../TkButton";
 import TkInput from "../forms/TkInput";
@@ -23,14 +23,11 @@ import {
   MaxEmailLength,
   MaxPhoneNumberLength,
   smallInputMaxLength,
-  employeeTypes,
-  genderTypes,
   API_BASE_URL,
   RQ,
   modes,
   PUBLIC_BUCKET_BASE_URL,
   urls,
-  countries,
   leadTypes,
   stausTypes,
 } from "../../utils/Constants";
@@ -38,15 +35,11 @@ import tkFetch from "../../utils/fetch";
 import { useMutation, useQueries } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import useUserAccessLevel from "../../utils/hooks/useUserAccessLevel";
-import { perAccessIds, permissionTypeIds } from "../../../DBConstants";
+import { permissionTypeIds } from "../../../DBConstants";
 import hasPageModeAccess from "../../utils/hasPageAccess";
-import TkAccessDenied from "../TkAccessDenied";
 import Image from "next/image";
 import axios from "axios";
 import TkDate from "../forms/TkDate";
-import { convertTimeToSec, convertToTimeFotTimeSheet } from "../../utils/time";
-import { Nav, NavItem, NavLink } from "reactstrap";
-import classNames from "classnames";
 
 const schema = Yup.object({
   firstName: Yup.string()
@@ -131,79 +124,13 @@ const schema = Yup.object({
   ),
 }).required();
 
-const EditTask = () => {
+const EditTask = ({ id, userData, mode }) => {
   const router = useRouter();
+  const viewMode = mode === modes.view;
+  const editMode = mode === modes.edit;
+  const cid = Number(id);
   const accessLevel = useUserAccessLevel(permissionTypeIds.users);
-  const results = useQueries({
-    queries: [
-      {
-        queryKey: [RQ.allSupervisors],
-        queryFn: tkFetch.get(`${API_BASE_URL}/users/list?filter=supervisor`),
-        enabled: hasPageModeAccess(modes.create, accessLevel),
-      },
-      {
-        queryKey: [RQ.allDepts],
-        queryFn: tkFetch.get(`${API_BASE_URL}/department/list`),
-        enabled: hasPageModeAccess(modes.create, accessLevel),
-      },
-      {
-        queryKey: [RQ.allRolesList],
-        queryFn: tkFetch.get(`${API_BASE_URL}/roles/list`),
-        enabled: hasPageModeAccess(modes.create, accessLevel),
-      },
-      {
-        queryKey: [RQ.allWorkCals],
-        queryFn: tkFetch.get(`${API_BASE_URL}/work-calendar/list`),
-        enabled: hasPageModeAccess(modes.create, accessLevel),
-      },
-      {
-        queryKey: [RQ.workspaceSettings, RQ.workspaceDefaults],
-        queryFn: tkFetch.postWithBody(
-          `${API_BASE_URL}/workspace/public-settings`,
-          { defaults: true }
-        ),
-        enabled: hasPageModeAccess(modes.create, accessLevel),
-      },
-    ],
-  });
-  const [supervisors, depts, roles, workCals, defaultWorkCal] = results;
-  const {
-    isLoading: isSupervisorLoading,
-    isError: isSupervisorError,
-    error: supervisorError,
-    data: supervisorsData,
-  } = supervisors;
-  const {
-    isLoading: isDeptLoading,
-    isError: isDeptError,
-    error: deptError,
-    data: deptData,
-  } = depts;
-  const {
-    isLoading: isRoleLoading,
-    isError: isRoleError,
-    error: roleError,
-    data: roleData,
-  } = roles;
-  const {
-    isLoading: isWcalLoading,
-    isError: isWcalError,
-    error: WcalError,
-    data: wCalData,
-  } = workCals;
-
-  //TODO: report this error to error reporting service, dont show it to user,( becuase not that important user can select a work calendar any way)
-  const {
-    isLoading: isDefaultWcalLoading,
-    isError: isDefaultWcalError,
-    error: defaultWcalError,
-    data: defaultwCalData,
-  } = defaultWorkCal;
-
-  const inviteUser = useMutation({
-    mutationFn: tkFetch.post(`${API_BASE_URL}/users/invite`),
-  });
-
+  const [isTaskk, setIsTaskk] = useState(false);
   const {
     control,
     register,
@@ -215,410 +142,186 @@ const EditTask = () => {
   } = useForm({
     resolver: yupResolver(schema),
   });
-
-  const [allSuperVisors, setAllSuperVisors] = React.useState([]);
-  const [allDept, setAllDept] = React.useState([]);
-  const [allRoles, setAllRoles] = React.useState([]);
-  const [allWorkCals, setAllWorkCals] = React.useState([]);
-  const [isAdminRole, setIsAdminRole] = React.useState(false);
-  const [profileImage, setProfileImage] = React.useState(null);
-  const [profileImageFile, setProfileImageFile] = React.useState(null);
-  const [uploadingImage, setUploadingImage] = React.useState(false);
-
-  // const handelProfileImg = async (imageFile) => {
-  //   const options = {
-  //     maxSizeMB: 0.3,
-  //     maxWidthOrHeight: 1024,
-  //     useWebWorker: true,
-  //   };
-  //   try {
-  //     const compressedFile = await imageCompression(imageFile, options);
-  //     setProfileImageFile(compressedFile);
-  //     setProfileImage(URL.createObjectURL(compressedFile));
-  //   } catch (error) {
-  //     TkToastError("Error while getting image file.");
-  //     setProfileImageFile(null);
-  //     setProfileImage(null);
-  //     console.log(error);
-  //   }
-  // };
-
-  const handelProfileImg = async (imageFile) => {
-    if (imageFile.size >= 10506319) {
-      TkToastError("Image size should be less than 10MB.");
-      return;
-    }
-    const options = {
-      maxSizeMB: 10.24,
-      maxWidthOrHeight: 1024,
-      useWebWorker: true,
-    };
-    try {
-      const compressedFile = await imageCompression(imageFile, options);
-      setProfileImageFile(compressedFile);
-      setProfileImage(URL.createObjectURL(compressedFile));
-    } catch (error) {
-      TkToastError("Error while getting image file.");
-      setProfileImageFile(null);
-      setProfileImage(null);
-      console.log(error);
-    }
-  };
+  useEffect(() => {
+    setIsTaskk(true);
+  }, []);
 
   useEffect(() => {
-    if (isAdminRole) {
-      setValue("canBePM", true);
-      setValue("canBeSupervisor", true);
-    }
-  }, [isAdminRole, setValue]);
-
-  useEffect(() => {
-    if (isSupervisorError) {
-      console.log("error", supervisorError);
-      TkToastError(supervisorError?.message);
-    }
-    if (isDeptError) {
-      console.log("error", deptError);
-      TkToastError(deptError?.message);
-    }
-    if (isRoleError) {
-      console.log("error", roleError);
-      TkToastError(roleError?.message);
-    }
-    if (isWcalError) {
-      console.log("error", WcalError);
-      TkToastError(WcalError?.message);
-    }
-  }, [
-    supervisorError,
-    isSupervisorError,
-    isDeptError,
-    deptError,
-    isRoleError,
-    roleError,
-    isWcalError,
-    WcalError,
-  ]);
-
-  useEffect(() => {
-    if (Array.isArray(supervisorsData)) {
-      const s = supervisorsData.map((supervisor) => ({
-        value: supervisor.id,
-        label: supervisor.firstName + " " + supervisor.lastName,
-      }));
-      setAllSuperVisors(s);
-    }
-
-    if (Array.isArray(deptData)) {
-      const d = deptData.map((dept) => ({
-        value: dept.id,
-        label: dept.name,
-        active: dept.active,
-      }));
-      setAllDept(d);
-    }
-
-    if (Array.isArray(roleData)) {
-      const r = roleData.map((role) => ({
-        value: role.id,
-        label: role.name,
-        isAdmin: role.isAdmin,
-        active: role.active,
-      }));
-      setAllRoles(r);
-    }
-
-    if (Array.isArray(wCalData)) {
-      const w = wCalData.map((wCal) => ({
-        value: wCal.id,
-        label: wCal.name,
-      }));
-      setAllWorkCals(w);
-    }
-  }, [supervisorsData, deptData, roleData, wCalData]);
-
-  useEffect(() => {
-    if (Array.isArray(defaultwCalData) && defaultwCalData.length > 0) {
-      if (defaultwCalData[0]?.defaultWorkCal) {
-        setValue("workCalendar", {
-          value: defaultwCalData[0]?.defaultWorkCal.id,
-          label: defaultwCalData[0]?.defaultWorkCal.name,
-        });
-      }
-    }
-  }, [defaultwCalData, setValue]);
-
-  const presignedUrls = useMutation({
-    mutationFn: tkFetch.post(
-      `${API_BASE_URL}/attachments/public-presigned-urls`
-    ),
-  });
-
-  const handelUpdateUser = (data, imageKey) => {
-    if (data.department?.active === false) {
-      setError("department", {
-        type: "manual",
-        message: "Department is not active",
+    if (userData) {
+      setValue("lead", {
+        value: userData.lead,
+        label: userData.lead,
       });
-      return;
-    } else if (data.role?.active === false) {
-      setError("role", {
-        type: "manual",
-        message: "Role is not active",
+      setValue("status", {
+        value: userData.status,
+        label: userData.status,
       });
-      return;
+      setValue("title", userData.title);
+      setValue("date", userData.date);
     }
-    const apiData = data;
-    apiData.supervisorId = data.supervisor?.value;
-    apiData.departmentId = data.department?.value;
-    apiData.type = data.type?.value;
-    apiData.roleId = data.role?.value;
-    apiData.workCalendarId = data.workCalendar?.value;
-    apiData.gender = data.gender?.value;
-    apiData.country = data.country?.label ?? null;
-    apiData.image = imageKey
-      ? `${PUBLIC_BUCKET_BASE_URL}/${imageKey}`
-      : undefined;
-
-    inviteUser.mutate(apiData, {
-      onSuccess: (data) => {
-        TkToastSuccess("User Invited Successfully");
-        router.push(`${urls.users}`);
-      },
-      onError: (error) => {
-        console.log("error", error);
-        //TODO: report error to error reporting service
-      },
-    });
-  };
-
-  const onSubmit = (data) => {
-    // if (!isAdminRole) {
-    //   const supervisor = getValues("supervisor");
-    //   if (!supervisor?.value) {
-    //     setError("supervisor", {
-    //       type: "manual",
-    //       message: "Select supervisor",
-    //     });
-    //     return;
-    //   }
-    // }
-    if (profileImage && profileImageFile) {
-      setUploadingImage(true);
-      const files = [
-        {
-          name: profileImageFile.name,
-          type: profileImageFile.type,
-        },
-      ];
-      presignedUrls.mutate(
-        { files },
-        {
-          onSuccess: async (urls) => {
-            if (Array.isArray(urls)) {
-              const config = {
-                headers: {
-                  "Content-Type": "multipart/form-data",
-                },
-              };
-              const urlInfo = urls[0];
-              let imageuploaded = false;
-              await axios
-                .put(urlInfo.url, profileImageFile, config)
-                .then(() => {
-                  imageuploaded = true;
-                })
-                .catch((err) => {
-                  TkToastError(
-                    "Error while uploading profile image. Saving the user without it."
-                  );
-                  console.log(err);
-                });
-              setUploadingImage(false);
-              handelUpdateUser(data, imageuploaded ? urlInfo.key : undefined);
-            }
-          },
-          onError: (error) => {
-            console.log("error while uploading files", error);
-            setUploadingImage(false);
-          },
-        }
-      );
-    } else {
-      handelUpdateUser(data);
-    }
-  };
-
-  const onclickRemoveProfileImage = () => {
-    console.log("remove profile image");
-    setProfileImageFile(null);
-    setProfileImage(null);
-    setValue("profile-img-file-input", null);
-  };
-
-  const onChangeImg = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      handelProfileImg(file);
-    }
-  };
+  }, [userData, setValue]);
 
   return (
     <>
-     <TkRow className="mt-3">
-        <TkCol>
-          <TkCardHeader tag="h5" className="mb-4">
-            <h4>Primary Information</h4>
-          </TkCardHeader>
-          <div>
-            <TkRow className="g-3">
-              <TkCol lg={4}>
-                <Controller
-                  name="type"
-                  control={control}
-                  render={({ field }) => (
-                    <TkSelect
-                      {...field}
-                      labelName="Leads"
-                      labelId={"_type"}
-                      id="type"
-                      options={leadTypes}
-                      placeholder="Select Leads"
-                      requiredStarOnLabel={true}
+      {isTaskk && (
+        <div>
+          <TkRow className="mt-3">
+            <TkCol>
+              <TkCardHeader tag="h5" className="mb-4">
+                <h4>Primary Information</h4>
+              </TkCardHeader>
+              <div>
+                <TkRow className="g-3">
+                  <TkCol lg={4}>
+                    <Controller
+                      name="lead"
+                      control={control}
+                      render={({ field }) => (
+                        <TkSelect
+                          {...field}
+                          labelName="Lead"
+                          labelId={"_lead"}
+                          id="lead"
+                          placeholder="Select Leads"
+                          options={leadTypes}
+                          requiredStarOnLabel={true}
+                          disabled={viewMode}
+                        />
+                      )}
                     />
-                  )}
-                />
-              </TkCol>
-              <TkCol lg={4}>
-                <Controller
-                  name="type"
-                  control={control}
-                  render={({ field }) => (
-                    <TkSelect
-                      {...field}
-                      labelName="Status"
-                      labelId={"_type"}
-                      id="type"
-                      options={stausTypes}
-                      placeholder="Select Type"
-                      requiredStarOnLabel={true}
+                  </TkCol>
+                  <TkCol lg={4}>
+                    <Controller
+                      name="status"
+                      control={control}
+                      render={({ field }) => (
+                        <TkSelect
+                          {...field}
+                          labelName="Status"
+                          labelId="status"
+                          id="status"
+                          options={stausTypes}
+                          placeholder="Select Status"
+                          requiredStarOnLabel={true}
+                          disabled={viewMode}
+                        />
+                      )}
                     />
-                  )}
-                />
-              </TkCol>
-
-              <TkCol lg={4}>
-                <TkInput
-                  {...register("title")}
-                  labelName="Title"
-                  labelId={"_title"}
-                  id="title"
-                  type="text"
-                  placeholder="Enter Title"
-                  requiredStarOnLabel={true}
-                />
-              </TkCol>
-            </TkRow>
-          </div>
-          <div>
-            <TkRow className="mt-3">
-              <TkCol lg={4}>
-                {/* add checkbox that user can be project manager */}
-                <TkRow className="justify-content-start mt-4">
-                  <TkCol xs={"auto"}>
-                    <TkCheckBox
-                      {...register("canBeSupervisor")}
-                      id="canBeSupervisor"
-                      type="checkbox"
-                      disabled={isAdminRole}
-                    />
-                    <TkLabel className="ms-3 me-lg-5" id="supervisor">
-                      Notify Assign By Email
-                    </TkLabel>
                   </TkCol>
 
-                  <TkCol xs={"auto"}>
-                    <TkCheckBox
-                      {...register("privatePhoenCall")}
-                      id="privatePhoenCall"
-                      type="checkbox"
-                      disabled={isAdminRole}
+                  <TkCol lg={4}>
+                    <TkInput
+                      {...register("title")}
+                      labelName="Title"
+                      labelId={"_title"}
+                      id="title"
+                      type="text"
+                      placeholder="Enter Title"
+                      requiredStarOnLabel={true}
+                      disabled={viewMode}
                     />
-                    <TkLabel className="ms-3 me-lg-5" id="privatePhoenCall">
-                      Private Task
-                    </TkLabel>
                   </TkCol>
                 </TkRow>
-              </TkCol>
-            </TkRow>
-          </div>
-        </TkCol>
-      </TkRow>
+              </div>
+              <div>
+                <TkRow className="mt-3">
+                  <TkCol lg={4}>
+                    {/* add checkbox that user can be project manager */}
+                    <TkRow className="justify-content-start mt-4">
+                      <TkCol xs={"auto"}>
+                        <TkCheckBox
+                          {...register("canBeSupervisor")}
+                          id="canBeSupervisor"
+                          type="checkbox"
+                        />
+                        <TkLabel className="ms-3 me-lg-5" id="supervisor">
+                          Notify Assign By Email
+                        </TkLabel>
+                      </TkCol>
 
-      <TkRow className="mt-5">
-        <TkCol>
-          <TkCardHeader tag="h5" className="mb-4">
-            <h4>Date and Time</h4>
-          </TkCardHeader>
-          <div>
-            <TkRow className="g-3">
-              <TkCol lg={4}>
-                <Controller
-                  name="date"
-                  control={control}
-                  rules={{ required: "Date is required" }}
-                  render={({ field }) => (
-                    <TkDate
-                      {...field}
-                      labelName="Date"
-                      id={"date"}
-                      placeholder="Select Date"
-                      options={{
-                        altInput: true,
-                        dateFormat: "d M, Y",
-                      }}
-                      requiredStarOnLabel={true}
-                    />
-                  )}
-                />
-                {errors.date?.message ? (
-                  <FormErrorText>{errors.date?.message}</FormErrorText>
-                ) : null}
-              </TkCol>
-
-              <TkCol lg={6}>
-                <TkRow className="justify-content-start mt-4">
-                  <TkCol xs={"auto"}>
-                    <TkCheckBox
-                      {...register("canBeSupervisor")}
-                      id="canBeSupervisor"
-                      type="checkbox"
-                      disabled={isAdminRole}
-                    />
-                    <TkLabel className="ms-3 me-lg-5" id="supervisor">
-                      Notify Assign By Email
-                    </TkLabel>
+                      <TkCol xs={"auto"}>
+                        <TkCheckBox
+                          {...register("privatePhoenCall")}
+                          id="privatePhoenCall"
+                          type="checkbox"
+                        />
+                        <TkLabel className="ms-3 me-lg-5" id="privatePhoenCall">
+                          Private Task
+                        </TkLabel>
+                      </TkCol>
+                    </TkRow>
                   </TkCol>
                 </TkRow>
-              </TkCol>
-            </TkRow>
+              </div>
+            </TkCol>
+          </TkRow>
+
+          <TkRow className="mt-5">
+            <TkCol>
+              <TkCardHeader tag="h5" className="mb-4">
+                <h4>Date and Time</h4>
+              </TkCardHeader>
+              <div>
+                <TkRow className="g-3">
+                  <TkCol lg={4}>
+                    <Controller
+                      name="date"
+                      control={control}
+                      rules={{ required: "Date is required" }}
+                      render={({ field }) => (
+                        <TkDate
+                          {...field}
+                          labelName="Date"
+                          id={"date"}
+                          placeholder="Select Date"
+                          options={{
+                            altInput: true,
+                            dateFormat: "d M, Y",
+                          }}
+                          requiredStarOnLabel={true}
+                          disabled={viewMode}
+                        />
+                      )}
+                    />
+                    {errors.date?.message ? (
+                      <FormErrorText>{errors.date?.message}</FormErrorText>
+                    ) : null}
+                  </TkCol>
+
+                  <TkCol lg={6}>
+                    <TkRow className="justify-content-start mt-4">
+                      <TkCol xs={"auto"}>
+                        <TkCheckBox
+                          {...register("canBeSupervisor")}
+                          id="canBeSupervisor"
+                          type="checkbox"
+                        />
+                        <TkLabel className="ms-3 me-lg-5" id="supervisor">
+                          Notify Assign By Email
+                        </TkLabel>
+                      </TkCol>
+                    </TkRow>
+                  </TkCol>
+                </TkRow>
+              </div>
+            </TkCol>
+          </TkRow>
+          <div className="d-flex mt-4 space-childern">
+            <div className="ms-auto" id="update-form-btns">
+              <TkButton
+                color="secondary"
+                type="button"
+                onClick={() => router.push(`${urls.taskk}`)}
+              >
+                Cancel
+              </TkButton>{" "}
+              <TkButton type="submit" color="primary">
+                Save
+              </TkButton>
+            </div>
           </div>
-        </TkCol>
-      </TkRow>
-      <div className="d-flex mt-4 space-childern">
-        <div className="ms-auto" id="update-form-btns">
-          <TkButton
-            color="secondary"
-            type="button"
-            onClick={() => router.push(`${urls.taskk}`)}
-          >
-            Cancel
-          </TkButton>{" "}
-          <TkButton type="submit" color="primary">
-            Save
-          </TkButton>
         </div>
-      </div>
+      )}
     </>
   );
 };

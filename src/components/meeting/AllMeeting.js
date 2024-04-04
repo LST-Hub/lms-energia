@@ -15,39 +15,53 @@ import TkIcon from "../TkIcon";
 const meetingData = [
     {
         id: 1,
-        event: "Test Subject",
-        location: "2021-06-01",
-        eventAccess: "1234567890",
-        organizer: "High",
-        status: "Open",
-        date: "7262054789",
+        lead: "John Doe",
+        location: "India",
+        eventAccess: "Public",
+        title: "Meeting",
+        status: "Active",
+        organizer: "John Doe",
+        date: "2021-09-01",
     },
     {
         id: 2,
-        event: "Demo",
-        location: "2021-14-01",
-        eventAccess: "7451681245",
-        organizer: "Low",
-        status: "Close",
-        date: "8845127896",
+        lead: "Steave Smith",
+        location: "India",
+        eventAccess: "Public",
+        title: "Meeting",
+        status: "Inactive",
+        organizer: "John Doe",
+        date: "2021-09-01",
     },
     {
         id: 3,
-        event: "Test Subject",
-        location: "2021-06-01",
-        eventAccess: "1234567890",
-        organizer: "High",
-        status: "Open",
-        date: "7262054789",
+        lead: "Will Smith",
+        location: "India",
+        eventAccess: "Public",
+        title: "Meeting",
+        status: "Active",
+        organizer: "John Doe",
+        date: "2021-09-01",
     },
     {
         id: 4,
-        event: "Test Subject",
-        location: "2021-06-01",
-        eventAccess: "1234567890",
-        organizer: "High",
-        status: "Open",
-        date: "7262054789",
+        lead: "Adam Miller",
+        location: "India",
+        eventAccess: "Public",
+        title: "Meeting",
+        status: "Inactive",
+        organizer: "John Doe",
+        date: "2021-09-01",
+    },
+    {
+        id: 5,
+        lead: "Tom Riddle",
+        location: "India",
+        eventAccess: "Public",
+        title: "Meeting",
+        status: "Active",
+        organizer: "John Doe",
+        date: "2021-09-01",
     },
 ];
 
@@ -56,21 +70,21 @@ function TableToolBar() {
     <>
       <TkCardBody className="table-toolbar mt-3">
         <TkRow className="mb-3">
-          <TkCol lg={2}>
+        <TkCol lg={4}>
             <TkInput
               // onChange={onSearchChange}
-              placeholder="Search"
+              placeholder="Search by name/Mobile No/ Company Name"
               isSearchField={true}
             />
           </TkCol>
 
-          <TkCol lg={2}>
+          {/* <TkCol lg={2}>
             <TkSelect
               placeholder="Active/Inactive"
               options={[]}
               // onChange={onActiveChange}
             />
-          </TkCol>
+          </TkCol> */}
         </TkRow>
       </TkCardBody>
     </>
@@ -96,13 +110,27 @@ const AllMeeting = () => {
 
   const columns = useMemo(
     () => [
+     
       {
-        Header: " Edit",
+        Header: "View | Edit",
         accessor: "id",
         filterable: false,
         Cell: (cellProps) => {
           return (
+            //   <div className="flex-grow-1 tasks_name">{cellProps.value}</div>
             <div className="d-flex align-items-center">
+              <ul className="ps-0 mb-0">
+                <li className="list-inline-item">
+                  <Link href={`${urls.meetingView}/${cellProps.value}`}>
+                    <a>
+                      <TkButton color="none">
+                        <TkIcon className="ri-eye-fill align-bottom me-2 text-muted"></TkIcon>
+                      </TkButton>
+                    </a>
+                  </Link>
+                </li>
+              </ul>
+              |
               <ul className="ps-0 mb-0">
                 <li className="list-inline-item">
                   <Link href={`${urls.meetingEdit}/${cellProps.value}`}>
@@ -119,14 +147,13 @@ const AllMeeting = () => {
         },
       },
       {
-        Header: "Event",
-        accessor: "event",
+        Header: "Lead",
+        accessor: "lead",
         filterable: false,
         Cell: (cellProps) => {
           return <div className="table-text">{cellProps.value}</div>;
         },
       },
-
       {
         Header: "Location",
         accessor: "location",
@@ -144,8 +171,8 @@ const AllMeeting = () => {
         },
       },
       {
-        Header: "Organizer",
-        accessor: "organizer",
+        Header: "Title",
+        accessor: "title",
         filterable: false,
         Cell: (cellProps) => {
           return <div className="table-text">{cellProps.value}</div>;
@@ -154,6 +181,14 @@ const AllMeeting = () => {
       {
         Header: "Status",
         accessor: "status",
+        filterable: false,
+        Cell: (cellProps) => {
+          return <div className="table-text">{cellProps.value}</div>;
+        },
+      },
+      {
+        Header: "Organizer",
+        accessor: "organizer",
         filterable: false,
         Cell: (cellProps) => {
           return <div className="table-text">{cellProps.value}</div>;
@@ -170,6 +205,83 @@ const AllMeeting = () => {
     ],
     []
   );
+
+  // const columns = useMemo(
+  //   () => [
+  //     {
+  //       Header: " Edit",
+  //       accessor: "id",
+  //       filterable: false,
+  //       Cell: (cellProps) => {
+  //         return (
+  //           <div className="d-flex align-items-center">
+  //             <ul className="ps-0 mb-0">
+  //               <li className="list-inline-item">
+  //                 <Link href={`${urls.meetingEdit}/${cellProps.value}`}>
+  //                   <a>
+  //                     <TkButton color="none">
+  //                       <TkIcon className="ri-edit-line fs-4 -fill align-bottom me-2 text-muted"></TkIcon>
+  //                     </TkButton>
+  //                   </a>
+  //                 </Link>
+  //               </li>
+  //             </ul>
+  //           </div>
+  //         );
+  //       },
+  //     },
+  //     {
+  //       Header: "Event",
+  //       accessor: "event",
+  //       filterable: false,
+  //       Cell: (cellProps) => {
+  //         return <div className="table-text">{cellProps.value}</div>;
+  //       },
+  //     },
+
+  //     {
+  //       Header: "Location",
+  //       accessor: "location",
+  //       filterable: false,
+  //       Cell: (cellProps) => {
+  //         return <div className="table-text">{cellProps.value}</div>;
+  //       },
+  //     },
+  //     {
+  //       Header: "Event Access",
+  //       accessor: "eventAccess",
+  //       filterable: false,
+  //       Cell: (cellProps) => {
+  //         return <div className="table-text">{cellProps.value}</div>;
+  //       },
+  //     },
+  //     {
+  //       Header: "Organizer",
+  //       accessor: "organizer",
+  //       filterable: false,
+  //       Cell: (cellProps) => {
+  //         return <div className="table-text">{cellProps.value}</div>;
+  //       },
+  //     },
+  //     {
+  //       Header: "Status",
+  //       accessor: "status",
+  //       filterable: false,
+  //       Cell: (cellProps) => {
+  //         return <div className="table-text">{cellProps.value}</div>;
+  //       },
+  //     },
+  //     {
+  //       Header: "Date",
+  //       accessor: "date",
+  //       filterable: false,
+  //       Cell: (cellProps) => {
+  //         return <div className="table-text">{cellProps.value}</div>;
+  //       },
+  //     },
+  //   ],
+  //   []
+  // );
 
   return (
     <>

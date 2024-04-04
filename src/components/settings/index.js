@@ -2,21 +2,15 @@ import React, { useLayoutEffect, useState } from "react";
 import { Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
 import classnames from "classnames";
 
-import PrioritySetting from "./PrioritySetting";
-import StatusSetting from "./StatusSetting";
-import AllExpenseCategories from "../expenseCategories/AllExpensesCategories";
-import AllWorkCals from "../workCalender/All";
 import TkAccessDenied from "../TkAccessDenied";
-import DepartmentSetting from "./DepartmentSetting";
-import AllCurrency from "./currency/AllCurrency";
-import WorkspaceSetting from "./WorkspaceSettings";
 import { useRouter } from "next/router";
 import { settingsTab, urls } from "../../utils/Constants";
+import RegionSetting from "./region";
 
 const tabValues = Object.values(settingsTab);
 
 function Settings({ accessLevel }) {
-  const [activeTab, setActiveTab] = useState(settingsTab.workCalendar);
+  const [activeTab, setActiveTab] = useState(settingsTab.region);
   const router = useRouter();
   const toggleTab = (tab) => {
     if (activeTab !== tab) {
@@ -35,13 +29,9 @@ function Settings({ accessLevel }) {
     if (tabValues.includes(tab)) {
       setActiveTab(tab);
     } else {
-      setActiveTab(settingsTab.workCalendar);
+      setActiveTab(settingsTab.region);
     }
   }, []);
-
-  if (!accessLevel) {
-    return <TkAccessDenied />;
-  }
 
   return (
     <>
@@ -49,112 +39,20 @@ function Settings({ accessLevel }) {
         <NavItem>
           <NavLink
             href="#"
-            className={classnames({ active: activeTab === settingsTab.workCalendar })}
+            className={classnames({
+              active: activeTab === settingsTab.region,
+            })}
             onClick={() => {
-              toggleTab(settingsTab.workCalendar);
+              toggleTab(settingsTab.region);
             }}
           >
-            Work Calendar
-          </NavLink>
-        </NavItem>
-        <NavItem>
-          <NavLink
-            href="#"
-            className={classnames({ active: activeTab === settingsTab.priorities })}
-            onClick={() => {
-              toggleTab(settingsTab.priorities);
-            }}
-          >
-            Priorities
-          </NavLink>
-        </NavItem>
-        <NavItem>
-          <NavLink
-            href="#"
-            className={classnames({ active: activeTab === settingsTab.status })}
-            onClick={() => {
-              toggleTab(settingsTab.status);
-            }}
-          >
-            Status
-          </NavLink>
-        </NavItem>
-        <NavItem>
-          <NavLink
-            href="#"
-            className={classnames({ active: activeTab === settingsTab.departments })}
-            onClick={() => {
-              toggleTab(settingsTab.departments);
-            }}
-          >
-            Department
-          </NavLink>
-        </NavItem>
-        <NavItem>
-          <NavLink
-            href="#"
-            className={classnames({ active: activeTab === settingsTab.currency })}
-            onClick={() => {
-              toggleTab(settingsTab.currency);
-            }}
-          >
-            Currency
-          </NavLink>
-        </NavItem>
-        <NavItem>
-          <NavLink
-            href="#"
-            className={classnames({ active: activeTab === settingsTab.expenseCategory })}
-            onClick={() => {
-              toggleTab(settingsTab.expenseCategory);
-            }}
-          >
-            Expense Category
-          </NavLink>
-        </NavItem>
-        <NavItem>
-          <NavLink
-            href="#"
-            className={classnames({ active: activeTab === settingsTab.workspace })}
-            onClick={() => {
-              toggleTab(settingsTab.workspace);
-            }}
-          >
-            Workspace Settings
+            Region
           </NavLink>
         </NavItem>
       </Nav>
       <TabContent activeTab={activeTab}>
-        <TabPane tabId={settingsTab.workCalendar} className="py-2 ps-2">
-          <AllWorkCals mounted={activeTab === settingsTab.workCalendar} />
-          {/* <SimpleBar className="pe-2">
-          </SimpleBar> */}
-        </TabPane>
-
-        <TabPane tabId={settingsTab.priorities} className="py-2 ps-2">
-          <PrioritySetting mounted={activeTab === settingsTab.priorities} />
-          {/* <SimpleBar className="pe-2">
-          </SimpleBar> */}
-        </TabPane>
-
-        <TabPane tabId={settingsTab.status} className="py-2 ps-2">
-          <StatusSetting mounted={activeTab === settingsTab.status} />
-        </TabPane>
-
-        <TabPane tabId={settingsTab.departments} className="py-2 ps-2">
-          <DepartmentSetting mounted={activeTab === settingsTab.departments} />
-        </TabPane>
-
-        <TabPane tabId={settingsTab.currency} className="py-2 ps-2">
-          <AllCurrency mounted={activeTab === settingsTab.currency} />
-        </TabPane>
-
-        <TabPane tabId={settingsTab.expenseCategory} className="py-2 ps-2">
-          <AllExpenseCategories mounted={activeTab === settingsTab.expenseCategory} />
-        </TabPane>
-
-        <TabPane tabId={settingsTab.workspace} className="py-2 ps-2">
-          <WorkspaceSetting mounted={activeTab === settingsTab.workspace} />
+        <TabPane tabId={settingsTab.region} className="py-2 ps-2">
+          <RegionSetting mounted={activeTab === settingsTab.region} />
         </TabPane>
       </TabContent>
     </>

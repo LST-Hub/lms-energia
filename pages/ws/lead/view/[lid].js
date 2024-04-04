@@ -2,36 +2,35 @@ import React from "react";
 import BreadCrumb from "../../../../src/utils/BreadCrumb";
 import TkPageHead from "../../../../src/components/TkPageHead";
 import UserDetails from "../../../../src/components/users/UserDetails";
-import { modes, taskData, urls } from "../../../../src/utils/Constants";
+import { demoUserData, modes, urls } from "../../../../src/utils/Constants";
 import TkContainer from "../../../../src/components/TkContainer";
-import EditTask from "../../../../src/components/task/EditTask";
+import EditLead from "../../../../src/components/leads/EditLead";
 import { useRouter } from "next/router";
 
-const TaskDetailsPage = () => {
+const LeadDetailsPage = () => {
   const router = useRouter();
-  const { eid } = router.query;
-  const user = taskData.find((user) => user.id === parseInt(eid));
-  
+  const { lid } = router.query;
+  const user = demoUserData.find((user) => user.id === parseInt(lid));
   return (
     <>
       <TkPageHead>
-        <title>{`Task Details`}</title>
+        <title>{`Lead Details`}</title>
       </TkPageHead>
 
       <div className="page-content">
-        <BreadCrumb pageTitle={"Task Details"} parentTitle="Task" parentLink={`${urls.taskk}`} />
+        <BreadCrumb pageTitle={"Lead Details"} parentTitle="Lead" parentLink={`${urls.lead}`} />
 
         <TkContainer>
-          <EditTask id={eid} userData={user} mode={modes.view} />
+          <EditLead id={lid} userData={user} mode={modes.view} />
         </TkContainer>
       </div>
     </>
   );
 };
 
-export default TaskDetailsPage;
+export default LeadDetailsPage;
 
-TaskDetailsPage.options = {
+LeadDetailsPage.options = {
   layout: true,
   auth: false,
 };

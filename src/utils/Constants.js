@@ -55,8 +55,32 @@ const leadTypes = [
   { value: "lead1", label: "Lead1" },
   { value: "lead2", label: "Lead2" },
   { value: "lead3", label: "Lead3" },
- 
 ];
+
+const clientTypes = [
+  { value: "1", label: "Gov" },
+  { value: "2", label: "Semi Gov" },
+  { value: "3", label: "Privet" },
+];
+
+const segmentTypes = [
+  { value: "1", label: "O&G" },
+  { value: "2", label: "Construction" },
+  { value: "3", label: "Industry" },
+];
+
+const divisionTypes = [
+  { value: "1", label: "Energy" },
+  { value: "2", label: "Cooling" },
+  { value: "3", label: "Welding" },
+];
+
+const requirementTypes = [
+  { value: "1", label: "Create Lead Management System" },
+  { value: "2", label: "Create Project Management System" },
+  { value: "3", label: "Create Task Management System" },
+];
+
 const organizerTypes = [
   { value: "john doe", label: "John Doe" },
   { value: "Joe marry", label: "Joe Marry" },
@@ -99,6 +123,283 @@ const projectTypes = [
   { value: "timeAndMaterial", label: "Time and Material" },
   { value: "ongoing", label: "Ongoing" },
   { value: "inhouse", label: "Inhouse" },
+];
+
+const demoUserData = [
+  {
+    id: 1,
+    name: "John Doe",
+    mobileNo: "7541259645",
+    email: "john@gmail.com",
+    companyName: "PointsBet",
+    contactNo: "7541259645",
+    cemail: "pointsbet@gmail.com",
+    address: "New York",
+    region: "Region 1",
+    crNo: "105",
+    vatNo: "VAT 105",
+    clientType: "Gov",
+    segment: "O&G",
+    division: "Energy",
+    requirement: "Create Lead Management System",
+    projectName: "Lead Management System",
+    duration: "24:00",
+    delivery: "2021-06-01",
+    location: "New York",
+    locationContactPerson: "John Doe",
+  },
+  {
+    id: 2,
+    name: "Steve Smith",
+    mobileNo: "9547851245",
+    email: "steve@gmail.com",
+    companyName: "LexisNexis",
+    contactNo: "9547851245",
+    cemail: "steve@gmail.com",
+    address: "Perth, Australia",
+    region: "Region 2",
+    crNo: "845",
+    vatNo: "VAT 845",
+    clientType: "Semi-Gov",
+    segment: "O&G",
+    division: "Cooling",
+    requirement: "Create Lead Management System",
+    projectName: "Lead Management System",
+    duration: "12:00",
+    delivery: "2024-01-01",
+    location: "Australia",
+    locationContactPerson: "Steve Smith",
+  },
+  {
+    id: 3,
+    name: "Will Smith",
+    mobileNo: "8451274562",
+    email: "will@gmail.com",
+    companyName: "Infosys",
+    contactNo: "7452153645",
+    cemail: "infosys@gmail.com",
+    address: "India",
+    region: "Region 3",
+    crNo: "954",
+    vatNo: "VAT 954",
+    clientType: "Gov",
+    segment: "O&G",
+    division: "Cooling",
+    requirement: "Create Lead Management System",
+    projectName: "Lead Management System",
+    duration: "20:00",
+    delivery: "2022-06-01",
+    location: "India",
+    locationContactPerson: "Will Smith",
+  },
+  {
+    id: 4,
+    name: "Adam Miller",
+    mobileNo: "8451274562",
+    email: "adammiller@gmail.com",
+    companyName: "TCS consultancy Services",
+    contactNo: "8451274562",
+    cemail: "infosys@gmail.com",
+    address: "India",
+    region: "Region 4",
+    crNo: "974",
+    vatNo: "VAT 974",
+    clientType: "Semi-Gov",
+    segment: "O&G",
+    division: "Welding",
+    requirement: "Create Lead Management System",
+    projectName: "Lead Management System",
+    duration: "21:00",
+    delivery: "2023-08-10",
+    location: "India",
+    locationContactPerson: "Adam Miller",
+  },
+  {
+    id: 5,
+    name: "Tom Riddle",
+    mobileNo: "9545123252",
+    email: "tom@gmail.com",
+    companyName: "Mindtree",
+    contactNo: "9545123252",
+    cemail: "mindtree@gmail.com",
+    address: "England",
+    region: "Region 5",
+    crNo: "115",
+    vatNo: "VAT 115",
+    clientType: "Semi-Gov",
+    segment: "O&G",
+    division: "Energy",
+    requirement: "Create Lead Management System",
+    projectName: "Lead Management System",
+    duration: "10:00",
+    delivery: "2021-06-01",
+    location: "England",
+    locationContactPerson: "Tom Riddle",
+  },
+];
+
+const demoPhoneCallData = [
+  {
+    id: 1,
+    lead: "John Doe",
+    phoneNumber: "7541259645",
+    organizer: "John Doe",
+    status: "Confirmed",
+    comments: "Call for Lead Management System",
+    date: "2021-06-01",
+    startTime: "10:00",
+    endTime: "11:00",
+    reminder: "5 min",
+    callDeatilscomments: "Call for Lead Management System",
+  },
+  {
+    id: 2,
+    lead: "Steve Smith",
+    phoneNumber: "9547851245",
+    organizer: "Joe Marry",
+    status: "Completed",
+    comments: "Call for Lead Management System",
+    date: "2021-06-01",
+    startTime: "10:00",
+    endTime: "11:00",
+    reminder: "5 min",
+    callDeatilscomments: "Call for Lead Management System",
+  },
+  {
+    id: 3,
+    lead: "Will Smith",
+    phoneNumber: "7452153645",
+    organizer: "Jane Pope",
+    status: "Confirmed",
+    comments: "Call for Lead Management System",
+    date: "2021-06-01",
+    startTime: "10:00",
+    endTime: "11:00",
+    reminder: "5 min",
+    callDeatilscomments: "Call for Lead Management System",
+  },
+  {
+    id: 4,
+    lead: "Adam Miller",
+    phoneNumber: "8451274562",
+    organizer: "Steve Smith",
+    status: "Completed",
+    comments: "Call for Lead Management System",
+    date: "2021-06-01",
+    startTime: "10:00",
+    endTime: "11:00",
+    reminder: "5 min",
+    callDeatilscomments: "Call for Lead Management System",
+  },
+  {
+    id: 5,
+    lead: "Tom Riddle",
+    phoneNumber: "9545123252",
+    organizer: "John Doe",
+    status: "Confirmed",
+    comments: "Call for Lead Management System",
+    date: "2021-06-01",
+    startTime: "10:00",
+    endTime: "11:00",
+    reminder: "5 min",
+    callDeatilscomments: "Call for Lead Management System",
+  },
+];
+
+const taskData = [
+  {
+    id: 1,
+    lead: "John Doe",
+    status: "Confirmed",
+    title: "Lead Management System",
+    date: "2021-06-01",
+  },
+  {
+    id: 2,
+    lead: "Steve Smith",
+    status: "Completed",
+    title: "Lead Management System",
+    date: "2021-06-01",
+  },
+  {
+    id: 3,
+    lead: "Will Smith",
+    status: "Confirmed",
+    title: "Lead Management System",
+    date: "2021-06-01",
+  },
+  {
+    id: 4,
+    lead: "Adam Miller",
+    status: "Completed",
+    title: "Lead Management System",
+    date: "2021-06-01",
+  },
+  {
+    id: 5,
+    lead: "Tom Riddle",
+    status: "Confirmed",
+    title: "Lead Management System",
+    date: "2021-06-01",
+  },
+];
+
+const meetingData = [
+  {
+    id: 1,
+    lead: "John Doe",
+    location: "New York",
+    eventAccess: "Public",
+    title: "Lead Management System",
+    status: "Confirmed",
+    organizer: "John Doe",
+    date: "2021-06-01",
+    startTime: "10:00",
+  },
+  {
+    id: 2,
+    lead: "Steve Smith",
+    location: "Australia",
+    eventAccess: "Private",
+    title: "Lead Management System",
+    status: "Completed",
+    organizer: "Joe Marry",
+    date: "2021-06-01",
+    startTime: "10:00",
+  },
+  {
+    id: 3,
+    lead: "Will Smith",
+    location: "India",
+    eventAccess: "Show As Busy",
+    title: "Lead Management System",
+    status: "Confirmed",
+    organizer: "Jane Pope",
+    date: "2021-06-01",
+    startTime: "10:00",
+  },
+  {
+    id: 4,
+    lead: "Adam Miller",
+    location: "India",
+    eventAccess: "Private",
+    title: "Lead Management System",
+    status: "Completed",
+    organizer: "Steve Smith",
+    date: "2021-06-01",
+    startTime: "10:00",
+  },
+  {
+    id: 5,
+    lead: "Tom Riddle",
+    location: "England",
+    eventAccess: "Show As Busy",
+    title: "Lead Management System",
+    status: "Confirmed",
+    organizer: "John Doe",
+    date: "2021-06-01",
+    startTime: "10:00",
+  },
 ];
 
 const countries = [
@@ -457,15 +758,16 @@ const RQ = {
   reportTodaysTask: "reportTodaysTask",
   allProjectListForReportTimesheeet: "allProjectListForReportTimesheeet",
   workCalendar: "workCalendar",
+  regionSettings: "regionSettings",
 };
 
 const ws = "/ws";
 
 const urls = {
-  phoneCall : `${ws}/call`,
-  phoneCallAdd : `${ws}/call/add`,
-  phoneCallEdit : `${ws}/call/edit`,
-  phoneCallView : `${ws}/call/view`,
+  phoneCall: `${ws}/call`,
+  phoneCallAdd: `${ws}/call/add`,
+  phoneCallEdit: `${ws}/call/edit`,
+  phoneCallView: `${ws}/call/view`,
   taskk: `${ws}/task`,
   taskkAdd: `${ws}/task/add`,
   taskkEdit: `${ws}/task/edit`,
@@ -474,6 +776,11 @@ const urls = {
   meetingAdd: `${ws}/meeting/add`,
   meetingEdit: `${ws}/meeting/edit`,
   meetingView: `${ws}/meeting/view`,
+  lead: `${ws}/lead`,
+  leadAdd: `${ws}/lead/add`,
+  leadEdit: `${ws}/lead/edit`,
+  leadView: `${ws}/lead/view`,
+  settings: `${ws}/settings`,
   dashboard: `${ws}/dashboard`,
   workCalendar: `${ws}/work-calendar`,
   workCalendarView: `${ws}/work-calendar/view`,
@@ -529,7 +836,6 @@ const urls = {
   roleAdd: `${ws}/roles/add`,
   roleEdit: `${ws}/roles/edit`,
   roleView: `${ws}/roles/view`,
-  settings: `${ws}/settings`,
   settingsExpenseCategories: `${ws}/settings/expense-categories`,
   profile: `${ws}/profile`,
   profileView: `${ws}/profile/view`,
@@ -543,8 +849,10 @@ const urls = {
   inviteSignup: "/invite-signup",
   inviteUserDetails: "/invite-user-details",
   idleHours: "/idle-hours",
-  leads: `${ws}/leads`,
-  leadAdd: `${ws}/leads/add`,
+  // lead: `${ws}/lead`,
+  // leadAdd: `${ws}/leads/add`,
+  // leadEdit: `${ws}/leads/edit`,
+  // leadView: `${ws}/leads/view`,
 };
 
 const SSNames = {
@@ -907,7 +1215,9 @@ const todaysTaskHighlightColumn = [
         <div className="d-flex align-items-center">
           <ul className="ps-0 mb-0">
             <li className="list-inline-item">
-              <Link href={`${urls.todaysTaskView}/${cellProps.row.original.id}`}>
+              <Link
+                href={`${urls.todaysTaskView}/${cellProps.row.original.id}`}
+              >
                 <a>
                   <TkButton color="none">
                     <TkIcon className="ri-eye-fill align-bottom text-muted"></TkIcon>
@@ -1066,13 +1376,10 @@ const userHighlightColumn = [
 ];
 
 const settingsTab = {
-  priorities: "priorities",
-  status: "status",
-  workCalendar: "workCalendar",
-  departments: "departments",
+  region: "region",
   currency: "currency",
+  workCalendar: "workCalendar",
   expenseCategory: "expenseCategory",
-  workspace: "workspace",
 };
 
 const approvalsTab = {
@@ -1141,6 +1448,10 @@ export {
   bigInpuMinLength,
   employeeTypes,
   leadTypes,
+  clientTypes,
+  segmentTypes,
+  divisionTypes,
+  requirementTypes,
   organizerTypes,
   stausTypes,
   eventAcessTypes,
@@ -1148,6 +1459,10 @@ export {
   reminderTypes,
   genderTypes,
   projectTypes,
+  demoUserData,
+  demoPhoneCallData,
+  taskData,
+  meetingData,
   countries,
   MaxEstimatedHoursLength,
   MaxHoursLimit,

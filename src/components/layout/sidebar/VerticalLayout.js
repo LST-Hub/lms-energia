@@ -6,10 +6,11 @@ import sidebarOptions from "./LayoutMenuData";
 import classNames from "classnames";
 import TkIcon from "../../TkIcon";
 import useSessionData from "../../../utils/hooks/useSessionData";
+import NavData from "./LayoutMenuData";
 
 const VerticalLayout = ({ user }) => {
   const sessionData = useSessionData();
-  const navData = sidebarOptions(user, sessionData);
+  const navData = NavData(user, sessionData);
   const router = useRouter();
 
   // useEffect(() => {

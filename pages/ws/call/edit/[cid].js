@@ -2,11 +2,16 @@ import React from "react";
 import BreadCrumb from "../../../../src/utils/BreadCrumb";
 import TkPageHead from "../../../../src/components/TkPageHead";
 import UserDetails from "../../../../src/components/users/UserDetails";
-import { modes, urls } from "../../../../src/utils/Constants";
+import { demoPhoneCallData, demoUserData, modes, urls } from "../../../../src/utils/Constants";
 import TkContainer from "../../../../src/components/TkContainer";
 import EditPhoneCall from "../../../../src/components/phoneCall/EditPhoneCall";
+import { useRouter } from "next/router";
 
 const PhoneCallDetailsPage = () => {
+  const router = useRouter();
+  const { cid } = router.query;
+  const user = demoPhoneCallData.find((user) => user.id === parseInt(cid));
+  console.log(user)
   return (
     <>
       <TkPageHead>
@@ -16,7 +21,7 @@ const PhoneCallDetailsPage = () => {
       <div className="page-content">
         <BreadCrumb pageTitle={"Phone Call Details"} parentTitle="Phone Call" parentLink={`${urls.phoneCall}`} />
         <TkContainer>
-          <EditPhoneCall mode={modes.edit} />
+          <EditPhoneCall id={cid} userData={user} mode={modes.edit} />
         </TkContainer>
       </div>
     </>

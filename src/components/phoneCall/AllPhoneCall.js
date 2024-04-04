@@ -15,39 +15,38 @@ import TkIcon from "../TkIcon";
 const usersData = [
   {
     id: 1,
-    subject: "Test Subject",
-    phoneCallDate: "2021-06-01",
+    lead: "John Doe",
     phoneNumber: "1234567890",
-    priority: "High",
-    status: "Open",
-    contact: "7262054789",
+    status: "Active",
+    date: "2021-09-01",
   },
   {
     id: 2,
-    subject: "Demo",
-    phoneCallDate: "2021-14-01",
-    phoneNumber: "7451681245",
-    priority: "Low",
-    status: "Close",
-    contact: "8845127896",
+    lead: "Steave Smith",
+    phoneNumber: "1234567890",
+    status: "Inactive",
+    date: "2021-09-01",
   },
   {
     id: 3,
-    subject: "Test Subject",
-    phoneCallDate: "2021-06-01",
+    lead: "Will Smith",
     phoneNumber: "1234567890",
-    priority: "High",
-    status: "Open",
-    contact: "7262054789",
+    status: "Active",
+    date: "2021-09-01",
   },
   {
     id: 4,
-    subject: "Test Subject",
-    phoneCallDate: "2021-06-01",
+    lead: "Adam Miller",
     phoneNumber: "1234567890",
-    priority: "High",
-    status: "Open",
-    contact: "7262054789",
+    status: "Inactive",
+    date: "2021-09-01",
+  },
+  {
+    id: 5,
+    lead: "Tom Riddle",
+    phoneNumber: "1234567890",
+    status: "Active",
+    date: "2021-09-01",
   },
 ];
 
@@ -56,21 +55,21 @@ function TableToolBar() {
     <>
       <TkCardBody className="table-toolbar mt-3">
         <TkRow className="mb-3">
-          <TkCol lg={2}>
+          <TkCol lg={4}>
             <TkInput
               // onChange={onSearchChange}
-              placeholder="Search"
+              placeholder="Search by name/Mobile No/ Company Name"
               isSearchField={true}
             />
           </TkCol>
 
-          <TkCol lg={2}>
+          {/* <TkCol lg={2}>
             <TkSelect
               placeholder="Active/Inactive"
               options={[]}
               // onChange={onActiveChange}
             />
-          </TkCol>
+          </TkCol> */}
         </TkRow>
       </TkCardBody>
     </>
@@ -96,15 +95,16 @@ const AllPhoneCall = () => {
 
   const columns = useMemo(
     () => [
+     
       {
-        Header: " Edit",
+        Header: "View | Edit",
         accessor: "id",
         filterable: false,
         Cell: (cellProps) => {
           return (
             //   <div className="flex-grow-1 tasks_name">{cellProps.value}</div>
             <div className="d-flex align-items-center">
-              {/* <ul className="ps-0 mb-0">
+              <ul className="ps-0 mb-0">
                 <li className="list-inline-item">
                   <Link href={`${urls.phoneCallView}/${cellProps.value}`}>
                     <a>
@@ -114,11 +114,11 @@ const AllPhoneCall = () => {
                     </a>
                   </Link>
                 </li>
-              </ul> */}
-
+              </ul>
+              |
               <ul className="ps-0 mb-0">
                 <li className="list-inline-item">
-                  <Link href={`${urls.phoneCallAdd}`}>
+                  <Link href={`${urls.phoneCallEdit}/${cellProps.value}`}>
                     <a>
                       <TkButton color="none">
                         <TkIcon className="ri-edit-line fs-4 -fill align-bottom me-2 text-muted"></TkIcon>
@@ -132,29 +132,8 @@ const AllPhoneCall = () => {
         },
       },
       {
-        Header: "Subject",
-        accessor: "subject",
-        filterable: false,
-        Cell: (cellProps) => {
-          return (
-            <>
-              <div className="d-flex align-items-center">
-                <Link href={`${urls.phoneCallAdd}`}>
-                  <a className="fw-medium table-link text-primary">
-                    <div>
-                      {cellProps.value.length > 17 ? cellProps.value.substring(0, 17) + "..." : cellProps.value}
-                    </div>
-                  </a>
-                </Link>
-              </div>
-            </>
-          );
-        },
-      },
-
-      {
-        Header: "Phone Call Date",
-        accessor: "phoneCallDate",
+        Header: "Lead",
+        accessor: "lead",
         filterable: false,
         Cell: (cellProps) => {
           return <div className="table-text">{cellProps.value}</div>;
@@ -169,14 +148,6 @@ const AllPhoneCall = () => {
         },
       },
       {
-        Header: "Priority",
-        accessor: "priority",
-        filterable: false,
-        Cell: (cellProps) => {
-          return <div className="table-text">{cellProps.value}</div>;
-        },
-      },
-      {
         Header: "Status",
         accessor: "status",
         filterable: false,
@@ -185,8 +156,8 @@ const AllPhoneCall = () => {
         },
       },
       {
-        Header: "Contact",
-        accessor: "contact",
+        Header: "Date",
+        accessor: "date",
         filterable: false,
         Cell: (cellProps) => {
           return <div className="table-text">{cellProps.value}</div>;
@@ -208,11 +179,16 @@ const AllPhoneCall = () => {
                   data={usersData || []}
                   Toolbar={
                     <TableToolBar
-                      onSearchChange={searchDebounce(updateSearchText, searchOnUI)}
+                      onSearchChange={searchDebounce(
+                        updateSearchText,
+                        searchOnUI
+                      )}
                       // accessLevel={accessLevel}
                       onSupervisorChange={(item) => {
                         updateFilters({
-                          [filterFields.users.supervisor]: item ? item.value : null,
+                          [filterFields.users.supervisor]: item
+                            ? item.value
+                            : null,
                         });
                       }}
                       onRoleChange={(item) => {

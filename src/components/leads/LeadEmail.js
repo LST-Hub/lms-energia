@@ -11,12 +11,11 @@ import TkSelect from "../../../src/components/forms/TkSelect";
 import TkDate from "../../../src/components/forms/TkDate";
 import TkIcon from "../../../src/components/TkIcon";
 
-function DirectMarketing({ toggleTab, tabs }) {
+function LeadEmail({ toggleTab, tabs }) {
   const [rSelected, setRSelected] = useState(1);
-  const [isDirectMarketing, setIsDirectMarketing] = useState(false);
-
+  const [isLeadEmail, setIsLeadEmail] = useState(false);
   useEffect(() => {
-    setIsDirectMarketing(true);
+    setIsLeadEmail(true);
   }, []);
   const [requirementDetailsSections, setRequirementDetailsSections] = useState([
     { id: 1, isVisible: true },
@@ -41,59 +40,64 @@ function DirectMarketing({ toggleTab, tabs }) {
   };
   return (
     <>
-      {isDirectMarketing && (
+      {isLeadEmail && (
         <div>
-          <TkRow className="mt-5">
+          <ButtonGroup>
+            <Button
+              color="primary"
+              outline
+              onClick={() => setRSelected(1)}
+              active={rSelected === 1}
+            >
+              Direct
+            </Button>
+            <Button
+              color="primary"
+              outline
+              onClick={() => setRSelected(2)}
+              active={rSelected === 2}
+            >
+              Refferal
+            </Button>
+            <Button
+              color="primary"
+              outline
+              onClick={() => setRSelected(3)}
+              active={rSelected === 3}
+            >
+              Portal
+            </Button>
+            <Button
+              color="primary"
+              outline
+              onClick={() => setRSelected(4)}
+              active={rSelected === 4}
+            >
+              New
+            </Button>
+            <Button
+              color="primary"
+              outline
+              onClick={() => setRSelected(5)}
+              active={rSelected === 5}
+            >
+              Existing
+            </Button>
+          </ButtonGroup>
+
+          <TkRow className="mt-3">
             <TkCol>
-              <div>
-                <TkRow className="g-3">
-                  <TkCol lg={4}>
-                    <TkSelect
-                      id="leadSource"
-                      name="leadSource"
-                      labelName="Lead Source"
-                      placeholder="Select Lead Source"
-                      options={[
-                        { value: "1", label: "New" },
-                        { value: "2", label: "Existing" },
-                      ]}
-                    />
-                  </TkCol>
-                  <TkCol lg={4}>
-                    <TkSelect
-                      id="visitDate"
-                      name="visitDate"
-                      labelName="Date Of Visit"
-                      options={[]}
-                      placeholder="Select Visit Date"
-                    />
-                  </TkCol>
-                  <TkCol lg={4}>
-                    <TkSelect
-                      id="visitTime"
-                      name="visitTime"
-                      labelName="Time Of Visit"
-                      options={[]}
-                      placeholder="Select Visit Time"
-                    />
-                  </TkCol>
-                </TkRow>
-                <TkRow className="mt-3">
-                  <TkCol lg={4}>
-                    <TkSelect
-                      id="visitUpdate"
-                      name="visitUpdate"
-                      labelName="Visit Update"
-                      options={[]}
-                      placeholder="Select Visit Update"
-                    />
-                  </TkCol>
-                </TkRow>
+              <div className="d-flex justify-content-center">
+                <TkInput
+                  type="text"
+                  placeholder="Search"
+                  isSearchField="true"
+                />
               </div>
             </TkCol>
           </TkRow>
 
-          <TkRow className="mt-5">
+          <TkRow className="mt-3">
             <TkCol>
               <TkCardHeader tag="h5" className="mb-4">
                 <h4 className="card-title">Personal Details</h4>
@@ -371,7 +375,7 @@ function DirectMarketing({ toggleTab, tabs }) {
                 type="button"
                 color="primary"
                 onClick={() => {
-                  toggleTab(tabs.leadAssigning);
+                  toggleTab(tabs.socialMedia);
                 }}
               >
                 Next
@@ -384,4 +388,4 @@ function DirectMarketing({ toggleTab, tabs }) {
   );
 }
 
-export default DirectMarketing;
+export default LeadEmail;
