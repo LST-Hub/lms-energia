@@ -111,7 +111,14 @@ const remindersTypes = [
   { value: "30 min", label: "30 Min" },
   { value: "1 hour", label: "1 Hour" },
 ];
-
+const meetingStatusTypes = [
+  { value: "1", label: "Scheduled" },
+  { value: "2", label: "Pending" },
+  { value: "3", label: "In progress" },
+  { value: "4", label: "Completed" },
+  { value: "5", label: "Closed"},
+  { value: "6", label: "On hold"}
+];
 const reminderTypes = [
   { value: "none", label: "None" },
   { value: "browser", label: "Browser" },
@@ -1479,6 +1486,7 @@ export {
   stausTypes,
   eventAcessTypes,
   remindersTypes,
+  meetingStatusTypes,
   reminderTypes,
   genderTypes,
   projectTypes,

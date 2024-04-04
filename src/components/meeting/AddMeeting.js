@@ -38,6 +38,7 @@ import {
   organizerTypes,
   customFormTypes,
   leadTypes,
+  meetingStatusTypes,
 } from "../../utils/Constants";
 import tkFetch from "../../utils/fetch";
 import { useMutation, useQueries } from "@tanstack/react-query";
@@ -318,7 +319,7 @@ const AddMeeting = () => {
                         labelName="Status"
                         labelId={"_status"}
                         id="status"
-                        options={stausTypes}
+                        options={meetingStatusTypes}
                         placeholder="Select Type"
                         requiredStarOnLabel={true}
                       />

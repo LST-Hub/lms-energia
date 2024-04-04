@@ -35,6 +35,7 @@ import {
   eventAcessTypes,
   stausTypes,
   organizerTypes,
+  meetingStatusTypes,
 } from "../../utils/Constants";
 import tkFetch from "../../utils/fetch";
 import { useMutation, useQueries } from "@tanstack/react-query";
@@ -267,7 +268,7 @@ const EditMeeting = ({ id, userData, mode }) => {
                           labelName="Status"
                           labelId="status"
                           id="status"
-                          options={stausTypes}
+                          options={meetingStatusTypes}
                           placeholder="Select Status"
                           requiredStarOnLabel={true}
                           disabled={viewMode}
