@@ -1,7 +1,6 @@
 import React from "react";
 import BreadCrumb from "../../../../src/utils/BreadCrumb";
 import TkPageHead from "../../../../src/components/TkPageHead";
-import UserDetails from "../../../../src/components/users/UserDetails";
 import { demoUserData, modes, urls } from "../../../../src/utils/Constants";
 import TkContainer from "../../../../src/components/TkContainer";
 import EditLead from "../../../../src/components/leads/EditLead";

@@ -14,9 +14,9 @@ const LeadDetailsPage = () => {
 
       <div className="page-content">
         <BreadCrumb pageTitle={"Add Lead"} parentTitle="Lead" parentLink={`${urls.lead}`} />
-        {/* <TkContainer>
+        <TkContainer>
             <AddLead/>
-        </TkContainer> */}
+        </TkContainer>
       </div>
     </>
   );

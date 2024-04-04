@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
-import Image from "next/future/image";
 import Link from "next/link";
 import TkInput from "../forms/TkInput";
 import { TkCardBody } from "../TkCard";
 import TkRow, { TkCol } from "../TkRow";
 import { filterFields, minSearchLength, urls } from "../../utils/Constants";
 import { isSearchonUI, searchDebounce } from "../../utils/utilsFunctions";
-import TkSelect from "../forms/TkSelect";
 import TkTableContainer from "../TkTableContainer";
 import { useMemo } from "react";
 import TkButton from "../TkButton";
