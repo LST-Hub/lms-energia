@@ -94,8 +94,8 @@ const organizerTypes = [
   { value: "steve smith", label: "Steve Smith" },
 ];
 const stausTypes = [
-  { value: "confirmed", label: "Confirmed" },
-  { value: "completed", label: "Completed" },
+  { value: "qualified", label: "Qualified" },
+  { value: "unqualified", label: "Unqualified" },
 ];
 const eventAcessTypes = [
   { value: "public", label: "Public" },

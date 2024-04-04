@@ -190,9 +190,9 @@ const Role = () => {
   //   });
   // };
 
-  if (!(Number(accessLevel) >= perAccessIds.create)) {
-    return <TkAccessDenied />;
-  }
+  // if (!(Number(accessLevel) >= perAccessIds.create)) {
+  //   return <TkAccessDenied />;
+  // }
 
   return (
     <>
@@ -235,9 +235,7 @@ const Role = () => {
                       labelName="Role Description"
                       // placeholder="Role Description"
                     />
-                    {errors.roleDescription?.message ? (
-                      <FormErrorText>{errors.roleDescription?.message}</FormErrorText>
-                    ) : null}
+                    
                   </div>
                   <TkCol md={4} lg={3} className="mb-3">
                     <Controller
@@ -253,9 +251,7 @@ const Role = () => {
                         />
                       )}
                     />
-                    {errors.roleRestriction?.message ? (
-                      <FormErrorText>{errors.roleRestriction?.message}</FormErrorText>
-                    ) : null}
+                   
                   </TkCol>
 
                   {/* <TkTableContainer

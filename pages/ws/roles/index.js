@@ -23,11 +23,11 @@ const Roles = () => {
       <div className="page-content">
         <BreadCrumb
           pageTitle={"Roles And Permisssions"}
-          // buttonText={accessLevel >= perAccessIds.create ? "Add Role" : undefined}
-          // onButtonClick={accessLevel >= perAccessIds.create ? handleButtonClick : undefined}
+          // buttonText={"Add Role"}
+          // onButtonClick={handleButtonClick}
         />
         <TkContainer>
-          <AllRoles accessLevel={accessLevel} />
+          <AllRoles />
         </TkContainer>
       </div>
     </>
