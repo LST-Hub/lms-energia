@@ -7,6 +7,7 @@ import {
   MaxNameLength,
   MinNameLength,
   clientTypes,
+  createdByNameTypes,
   demoUserData,
   divisionTypes,
   requirementTypes,
@@ -393,6 +394,12 @@ function AddLead({ id, userData, mode }) {
       setValue("name", userData.name);
       setValue("mobileNo", userData.mobileNo);
       setValue("email", userData.email);
+      setValue("createdBy", {
+        value: userData.createdBy,
+        label: userData.createdBy,
+      });
+      setValue("createdDate", userData.createdDate);
+      setValue("leadValue", userData.leadValue);
       setValue("companyName", userData.companyName);
       setValue("contactNo", userData.contactNo);
       setValue("cemail", userData.cemail);
@@ -471,6 +478,49 @@ function AddLead({ id, userData, mode }) {
                         disabled={viewMode}
                       />
                     </TkCol>
+
+                    <TkCol lg={4}>
+                    <TkSelect
+                      id="createdBy"
+                      name="createdBy"
+                      labelName="Created By"
+                      placeholder="Select Created By"
+                      requiredStarOnLabel="true"
+                      options={createdByNameTypes}
+                      disabled={viewMode}
+                    />
+                  </TkCol>
+                  <TkCol lg={4}>
+                    <Controller
+                      name="createdDate"
+                      control={control}
+                      render={({ field }) => (
+                        <TkDate
+                          {...field}
+                          labelName="Created Date"
+                          id={"createdDate"}
+                          placeholder="Enter Created Date"
+                          options={{
+                            altInput: true,
+                            dateFormat: "d M, Y",
+                          }}
+                          requiredStarOnLabel={true}
+                          disabled={viewMode}
+                        />
+                      )}
+                    />
+                  </TkCol>
+
+                  <TkCol lg={4}>
+                    <TkInput
+                      id="leadValue"
+                      type="text"
+                      labelName="Lead Value"
+                      placeholder="Enter Lead Value"
+                      requiredStarOnLabel="true"
+                      disabled={viewMode}
+                    />
+                  </TkCol>
                   </TkRow>
                 </div>
               </TkCol>
@@ -574,7 +624,7 @@ function AddLead({ id, userData, mode }) {
                             labelId={"_clientType"}
                             id="lead"
                             placeholder="Select Leads"
-                            options={clientTypes}
+                            options={createdByNameTypes}
                             requiredStarOnLabel={true}
                             disabled={viewMode}
                           />
