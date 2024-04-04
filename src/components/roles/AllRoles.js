@@ -38,7 +38,10 @@ import TkButton from "../TkButton";
 
 const restrictionOptions = [
   { value: roleRestrictionIds.own, label: roleRestrictionLabels.own },
-  { value: roleRestrictionIds.subordinates, label: roleRestrictionLabels.subordinates },
+  {
+    value: roleRestrictionIds.subordinates,
+    label: roleRestrictionLabels.subordinates,
+  },
   { value: roleRestrictionIds.none, label: roleRestrictionLabels.none },
 ];
 
@@ -48,13 +51,26 @@ function TableToolBar({ onSearchChange, onRestrictionChange, onActiveChange }) {
       <TkCardBody className="table-toolbar mt-3 mb-4">
         <TkRow className="mb-3">
           <TkCol lg={3}>
-            <TkInput onChange={onSearchChange} type="text" placeholder="Search Role Name" isSearchField={true} />
+            <TkInput
+              onChange={onSearchChange}
+              type="text"
+              placeholder="Search Role Name"
+              isSearchField={true}
+            />
           </TkCol>
           <TkCol lg={3}>
-            <TkSelect placeholder="Select Restriction" options={restrictionOptions} onChange={onRestrictionChange} />
+            <TkSelect
+              placeholder="Select Restriction"
+              options={restrictionOptions}
+              onChange={onRestrictionChange}
+            />
           </TkCol>
           <TkCol lg={3}>
-            <TkSelect placeholder="Active/Inactive" options={filterStatusOptions} onChange={onActiveChange} />
+            <TkSelect
+              placeholder="Active/Inactive"
+              options={filterStatusOptions}
+              onChange={onActiveChange}
+            />
           </TkCol>
         </TkRow>
       </TkCardBody>
@@ -66,9 +82,12 @@ const AllRoles = ({ accessLevel }) => {
   const [urlParamsStr, setUrlParamsStr] = React.useState("");
   const [searchText, setSearchText] = useState("");
   const [roles, setRoles] = useState([]);
-  const [filters, updateFilters] = useReducer((state, newState) => ({ ...state, ...newState }), {
-    [filterFields.roles.restriction]: null, // keep the initial values to null for filters
-  });
+  const [filters, updateFilters] = useReducer(
+    (state, newState) => ({ ...state, ...newState }),
+    {
+      [filterFields.roles.restriction]: null, // keep the initial values to null for filters
+    }
+  );
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: [RQ.allRoles],
@@ -83,7 +102,9 @@ const AllRoles = ({ accessLevel }) => {
     error: backError,
   } = useQuery({
     queryKey: [RQ.allRoles, urlParamsStr],
-    queryFn: tkFetch.get(`${API_BASE_URL}/roles${urlParamsStr ? `?${urlParamsStr}` : ""}`),
+    queryFn: tkFetch.get(
+      `${API_BASE_URL}/roles${urlParamsStr ? `?${urlParamsStr}` : ""}`
+    ),
     enabled: Number(accessLevel) >= perAccessIds.view && !!urlParamsStr,
   });
 
@@ -99,7 +120,11 @@ const AllRoles = ({ accessLevel }) => {
     if (searchText === "") {
       doSearch = false;
     }
-    if (Object.values(filters).every((val) => val === null || val === undefined || val === "")) {
+    if (
+      Object.values(filters).every(
+        (val) => val === null || val === undefined || val === ""
+      )
+    ) {
       doFilter = false;
     }
 
@@ -110,10 +135,18 @@ const AllRoles = ({ accessLevel }) => {
       return;
     }
     if (isSearchonUI(data)) {
-      const newData = searchAndFilterData(data, searchText, serachFields.roles, filters);
+      const newData = searchAndFilterData(
+        data,
+        searchText,
+        serachFields.roles,
+        filters
+      );
       setRoles(newData);
     } else {
-      const urlParamString = convertToURLParamsString({ [searchParamName]: searchText, ...filters });
+      const urlParamString = convertToURLParamsString({
+        [searchParamName]: searchText,
+        ...filters,
+      });
       setUrlParamsStr(urlParamString);
     }
   }, [searchText, filters, data]);
@@ -127,6 +160,29 @@ const AllRoles = ({ accessLevel }) => {
       setSearchText("");
     }
   };
+  const [isRoles, setIsRoles] = useState(false);
+
+  useEffect(() => {
+    setIsRoles(true);
+  }, []);
+
+  const rolesData = [
+    {
+      id: 1,
+      name: "Sales Head",
+      description: "Admin has all the data access and all permissions",
+    },
+    {
+      id: 2,
+      name: "Sales Manager",
+      description: "Sales Manager has access the own data and sales representative data",
+    },
+    {
+      id: 3,
+      name: "Sales Representative",
+      description: "Sales Representative has access the own data only",
+    }
+  ];
 
   const columns = useMemo(
     () => [
@@ -140,7 +196,7 @@ const AllRoles = ({ accessLevel }) => {
             <div className="d-flex align-items-center">
               <ul className="ps-0 mb-0">
                 <li className="list-inline-item">
-                <Link href={`${urls.roleView}/${cellProps.row.original.id}`}>
+                  <Link href={`${urls.roleView}/${cellProps.row.original.id}`}>
                     <a>
                       <TkButton color="none">
                         <TkIcon className="ri-eye-fill align-bottom me-2 text-muted"></TkIcon>
@@ -159,7 +215,7 @@ const AllRoles = ({ accessLevel }) => {
         filterable: false,
         Cell: (cellProps) => {
           return <div className="table-text">{cellProps.value}</div>;
-        }, 
+        },
       },
       {
         Header: "Description",
@@ -171,7 +227,8 @@ const AllRoles = ({ accessLevel }) => {
               {cellProps.row.original.description.length > 100 ? (
                 <>
                   <span id={`toolTip${cellProps.row.id}`}>
-                    {cellProps.row.original.description.substring(0, 100) + "..."}
+                    {cellProps.row.original.description.substring(0, 100) +
+                      "..."}
                   </span>
                   <UncontrolledTooltip
                     target={`toolTip${cellProps.row.id}`}
@@ -188,68 +245,71 @@ const AllRoles = ({ accessLevel }) => {
           );
         },
       },
-      
     ],
     []
   );
 
-  if (!accessLevel) {
-    return <TkAccessDenied />;
-  }
+  // if (!accessLevel) {
+  //   return <TkAccessDenied />;
+  // }
 
   return (
     <>
-      <TkRow>
-        {isLoading ? (
+      {isRoles && (
+        <div>
+          <TkRow>
+            {/* {isLoading ? (
           <TkLoader />
         ) : isError ? (
           <FormErrorBox errMessage={error.message} />
-        ) : data?.length > 0 ? (
-          <TkRow>
-            <TkCol lg={12}>
-              {/* <TkCardHeader className="tk-card-header border-bottom mb-4">
+        ) : data?.length > 0 ? ( */}
+            <TkRow>
+              <TkCol lg={12}>
+                {/* <TkCardHeader className="tk-card-header border-bottom mb-4">
                 <div className="d-flex align-items-center">
                   <TkCardTitle className="mb-0 flex-grow-1">
                     <h2>Roles And Permissions</h2>
                   </TkCardTitle>
                 </div>
               </TkCardHeader> */}
-              <TkCardBody>
-                {isBackError ? (
-                  <FormErrorBox errMessage={backError.message} />
-                ) : (
-                  <TkTableContainer
-                    columns={columns}
-                    data={backendData || roles}
-                    // Toolbar={
-                    //   <TableToolBar
-                    //     onSearchChange={searchDebounce(updateSearchText, searchOnUI)}
-                    //     onRestrictionChange={(item) => {
-                    //       updateFilters({
-                    //         [filterFields.roles.restriction]: item ? item.value : null,
-                    //       });
-                    //     }}
-                    //     onActiveChange={(item) => {
-                    //       updateFilters({
-                    //         [filterFields.roles.active]: item ? item.value : null,
-                    //       });
-                    //     }}
-                    //   />
-                    // }
-                    loading={urlParamsStr.length > 0 && isBackLoading}
-                    defaultPageSize={10}
-                    showPagination={true}
-                  />
-                )}
-              </TkCardBody>
-            </TkCol>
-          </TkRow>
-        ) : (
+                <TkCardBody>
+                  {isBackError ? (
+                    <FormErrorBox errMessage={backError.message} />
+                  ) : (
+                    <TkTableContainer
+                      columns={columns}
+                      data={rolesData}
+                      // Toolbar={
+                      //   <TableToolBar
+                      //     onSearchChange={searchDebounce(updateSearchText, searchOnUI)}
+                      //     onRestrictionChange={(item) => {
+                      //       updateFilters({
+                      //         [filterFields.roles.restriction]: item ? item.value : null,
+                      //       });
+                      //     }}
+                      //     onActiveChange={(item) => {
+                      //       updateFilters({
+                      //         [filterFields.roles.active]: item ? item.value : null,
+                      //       });
+                      //     }}
+                      //   />
+                      // }
+                      // loading={urlParamsStr.length > 0 && isBackLoading}
+                      defaultPageSize={10}
+                      showPagination={true}
+                    />
+                  )}
+                </TkCardBody>
+              </TkCol>
+            </TkRow>
+            {/* ) : (
           <TkCol lg={10}>
             <TkNoData />
           </TkCol>
-        )}
-      </TkRow>
+        )} */}
+          </TkRow>
+        </div>
+      )}
     </>
   );
 };

@@ -38,5 +38,5 @@ export default Roles;
 
 Roles.options = {
   layout: true,
-  auth: true,
+  // auth: true,
 };

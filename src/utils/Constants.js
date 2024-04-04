@@ -764,6 +764,7 @@ const RQ = {
 const ws = "/ws";
 
 const urls = {
+  roles: `${ws}/roles`,
   phoneCall: `${ws}/call`,
   phoneCallAdd: `${ws}/call/add`,
   phoneCallEdit: `${ws}/call/edit`,

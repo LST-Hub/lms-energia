@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import imageCompression from "browser-image-compression";
 import TkButton from "../TkButton";
 import TkInput from "../forms/TkInput";
@@ -224,7 +224,6 @@ const AddTask = () => {
                           {...register("canBeSupervisor")}
                           id="canBeSupervisor"
                           type="checkbox"
-                          disabled={isAdminRole}
                         />
                         <TkLabel className="ms-3 me-lg-5" id="supervisor">
                           Notify Assign By Email
@@ -236,7 +235,6 @@ const AddTask = () => {
                           {...register("privatePhoenCall")}
                           id="privatePhoenCall"
                           type="checkbox"
-                          disabled={isAdminRole}
                         />
                         <TkLabel className="ms-3 me-lg-5" id="privatePhoenCall">
                           Private Task
@@ -287,7 +285,6 @@ const AddTask = () => {
                           {...register("canBeSupervisor")}
                           id="canBeSupervisor"
                           type="checkbox"
-                          disabled={isAdminRole}
                         />
                         <TkLabel className="ms-3 me-lg-5" id="supervisor">
                           Notify Assign By Email

@@ -310,14 +310,14 @@ const AddMeeting = () => {
 
                 <TkCol lg={4}>
                   <Controller
-                    name="type"
+                    name="status"
                     control={control}
                     render={({ field }) => (
                       <TkSelect
                         {...field}
                         labelName="Status"
-                        labelId={"_type"}
-                        id="type"
+                        labelId={"_status"}
+                        id="status"
                         options={stausTypes}
                         placeholder="Select Type"
                         requiredStarOnLabel={true}
@@ -327,14 +327,14 @@ const AddMeeting = () => {
                 </TkCol>
                 <TkCol lg={4}>
                   <Controller
-                    name="type"
+                    name="organizer"
                     control={control}
                     render={({ field }) => (
                       <TkSelect
                         {...field}
                         labelName="Organizer"
-                        labelId={"_type"}
-                        id="type"
+                        labelId={"_organizer"}
+                        id="organizer"
                         options={organizerTypes}
                         placeholder="Select Organizer"
                         requiredStarOnLabel={true}
