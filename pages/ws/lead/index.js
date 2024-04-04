@@ -29,9 +29,9 @@ const Leads = () => {
           buttonText={"Add Lead"}
           onButtonClick={handleButtonClick}
         />
-        <TkContainer>
+        {/* <TkContainer>
          <AllLead />
-        </TkContainer>
+        </TkContainer> */}
       </div>
     </>
   );
