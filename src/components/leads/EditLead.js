@@ -513,6 +513,7 @@ function AddLead({ id, userData, mode }) {
 
                   <TkCol lg={4}>
                     <TkInput
+                    {...register("leadValue")}
                       id="leadValue"
                       type="text"
                       labelName="Lead Value"
