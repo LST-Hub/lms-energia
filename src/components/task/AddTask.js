@@ -168,14 +168,14 @@ const AddTask = () => {
                 <TkRow className="g-3">
                   <TkCol lg={4}>
                     <Controller
-                      name="type"
+                      name="lead"
                       control={control}
                       render={({ field }) => (
                         <TkSelect
                           {...field}
-                          labelName="Leads"
-                          labelId={"_type"}
-                          id="type"
+                          labelName="Lead"
+                          labelId={"_lead"}
+                          id="lead"
                           options={leadTypes}
                           placeholder="Select Leads"
                           requiredStarOnLabel={true}
@@ -185,16 +185,16 @@ const AddTask = () => {
                   </TkCol>
                   <TkCol lg={4}>
                     <Controller
-                      name="type"
+                      name="status"
                       control={control}
                       render={({ field }) => (
                         <TkSelect
                           {...field}
                           labelName="Status"
-                          labelId={"_type"}
-                          id="type"
+                          labelId={"_status"}
+                          id="status"
                           options={stausTypes}
-                          placeholder="Select Type"
+                          placeholder="Select Status"
                           requiredStarOnLabel={true}
                         />
                       )}
