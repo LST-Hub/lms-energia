@@ -186,29 +186,7 @@ const AllRoles = ({ accessLevel }) => {
 
   const columns = useMemo(
     () => [
-      {
-        Header: "View",
-        accessor: "view",
-        filterable: false,
-        Cell: (cellProps) => {
-          return (
-            //   <div className="flex-grow-1 tasks_name">{cellProps.value}</div>
-            <div className="d-flex align-items-center">
-              <ul className="ps-0 mb-0">
-                <li className="list-inline-item">
-                  <Link href={`${urls.roleView}/${cellProps.row.original.id}`}>
-                    <a>
-                      <TkButton color="none">
-                        <TkIcon className="ri-eye-fill align-bottom me-2 text-muted"></TkIcon>
-                      </TkButton>
-                    </a>
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          );
-        },
-      },
+      
       {
         Header: "Roles",
         accessor: "name",
