@@ -1323,6 +1323,7 @@ function AddLead() {
                                   type="button"
                                   color="primary"
                                   className="mt-4"
+                                  onClick={leadActivityToggle}
                                 >
                                   Add Activity
                                 </TkButton>
@@ -1889,6 +1890,7 @@ function AddLead() {
                                   type="button"
                                   color="primary"
                                   className="mt-4"
+                                  onClick={leadActivityToggle}
                                 >
                                   Add Activity
                                 </TkButton>
@@ -2447,7 +2449,7 @@ function AddLead() {
                                   type="button"
                                   color="primary"
                                   className="mt-4"
-                                  onClick={partnerToggle}
+                                  onClick={leadActivityToggle}
                                 >
                                   Add Activity
                                 </TkButton>
@@ -3022,6 +3024,7 @@ function AddLead() {
                                   type="button"
                                   color="primary"
                                   className="mt-4"
+                                  onClick={leadActivityToggle}
                                 >
                                   Add Activity
                                 </TkButton>
@@ -3054,7 +3057,7 @@ function AddLead() {
                     className="p-3 bg-soft-info"
                     partnerToggle={leadActivityToggle}
                   >
-                    {"Add Partner"}
+                    {"Add Lead Activity"}
                   </TkModalHeader>
                   <TkContainer>
                     <TkCardBody>
