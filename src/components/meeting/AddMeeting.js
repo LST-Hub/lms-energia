@@ -238,44 +238,55 @@ const AddMeeting = () => {
 
   return (
     <>
-     {isMeeting && (
-      <div>
-        <TkRow className="mt-3">
-          <TkCol>
-            <TkCardHeader tag="h5" className="mb-4">
-              <h4>Primary Information</h4>
-            </TkCardHeader>
-            <div>
-              <TkRow className="g-3">
-                <TkCol lg={4}>
-                  <Controller
-                    name="type"
-                    control={control}
-                    render={({ field }) => (
-                      <TkSelect
-                        {...field}
-                        labelName="Leads"
-                        labelId={"_type"}
-                        id="type"
-                        options={leadTypes}
-                        placeholder="Select Leads"
-                        requiredStarOnLabel={true}
-                      />
-                    )}
-                  />
-                </TkCol>
-                <TkCol lg={4}>
-                  <TkInput
-                    labelName="Location"
-                    labelId={"location"}
-                    id="location"
-                    type="text"
-                    placeholder="Enter Location"
-                    requiredStarOnLabel={true}
-                  />
-                </TkCol>
+      {isMeeting && (
+        <div>
+          <TkRow className="mt-3">
+            <TkCol>
+              <TkCardHeader tag="h5" className="mb-4">
+                <h4>Primary Information</h4>
+              </TkCardHeader>
+              <div>
+                <TkRow className="g-3">
+                  <TkCol lg={4}>
+                    <Controller
+                      name="type"
+                      control={control}
+                      render={({ field }) => (
+                        <TkSelect
+                          {...field}
+                          labelName="Leads"
+                          labelId={"_type"}
+                          id="type"
+                          options={leadTypes}
+                          placeholder="Select Leads"
+                          requiredStarOnLabel={true}
+                        />
+                      )}
+                    />
+                  </TkCol>
+                  <TkCol lg={4}>
+                    <TkInput
+                      labelName="Location"
+                      labelId={"location"}
+                      id="location"
+                      type="text"
+                      placeholder="Enter Location"
+                      requiredStarOnLabel={true}
+                    />
+                  </TkCol>
 
-                <TkCol lg={4}>
+                  <TkCol lg={4}>
+                    <TkInput
+                      {...register("subject")}
+                      labelName="Subject"
+                      labelId={"_subject"}
+                      id="subject"
+                      type="text"
+                      placeholder="Enter Subject"
+                      requiredStarOnLabel={true}
+                    />
+                  </TkCol>
+                  {/* <TkCol lg={4}>
                   <Controller
                     name="eventAccess"
                     control={control}
@@ -292,12 +303,12 @@ const AddMeeting = () => {
                       />
                     )}
                   />
-                </TkCol>
-              </TkRow>
-            </div>
-            <div>
-              <TkRow className="mt-3">
-              <TkCol lg={4}>
+                </TkCol> */}
+                </TkRow>
+              </div>
+              <div>
+                <TkRow className="mt-3">
+                  {/* <TkCol lg={4}>
                     <TkInput
                       {...register("subject")}
                       labelName="Subject"
@@ -307,129 +318,129 @@ const AddMeeting = () => {
                       placeholder="Enter Subject"
                       requiredStarOnLabel={true}
                     />
+                  </TkCol> */}
+
+                  <TkCol lg={4}>
+                    <Controller
+                      name="status"
+                      control={control}
+                      render={({ field }) => (
+                        <TkSelect
+                          {...field}
+                          labelName="Status"
+                          labelId={"_status"}
+                          id="status"
+                          options={[]}
+                          placeholder="Select Type"
+                          requiredStarOnLabel={true}
+                        />
+                      )}
+                    />
+                  </TkCol>
+                  <TkCol lg={4}>
+                    <Controller
+                      name="organizer"
+                      control={control}
+                      render={({ field }) => (
+                        <TkSelect
+                          {...field}
+                          labelName="Organizer"
+                          labelId={"_organizer"}
+                          id="organizer"
+                          options={organizerTypes}
+                          placeholder="Select Organizer"
+                          requiredStarOnLabel={true}
+                        />
+                      )}
+                    />
+                  </TkCol>
+                </TkRow>
+              </div>
+            </TkCol>
+          </TkRow>
+
+          <TkRow className="mt-5">
+            <TkCol>
+              <TkCardHeader tag="h5" className="mb-4">
+                <h4>Date and Time</h4>
+              </TkCardHeader>
+              <div>
+                <TkRow className="g-3">
+                  <TkCol lg={4}>
+                    <Controller
+                      name="date"
+                      control={control}
+                      rules={{ required: "Date is required" }}
+                      render={({ field }) => (
+                        <TkDate
+                          {...field}
+                          labelName="Date"
+                          id={"date"}
+                          placeholder="Select Date"
+                          options={{
+                            altInput: true,
+                            dateFormat: "d M, Y",
+                          }}
+                          requiredStarOnLabel={true}
+                        />
+                      )}
+                    />
                   </TkCol>
 
-                <TkCol lg={4}>
-                  <Controller
-                    name="status"
-                    control={control}
-                    render={({ field }) => (
-                      <TkSelect
-                        {...field}
-                        labelName="Status"
-                        labelId={"_status"}
-                        id="status"
-                        options={[]}
-                        placeholder="Select Type"
-                        requiredStarOnLabel={true}
-                      />
-                    )}
-                  />
-                </TkCol>
-                <TkCol lg={4}>
-                  <Controller
-                    name="organizer"
-                    control={control}
-                    render={({ field }) => (
-                      <TkSelect
-                        {...field}
-                        labelName="Organizer"
-                        labelId={"_organizer"}
-                        id="organizer"
-                        options={organizerTypes}
-                        placeholder="Select Organizer"
-                        requiredStarOnLabel={true}
-                      />
-                    )}
-                  />
-                </TkCol>
-              </TkRow>
+                  <TkCol lg={4}>
+                    <TkInput
+                      labelName="Time"
+                      id={"startTime"}
+                      type="text"
+                      placeholder="Enter Time"
+                    />
+                  </TkCol>
+
+                  {/* <TkCol lg={4}>
+                    <TkRow className="justify-content-start mt-4">
+                      <TkCol xs={"auto"}>
+                        <TkCheckBox
+                          id="canBeSupervisor"
+                          type="checkbox"
+                          disabled={isAdminRole}
+                        />
+                        <TkLabel className="ms-3 me-lg-5" id="supervisor">
+                          All Day
+                        </TkLabel>
+                      </TkCol>
+
+                      <TkCol xs={"auto"}>
+                        <TkCheckBox
+                          id="privatePhoenCall"
+                          type="checkbox"
+                          disabled={isAdminRole}
+                        />
+                        <TkLabel className="ms-3 me-lg-5" id="privatePhoenCall">
+                          Reserve Time
+                        </TkLabel>
+                      </TkCol>
+                    </TkRow>
+                  </TkCol> */}
+                </TkRow>
+              </div>
+            </TkCol>
+          </TkRow>
+          <div className="d-flex mt-4 space-childern">
+            <div className="ms-auto" id="update-form-btns">
+              <TkButton
+                color="secondary"
+                type="button"
+                onClick={() => router.push(`${urls.meeting}`)}
+              >
+                Cancel
+              </TkButton>{" "}
+              <TkButton type="submit" color="primary">
+                Save
+              </TkButton>
             </div>
-          </TkCol>
-        </TkRow>
-
-        <TkRow className="mt-5">
-          <TkCol>
-            <TkCardHeader tag="h5" className="mb-4">
-              <h4>Date and Time</h4>
-            </TkCardHeader>
-            <div>
-              <TkRow className="g-3">
-                <TkCol lg={4}>
-                  <Controller
-                    name="date"
-                    control={control}
-                    rules={{ required: "Date is required" }}
-                    render={({ field }) => (
-                      <TkDate
-                        {...field}
-                        labelName="Date"
-                        id={"date"}
-                        placeholder="Select Date"
-                        options={{
-                          altInput: true,
-                          dateFormat: "d M, Y",
-                        }}
-                        requiredStarOnLabel={true}
-                      />
-                    )}
-                  />
-                </TkCol>
-
-                <TkCol>
-                  <TkInput
-                    labelName="Start Time"
-                    id={"startTime"}
-                    type="text"
-                    placeholder="Enter Start Time"
-                  />
-                </TkCol>
-
-                <TkCol lg={4}>
-                  <TkRow className="justify-content-start mt-4">
-                    <TkCol xs={"auto"}>
-                      <TkCheckBox
-                        id="canBeSupervisor"
-                        type="checkbox"
-                        disabled={isAdminRole}
-                      />
-                      <TkLabel className="ms-3 me-lg-5" id="supervisor">
-                        All Day
-                      </TkLabel>
-                    </TkCol>
-
-                    <TkCol xs={"auto"}>
-                      <TkCheckBox
-                        id="privatePhoenCall"
-                        type="checkbox"
-                        disabled={isAdminRole}
-                      />
-                      <TkLabel className="ms-3 me-lg-5" id="privatePhoenCall">
-                        Reserve Time
-                      </TkLabel>
-                    </TkCol>
-                  </TkRow>
-                </TkCol>
-              </TkRow>
-            </div>
-          </TkCol>
-        </TkRow>
-        <div className="d-flex mt-4 space-childern">
-          <div className="ms-auto" id="update-form-btns">
-            <TkButton
-              color="secondary"
-              type="button"
-              onClick={() => router.push(`${urls.meeting}`)}
-            >
-              Cancel
-            </TkButton>{" "}
-            <TkButton type="submit" color="primary">
-              Save
-            </TkButton>
           </div>
         </div>
-      </div>
-       )}
+      )}
     </>
   );
 };

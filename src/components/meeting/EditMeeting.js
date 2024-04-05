@@ -223,6 +223,20 @@ const EditMeeting = ({ id, userData, mode }) => {
                   </TkCol>
 
                   <TkCol lg={4}>
+                    <TkInput
+                      {...register("subject")}
+                      labelName="Subject"
+                      tooltip="Enter Subject"
+                      labelId={"_subject"}
+                      id="subject"
+                      type="text"
+                      placeholder="Enter Subject"
+                      requiredStarOnLabel={true}
+                      disabled={viewMode}
+                    />
+                  </TkCol>
+
+                  {/* <TkCol lg={4}>
                     <Controller
                       name="eventAccess"
                       control={control}
@@ -239,12 +253,12 @@ const EditMeeting = ({ id, userData, mode }) => {
                         />
                       )}
                     />
-                  </TkCol>
+                  </TkCol> */}
                 </TkRow>
               </div>
               <div>
                 <TkRow className="mt-3">
-                  <TkCol lg={4}>
+                  {/* <TkCol lg={4}>
                     <TkInput
                       {...register("subject")}
                       labelName="Subject"
@@ -256,7 +270,7 @@ const EditMeeting = ({ id, userData, mode }) => {
                       requiredStarOnLabel={true}
                       disabled={viewMode}
                     />
-                  </TkCol>
+                  </TkCol> */}
 
                   <TkCol lg={4}>
                     <Controller
@@ -348,11 +362,11 @@ const EditMeeting = ({ id, userData, mode }) => {
                           convertToTimeFotTimeSheet(e.target.value)
                         );
                       }}
-                      labelName="Start Time"
+                      labelName="Time"
                       id={"startTime"}
                       name="startTime"
                       type="text"
-                      placeholder="Enter Start Time"
+                      placeholder="Enter Time"
                       disabled={viewMode}
                       requiredStarOnLabel={true}
                     />
@@ -368,7 +382,7 @@ const EditMeeting = ({ id, userData, mode }) => {
                 />
               </TkCol> */}
 
-                  <TkCol lg={4}>
+                  {/* <TkCol lg={4}>
                     <TkRow className="justify-content-start mt-4">
                       <TkCol xs={"auto"}>
                         <TkCheckBox id="canBeSupervisor" type="checkbox" />
@@ -384,7 +398,7 @@ const EditMeeting = ({ id, userData, mode }) => {
                         </TkLabel>
                       </TkCol>
                     </TkRow>
-                  </TkCol>
+                  </TkCol> */}
                 </TkRow>
               </div>
             </TkCol>

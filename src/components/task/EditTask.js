@@ -239,7 +239,7 @@ const EditTask = ({ id, userData, mode }) => {
                         </TkLabel>
                       </TkCol>
 
-                      <TkCol xs={"auto"}>
+                      {/* <TkCol xs={"auto"}>
                         <TkCheckBox
                           {...register("privatePhoenCall")}
                           id="privatePhoenCall"
@@ -248,7 +248,7 @@ const EditTask = ({ id, userData, mode }) => {
                         <TkLabel className="ms-3 me-lg-5" id="privatePhoenCall">
                           Private Task
                         </TkLabel>
-                      </TkCol>
+                      </TkCol> */}
                     </TkRow>
                   </TkCol>
                 </TkRow>
@@ -288,7 +288,7 @@ const EditTask = ({ id, userData, mode }) => {
                     ) : null}
                   </TkCol>
 
-                  <TkCol lg={6}>
+                  {/* <TkCol lg={6}>
                     <TkRow className="justify-content-start mt-4">
                       <TkCol xs={"auto"}>
                         <TkCheckBox
@@ -301,7 +301,7 @@ const EditTask = ({ id, userData, mode }) => {
                         </TkLabel>
                       </TkCol>
                     </TkRow>
-                  </TkCol>
+                  </TkCol> */}
                 </TkRow>
               </div>
             </TkCol>
