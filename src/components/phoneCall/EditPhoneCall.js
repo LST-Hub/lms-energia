@@ -192,7 +192,6 @@ const EditPhoneCall = ({ id, userData, mode }) => {
     resolver: yupResolver(schema),
   });
 
-  
   useEffect(() => {
     setIsPhoneCall(true);
   }, []);
@@ -226,248 +225,250 @@ const EditPhoneCall = ({ id, userData, mode }) => {
 
   return (
     <>
-     {isPhoneCall && (
-    <div>
-      <TkForm>
-        <TkRow className="mt-3">
-          <TkCol>
-            <TkCardHeader tag="h5" className="mb-4">
-              <h4>Primary Information</h4>
-            </TkCardHeader>
-            <div>
-              <TkRow className="g-3">
-                <TkCol lg={4}>
-                  <Controller
-                    name="lead"
-                    control={control}
-                    render={({ field }) => (
-                      <TkSelect
-                        {...field}
-                        labelName="Lead"
-                        labelId={"_lead"}
-                        id="lead"
-                        placeholder="Select Leads"
-                        options={leadTypes}
+      {isPhoneCall && (
+        <div>
+          <TkForm>
+            <TkRow className="mt-3">
+              <TkCol>
+                <TkCardHeader tag="h5" className="mb-4">
+                  <h4>Primary Information</h4>
+                </TkCardHeader>
+                <div>
+                  <TkRow className="g-3">
+                    <TkCol lg={4}>
+                      <Controller
+                        name="lead"
+                        control={control}
+                        render={({ field }) => (
+                          <TkSelect
+                            {...field}
+                            labelName="Lead"
+                            labelId={"_lead"}
+                            id="lead"
+                            placeholder="Select Leads"
+                            options={leadTypes}
+                            requiredStarOnLabel={true}
+                            disabled={viewMode}
+                          />
+                        )}
+                      />
+                    </TkCol>
+
+                    <TkCol lg={4}>
+                      <TkInput
+                        {...register("phoneNumber")}
+                        labelName=" Phone Number"
+                        labelId={"phoneNumber"}
+                        id="phoneNumber"
+                        type="text"
+                        placeholder="Enter Phone Number"
                         requiredStarOnLabel={true}
                         disabled={viewMode}
                       />
-                    )}
-                  />
-                </TkCol>
+                    </TkCol>
 
-                <TkCol lg={4}>
-                  <TkInput
-                    {...register("phoneNumber")}
-                    labelName=" Phone Number"
-                    labelId={"phoneNumber"}
-                    id="phoneNumber"
-                    type="text"
-                    placeholder="Enter Phone Number"
-                    requiredStarOnLabel={true}
-                    disabled={viewMode}
-                  />
-                </TkCol>
-
-                <TkCol lg={4}>
-                  <Controller
-                    name="organizer"
-                    control={control}
-                    render={({ field }) => (
-                      <TkSelect
-                        {...field}
-                        labelName="Organizer"
-                        tooltip="Select Organizer"
-                        labelId={"organizer"}
-                        id="organizer"
-                        options={organizerTypes}
-                        placeholder="Select Organizer"
-                        requiredStarOnLabel={true}
+                    <TkCol lg={4}>
+                      <Controller
+                        name="organizer"
+                        control={control}
+                        render={({ field }) => (
+                          <TkSelect
+                            {...field}
+                            labelName="Organizer"
+                            tooltip="Select Organizer"
+                            labelId={"organizer"}
+                            id="organizer"
+                            options={organizerTypes}
+                            placeholder="Select Organizer"
+                            requiredStarOnLabel={true}
+                            disabled={viewMode}
+                          />
+                        )}
+                      />
+                    </TkCol>
+                  </TkRow>
+                </div>
+                <div>
+                  <TkRow className="mt-3">
+                    <TkCol lg={4}>
+                      <Controller
+                        name="status"
+                        control={control}
+                        render={({ field }) => (
+                          <TkSelect
+                            {...field}
+                            labelName="Status"
+                            labelId="status"
+                            id="status"
+                            options={stausTypes}
+                            placeholder="Select Status"
+                            requiredStarOnLabel={true}
+                            disabled={viewMode}
+                          />
+                        )}
+                      />
+                    </TkCol>
+                    <TkCol lg={4}>
+                      <TkInput
+                        {...register("comments")}
+                        labelName="Comments"
+                        tooltip="Enter comments"
+                        labelId={"_comments"}
+                        id="comments"
+                        type="textarea"
+                        placeholder="Enter Comments"
                         disabled={viewMode}
                       />
-                    )}
-                  />
-                </TkCol>
-              </TkRow>
-            </div>
-            <div>
-              <TkRow className="mt-3">
-                <TkCol lg={4}>
-                  <Controller
-                    name="status"
-                    control={control}
-                    render={({ field }) => (
-                      <TkSelect
-                        {...field}
-                        labelName="Status"
-                        labelId="status"
-                        id="status"
-                        options={stausTypes}
-                        placeholder="Select Status"
-                        requiredStarOnLabel={true}
-                        disabled={viewMode}
-                      />
-                    )}
-                  />
-                </TkCol>
-                <TkCol lg={4}>
-                  <TkInput
-                    {...register("comments")}
-                    labelName="Comments"
-                    tooltip="Enter comments"
-                    labelId={"_comments"}
-                    id="comments"
-                    type="textarea"
-                    placeholder="Enter Comments"
-                    disabled={viewMode}
-                  />
-                </TkCol>
-              </TkRow>
-            </div>
-          </TkCol>
-        </TkRow>
+                    </TkCol>
+                  </TkRow>
+                </div>
+              </TkCol>
+            </TkRow>
 
-        <TkRow className="mt-3">
-          <TkCol>
-            <TkCardHeader tag="h5" className="mb-4">
-              <h4>Date and Time</h4>
-            </TkCardHeader>
-            <div>
-              <TkRow className="g-3">
-                <TkCol lg={4}>
-                  <Controller
-                    name="date"
-                    control={control}
-                    rules={{ required: "Date is required" }}
-                    render={({ field }) => (
-                      <TkDate
-                        {...field}
-                        labelName="Date"
-                        id={"date"}
-                        placeholder="Select Date"
-                        options={{
-                          altInput: true,
-                          dateFormat: "d M, Y",
+            <TkRow className="mt-3">
+              <TkCol>
+                <TkCardHeader tag="h5" className="mb-4">
+                  <h4>Date and Time</h4>
+                </TkCardHeader>
+                <div>
+                  <TkRow className="g-3">
+                    <TkCol lg={4}>
+                      <Controller
+                        name="date"
+                        control={control}
+                        rules={{ required: "Date is required" }}
+                        render={({ field }) => (
+                          <TkDate
+                            {...field}
+                            labelName="Date"
+                            id={"date"}
+                            placeholder="Select Date"
+                            options={{
+                              altInput: true,
+                              dateFormat: "d M, Y",
+                            }}
+                            requiredStarOnLabel={true}
+                            disabled={viewMode}
+                          />
+                        )}
+                      />
+                    </TkCol>
+
+                    <TkCol lg={4}>
+                      <TkInput
+                        {...register(`startTime`, {
+                          required: "Time is required",
+                          validate: (value) => {
+                            if (value && !/^[0-9]*([.:][0-9]+)?$/.test(value)) {
+                              return "Invalid Time";
+                            }
+                            if (convertTimeToSec(value) > 86400 || value > 24) {
+                              return "Time should be less than 24 hours";
+                            }
+                          },
+                        })}
+                        onBlur={(e) => {
+                          setValue(
+                            `startTime`,
+                            convertToTimeFotTimeSheet(e.target.value)
+                          );
                         }}
+                        labelName="Start Time"
+                        id={"startTime"}
+                        name="startTime"
+                        type="text"
+                        placeholder="Enter Start Time"
+                        disabled={viewMode}
                         requiredStarOnLabel={true}
+                      />
+                    </TkCol>
+
+                    <TkCol lg={4}>
+                      <TkInput
+                        {...register(`endTime`, {
+                          required: "Time is required",
+                          validate: (value) => {
+                            if (value && !/^[0-9]*([.:][0-9]+)?$/.test(value)) {
+                              return "Invalid Time";
+                            }
+                            if (convertTimeToSec(value) > 86400 || value > 24) {
+                              return "Time should be less than 24 hours";
+                            }
+                          },
+                        })}
+                        onBlur={(e) => {
+                          setValue(
+                            `endTime`,
+                            convertToTimeFotTimeSheet(e.target.value)
+                          );
+                        }}
+                        labelName="End Time"
+                        id={"endTime"}
+                        name="endTime"
+                        type="text"
+                        placeholder="Enter End Time"
+                        disabled={viewMode}
+                        requiredStarOnLabel={true}
+                      />
+                    </TkCol>
+                  </TkRow>
+                </div>
+                <div>
+                  <TkRow className="mt-3">
+                    <TkCol lg={4}>
+                      <Controller
+                        name="reminder"
+                        control={control}
+                        render={({ field }) => (
+                          <TkSelect
+                            {...field}
+                            labelName="Reminder"
+                            labelId={"_reminder"}
+                            id="reminder"
+                            options={remindersTypes}
+                            placeholder="Select Reminder"
+                            requiredStarOnLabel={true}
+                            disabled={viewMode}
+                          />
+                        )}
+                      />
+                    </TkCol>
+
+                    <TkCol lg={4}>
+                      <TkInput
+                        {...register("callDeatilscomments")}
+                        labelName="After Call Details/Comments"
+                        tooltip="Enter comments"
+                        labelId={"_callDeatilscomments"}
+                        id="callDeatilscomments"
+                        type="textarea"
+                        placeholder="Enter Call Details/Comments"
                         disabled={viewMode}
                       />
-                    )}
-                  />
-                </TkCol>
-
-                <TkCol lg={4}>
-                  <TkInput
-                    {...register(`startTime`, {
-                      required: "Time is required",
-                      validate: (value) => {
-                        if (value && !/^[0-9]*([.:][0-9]+)?$/.test(value)) {
-                          return "Invalid Time";
-                        }
-                        if (convertTimeToSec(value) > 86400 || value > 24) {
-                          return "Time should be less than 24 hours";
-                        }
-                      },
-                    })}
-                    onBlur={(e) => {
-                      setValue(
-                        `startTime`,
-                        convertToTimeFotTimeSheet(e.target.value)
-                      );
-                    }}
-                    labelName="Start Time"
-                    id={"startTime"}
-                    name="startTime"
-                    type="text"
-                    placeholder="Enter Start Time"
-                    disabled={viewMode}
-                    requiredStarOnLabel={true}
-                  />
-                </TkCol>
-
-                <TkCol lg={4}>
-                  <TkInput
-                    {...register(`endTime`, {
-                      required: "Time is required",
-                      validate: (value) => {
-                        if (value && !/^[0-9]*([.:][0-9]+)?$/.test(value)) {
-                          return "Invalid Time";
-                        }
-                        if (convertTimeToSec(value) > 86400 || value > 24) {
-                          return "Time should be less than 24 hours";
-                        }
-                      },
-                    })}
-                    onBlur={(e) => {
-                      setValue(
-                        `endTime`,
-                        convertToTimeFotTimeSheet(e.target.value)
-                      );
-                    }}
-                    labelName="End Time"
-                    id={"endTime"}
-                    name="endTime"
-                    type="text"
-                    placeholder="Enter End Time"
-                    disabled={viewMode}
-                    requiredStarOnLabel={true}
-                  />
-                </TkCol>
-              </TkRow>
+                    </TkCol>
+                  </TkRow>
+                </div>
+              </TkCol>
+            </TkRow>
+            <div className="d-flex mt-4 space-childern">
+              {editMode ? (
+                <div className="ms-auto" id="update-form-btns">
+                  <TkButton
+                    color="secondary"
+                    onClick={() => router.push(`${urls.phoneCall}`)}
+                    type="button"
+                  >
+                    Cancel
+                  </TkButton>{" "}
+                  <TkButton type="submit" color="primary">
+                    Update
+                  </TkButton>
+                </div>
+              ) : null}
             </div>
-            <div>
-              <TkRow className="mt-3">
-                <TkCol lg={4}>
-                  <Controller
-                    name="reminder"
-                    control={control}
-                    render={({ field }) => (
-                      <TkSelect
-                        {...field}
-                        labelName="Reminder"
-                        labelId={"_reminder"}
-                        id="reminder"
-                        options={remindersTypes}
-                        placeholder="Select Reminder"
-                        requiredStarOnLabel={true}
-                        disabled={viewMode}
-                      />
-                    )}
-                  />
-                </TkCol>
-
-                <TkCol lg={4}>
-                  <TkInput
-                    {...register("callDeatilscomments")}
-                    labelName="After Call Details/Comments"
-                    tooltip="Enter comments"
-                    labelId={"_callDeatilscomments"}
-                    id="callDeatilscomments"
-                    type="textarea"
-                    placeholder="Enter Call Details/Comments"
-                    disabled={viewMode}
-                  />
-                </TkCol>
-              </TkRow>
-            </div>
-          </TkCol>
-        </TkRow>
-        <div className="d-flex mt-4 space-childern">
-          <div className="ms-auto" id="update-form-btns">
-            <TkButton
-              color="secondary"
-              type="button"
-              onClick={() => router.push(`${urls.phoneCall}`)}
-            >
-              Cancel
-            </TkButton>{" "}
-            <TkButton type="submit" color="primary">
-              Save
-            </TkButton>
-          </div>
+          </TkForm>
         </div>
-      </TkForm>
-      </div>
-    )}
+      )}
     </>
   );
 };

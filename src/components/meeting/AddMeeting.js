@@ -297,17 +297,17 @@ const AddMeeting = () => {
             </div>
             <div>
               <TkRow className="mt-3">
-                <TkCol lg={4}>
-                  <TkInput
-                    labelName="Title"
-                    tooltip="Enter Title"
-                    labelId={"_subject"}
-                    id="title"
-                    type="text"
-                    placeholder="Enter Title"
-                    requiredStarOnLabel={true}
-                  />
-                </TkCol>
+              <TkCol lg={4}>
+                    <TkInput
+                      {...register("subject")}
+                      labelName="Subject"
+                      labelId={"_subject"}
+                      id="subject"
+                      type="text"
+                      placeholder="Enter Subject"
+                      requiredStarOnLabel={true}
+                    />
+                  </TkCol>
 
                 <TkCol lg={4}>
                   <Controller

@@ -306,19 +306,22 @@ const EditTask = ({ id, userData, mode }) => {
               </div>
             </TkCol>
           </TkRow>
+
           <div className="d-flex mt-4 space-childern">
-            <div className="ms-auto" id="update-form-btns">
-              <TkButton
-                color="secondary"
-                type="button"
-                onClick={() => router.push(`${urls.taskk}`)}
-              >
-                Cancel
-              </TkButton>{" "}
-              <TkButton type="submit" color="primary">
-                Save
-              </TkButton>
-            </div>
+            {editMode ? (
+              <div className="ms-auto" id="update-form-btns">
+                <TkButton
+                  color="secondary"
+                  onClick={() => router.push(`${urls.taskk}`)}
+                  type="button"
+                >
+                  Cancel
+                </TkButton>{" "}
+                <TkButton type="submit" color="primary">
+                  Update
+                </TkButton>
+              </div>
+            ) : null}
           </div>
         </div>
       )}

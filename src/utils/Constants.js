@@ -163,6 +163,7 @@ const demoUserData = [
     delivery: "2021-06-01",
     location: "New York",
     locationContactPerson: "John Doe",
+    note: "This is a note",
   },
   {
     id: 2,
@@ -188,6 +189,8 @@ const demoUserData = [
     delivery: "2024-01-01",
     location: "Australia",
     locationContactPerson: "Steve Smith",
+    note: "This is a note",
+
   },
   {
     id: 3,
@@ -213,6 +216,8 @@ const demoUserData = [
     delivery: "2022-06-01",
     location: "India",
     locationContactPerson: "Will Smith",
+    note: "This is a note",
+
   },
   {
     id: 4,
@@ -238,6 +243,8 @@ const demoUserData = [
     delivery: "2023-08-10",
     location: "India",
     locationContactPerson: "Adam Miller",
+    note: "This is a note",
+
   },
   {
     id: 5,
@@ -263,6 +270,8 @@ const demoUserData = [
     delivery: "2021-06-01",
     location: "England",
     locationContactPerson: "Tom Riddle",
+    note: "This is a note",
+
   },
 ];
 
@@ -378,7 +387,7 @@ const meetingData = [
     lead: "John Doe",
     location: "New York",
     eventAccess: "Public",
-    title: "Lead Management System",
+    subject: "Lead Management System",
     status: "Confirmed",
     organizer: "John Doe",
     date: "2021-06-01",
@@ -389,7 +398,7 @@ const meetingData = [
     lead: "Steve Smith",
     location: "Australia",
     eventAccess: "Private",
-    title: "Lead Management System",
+    subject: "Lead Management System",
     status: "Completed",
     organizer: "Joe Marry",
     date: "2021-06-01",
@@ -400,7 +409,7 @@ const meetingData = [
     lead: "Will Smith",
     location: "India",
     eventAccess: "Show As Busy",
-    title: "Lead Management System",
+    subject: "Lead Management System",
     status: "Confirmed",
     organizer: "Jane Pope",
     date: "2021-06-01",
@@ -411,7 +420,7 @@ const meetingData = [
     lead: "Adam Miller",
     location: "India",
     eventAccess: "Private",
-    title: "Lead Management System",
+    subject: "Lead Management System",
     status: "Completed",
     organizer: "Steve Smith",
     date: "2021-06-01",
@@ -422,7 +431,7 @@ const meetingData = [
     lead: "Tom Riddle",
     location: "England",
     eventAccess: "Show As Busy",
-    title: "Lead Management System",
+    subject: "Lead Management System",
     status: "Confirmed",
     organizer: "John Doe",
     date: "2021-06-01",

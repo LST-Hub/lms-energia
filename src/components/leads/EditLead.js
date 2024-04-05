@@ -100,6 +100,8 @@ function AddLead({ id, userData, mode }) {
   const [portalsCheckbox, setPortalsCheckbox] = useState(false);
   const [directMarketingCheckbox, setDirectMarketingCheckbox] = useState(false);
   const [isLeadEdit, setIsLeadEdit] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [allDurations, setAllDurations] = useState({});
   const [requirementDetailsSections, setRequirementDetailsSections] = useState([
     { id: 1, isVisible: true },
   ]);
@@ -267,30 +269,38 @@ function AddLead({ id, userData, mode }) {
   const DirectCallData = [
     {
       id: 1,
-      subject: "Test Subject",
-      phoneCallDate: "2021-06-01",
+      lead: "John Doe",
       phoneNumber: "1234567890",
-      priority: "High",
-      status: "Open",
-      contact: "7262054789",
+      status: "Qualified",
+      date: "2021-09-01",
     },
     {
       id: 2,
-      subject: "Demo",
-      phoneCallDate: "2021-14-01",
-      phoneNumber: "7451681245",
-      priority: "Low",
-      status: "Close",
-      contact: "8845127896",
+      lead: "Steave Smith",
+      phoneNumber: "1234567890",
+      status: "Unqualified",
+      date: "2021-09-01",
     },
     {
       id: 3,
-      subject: "Test Subject",
-      phoneCallDate: "2021-06-01",
+      lead: "Will Smith",
       phoneNumber: "1234567890",
-      priority: "High",
-      status: "Open",
-      contact: "7262054789",
+      status: "Qualified",
+      date: "2021-09-01",
+    },
+    {
+      id: 4,
+      lead: "Adam Miller",
+      phoneNumber: "1234567890",
+      status: "Unqualified",
+      date: "2021-09-01",
+    },
+    {
+      id: 5,
+      lead: "Tom Riddle",
+      phoneNumber: "1234567890",
+      status: "Qualified",
+      date: "2021-09-01",
     },
   ];
   const columns = useMemo(
@@ -320,34 +330,8 @@ function AddLead({ id, userData, mode }) {
         },
       },
       {
-        Header: "Subject",
-        accessor: "subject",
-        filterable: false,
-        // Cell: (cellProps) => {
-        //   return (
-        //     <>
-        //       <div className="d-flex align-items-center">
-        //         <Link href={`${urls.phoneCallAdd}`}>
-        //           <a className="fw-medium table-link text-primary">
-        //             <div>
-        //               {cellProps.value.length > 17
-        //                 ? cellProps.value.substring(0, 17) + "..."
-        //                 : cellProps.value}
-        //             </div>
-        //           </a>
-        //         </Link>
-        //       </div>
-        //     </>
-        //   );
-        // },
-        Cell: (cellProps) => {
-          return <div className="table-text">{cellProps.value}</div>;
-        },
-      },
-
-      {
-        Header: "Phone Call Date",
-        accessor: "phoneCallDate",
+        Header: "Lead",
+        accessor: "lead",
         filterable: false,
         Cell: (cellProps) => {
           return <div className="table-text">{cellProps.value}</div>;
@@ -362,14 +346,6 @@ function AddLead({ id, userData, mode }) {
         },
       },
       {
-        Header: "Priority",
-        accessor: "priority",
-        filterable: false,
-        Cell: (cellProps) => {
-          return <div className="table-text">{cellProps.value}</div>;
-        },
-      },
-      {
         Header: "Status",
         accessor: "status",
         filterable: false,
@@ -378,8 +354,8 @@ function AddLead({ id, userData, mode }) {
         },
       },
       {
-        Header: "Contact",
-        accessor: "contact",
+        Header: "Date",
+        accessor: "date",
         filterable: false,
         Cell: (cellProps) => {
           return <div className="table-text">{cellProps.value}</div>;
@@ -428,8 +404,14 @@ function AddLead({ id, userData, mode }) {
       setValue("delivery", userData.delivery);
       setValue("location", userData.location);
       setValue("locationContactPerson", userData.locationContactPerson);
+      setValue("note", userData.note);
     }
   }, [setValue, userData]);
+
+  useEffect(() => {
+    setValue("createdDate", new Date());
+    setSelectedDate(new Date());
+  }, [setValue]);
 
   return (
     <>
@@ -480,38 +462,43 @@ function AddLead({ id, userData, mode }) {
                     </TkCol>
 
                     <TkCol lg={4}>
-                    <TkSelect
-                      id="createdBy"
-                      name="createdBy"
-                      labelName="Created By"
-                      placeholder="Select Created By"
-                      requiredStarOnLabel="true"
-                      options={createdByNameTypes}
-                      disabled={viewMode}
-                    />
-                  </TkCol>
-                  <TkCol lg={4}>
-                    <Controller
-                      name="createdDate"
-                      control={control}
-                      render={({ field }) => (
-                        <TkDate
-                          {...field}
-                          labelName="Created Date"
-                          id={"createdDate"}
-                          placeholder="Enter Created Date"
-                          options={{
-                            altInput: true,
-                            dateFormat: "d M, Y",
-                          }}
-                          requiredStarOnLabel={true}
-                          disabled={viewMode}
-                        />
-                      )}
-                    />
-                  </TkCol>
+                      <TkSelect
+                        id="createdBy"
+                        name="createdBy"
+                        labelName="Created By"
+                        placeholder="Select Created By"
+                        requiredStarOnLabel="true"
+                        options={createdByNameTypes}
+                        disabled={viewMode}
+                      />
+                    </TkCol>
+                    <TkCol lg={4}>
+                      <Controller
+                        name="createdDate"
+                        control={control}
+                        render={({ field }) => (
+                          <TkDate
+                            {...field}
+                            labelName="Created Date"
+                            id={"createdDate"}
+                            placeholder="Enter Created Date"
+                            options={{
+                              altInput: true,
+                              dateFormat: "d M, Y",
+                            }}
+                            onChange={(e) => {
+                              field.onChange(e);
+                              setSelectedDate(e);
+                              setAllDurations({});
+                            }}
+                            requiredStarOnLabel={true}
+                            disabled={viewMode}
+                          />
+                        )}
+                      />
+                    </TkCol>
 
-                  <TkCol lg={4}>
+                    {/* <TkCol lg={4}>
                     <TkInput
                     {...register("leadValue")}
                       id="leadValue"
@@ -521,7 +508,7 @@ function AddLead({ id, userData, mode }) {
                       requiredStarOnLabel="true"
                       disabled={viewMode}
                     />
-                  </TkCol>
+                  </TkCol> */}
                   </TkRow>
                 </div>
               </TkCol>
@@ -786,6 +773,17 @@ function AddLead({ id, userData, mode }) {
                                 type="text"
                                 labelName="Location Contact Person"
                                 placeholder="Enter Location Contact Person"
+                                disabled={viewMode}
+                              />
+                            </TkCol>
+                            <TkCol lg={8}>
+                              <TkInput
+                                {...register("note")}
+                                id="note"
+                                name="note"
+                                type="textarea"
+                                labelName="Note"
+                                placeholder="Enter Note"
                                 disabled={viewMode}
                               />
                             </TkCol>
@@ -1930,7 +1928,7 @@ function AddLead({ id, userData, mode }) {
                 </TabPane>
               </TabContent>
 
-              <div className="d-flex mt-4 space-childern">
+              {/* <div className="d-flex mt-4 space-childern">
                 <div className="ms-auto" id="update-form-btns">
                   <TkButton
                     color="secondary"
@@ -1943,6 +1941,26 @@ function AddLead({ id, userData, mode }) {
                     Save
                   </TkButton>
                 </div>
+              </div>*/}
+
+              <div className="d-flex mt-4 space-childern">
+                {editMode ? (
+                  <div className="ms-auto" id="update-form-btns">
+                    <TkButton
+                      color="secondary"
+                      onClick={() => router.push(`${urls.lead}`)}
+                      type="button"
+                    >
+                      Cancel
+                    </TkButton>{" "}
+                    <TkButton
+                      type="submit"
+                      color="primary"
+                    >
+                      Update
+                    </TkButton>
+                  </div>
+                ) : null}
               </div>
             </TkRow>
           </TkForm>

@@ -167,7 +167,7 @@ const EditMeeting = ({ id, userData, mode }) => {
         value: userData.eventAccess,
         label: userData.eventAccess,
       });
-      setValue("title", userData.title);
+      setValue("subject", userData.subject);
       setValue("status", {
         value: userData.status,
         label: userData.status,
@@ -246,13 +246,13 @@ const EditMeeting = ({ id, userData, mode }) => {
                 <TkRow className="mt-3">
                   <TkCol lg={4}>
                     <TkInput
-                      {...register("title")}
-                      labelName="Title"
-                      tooltip="Enter Title"
+                      {...register("subject")}
+                      labelName="Subject"
+                      tooltip="Enter Subject"
                       labelId={"_subject"}
-                      id="title"
+                      id="subject"
                       type="text"
-                      placeholder="Enter Title"
+                      placeholder="Enter Subject"
                       requiredStarOnLabel={true}
                       disabled={viewMode}
                     />
@@ -389,19 +389,22 @@ const EditMeeting = ({ id, userData, mode }) => {
               </div>
             </TkCol>
           </TkRow>
+
           <div className="d-flex mt-4 space-childern">
-            <div className="ms-auto" id="update-form-btns">
-              <TkButton
-                color="secondary"
-                type="button"
-                onClick={() => router.push(`${urls.meeting}`)}
-              >
-                Cancel
-              </TkButton>{" "}
-              <TkButton type="submit" color="primary">
-                Save
-              </TkButton>
-            </div>
+            {editMode ? (
+              <div className="ms-auto" id="update-form-btns">
+                <TkButton
+                  color="secondary"
+                  onClick={() => router.push(`${urls.meeting}`)}
+                  type="button"
+                >
+                  Cancel
+                </TkButton>{" "}
+                <TkButton type="submit" color="primary">
+                  Update
+                </TkButton>
+              </div>
+            ) : null}
           </div>
         </div>
       )}

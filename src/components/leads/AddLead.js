@@ -62,6 +62,8 @@ function AddLead() {
   const [portalsCheckbox, setPortalsCheckbox] = useState(false);
   const [directMarketingCheckbox, setDirectMarketingCheckbox] = useState(false);
   const [isLead, setIsLead] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [allDurations, setAllDurations] = useState({});
   const [requirementDetailsSections, setRequirementDetailsSections] = useState([
     { id: 1, isVisible: true },
   ]);
@@ -98,6 +100,11 @@ function AddLead() {
       )
     );
   };
+
+  useEffect(() => {
+    setValue("createdDate", new Date());
+    setSelectedDate(new Date());
+  }, [setValue]);
   // const toggleTab = (tab) => {
   //   if (activeTab !== tab) {
   //     setActiveTab(tab);
@@ -303,13 +310,18 @@ function AddLead() {
                             altInput: true,
                             dateFormat: "d M, Y",
                           }}
+                          onChange={(e) => {
+                            field.onChange(e);
+                            setSelectedDate(e);
+                            setAllDurations({});
+                          }}
                           requiredStarOnLabel={true}
                         />
                       )}
                     />
                   </TkCol>
 
-                  <TkCol lg={4}>
+                  {/* <TkCol lg={4}>
                     <TkInput
                       id="leadValue"
                       type="text"
@@ -317,7 +329,7 @@ function AddLead() {
                       placeholder="Enter Lead Value"
                       requiredStarOnLabel="true"
                     />
-                  </TkCol>
+                  </TkCol> */}
                 </TkRow>
               </div>
             </TkCol>
@@ -512,6 +524,17 @@ function AddLead() {
                               placeholder="Enter Location Contact Person"
                             />
                           </TkCol>
+
+                          <TkCol lg={8}>
+                              <TkInput
+                                {...register("note")}
+                                id="note"
+                                name="note"
+                                type="textarea"
+                                labelName="Note"
+                                placeholder="Enter Note"
+                              />
+                            </TkCol>
                         </TkRow>
                       </>
                     </div>
