@@ -50,8 +50,12 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit = async (data) => {
+
+    localStorage.setItem("email", data.email);
+    localStorage.setItem("password", data.password);
+    router.push(`${urls.dashboard}`);
     //implement auth logic here
-    setIsLoading(true);
+    {/* setIsLoading(true);
     signIn("credentials", {
       email: data.email,
       password: data.password,
@@ -69,7 +73,7 @@ const Login = () => {
       .catch((err) => {
         TkToastError("Some Error occured, Please try again later", { autoClose: 5000 });
         console.log("err", err);
-      });
+      });*/}
   };
 
   const googleLoginHabdler = async () => {
