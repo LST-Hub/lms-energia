@@ -268,7 +268,7 @@ const EditMeeting = ({ id, userData, mode }) => {
                           labelName="Status"
                           labelId="status"
                           id="status"
-                          options={meetingStatusTypes}
+                          options={[]}
                           placeholder="Select Status"
                           requiredStarOnLabel={true}
                           disabled={viewMode}

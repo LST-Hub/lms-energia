@@ -218,7 +218,7 @@ const AddPhoneCall = () => {
                         labelName="Status"
                         labelId={"_type"}
                         id="type"
-                        options={stausTypes}
+                        options={[]}
                         placeholder="Select Status"
                         requiredStarOnLabel={true}
                       />

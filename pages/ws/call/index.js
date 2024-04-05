@@ -25,7 +25,7 @@ const Users = () => {
 
       <div className="page-content">
         <BreadCrumb
-          pageTitle={"Users"}
+          pageTitle={"Phone Call"}
           buttonText={"Add Phone Call"}
           onButtonClick={handleButtonClick}
         />

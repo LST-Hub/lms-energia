@@ -193,7 +193,7 @@ const AddTask = () => {
                           labelName="Status"
                           labelId={"_status"}
                           id="status"
-                          options={stausTypes}
+                          options={[]}
                           placeholder="Select Status"
                           requiredStarOnLabel={true}
                         />

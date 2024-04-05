@@ -300,7 +300,7 @@ const EditPhoneCall = ({ id, userData, mode }) => {
                             labelName="Status"
                             labelId="status"
                             id="status"
-                            options={stausTypes}
+                            options={[]}
                             placeholder="Select Status"
                             requiredStarOnLabel={true}
                             disabled={viewMode}

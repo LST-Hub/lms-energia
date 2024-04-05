@@ -319,7 +319,7 @@ const AddMeeting = () => {
                         labelName="Status"
                         labelId={"_status"}
                         id="status"
-                        options={meetingStatusTypes}
+                        options={[]}
                         placeholder="Select Type"
                         requiredStarOnLabel={true}
                       />
