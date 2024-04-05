@@ -11,13 +11,39 @@ import TkSelect from "../../../src/components/forms/TkSelect";
 import TkDate from "../../../src/components/forms/TkDate";
 import TkIcon from "../../../src/components/TkIcon";
 import classnames from "classnames";
+import { Controller, useForm } from "react-hook-form";
+import { MaxNameLength, MinNameLength, createdByNameTypes } from "../../utils/Constants";
+import * as Yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 const tabs = {
   phoneCall: "phoneCall",
   meeting: "meeting",
   task: "task",
 };
-
+const schema = Yup.object({
+  name: Yup.string()
+    .min(
+      MinNameLength,
+      `First name should have at least ${MinNameLength} character.`
+    )
+    .max(
+      MaxNameLength,
+      `First name should have at most ${MaxNameLength} characters.`
+    )
+    .required("First name is required"),
+}).required();
 function DirectCall({ toggleTab, tabs }) {
+  const {
+    control,
+    register,
+    handleSubmit,
+    setValue,
+    getValues,
+    setError,
+    formState: { errors, isDirty, dirtyFields },
+  } = useForm({
+    resolver: yupResolver(schema),
+  });
   const [rSelected, setRSelected] = useState(1);
   const [isDirectCall, setIsDirectCall] = useState(false);
   const [activeTab, setActiveTab] = useState(tabs.phoneCall);
@@ -60,36 +86,15 @@ function DirectCall({ toggleTab, tabs }) {
       )
     );
   };
+
   return (
     <>
       {isDirectCall && (
         <div>
-          <TkRow className="mt-5">
-            <TkCol>
-              <div>
-                <TkRow className="g-3">
-                  <TkCol lg={4}>
-                    <TkSelect
-                      id="leadSource"
-                      name="leadSource"
-                      labelName="Lead Source"
-                      placeholder="Select Lead Source"
-                      options={[
-                        { value: "1", label: "Direct" },
-                        { value: "2", label: "Refferal" },
-                        { value: "3", label: "New" },
-                      ]}
-                    />
-                  </TkCol>
-                </TkRow>
-              </div>
-            </TkCol>
-          </TkRow>
-
-          <TkRow className="mt-5">
+          <TkRow className="mt-3">
             <TkCol>
               <TkCardHeader tag="h5" className="mb-4">
-                <h4 className="card-title">Personal Details</h4>
+                <h4>Personal Details</h4>
               </TkCardHeader>
               <div>
                 <TkRow className="g-3">
@@ -122,17 +127,49 @@ function DirectCall({ toggleTab, tabs }) {
                       requiredStarOnLabel="true"
                     />
                   </TkCol>
+
+                  <TkCol lg={4}>
+                    <TkSelect
+                      id="createdBy"
+                      name="createdBy"
+                      labelName="Created By"
+                      placeholder="Select Created By"
+                      requiredStarOnLabel="true"
+                      options={createdByNameTypes}
+                    />
+                  </TkCol>
+                  <TkCol lg={4}>
+                    <Controller
+                      name="createdDate"
+                      control={control}
+                      render={({ field }) => (
+                        <TkDate
+                          {...field}
+                          labelName="Created Date"
+                          id={"createdDate"}
+                          placeholder="Enter Created Date"
+                          options={{
+                            altInput: true,
+                            dateFormat: "d M, Y",
+                          }}
+                          onChange={(e) => {
+                            field.onChange(e);
+                            setSelectedDate(e);
+                            setAllDurations({});
+                          }}
+                          requiredStarOnLabel={true}
+                        />
+                      )}
+                    />
+                  </TkCol>
                 </TkRow>
               </div>
-              {/* </TkCardBody>
-              </TkCard> */}
             </TkCol>
           </TkRow>
-
           <TkRow className="mt-5">
             <TkCol>
               <TkCardHeader tag="h5" className="mb-4">
-                <h4 className="card-title">Company Details</h4>
+                <h4>Company Details</h4>
               </TkCardHeader>
               <div>
                 <TkRow className="mt-3">
@@ -232,122 +269,11 @@ function DirectCall({ toggleTab, tabs }) {
               </div>
             </TkCol>
           </TkRow>
-          <TkRow className="mt-5">
-            <TkCol>
-              <TkCardHeader tag="h5" className="mb-4">
-                <h4 className="card-title">Lead Assigning</h4>
-              </TkCardHeader>
-              <div>
-                <TkRow className="g-3">
-                  <TkCol lg={4}>
-                    <TkSelect
-                      id="region"
-                      name="region"
-                      labelName="Region"
-                      placeholder="Select Region"
-                      options={[
-                        { value: "1", label: "Region 1" },
-                        { value: "2", label: "Region 2" },
-                        { value: "3", label: "Region 3" },
-                      ]}
-                    />
-                  </TkCol>
-                  <TkCol lg={4}>
-                    <TkSelect
-                      id="salesTeam"
-                      name="salesTeam"
-                      labelName="Sales Team Name"
-                      placeholder="Select Sales Team"
-                      options={[
-                        { value: "1", label: "Sales Team 1" },
-                        { value: "2", label: "Sales Team 2" },
-                        { value: "3", label: "Sales Team 3" },
-                      ]}
-                    />
-                  </TkCol>
-                </TkRow>
-              </div>
-            </TkCol>
-          </TkRow>
 
           <TkRow className="mt-5">
             <TkCol>
-              <TkCardHeader tag="h5" className="mb-4">
-                <h4 className="card-title">Lead Nurturing</h4>
-              </TkCardHeader>
-              <div>
-                <TkRow className="g-3">
-                  <TkCol lg={4}>
-                    <TkSelect
-                      id="primaryAction"
-                      name="primaryAction"
-                      labelName="Primary Action"
-                      placeholder="Select Primary Action"
-                      options={[
-                        { value: "1", label: "Replied" },
-                        { value: "2", label: "Call" },
-                        { value: "3", label: "Meeting appointment fixed" },
-                        { value: "3", label: "Meeting done" },
-                        { value: "3", label: "Waiting for the reply" },
-                        { value: "3", label: "Meeting postponed" },
-                      ]}
-                    />
-                  </TkCol>
-                  <TkCol lg={4}>
-                    <TkInput
-                      id="leadValue"
-                      name="leadValue"
-                      labelName="Lead Value"
-                      type="text"
-                      placeholder="Enter Lead Value"
-                    />
-                  </TkCol>
-                  <TkCol lg={4}>
-                    <TkSelect
-                      id="leadUpdate"
-                      name="leadUpdate"
-                      labelName="Lead Update"
-                      placeholder="Select Lead Update"
-                      options={[
-                        { value: "1", label: "Qualified" },
-                        { value: "2", label: "Unqualified" },
-                      ]}
-                    />
-                  </TkCol>
-                </TkRow>
-                <TkRow className="mt-4">
-                  <TkCol lg={4}>
-                    <TkInput
-                      id="reason"
-                      name="reason"
-                      labelName="Reason if unqualified lead"
-                      type="text"
-                      placeholder="Enter Reason"
-                    />
-                  </TkCol>
-                  <TkCol lg={4}>
-                    <TkSelect
-                      id="prospectNurturing"
-                      name="prospectNurturing"
-                      labelName="Prospect Nurturing"
-                      placeholder="Select Prospect Nurturing"
-                      options={[
-                        { value: "1", label: "Quotation Issued" },
-                        { value: "2", label: "Waiting fro the approval" },
-                        { value: "3", label: "Waiting for document" },
-                        { value: "3", label: "Waiting for the PO" },
-                      ]}
-                    />
-                  </TkCol>
-                </TkRow>
-              </div>
-            </TkCol>
-          </TkRow>
-
-          <TkRow className="mt-5">
-            <TkCol>
-              <TkCardHeader tag="h5" className="mb-2">
-                <h4 className="card-title">Requirement Details</h4>
+              <TkCardHeader tag="h5" className="mb-3">
+                <h4>Requirement Details</h4>
               </TkCardHeader>
             </TkCol>
           </TkRow>
@@ -430,6 +356,17 @@ function DirectCall({ toggleTab, tabs }) {
                               placeholder="Enter Location Contact Person"
                             />
                           </TkCol>
+
+                          <TkCol lg={8}>
+                            <TkInput
+                              {...register("note")}
+                              id="note"
+                              name="note"
+                              type="textarea"
+                              labelName="Note"
+                              placeholder="Enter Note"
+                            />
+                          </TkCol>
                         </TkRow>
                       </>
                     </div>
@@ -472,59 +409,17 @@ function DirectCall({ toggleTab, tabs }) {
           <div className="d-flex mt-4 space-childern">
             <div className="ms-auto" id="update-form-btns">
               <TkButton
+                color="secondary"
                 type="button"
-                color="primary"
-                onClick={() => {
-                  toggleTab(tabs.email);
-                }}
+                onClick={() => router.push(`${urls.lead}`)}
               >
-                Next
+                Cancel
+              </TkButton>{" "}
+              <TkButton type="submit" color="primary">
+                Save
               </TkButton>
             </div>
           </div>
-          {/* <Nav className="nav-tabs dropdown-tabs nav-tabs-custom mb-3 mt-3">
-              <NavItem>
-                <NavLink
-                  href="#"
-                  className={classnames({
-                    active: activeTab === tabs.phoneCall,
-                  })}
-                  onClick={() => {
-                    toggleTab(tabs.phoneCall);
-                  }}
-                >
-                  Phone Call
-                </NavLink>
-              </NavItem>
-
-              <NavItem>
-                <NavLink
-                  href="#"
-                  className={classnames({
-                    active: activeMeetingTab === tabs.meeting,
-                  })}
-                  onClick={() => {
-                    toggleTab(tabs.meeting);
-                  }}
-                >
-                  Meeting
-                </NavLink>
-              </NavItem>
-
-              <NavItem>
-                <NavLink
-                  href="#"
-                  className={classnames({
-                    active: activeTaskTab === tabs.email,
-                  })}
-                  onClick={() => {
-                    toggleTab(tabs.email);
-                  }}
-                >
-                  Task
-                </NavLink>
-              </NavItem>
-            </Nav> */}
         </div>
       )}
     </>

@@ -33,24 +33,24 @@ function NavData(user, sessionData) {
       icon: "ri-links-line",
       link: `${urls.lead}`,
     },
-    {
-      id: "phone call",
-      label: "Phone Call",
-      icon: "ri-phone-fill",
-      link: `${urls.phoneCall}`,
-    },
-    {
-      id: "task",
-      label: "Task",
-      icon: "ri-task-line",
-      link: `${urls.taskk}`,
-    },
-    {
-      id: "meeting",
-      label: "Meeting",
-      icon: "ri-calendar-line",
-      link: `${urls.meeting}`,
-    },
+    // {
+    //   id: "phone call",
+    //   label: "Phone Call",
+    //   icon: "ri-phone-fill",
+    //   link: `${urls.phoneCall}`,
+    // },
+    // {
+    //   id: "task",
+    //   label: "Task",
+    //   icon: "ri-task-line",
+    //   link: `${urls.taskk}`,
+    // },
+    // {
+    //   id: "meeting",
+    //   label: "Meeting",
+    //   icon: "ri-calendar-line",
+    //   link: `${urls.meeting}`,
+    // },
     {
       id: "users",
       label: "Users",

@@ -72,6 +72,7 @@ const schema = Yup.object({
 
 const tabs = {
   directCall: "directCall",
+  phoneCall: "phoneCall",
   email: "email",
   socialMedia: "socialMedia",
   portals: "portals",
@@ -135,136 +136,7 @@ function AddLead({ id, userData, mode }) {
   //   }
   // };
 
-  // return (
-  // <TkContainer>
-  //   <Nav className="nav-tabs dropdown-tabs nav-tabs-custom mb-3">
-  //     <NavItem>
-  //       <NavLink
-  //         href="#"
-  //         className={classnames({
-  //           active: activeTab === tabs.directCall,
-  //         })}
-  //         onClick={() => {
-  //           toggleTab(tabs.directCall);
-  //         }}
-  //       >
-  //         Direct Call
-  //       </NavLink>
-  //     </NavItem>
-  //     <NavItem>
-  //       <NavLink
-  //         href="#"
-  //         className={classnames({ active: activeTab === tabs.email })}
-  //         onClick={() => {
-  //           toggleTab(tabs.email);
-  //         }}
-  //       >
-  //         Email
-  //       </NavLink>
-  //     </NavItem>
-  //     <NavItem>
-  //       <NavLink
-  //         href="#"
-  //         className={classnames({
-  //           active: activeTab === tabs.socialMedia,
-  //         })}
-  //         onClick={() => {
-  //           toggleTab(tabs.socialMedia);
-  //         }}
-  //       >
-  //         Social Media
-  //       </NavLink>
-  //     </NavItem>
-  //     <NavItem>
-  //       <NavLink
-  //         href="#"
-  //         className={classnames({ active: activeTab === tabs.portals })}
-  //         onClick={() => {
-  //           toggleTab(tabs.portals);
-  //         }}
-  //       >
-  //         Portals
-  //       </NavLink>
-  //     </NavItem>
-  //     <NavItem>
-  //       <NavLink
-  //         href="#"
-  //         className={classnames({
-  //           active: activeTab === tabs.directMarketing,
-  //         })}
-  //         onClick={() => {
-  //           toggleTab(tabs.directMarketing);
-  //         }}
-  //       >
-  //         Direct Marketing
-  //       </NavLink>
-  //     </NavItem>
-  //     {/* <NavItem>
-  //           <NavLink
-  //             href="#"
-  //             className={classnames({
-  //               active: activeTab === tabs.leadAssigning,
-  //             })}
-  //             onClick={() => {
-  //               toggleTab(tabs.leadAssigning);
-  //             }}
-  //           >
-  //             Lead Assigning
-  //           </NavLink>
-  //         </NavItem>
-  //         <NavItem>
-  //           <NavLink
-  //             href="#"
-  //             className={classnames({
-  //               active: activeTab === tabs.leadNurutring,
-  //             })}
-  //             onClick={() => {
-  //               toggleTab(tabs.leadNurutring);
-  //             }}
-  //           >
-  //             Lead Nurturing
-  //           </NavLink>
-  //         </NavItem> */}
-  //   </Nav>
-  //   <TabContent activeTab={activeTab}>
-  //     <TabPane tabId={tabs.directCall}>
-  //       <TkCardBody>
-  //         <DirectCall toggleTab={toggleTab} tabs={tabs} />
-  //       </TkCardBody>
-  //     </TabPane>
-  //     <TabPane tabId={tabs.email}>
-  //       <TkCardBody>
-  //         <LeadEmail toggleTab={toggleTab} tabs={tabs} />
-  //       </TkCardBody>
-  //     </TabPane>
-  //     <TabPane tabId={tabs.socialMedia}>
-  //       <TkCardBody>
-  //         <SocialMedia toggleTab={toggleTab} tabs={tabs} />
-  //       </TkCardBody>
-  //     </TabPane>
-  //     <TabPane tabId={tabs.portals}>
-  //       <TkCardBody>
-  //         <LeadPortals toggleTab={toggleTab} tabs={tabs} />
-  //       </TkCardBody>
-  //     </TabPane>
-  //     <TabPane tabId={tabs.directMarketing}>
-  //       <TkCardBody>
-  //         <DirectMarketing toggleTab={toggleTab} tabs={tabs} />
-  //       </TkCardBody>
-  //     </TabPane>
-  //     {/* <TabPane tabId={tabs.leadAssigning}>
-  //           <TkCardBody>
-  //             <LeadAssigning toggleTab={toggleTab} tabs={tabs} />
-  //           </TkCardBody>
-  //         </TabPane>
-  //         <TabPane tabId={tabs.leadNurutring}>
-  //           <TkCardBody>
-  //             <LeadNurturing />
-  //           </TkCardBody>
-  //         </TabPane> */}
-  //   </TabContent>
-  // </TkContainer>
-  // );
+
 
   const DirectCallData = [
     {
@@ -797,6 +669,7 @@ function AddLead({ id, userData, mode }) {
                             type="button"
                             onClick={() => handleToggleVisibility(section.id)}
                             className="bg-transparent border-0 ps-0 ms-0 text-center"
+                            disabled={viewMode}
                           >
                             {section.isVisible ? (
                               <span className="ms-auto badge p-1 rounded-circle badge-soft-danger fs-4 me-3">
@@ -819,6 +692,7 @@ function AddLead({ id, userData, mode }) {
                 type="button"
                 className="bg-transparent border-0 ps-0 ms-0 text-center"
                 onClick={handleAddSection}
+                disabled={viewMode}
               >
                 <span className="add-timsheet-btn badge p-1 rounded-circle badge-soft-dark fs-4">
                   <TkIcon className="ri-add-line"></TkIcon>
@@ -827,11 +701,11 @@ function AddLead({ id, userData, mode }) {
             </TkCol>
 
             <TkRow className="g-3">
-              <TkCardHeader>
+              {/* <TkCardHeader>
                 <h5>Leads Events</h5>
-              </TkCardHeader>
+              </TkCardHeader> */}
 
-              <TkCol lg={12}>
+              {/* <TkCol lg={12}>
                 <TkRow className="justify-content-start mt-4">
                   <TkCol xs={"auto"}>
                     <TkCheckBox
@@ -895,10 +769,10 @@ function AddLead({ id, userData, mode }) {
                     </TkLabel>
                   </TkCol>
                 </TkRow>
-              </TkCol>
+              </TkCol> */}
 
               {/* Direct Call */}
-              <div>
+              {/* <div>
                 {directCallCheckbox && (
                   <>
                     <TkRow className="justify-content-center mt-4">
@@ -1077,7 +951,7 @@ function AddLead({ id, userData, mode }) {
                 )}
 
                 {/* Email */}
-                <>
+              {/* <>
                   {emailCheckbox && (
                     <>
                       <TkRow className="justify-content-center mt-4">
@@ -1256,10 +1130,10 @@ function AddLead({ id, userData, mode }) {
                       </TkRow>
                     </>
                   )}
-                </>
+                </> */}
 
-                {/* Social Media */}
-                <>
+              {/* Social Media */}
+              {/* <>
                   {socialMediaCheckbox && (
                     <>
                       <TkRow className="justify-content-center mt-4">
@@ -1460,10 +1334,10 @@ function AddLead({ id, userData, mode }) {
                       </TkRow>
                     </>
                   )}
-                </>
+                </> */}
 
-                {/* Ports */}
-                <>
+              {/* Ports */}
+              {/* <>
                   {portalsCheckbox && (
                     <>
                       <TkRow className="justify-content-center mt-4">
@@ -1656,10 +1530,10 @@ function AddLead({ id, userData, mode }) {
                       </TkRow>
                     </>
                   )}
-                </>
+                </> */}
 
-                {/* Direct Marketing */}
-                {directMarketingCheckbox && (
+              {/* Direct Marketing */}
+              {/* {directMarketingCheckbox && (
                   <>
                     <TkRow className="justify-content-center mt-4">
                       <TkCardHeader>
@@ -1865,10 +1739,28 @@ function AddLead({ id, userData, mode }) {
                       </TkRow>
                     </TkRow>
                   </>
-                )}
-              </div>
+                )} */}
+              {/* </div>  */}
 
               {/* <h5>Lead History</h5> */}
+
+              <div className="d-flex mt-4 space-childern">
+                {editMode ? (
+                  <div className="ms-auto" id="update-form-btns">
+                    <TkButton
+                      color="secondary"
+                      onClick={() => router.push(`${urls.lead}`)}
+                      type="button"
+                    >
+                      Cancel
+                    </TkButton>{" "}
+                    <TkButton type="submit" color="primary">
+                      Update
+                    </TkButton>
+                  </div>
+                ) : null}
+              </div>
+
               <Nav className="nav-tabs dropdown-tabs nav-tabs-custom mb-3 mt-3">
                 <NavItem>
                   <NavLink
@@ -1880,7 +1772,7 @@ function AddLead({ id, userData, mode }) {
                       toggleTab(tabs.phoneCall);
                     }}
                   >
-                    Phone Call
+                    Phone
                   </NavLink>
                 </NavItem>
 
@@ -1894,7 +1786,7 @@ function AddLead({ id, userData, mode }) {
                       toggleTab(tabs.meeting);
                     }}
                   >
-                    Task
+                    Email
                   </NavLink>
                 </NavItem>
 
@@ -1927,41 +1819,6 @@ function AddLead({ id, userData, mode }) {
                   </TkCardBody>
                 </TabPane>
               </TabContent>
-
-              {/* <div className="d-flex mt-4 space-childern">
-                <div className="ms-auto" id="update-form-btns">
-                  <TkButton
-                    color="secondary"
-                    type="button"
-                    onClick={() => router.push(`${urls.lead}`)}
-                  >
-                    Cancel
-                  </TkButton>{" "}
-                  <TkButton type="submit" color="primary">
-                    Save
-                  </TkButton>
-                </div>
-              </div>*/}
-
-              <div className="d-flex mt-4 space-childern">
-                {editMode ? (
-                  <div className="ms-auto" id="update-form-btns">
-                    <TkButton
-                      color="secondary"
-                      onClick={() => router.push(`${urls.lead}`)}
-                      type="button"
-                    >
-                      Cancel
-                    </TkButton>{" "}
-                    <TkButton
-                      type="submit"
-                      color="primary"
-                    >
-                      Update
-                    </TkButton>
-                  </div>
-                ) : null}
-              </div>
             </TkRow>
           </TkForm>
         </div>

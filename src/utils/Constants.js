@@ -439,6 +439,11 @@ const meetingData = [
   },
 ];
 
+const leadActivityTypes = [
+  { value: "1", label: "Phone" },
+  { value: "2", label: "Email" },
+  { value: "3", label: "Meeting" },
+];
 const countries = [
   { label: "Afghanistan", value: "Afghanistan" },
   { label: "Åland Islands", value: "Åland Islands" },
@@ -1503,6 +1508,7 @@ export {
   demoPhoneCallData,
   taskData,
   meetingData,
+  leadActivityTypes,
   countries,
   MaxEstimatedHoursLength,
   MaxHoursLimit,
