@@ -51,92 +51,58 @@ function NavData(user, sessionData) {
       icon: "ri-calendar-line",
       link: `${urls.meeting}`,
     },
-    // {
-    //   id: "users",
-    //   label: "Users",
-    //   icon: "ri-group-line",
-    //   link: `${urls.users}`,
-    // },
-    // {
-    //   id: "roles",
-    //   label: "Roles",
-    //   icon: "ri-user-settings-fill",
-    //   link: `${urls.roles}`,
-    // },
-    // {
-    //   id: "settings",
-    //   label: "Settings",
-    //   icon: "ri-settings-4-fill",
-    //   link: `${urls.settings}`,
-    // },
-  ];
-
-  if (userEmail == "saleshead@gmail.com") {
-    menuItemsForAll.push(
-      {
-        id: "users",
-        label: "Users",
-        icon: "ri-group-line",
-        link: `${urls.users}`,
-      },
-      {
-        id: "roles",
-        label: "Roles",
-        icon: "ri-user-settings-fill",
-        link: `${urls.roles}`,
-      },
-      {
-        id: "settings",
-        label: "Settings",
-        icon: "ri-settings-4-fill",
-        link: `${urls.settings}`,
-      }
-    );
-  }
-  if (userEmail == "salesmanager@gmail.com") {
-    menuItemsForAll.push({
+    {
       id: "users",
       label: "Users",
       icon: "ri-group-line",
       link: `${urls.users}`,
-    });
-  }
+    },
+    {
+      id: "roles",
+      label: "Roles",
+      icon: "ri-user-settings-fill",
+      link: `${urls.roles}`,
+    },
+    {
+      id: "settings",
+      label: "Settings",
+      icon: "ri-settings-4-fill",
+      link: `${urls.settings}`,
+    },
+  ];
 
-  // if (salesRepresntativeEmail == "salesrepresentative@gmail.com") {
+  // if (userEmail == "saleshead@gmail.com") {
   //   menuItemsForAll.push(
   //     {
-  //       id: "dashboard",
-  //       label: "Dashboard",
-  //       icon: "ri-dashboard-fill",
-  //       link: `${urls.dashboard}`,
-  //     },
-
-  //     {
-  //       id: "leads",
-  //       label: "Lead",
-  //       icon: "ri-links-line",
-  //       link: `${urls.lead}`,
+  //       id: "users",
+  //       label: "Users",
+  //       icon: "ri-group-line",
+  //       link: `${urls.users}`,
   //     },
   //     {
-  //       id: "phone call",
-  //       label: "Phone Call",
-  //       icon: "ri-phone-fill",
-  //       link: `${urls.phoneCall}`,
+  //       id: "roles",
+  //       label: "Roles",
+  //       icon: "ri-user-settings-fill",
+  //       link: `${urls.roles}`,
   //     },
   //     {
-  //       id: "task",
-  //       label: "Task",
-  //       icon: "ri-task-line",
-  //       link: `${urls.taskk}`,
-  //     },
-  //     {
-  //       id: "meeting",
-  //       label: "Meeting",
-  //       icon: "ri-calendar-line",
-  //       link: `${urls.meeting}`,
+  //       id: "settings",
+  //       label: "Settings",
+  //       icon: "ri-settings-4-fill",
+  //       link: `${urls.settings}`,
   //     }
   //   );
   // }
+  // if (userEmail == "salesmanager@gmail.com") {
+  //   menuItemsForAll.push({
+  //     id: "users",
+  //     label: "Users",
+  //     icon: "ri-group-line",
+  //     link: `${urls.users}`,
+  //   });
+  // }
+
+  
 
   return menuItemsForAll;
 }
