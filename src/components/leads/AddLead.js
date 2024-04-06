@@ -653,7 +653,18 @@ function AddLead() {
                               </div>
                             ))}
 
-                            <TkCol
+                            <TkRow className="justify-content-center">
+                              <TkCol lg={2} className="text-center">
+                                <TkButton
+                                  type="button"
+                                  color="primary"
+                                  onClick={handleAddSection}
+                                >
+                                  Add
+                                </TkButton>
+                              </TkCol>
+                            </TkRow>
+                            {/* <TkCol
                               md={1}
                               lg={5}
                               className="text-center text-md-end"
@@ -667,7 +678,7 @@ function AddLead() {
                                   <TkIcon className="ri-add-line"></TkIcon>
                                 </span>
                               </TkButton>
-                            </TkCol>
+                            </TkCol> */}
 
                             <div className="d-flex mt-4 space-childern">
                               <div className="ms-auto" id="update-form-btns">
@@ -1195,7 +1206,18 @@ function AddLead() {
                               </div>
                             ))}
 
-                            <TkCol
+                            <TkRow className="justify-content-center">
+                              <TkCol lg={2} className="text-center">
+                                <TkButton
+                                  type="button"
+                                  color="primary"
+                                  onClick={handleAddSection}
+                                >
+                                  Add
+                                </TkButton>
+                              </TkCol>
+                            </TkRow>
+                            {/* <TkCol
                               md={1}
                               lg={5}
                               className="text-center text-md-end"
@@ -1209,7 +1231,7 @@ function AddLead() {
                                   <TkIcon className="ri-add-line"></TkIcon>
                                 </span>
                               </TkButton>
-                            </TkCol>
+                            </TkCol> */}
 
                             <div className="d-flex mt-4 space-childern">
                               <div className="ms-auto" id="update-form-btns">
@@ -1762,7 +1784,19 @@ function AddLead() {
                               </div>
                             ))}
 
-                            <TkCol
+                            <TkRow className="justify-content-center">
+                              <TkCol lg={2} className="text-center">
+                                <TkButton
+                                  type="button"
+                                  color="primary"
+                                  onClick={handleAddSection}
+                                >
+                                  Add
+                                </TkButton>
+                              </TkCol>
+                            </TkRow>
+
+                            {/* <TkCol
                               md={1}
                               lg={5}
                               className="text-center text-md-end"
@@ -1776,7 +1810,7 @@ function AddLead() {
                                   <TkIcon className="ri-add-line"></TkIcon>
                                 </span>
                               </TkButton>
-                            </TkCol>
+                            </TkCol> */}
 
                             <div className="d-flex mt-4 space-childern">
                               <div className="ms-auto" id="update-form-btns">
@@ -2321,7 +2355,19 @@ function AddLead() {
                               </div>
                             ))}
 
-                            <TkCol
+                            <TkRow className="justify-content-center">
+                              <TkCol lg={2} className="text-center">
+                                <TkButton
+                                  type="button"
+                                  color="primary"
+                                  onClick={handleAddSection}
+                                >
+                                  Add
+                                </TkButton>
+                              </TkCol>
+                            </TkRow>
+
+                            {/* <TkCol
                               md={1}
                               lg={5}
                               className="text-center text-md-end"
@@ -2335,7 +2381,7 @@ function AddLead() {
                                   <TkIcon className="ri-add-line"></TkIcon>
                                 </span>
                               </TkButton>
-                            </TkCol>
+                            </TkCol> */}
 
                             <div className="d-flex mt-4 space-childern">
                               <div className="ms-auto" id="update-form-btns">
@@ -2896,7 +2942,19 @@ function AddLead() {
                               </div>
                             ))}
 
-                            <TkCol
+                            <TkRow className="justify-content-center">
+                              <TkCol lg={2} className="text-center">
+                                <TkButton
+                                  type="button"
+                                  color="primary"
+                                  onClick={handleAddSection}
+                                >
+                                  Add
+                                </TkButton>
+                              </TkCol>
+                            </TkRow>
+
+                            {/* <TkCol
                               md={1}
                               lg={5}
                               className="text-center text-md-end"
@@ -2910,7 +2968,7 @@ function AddLead() {
                                   <TkIcon className="ri-add-line"></TkIcon>
                                 </span>
                               </TkButton>
-                            </TkCol>
+                            </TkCol> */}
 
                             <div className="d-flex mt-4 space-childern">
                               <div className="ms-auto" id="update-form-btns">
