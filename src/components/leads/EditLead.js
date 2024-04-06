@@ -139,38 +139,27 @@ function AddLead({ id, userData, mode }) {
   const DirectCallData = [
     {
       id: 1,
+      _activityType: "Phone",
       lead: "John Doe",
       phoneNumber: "1234567890",
-      status: "Qualified",
       date: "2021-09-01",
+      comments: "Lead Mangement Demo",
     },
     {
       id: 2,
+      _activityType: "Email",
       lead: "Steave Smith",
       phoneNumber: "1234567890",
-      status: "Unqualified",
       date: "2021-09-01",
+      comments: "Lead Mangement Module Demo",
     },
     {
       id: 3,
+      _activityType: "Meeting",
       lead: "Will Smith",
       phoneNumber: "1234567890",
-      status: "Qualified",
       date: "2021-09-01",
-    },
-    {
-      id: 4,
-      lead: "Adam Miller",
-      phoneNumber: "1234567890",
-      status: "Unqualified",
-      date: "2021-09-01",
-    },
-    {
-      id: 5,
-      lead: "Tom Riddle",
-      phoneNumber: "1234567890",
-      status: "Qualified",
-      date: "2021-09-01",
+      comments: "Lead Mangement Module Demo",
     },
   ];
   const columns = useMemo(
@@ -200,7 +189,15 @@ function AddLead({ id, userData, mode }) {
       //   },
       // },
       {
-        Header: "Lead",
+        Header: "Activity Type",
+        accessor: "_activityType",
+        filterable: false,
+        Cell: (cellProps) => {
+          return <div className="table-text">{cellProps.value}</div>;
+        },
+      },
+      {
+        Header: "Lead Name",
         accessor: "lead",
         filterable: false,
         Cell: (cellProps) => {
@@ -216,16 +213,16 @@ function AddLead({ id, userData, mode }) {
         },
       },
       {
-        Header: "Status",
-        accessor: "status",
+        Header: "Date",
+        accessor: "date",
         filterable: false,
         Cell: (cellProps) => {
           return <div className="table-text">{cellProps.value}</div>;
         },
       },
       {
-        Header: "Date",
-        accessor: "date",
+        Header: "Comments",
+        accessor: "comments",
         filterable: false,
         Cell: (cellProps) => {
           return <div className="table-text">{cellProps.value}</div>;
