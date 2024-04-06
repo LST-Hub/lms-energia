@@ -79,6 +79,7 @@ function AddLead() {
   const [activeTab, setActiveTab] = useState(tabs.directCall);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showForm, setShowForm] = useState(false);
+  const [buttonsDisabled, setButtonsDisabled] = useState(false);
   const [requirementDetailsSections, setRequirementDetailsSections] = useState([
     { id: 1, isVisible: true },
   ]);
@@ -122,9 +123,16 @@ function AddLead() {
   //   setShowForm(true);
   // };
 
+  // const handleButtonClick = (button) => {
+  //   setSelectedButton(button);
+  //   setShowForm(true);
+  //   setButtonsDisabled(true);
+  // };
+
   const handleButtonClick = (button) => {
     setSelectedButton(button);
     setShowForm(true);
+    setButtonsDisabled(true);
   };
 
   const handleFormSubmit = (event) => {
@@ -163,7 +171,7 @@ function AddLead() {
                 <h4>Lead Types</h4>
               </TkCardHeader>
               <div>
-                <Button
+                {/* <Button
                   color="primary"
                   outline
                   style={{ marginRight: "20px", marginBottom: "20px" }}
@@ -210,8 +218,61 @@ function AddLead() {
                   onClick={() => handleButtonClick("directMarketing")}
                 >
                   Direct Marketing
+                </Button> */}
+
+                <Button
+                  color="primary"
+                  outline
+                  style={{ marginRight: "20px", marginBottom: "20px" }}
+                  active={selectedButton === "directCall"}
+                  onClick={() => handleButtonClick("directCall")}
+                  disabled={buttonsDisabled} // Disable the button if buttonsDisabled is true
+                >
+                  Direct Call
+                </Button>
+                <Button
+                  color="primary"
+                  outline
+                  style={{ marginRight: "20px", marginBottom: "20px" }}
+                  active={selectedButton === "email"}
+                  onClick={() => handleButtonClick("email")}
+                  disabled={buttonsDisabled} // Disable the button if buttonsDisabled is true
+                >
+                  Email
                 </Button>
 
+                <Button
+                  color="primary"
+                  outline
+                  style={{ marginRight: "20px", marginBottom: "20px" }}
+                  active={selectedButton === "socialMedia"}
+                  onClick={() => handleButtonClick("socialMedia")}
+                  disabled={buttonsDisabled} // Disable the button if buttonsDisabled is true
+                >
+                  SocialMedia
+                </Button>
+
+                <Button
+                  color="primary"
+                  outline
+                  style={{ marginRight: "20px", marginBottom: "20px" }}
+                  active={selectedButton === "portals"}
+                  onClick={() => handleButtonClick("portals")}
+                  disabled={buttonsDisabled} // Disable the button if buttonsDisabled is true
+                >
+                  Portals
+                </Button>
+
+                <Button
+                  color="primary"
+                  outline
+                  style={{ marginRight: "20px", marginBottom: "20px" }}
+                  active={selectedButton === "directMarketing"}
+                  onClick={() => handleButtonClick("directMarketing")}
+                  disabled={buttonsDisabled} // Disable the button if buttonsDisabled is true
+                >
+                  Direct Marketing
+                </Button>
                 {showForm && (
                   <Form onSubmit={handleFormSubmit}>
                     <TkContainer>

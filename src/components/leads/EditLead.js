@@ -177,30 +177,30 @@ function AddLead({ id, userData, mode }) {
   ];
   const columns = useMemo(
     () => [
-      {
-        Header: "View",
-        accessor: "view",
-        filterable: false,
-        Cell: (cellProps) => {
-          return (
-            <div className="d-flex align-items-center">
-              <ul className="ps-0 mb-0">
-                <li className="list-inline-item">
-                  <Link
-                    href={`${urls.phoneCallView}/${cellProps.row.original.id}`}
-                  >
-                    <a>
-                      <TkButton color="none">
-                        <TkIcon className="ri-eye-fill align-bottom text-muted"></TkIcon>
-                      </TkButton>
-                    </a>
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          );
-        },
-      },
+      // {
+      //   Header: "View",
+      //   accessor: "view",
+      //   filterable: false,
+      //   Cell: (cellProps) => {
+      //     return (
+      //       <div className="d-flex align-items-center">
+      //         <ul className="ps-0 mb-0">
+      //           <li className="list-inline-item">
+      //             <Link
+      //               href={`${urls.phoneCallView}/${cellProps.row.original.id}`}
+      //             >
+      //               <a>
+      //                 <TkButton color="none">
+      //                   <TkIcon className="ri-eye-fill align-bottom text-muted"></TkIcon>
+      //                 </TkButton>
+      //               </a>
+      //             </Link>
+      //           </li>
+      //         </ul>
+      //       </div>
+      //     );
+      //   },
+      // },
       {
         Header: "Lead",
         accessor: "lead",
