@@ -136,8 +136,6 @@ function AddLead({ id, userData, mode }) {
   //   }
   // };
 
-
-
   const DirectCallData = [
     {
       id: 1,
@@ -1764,43 +1762,15 @@ function AddLead({ id, userData, mode }) {
               <Nav className="nav-tabs dropdown-tabs nav-tabs-custom mb-3 mt-3">
                 <NavItem>
                   <NavLink
-                    href="#"
+                    // href="#"
                     className={classnames({
                       active: activeTab === tabs.phoneCall,
                     })}
-                    onClick={() => {
-                      toggleTab(tabs.phoneCall);
-                    }}
+                    // onClick={() => {
+                    //   toggleTab(tabs.phoneCall);
+                    // }}
                   >
-                    Phone
-                  </NavLink>
-                </NavItem>
-
-                <NavItem>
-                  <NavLink
-                    href="#"
-                    className={classnames({
-                      active: activeTab === tabs.meeting,
-                    })}
-                    onClick={() => {
-                      toggleTab(tabs.meeting);
-                    }}
-                  >
-                    Email
-                  </NavLink>
-                </NavItem>
-
-                <NavItem>
-                  <NavLink
-                    href="#"
-                    className={classnames({
-                      active: activeTab === tabs.email,
-                    })}
-                    onClick={() => {
-                      toggleTab(tabs.email);
-                    }}
-                  >
-                    Meeting
+                    Lead Activity
                   </NavLink>
                 </NavItem>
               </Nav>

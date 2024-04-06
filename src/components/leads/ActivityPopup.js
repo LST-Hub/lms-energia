@@ -271,6 +271,17 @@ const ActivityPopup = ({ isPopup }) => {
                           />
                         </TkCol>
 
+                        <TkCol lg={8}>
+                              <TkInput
+                                {...register("comments")}
+                                id="comments"
+                                name="comments"
+                                type="textarea"
+                                labelName="Comments"
+                                placeholder="Enter Comments"
+                              />
+                            </TkCol>
+
                         <div className="d-flex mt-4 space-childern">
                           <div className="ms-auto" id="update-form-btns">
                             <TkButton
