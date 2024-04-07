@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import TkPageHead from "../../../src/components/TkPageHead";
 import BreadCrumb from "../../../src/utils/BreadCrumb";
 import { Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
@@ -48,6 +48,8 @@ import {
 import TkTableContainer from "../TkTableContainer";
 import Link from "next/link";
 import { yupResolver } from "@hookform/resolvers/yup";
+import TkModal, { TkModalHeader } from "../TkModal";
+import ActivityPopup from "./ActivityPopup";
 const schema = Yup.object({
   name: Yup.string()
     .min(
@@ -95,6 +97,7 @@ function AddLead({ id, userData, mode }) {
   const viewMode = mode === modes.view;
   const editMode = mode === modes.edit;
   const lid = Number(id);
+  const [activityModal, setActivityModal] = useState(false);
   const [directCallCheckbox, setDirectCallCheckbox] = useState(false);
   const [emailCheckbox, setEmailCheckbox] = useState(false);
   const [socialMediaCheckbox, setSocialMediaCheckbox] = useState(false);
@@ -106,6 +109,14 @@ function AddLead({ id, userData, mode }) {
   const [requirementDetailsSections, setRequirementDetailsSections] = useState([
     { id: 1, isVisible: true },
   ]);
+
+  const leadActivityToggle = useCallback(() => {
+    if (activityModal) {
+      setActivityModal(false);
+    } else {
+      setActivityModal(true);
+    }
+  }, [activityModal]);
 
   useEffect(() => {
     setIsLeadEdit(true);
@@ -285,7 +296,19 @@ function AddLead({ id, userData, mode }) {
       {isLeadEdit && (
         <div>
           <TkForm>
-            <TkRow className="mt-3">
+            <TkRow>
+            <TkCol lg={12} className="d-flex justify-content-end">
+                <TkButton
+                  type="button"
+                  color="primary"
+                  onClick={leadActivityToggle}
+                  disabled={viewMode}
+                >
+                  Add Activity
+                </TkButton>
+              </TkCol>
+            </TkRow>
+            <TkRow className="mt-4">
               <TkCol>
                 <TkCardHeader tag="h5" className="mb-4">
                   <h4>Personal Details</h4>
@@ -509,7 +532,6 @@ function AddLead({ id, userData, mode }) {
                 </div>
               </TkCol>
             </TkRow>
-
             <TkRow className="mt-5">
               <TkCol>
                 <TkCardHeader tag="h5" className="mb-3">
@@ -681,8 +703,20 @@ function AddLead({ id, userData, mode }) {
                 )}
               </div>
             ))}
+            <TkRow className="justify-content-center">
+              <TkCol lg={2} className="text-center">
+                <TkButton
+                  type="button"
+                  color="primary"
+                  onClick={handleAddSection}
+                  disabled={viewMode}
+                >
+                  Add
+                </TkButton>
+              </TkCol>
+            </TkRow>
 
-            <TkCol md={1} lg={5} className="text-center text-md-end">
+            {/* <TkCol md={1} lg={5} className="text-center text-md-end">
               <TkButton
                 type="button"
                 className="bg-transparent border-0 ps-0 ms-0 text-center"
@@ -693,8 +727,7 @@ function AddLead({ id, userData, mode }) {
                   <TkIcon className="ri-add-line"></TkIcon>
                 </span>
               </TkButton>
-            </TkCol>
-
+            </TkCol> */}
             <TkRow className="g-3">
               {/* <TkCardHeader>
                 <h5>Leads Events</h5>
@@ -1788,6 +1821,26 @@ function AddLead({ id, userData, mode }) {
               </TabContent>
             </TkRow>
           </TkForm>
+          <TkModal
+                  isOpen={activityModal}
+                  leadActivityToggle={leadActivityToggle}
+                  centered
+                  size="lg"
+                  className="border-0"
+                  modalClassName="modal fade zoomIn"
+                >
+                  <TkModalHeader
+                    className="p-3 bg-soft-info"
+                    partnerToggle={leadActivityToggle}
+                  >
+                    {"Add Lead Activity"}
+                  </TkModalHeader>
+                  <TkContainer>
+                    <TkCardBody>
+                      <ActivityPopup isPopup={true} />
+                    </TkCardBody>
+                  </TkContainer>
+                </TkModal>
         </div>
       )}
     </>
