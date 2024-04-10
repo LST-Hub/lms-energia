@@ -181,6 +181,11 @@ const AllRoles = ({ accessLevel }) => {
       id: 3,
       name: "Sales Representative",
       description: "Sales Representative has access the own data only",
+    },
+    {
+      id: 4,
+      name: "Sales Support",
+      description: "Sales Support has access the own data only"
     }
   ];
 

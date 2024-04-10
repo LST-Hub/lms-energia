@@ -330,16 +330,15 @@ function AddLead() {
                                     id="leadSource"
                                     name="leadSource"
                                     labelName="Lead Source"
-                                    placeholder="Select Lead Source"
+                                    placeholder="Select Source"
                                     requiredStarOnLabel="true"
                                     options={[
-                                      { value: "1", label: "Direct" },
-                                      { value: "2", label: "Refferal" },
-                                      { value: "3", label: "New" },
+                                      { value: "1", label: "Refferal" },
+                                      { value: "2", label: "New" },
                                     ]}
                                   />
                                 </TkCol>
-                                <TkCol lg={4}>
+                                {/* <TkCol lg={4}>
                                   <TkSelect
                                     id="createdBy"
                                     name="createdBy"
@@ -347,6 +346,15 @@ function AddLead() {
                                     placeholder="Select Created By"
                                     requiredStarOnLabel="true"
                                     options={createdByNameTypes}
+                                  />
+                                </TkCol> */}
+                                <TkCol lg={4}>
+                                  <TkInput
+                                    id="createdBy"
+                                    type="text"
+                                    labelName="Created By"
+                                    placeholder="Enter Created By"
+                                    requiredStarOnLabel="true"
                                   />
                                 </TkCol>
                                 <TkCol lg={4}>
@@ -407,6 +415,30 @@ function AddLead() {
                                         labelName="Email"
                                         placeholder="Enter Email"
                                         requiredStarOnLabel="true"
+                                      />
+                                    </TkCol>
+                                  </TkRow>
+                                  <TkRow className="mt-3 mb-4">
+                                    <TkCol lg={4}>
+                                      <TkSelect
+                                        id="enquiryBy"
+                                        name="enquiryBy"
+                                        labelName="Enquiry By"
+                                        placeholder="Enquiry By"
+                                        requiredStarOnLabel="true"
+                                        options={[
+                                          { value: "1", label: "Direct" },
+                                          { value: "2", label: "Consultant" },
+                                          { value: "3", label: "Other" },
+                                        ]}
+                                      />
+                                    </TkCol>
+                                    <TkCol lg={8}>
+                                      <TkInput
+                                        id="note"
+                                        type="text"
+                                        labelName="Note"
+                                        placeholder="Enter Note"
                                       />
                                     </TkCol>
                                   </TkRow>
@@ -876,22 +908,56 @@ function AddLead() {
                         {activeTab === "primary" && (
                           <div>
                             <TkRow className="mt-3">
-                              <TkRow className="mt-3 mb-5">
+                              <TkRow className="mt-3 mb-5 ">
                                 <TkCol lg={4}>
                                   <TkSelect
                                     id="leadSource"
                                     name="leadSource"
                                     labelName="Lead Source"
-                                    placeholder="Select Lead Source"
+                                    placeholder="Select Source"
                                     requiredStarOnLabel="true"
                                     options={[
                                       { value: "1", label: "Direct" },
-                                      { value: "2", label: "Refferal" },
+                                      { value: "2", label: "Referral" },
                                       { value: "3", label: "New" },
                                     ]}
                                   />
                                 </TkCol>
+                                <TkCol lg={4}>
+                                  <TkInput
+                                    id="createdBy"
+                                    type="text"
+                                    labelName="Created By"
+                                    placeholder="Enter Created By"
+                                    requiredStarOnLabel="true"
+                                  />
+                                </TkCol>
+                                <TkCol lg={4}>
+                                  <Controller
+                                    name="createdDate"
+                                    control={control}
+                                    render={({ field }) => (
+                                      <TkDate
+                                        {...field}
+                                        labelName="Created Date"
+                                        id={"createdDate"}
+                                        placeholder="Enter Created Date"
+                                        options={{
+                                          altInput: true,
+                                          dateFormat: "d M, Y",
+                                        }}
+                                        onChange={(e) => {
+                                          field.onChange(e);
+                                          setSelectedDate(e);
+                                          setAllDurations({});
+                                        }}
+                                        requiredStarOnLabel={true}
+                                      />
+                                    )}
+                                  />
+                                </TkCol>
                               </TkRow>
+
                               <TkCol>
                                 <TkCardHeader tag="h5" className="mb-4">
                                   <h4>Personal Details</h4>
@@ -928,7 +994,7 @@ function AddLead() {
                                       />
                                     </TkCol>
 
-                                    <TkCol lg={4}>
+                                    {/* <TkCol lg={4}>
                                       <TkSelect
                                         id="createdBy"
                                         name="createdBy"
@@ -937,29 +1003,29 @@ function AddLead() {
                                         requiredStarOnLabel="true"
                                         options={createdByNameTypes}
                                       />
-                                    </TkCol>
+                                    </TkCol> */}
+                                  </TkRow>
+                                  <TkRow className="mt-3 mb-4">
                                     <TkCol lg={4}>
-                                      <Controller
-                                        name="createdDate"
-                                        control={control}
-                                        render={({ field }) => (
-                                          <TkDate
-                                            {...field}
-                                            labelName="Created Date"
-                                            id={"createdDate"}
-                                            placeholder="Enter Created Date"
-                                            options={{
-                                              altInput: true,
-                                              dateFormat: "d M, Y",
-                                            }}
-                                            onChange={(e) => {
-                                              field.onChange(e);
-                                              setSelectedDate(e);
-                                              setAllDurations({});
-                                            }}
-                                            requiredStarOnLabel={true}
-                                          />
-                                        )}
+                                      <TkSelect
+                                         id="enquiryBy"
+                                         name="enquiryBy"
+                                         labelName="Enquiry By"
+                                         placeholder="Enquiry By"
+                                         requiredStarOnLabel="true"
+                                        options={[
+                                          { value: "1", label: "Direct" },
+                                          { value: "2", label: "Consultant" },
+                                          { value: "3", label: "Other" },
+                                        ]}
+                                      />
+                                    </TkCol>
+                                    <TkCol lg={8}>
+                                      <TkInput
+                                        id="note"
+                                        type="text"
+                                        labelName="Note"
+                                        placeholder="Enter Note"
                                       />
                                     </TkCol>
                                   </TkRow>
@@ -1428,17 +1494,17 @@ function AddLead() {
                         {activeTab === "primary" && (
                           <div>
                             <TkRow className="mt-3">
-                              <TkRow className="mt-3 mb-5">
+                              <TkRow className="mt-3 ">
                                 <TkCol lg={4}>
                                   <TkSelect
                                     id="leadSource"
                                     name="leadSource"
                                     labelName="Lead Source"
-                                    placeholder="Select Lead Source"
+                                    placeholder="Select Source"
                                     requiredStarOnLabel="true"
                                     options={[
                                       { value: "1", label: "Direct" },
-                                      { value: "2", label: "Refferal" },
+                                      { value: "2", label: "Referral" },
                                       { value: "3", label: "New" },
                                     ]}
                                   />
@@ -1467,6 +1533,51 @@ function AddLead() {
                                     labelName="Campaign Name"
                                     placeholder="Enter Campaign Name"
                                     requiredStarOnLabel="true"
+                                  />
+                                </TkCol>
+                              </TkRow>
+                              <TkRow className="mt-3 mb-5">
+                                <TkCol lg={4}>
+                                  <TkSelect
+                                    id="visitUpdate"
+                                    name="visitUpdate"
+                                    labelName="Visit Update"
+                                    options={[]}
+                                    placeholder="Select Visit Update"
+                                    requiredStarOnLabel="true"
+                                  />
+                                </TkCol>
+                                <TkCol lg={4}>
+                                  <TkInput
+                                    id="createdBy"
+                                    type="text"
+                                    labelName="Created By"
+                                    placeholder="Enter Created By"
+                                    requiredStarOnLabel="true"
+                                  />
+                                </TkCol>
+                                <TkCol lg={4}>
+                                  <Controller
+                                    name="createdDate"
+                                    control={control}
+                                    render={({ field }) => (
+                                      <TkDate
+                                        {...field}
+                                        labelName="Created Date"
+                                        id={"createdDate"}
+                                        placeholder="Enter Created Date"
+                                        options={{
+                                          altInput: true,
+                                          dateFormat: "d M, Y",
+                                        }}
+                                        onChange={(e) => {
+                                          field.onChange(e);
+                                          setSelectedDate(e);
+                                          setAllDurations({});
+                                        }}
+                                        requiredStarOnLabel={true}
+                                      />
+                                    )}
                                   />
                                 </TkCol>
                               </TkRow>
@@ -1505,39 +1616,28 @@ function AddLead() {
                                         requiredStarOnLabel="true"
                                       />
                                     </TkCol>
-
+                                  </TkRow>
+                                  <TkRow className="mt-3 mb-4">
                                     <TkCol lg={4}>
                                       <TkSelect
-                                        id="createdBy"
-                                        name="createdBy"
-                                        labelName="Created By"
-                                        placeholder="Select Created By"
+                                        id="enquiryBy"
+                                        name="enquiryBy"
+                                        labelName="Enquiry By"
+                                        placeholder="Enquiry By"
                                         requiredStarOnLabel="true"
-                                        options={createdByNameTypes}
+                                        options={[
+                                          { value: "1", label: "Direct" },
+                                          { value: "2", label: "Consultant" },
+                                          { value: "3", label: "Other" },
+                                        ]}
                                       />
                                     </TkCol>
-                                    <TkCol lg={4}>
-                                      <Controller
-                                        name="createdDate"
-                                        control={control}
-                                        render={({ field }) => (
-                                          <TkDate
-                                            {...field}
-                                            labelName="Created Date"
-                                            id={"createdDate"}
-                                            placeholder="Enter Created Date"
-                                            options={{
-                                              altInput: true,
-                                              dateFormat: "d M, Y",
-                                            }}
-                                            onChange={(e) => {
-                                              field.onChange(e);
-                                              setSelectedDate(e);
-                                              setAllDurations({});
-                                            }}
-                                            requiredStarOnLabel={true}
-                                          />
-                                        )}
+                                    <TkCol lg={8}>
+                                      <TkInput
+                                        id="note"
+                                        type="text"
+                                        labelName="Note"
+                                        placeholder="Enter Note"
                                       />
                                     </TkCol>
                                   </TkRow>
@@ -2007,13 +2107,13 @@ function AddLead() {
                         {activeTab === "primary" && (
                           <div>
                             <TkRow className="mt-3">
-                              <TkRow className="mt-3 mb-5">
+                              <TkRow className="mt-3">
                                 <TkCol lg={4}>
                                   <TkSelect
                                     id="leadSource"
                                     name="leadSource"
                                     labelName="Lead Source"
-                                    placeholder="Select Lead Source"
+                                    placeholder="Select Source"
                                     requiredStarOnLabel="true"
                                     options={[
                                       { value: "1", label: "Direct" },
@@ -2038,6 +2138,41 @@ function AddLead() {
                                       { value: "5", label: "Referral" },
                                       { value: "6", label: "Other" },
                                     ]}
+                                  />
+                                </TkCol>
+                                <TkCol lg={4}>
+                                  <TkInput
+                                    id="createdBy"
+                                    type="text"
+                                    labelName="Created By"
+                                    placeholder="Enter Created By"
+                                    requiredStarOnLabel="true"
+                                  />
+                                </TkCol>
+                              </TkRow>
+                              <TkRow className="mt-3 mb-5">
+                                <TkCol lg={4}>
+                                  <Controller
+                                    name="createdDate"
+                                    control={control}
+                                    render={({ field }) => (
+                                      <TkDate
+                                        {...field}
+                                        labelName="Created Date"
+                                        id={"createdDate"}
+                                        placeholder="Enter Created Date"
+                                        options={{
+                                          altInput: true,
+                                          dateFormat: "d M, Y",
+                                        }}
+                                        onChange={(e) => {
+                                          field.onChange(e);
+                                          setSelectedDate(e);
+                                          setAllDurations({});
+                                        }}
+                                        requiredStarOnLabel={true}
+                                      />
+                                    )}
                                   />
                                 </TkCol>
                               </TkRow>
@@ -2076,39 +2211,28 @@ function AddLead() {
                                         requiredStarOnLabel="true"
                                       />
                                     </TkCol>
-
+                                  </TkRow>
+                                  <TkRow className="mt-3 mb-4">
                                     <TkCol lg={4}>
                                       <TkSelect
-                                        id="createdBy"
-                                        name="createdBy"
-                                        labelName="Created By"
-                                        placeholder="Select Created By"
+                                        id="enquiryBy"
+                                        name="enquiryBy"
+                                        labelName="Enquiry By"
+                                        placeholder="Enquiry By"
                                         requiredStarOnLabel="true"
-                                        options={createdByNameTypes}
+                                        options={[
+                                          { value: "1", label: "Direct" },
+                                          { value: "2", label: "Consultant" },
+                                          { value: "3", label: "Other" },
+                                        ]}
                                       />
                                     </TkCol>
-                                    <TkCol lg={4}>
-                                      <Controller
-                                        name="createdDate"
-                                        control={control}
-                                        render={({ field }) => (
-                                          <TkDate
-                                            {...field}
-                                            labelName="Created Date"
-                                            id={"createdDate"}
-                                            placeholder="Enter Created Date"
-                                            options={{
-                                              altInput: true,
-                                              dateFormat: "d M, Y",
-                                            }}
-                                            onChange={(e) => {
-                                              field.onChange(e);
-                                              setSelectedDate(e);
-                                              setAllDurations({});
-                                            }}
-                                            requiredStarOnLabel={true}
-                                          />
-                                        )}
+                                    <TkCol lg={8}>
+                                      <TkInput
+                                        id="note"
+                                        type="text"
+                                        labelName="Note"
+                                        placeholder="Enter Note"
                                       />
                                     </TkCol>
                                   </TkRow>
@@ -2585,7 +2709,7 @@ function AddLead() {
                                     id="leadSource"
                                     name="leadSource"
                                     labelName="Lead Source"
-                                    placeholder="Select Lead Source"
+                                    placeholder="Select Source"
                                     requiredStarOnLabel="true"
                                     options={[
                                       { value: "1", label: "Direct" },
@@ -2627,6 +2751,39 @@ function AddLead() {
                                     requiredStarOnLabel="true"
                                   />
                                 </TkCol>
+                                <TkCol lg={4}>
+                                  <TkInput
+                                    id="createdBy"
+                                    type="text"
+                                    labelName="Created By"
+                                    placeholder="Enter Created By"
+                                    requiredStarOnLabel="true"
+                                  />
+                                </TkCol>
+                                <TkCol lg={4}>
+                                  <Controller
+                                    name="createdDate"
+                                    control={control}
+                                    render={({ field }) => (
+                                      <TkDate
+                                        {...field}
+                                        labelName="Created Date"
+                                        id={"createdDate"}
+                                        placeholder="Enter Created Date"
+                                        options={{
+                                          altInput: true,
+                                          dateFormat: "d M, Y",
+                                        }}
+                                        onChange={(e) => {
+                                          field.onChange(e);
+                                          setSelectedDate(e);
+                                          setAllDurations({});
+                                        }}
+                                        requiredStarOnLabel={true}
+                                      />
+                                    )}
+                                  />
+                                </TkCol>
                               </TkRow>
                               <TkCol>
                                 <TkCardHeader tag="h5" className="mb-4">
@@ -2663,39 +2820,28 @@ function AddLead() {
                                         requiredStarOnLabel="true"
                                       />
                                     </TkCol>
-
+                                  </TkRow>
+                                  <TkRow className="mt-3 mb-4">
                                     <TkCol lg={4}>
                                       <TkSelect
-                                        id="createdBy"
-                                        name="createdBy"
-                                        labelName="Created By"
-                                        placeholder="Select Created By"
+                                        id="enquiryBy"
+                                        name="enquiryBy"
+                                        labelName="Enquiry By"
+                                        placeholder="Enquiry By"
                                         requiredStarOnLabel="true"
-                                        options={createdByNameTypes}
+                                        options={[
+                                          { value: "1", label: "Direct" },
+                                          { value: "2", label: "Consultant" },
+                                          { value: "3", label: "Other" },
+                                        ]}
                                       />
                                     </TkCol>
-                                    <TkCol lg={4}>
-                                      <Controller
-                                        name="createdDate"
-                                        control={control}
-                                        render={({ field }) => (
-                                          <TkDate
-                                            {...field}
-                                            labelName="Created Date"
-                                            id={"createdDate"}
-                                            placeholder="Enter Created Date"
-                                            options={{
-                                              altInput: true,
-                                              dateFormat: "d M, Y",
-                                            }}
-                                            onChange={(e) => {
-                                              field.onChange(e);
-                                              setSelectedDate(e);
-                                              setAllDurations({});
-                                            }}
-                                            requiredStarOnLabel={true}
-                                          />
-                                        )}
+                                    <TkCol lg={8}>
+                                      <TkInput
+                                        id="note"
+                                        type="text"
+                                        labelName="Note"
+                                        placeholder="Enter Note"
                                       />
                                     </TkCol>
                                   </TkRow>
