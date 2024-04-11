@@ -10,6 +10,7 @@ import {
   createdByNameTypes,
   demoUserData,
   divisionTypes,
+  leadSourceTypes,
   requirementTypes,
   segmentTypes,
   urls,
@@ -245,13 +246,19 @@ function AddLead({ id, userData, mode }) {
 
   useEffect(() => {
     if (userData) {
+      setValue("leadSource", {
+        value: userData.leadSource,
+        label: userData.leadSource,
+      });
+      setValue("createdBy", userData.createdBy);
       setValue("name", userData.name);
       setValue("mobileNo", userData.mobileNo);
       setValue("email", userData.email);
-      setValue("createdBy", {
-        value: userData.createdBy,
-        label: userData.createdBy,
+      setValue("enquiryBy", {
+        value: userData.enquiryBy,
+        label: userData.enquiryBy,
       });
+      setValue("noote", userData.noote);
       setValue("createdDate", userData.createdDate);
       setValue("leadValue", userData.leadValue);
       setValue("companyName", userData.companyName);
@@ -309,52 +316,83 @@ function AddLead({ id, userData, mode }) {
               </TkCol>
             </TkRow>
             <TkRow className="mt-3 mb-5">
-              <TkCol lg={4}>
-                <TkSelect
-                  id="leadSource"
-                  name="leadSource"
-                  labelName="Lead Source"
-                  placeholder="Select Lead Source"
-                  requiredStarOnLabel="true"
-                  options={[
-                    { value: "1", label: "Direct" },
-                    { value: "2", label: "Refferal" },
-                    { value: "3", label: "New" },
-                  ]}
-                />
-              </TkCol>
-              <TkCol lg={4}>
-                <TkInput
-                  id="createdBy"
-                  type="text"
-                  labelName="Created By"
-                  placeholder="Enter Created By"
-                  requiredStarOnLabel="true"
-                />
-              </TkCol>
-              <TkCol lg={4}>
-                <Controller
-                  name="createdDate"
-                  control={control}
-                  render={({ field }) => (
-                    <TkDate
-                      {...field}
-                      labelName="Created Date"
-                      id={"createdDate"}
-                      placeholder="Enter Created Date"
-                      options={{
-                        altInput: true,
-                        dateFormat: "d M, Y",
-                      }}
-                      onChange={(e) => {
-                        field.onChange(e);
-                        setSelectedDate(e);
-                        setAllDurations({});
-                      }}
-                      requiredStarOnLabel={true}
-                    />
-                  )}
-                />
+              <TkCol>
+                <div>
+                  <TkRow className="g-3">
+                    <TkCol lg={4}>
+                      <Controller
+                        name="leadSource"
+                        control={control}
+                        render={({ field }) => (
+                          <TkSelect
+                            {...field}
+                            labelName="Lead Source"
+                            labelId={"_leadSource"}
+                            id="leadSource"
+                            placeholder="Select Lead Source"
+                            options={leadSourceTypes}
+                            requiredStarOnLabel={true}
+                            disabled={viewMode}
+                          />
+                        )}
+                      />
+                    </TkCol>
+
+                    {/* <TkCol lg={4}>
+                      <Controller
+                        name="leadSource"
+                        control={control}
+                        render={({ field }) => (
+                          <TkSelect
+                            id="leadSource"
+                            name="leadSource"
+                            labelName="Lead Source"
+                            placeholder="Select Lead Source"
+                            requiredStarOnLabel="true"
+                            options={leadSourceTypes}
+                            disabled={viewMode}
+                          />
+                        )}
+                      />
+                    </TkCol> */}
+                    <TkCol lg={4}>
+                      <TkInput
+                        {...register("createdBy")}
+                        id="createdBy"
+                        type="text"
+                        labelName="Created By"
+                        placeholder="Enter Created By"
+                        disabled={true}
+                        requiredStarOnLabel="true"
+                      />
+                    </TkCol>
+                    <TkCol lg={4}>
+                      <Controller
+                        name="createdDate"
+                        control={control}
+                        render={({ field }) => (
+                          <TkDate
+                            {...field}
+                            labelName="Created Date"
+                            id={"createdDate"}
+                            placeholder="Enter Created Date"
+                            options={{
+                              altInput: true,
+                              dateFormat: "d M, Y",
+                            }}
+                            onChange={(e) => {
+                              field.onChange(e);
+                              setSelectedDate(e);
+                              setAllDurations({});
+                            }}
+                            disabled={true}
+                            requiredStarOnLabel={true}
+                          />
+                        )}
+                      />
+                    </TkCol>
+                  </TkRow>
+                </div>
               </TkCol>
             </TkRow>
             <TkRow className="mt-4">
@@ -411,9 +449,29 @@ function AddLead({ id, userData, mode }) {
                       disabled={viewMode}
                     />
                   </TkCol> */}
-                  </TkRow>
-                  <TkRow className="mt-3 mb-4">
                     <TkCol lg={4}>
+                      <Controller
+                        name="enquiryBy"
+                        control={control}
+                        render={({ field }) => (
+                          <TkSelect
+                            {...field}
+                            labelName="Enquiry By"
+                            labelId={"_enquiryBy"}
+                            id="enquiryBy"
+                            placeholder="Enquiry By"
+                            options={[
+                              { value: "1", label: "Direct" },
+                              { value: "2", label: "Consultant" },
+                              { value: "3", label: "Other" },
+                            ]}
+                            requiredStarOnLabel={true}
+                            disabled={viewMode}
+                          />
+                        )}
+                      />
+                    </TkCol>
+                    {/* <TkCol lg={4}>
                       <TkSelect
                         id="enquiryBy"
                         name="enquiryBy"
@@ -426,9 +484,10 @@ function AddLead({ id, userData, mode }) {
                           { value: "3", label: "Other" },
                         ]}
                       />
-                    </TkCol>
+                    </TkCol> */}
                     <TkCol lg={8}>
                       <TkInput
+                        {...register("noote")}
                         id="note"
                         type="text"
                         labelName="Note"
@@ -439,13 +498,14 @@ function AddLead({ id, userData, mode }) {
                 </div>
               </TkCol>
             </TkRow>
+
             <TkRow className="mt-5">
               <TkCol>
                 <TkCardHeader tag="h5" className="mb-4">
                   <h4>Company Details</h4>
                 </TkCardHeader>
                 <div>
-                  <TkRow className="mt-3">
+                  <TkRow className="g-3">
                     <TkCol lg={4}>
                       <TkInput
                         {...register("companyName")}
@@ -478,8 +538,8 @@ function AddLead({ id, userData, mode }) {
                         disabled={viewMode}
                       />
                     </TkCol>
-                  </TkRow>
-                  <TkRow className="mt-3">
+                    {/* </TkRow>
+                  <TkRow className="mt-3"> */}
                     <TkCol lg={4}>
                       <TkInput
                         {...register("address")}
@@ -513,8 +573,8 @@ function AddLead({ id, userData, mode }) {
                         disabled={viewMode}
                       />
                     </TkCol>
-                  </TkRow>
-                  <TkRow className="mt-3">
+                    {/* </TkRow>
+                  <TkRow className="mt-3"> */}
                     <TkCol lg={4}>
                       <TkInput
                         {...register("vatNo")}
@@ -582,7 +642,7 @@ function AddLead({ id, userData, mode }) {
                     <TkCol>
                       <div>
                         <>
-                          <TkRow className="mt-3">
+                          <TkRow className="g-3">
                             <TkCol lg={4}>
                               <Controller
                                 name="division"
@@ -643,8 +703,8 @@ function AddLead({ id, userData, mode }) {
                                 disabled={viewMode}
                               />
                             </TkCol>
-                          </TkRow>
-                          <TkRow className="mt-3">
+                            {/* </TkRow>
+                          <TkRow className="mt-3"> */}
                             <TkCol lg={4}>
                               <TkInput
                                 {...register("duration")}
@@ -688,8 +748,8 @@ function AddLead({ id, userData, mode }) {
                                 disabled={viewMode}
                               />
                             </TkCol>
-                          </TkRow>
-                          <TkRow className="mt-3">
+                            {/* </TkRow>
+                          <TkRow className="mt-3"> */}
                             <TkCol lg={4}>
                               <TkInput
                                 {...register("locationContactPerson")}

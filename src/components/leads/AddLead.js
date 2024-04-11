@@ -323,22 +323,25 @@ function AddLead() {
                       <div>
                         {activeTab === "primary" && (
                           <div>
-                            <TkRow className="mt-3">
-                              <TkRow className="mt-3 mb-5">
-                                <TkCol lg={4}>
-                                  <TkSelect
-                                    id="leadSource"
-                                    name="leadSource"
-                                    labelName="Lead Source"
-                                    placeholder="Select Source"
-                                    requiredStarOnLabel="true"
-                                    options={[
-                                      { value: "1", label: "Refferal" },
-                                      { value: "2", label: "New" },
-                                    ]}
-                                  />
-                                </TkCol>
-                                {/* <TkCol lg={4}>
+                            {/* <TkRow className="mt-3"> */}
+                            <TkRow className="mt-4 mb-5">
+                              <TkCol>
+                                <div>
+                                  <TkRow className="g-3">
+                                    <TkCol lg={4}>
+                                      <TkSelect
+                                        id="leadSource"
+                                        name="leadSource"
+                                        labelName="Lead Source"
+                                        placeholder="Select Source"
+                                        requiredStarOnLabel="true"
+                                        options={[
+                                          { value: "1", label: "Refferal" },
+                                          { value: "2", label: "New" },
+                                        ]}
+                                      />
+                                    </TkCol>
+                                    {/* <TkCol lg={4}>
                                   <TkSelect
                                     id="createdBy"
                                     name="createdBy"
@@ -348,43 +351,49 @@ function AddLead() {
                                     options={createdByNameTypes}
                                   />
                                 </TkCol> */}
-                                <TkCol lg={4}>
-                                  <TkInput
-                                    id="createdBy"
-                                    type="text"
-                                    labelName="Created By"
-                                    placeholder="Enter Created By"
-                                    requiredStarOnLabel="true"
-                                  />
-                                </TkCol>
-                                <TkCol lg={4}>
-                                  <Controller
-                                    name="createdDate"
-                                    control={control}
-                                    render={({ field }) => (
-                                      <TkDate
-                                        {...field}
-                                        labelName="Created Date"
-                                        id={"createdDate"}
-                                        placeholder="Enter Created Date"
-                                        options={{
-                                          altInput: true,
-                                          dateFormat: "d M, Y",
-                                        }}
-                                        onChange={(e) => {
-                                          field.onChange(e);
-                                          setSelectedDate(e);
-                                          setAllDurations({});
-                                        }}
-                                        requiredStarOnLabel={true}
+                                    <TkCol lg={4}>
+                                      <TkInput
+                                        id="createdBy"
+                                        type="text"
+                                        labelName="Created By"
+                                        placeholder="Enter Created By"
+                                        requiredStarOnLabel="true"
                                       />
-                                    )}
-                                  />
-                                </TkCol>
-                              </TkRow>
+                                    </TkCol>
+                                    <TkCol lg={4}>
+                                      <Controller
+                                        name="createdDate"
+                                        control={control}
+                                        render={({ field }) => (
+                                          <TkDate
+                                            {...field}
+                                            labelName="Created Date"
+                                            id={"createdDate"}
+                                            placeholder="Enter Created Date"
+                                            options={{
+                                              altInput: true,
+                                              dateFormat: "d M, Y",
+                                            }}
+                                            onChange={(e) => {
+                                              field.onChange(e);
+                                              setSelectedDate(e);
+                                              setAllDurations({});
+                                            }}
+                                            disabled={true}
+                                            requiredStarOnLabel={true}
+                                          />
+                                        )}
+                                      />
+                                    </TkCol>
+                                  </TkRow>
+                                </div>
+                              </TkCol>
+                            </TkRow>
+
+                            <TkRow className="mt-3">
                               <TkCol>
                                 <TkCardHeader tag="h5" className="mb-4">
-                                  <h4>Personal Details</h4>
+                                  <h4 >Personal Details</h4>
                                 </TkCardHeader>
                                 <div>
                                   <TkRow className="g-3">
@@ -417,8 +426,7 @@ function AddLead() {
                                         requiredStarOnLabel="true"
                                       />
                                     </TkCol>
-                                  </TkRow>
-                                  <TkRow className="mt-3 mb-4">
+                                
                                     <TkCol lg={4}>
                                       <TkSelect
                                         id="enquiryBy"
@@ -445,13 +453,15 @@ function AddLead() {
                                 </div>
                               </TkCol>
                             </TkRow>
+
+                            
                             <TkRow className="mt-5">
                               <TkCol>
                                 <TkCardHeader tag="h5" className="mb-4">
                                   <h4>Company Details</h4>
                                 </TkCardHeader>
                                 <div>
-                                  <TkRow className="mt-3">
+                                <TkRow className="g-3">
                                     <TkCol lg={4}>
                                       <TkInput
                                         id="name"
@@ -478,8 +488,7 @@ function AddLead() {
                                         placeholder="Enter Email"
                                       />
                                     </TkCol>
-                                  </TkRow>
-                                  <TkRow className="mt-3">
+                                 
                                     <TkCol lg={4}>
                                       <TkInput
                                         id="address"
@@ -507,8 +516,7 @@ function AddLead() {
                                         placeholder="Enter CR No"
                                       />
                                     </TkCol>
-                                  </TkRow>
-                                  <TkRow className="mt-3">
+                                  
                                     <TkCol lg={4}>
                                       <TkInput
                                         id="vatNo"
@@ -563,7 +571,7 @@ function AddLead() {
                                     <TkCol>
                                       <div>
                                         <>
-                                          <TkRow className="mt-3">
+                                        <TkRow className="g-3">
                                             <TkCol lg={4}>
                                               <TkSelect
                                                 id="division"
@@ -604,8 +612,7 @@ function AddLead() {
                                                 placeholder="Enter Project Name"
                                               />
                                             </TkCol>
-                                          </TkRow>
-                                          <TkRow className="mt-3">
+                                         
                                             <TkCol lg={4}>
                                               <TkInput
                                                 id="duration"
@@ -633,8 +640,7 @@ function AddLead() {
                                                 placeholder="Enter Location"
                                               />
                                             </TkCol>
-                                          </TkRow>
-                                          <TkRow className="mt-3">
+                                         
                                             <TkCol lg={4}>
                                               <TkInput
                                                 id="locationContactPerson"
@@ -841,8 +847,7 @@ function AddLead() {
                                   ]}
                                 />
                               </TkCol>
-                            </TkRow>
-                            <TkRow className="mt-4">
+                           
                               <TkCol lg={4}>
                                 <TkInput
                                   id="reason"
@@ -907,8 +912,10 @@ function AddLead() {
                       <div>
                         {activeTab === "primary" && (
                           <div>
-                            <TkRow className="mt-3">
-                              <TkRow className="mt-3 mb-5 ">
+                            <TkRow className="mt-4 mb-5">
+                            <TkCol>
+                                <div>
+                                <TkRow className="g-3">
                                 <TkCol lg={4}>
                                   <TkSelect
                                     id="leadSource"
@@ -951,13 +958,18 @@ function AddLead() {
                                           setSelectedDate(e);
                                           setAllDurations({});
                                         }}
+                                        disabled={true}
                                         requiredStarOnLabel={true}
                                       />
                                     )}
                                   />
                                 </TkCol>
                               </TkRow>
+                              </div>
+                              </TkCol>
+                            </TkRow>
 
+                              <TkRow className="mt-3">
                               <TkCol>
                                 <TkCardHeader tag="h5" className="mb-4">
                                   <h4>Personal Details</h4>
@@ -1004,15 +1016,15 @@ function AddLead() {
                                         options={createdByNameTypes}
                                       />
                                     </TkCol> */}
-                                  </TkRow>
-                                  <TkRow className="mt-3 mb-4">
+                                  {/* </TkRow>
+                                  <TkRow className="mt-3 mb-4"> */}
                                     <TkCol lg={4}>
                                       <TkSelect
-                                         id="enquiryBy"
-                                         name="enquiryBy"
-                                         labelName="Enquiry By"
-                                         placeholder="Enquiry By"
-                                         requiredStarOnLabel="true"
+                                        id="enquiryBy"
+                                        name="enquiryBy"
+                                        labelName="Enquiry By"
+                                        placeholder="Enquiry By"
+                                        requiredStarOnLabel="true"
                                         options={[
                                           { value: "1", label: "Direct" },
                                           { value: "2", label: "Consultant" },
@@ -1032,13 +1044,15 @@ function AddLead() {
                                 </div>
                               </TkCol>
                             </TkRow>
+
+
                             <TkRow className="mt-5">
                               <TkCol>
                                 <TkCardHeader tag="h5" className="mb-4">
                                   <h4>Company Details</h4>
                                 </TkCardHeader>
                                 <div>
-                                  <TkRow className="mt-3">
+                                   <TkRow className="g-3">
                                     <TkCol lg={4}>
                                       <TkInput
                                         id="name"
@@ -1065,8 +1079,7 @@ function AddLead() {
                                         placeholder="Enter Email"
                                       />
                                     </TkCol>
-                                  </TkRow>
-                                  <TkRow className="mt-3">
+                                 
                                     <TkCol lg={4}>
                                       <TkInput
                                         id="address"
@@ -1094,8 +1107,7 @@ function AddLead() {
                                         placeholder="Enter CR No"
                                       />
                                     </TkCol>
-                                  </TkRow>
-                                  <TkRow className="mt-3">
+                                 
                                     <TkCol lg={4}>
                                       <TkInput
                                         id="vatNo"
@@ -1150,7 +1162,7 @@ function AddLead() {
                                     <TkCol>
                                       <div>
                                         <>
-                                          <TkRow className="mt-3">
+                                        <TkRow className="g-3">
                                             <TkCol lg={4}>
                                               <TkSelect
                                                 id="division"
@@ -1191,8 +1203,7 @@ function AddLead() {
                                                 placeholder="Enter Project Name"
                                               />
                                             </TkCol>
-                                          </TkRow>
-                                          <TkRow className="mt-3">
+                                          
                                             <TkCol lg={4}>
                                               <TkInput
                                                 id="duration"
@@ -1220,8 +1231,7 @@ function AddLead() {
                                                 placeholder="Enter Location"
                                               />
                                             </TkCol>
-                                          </TkRow>
-                                          <TkRow className="mt-3">
+                                         
                                             <TkCol lg={4}>
                                               <TkInput
                                                 id="locationContactPerson"
@@ -1428,8 +1438,7 @@ function AddLead() {
                                   ]}
                                 />
                               </TkCol>
-                            </TkRow>
-                            <TkRow className="mt-4">
+                           
                               <TkCol lg={4}>
                                 <TkInput
                                   id="reason"
@@ -1493,8 +1502,10 @@ function AddLead() {
                       <div>
                         {activeTab === "primary" && (
                           <div>
-                            <TkRow className="mt-3">
-                              <TkRow className="mt-3 ">
+                            <TkRow className="mt-4 mb-5">
+                              <TkCol>
+                                <div>
+                                <TkRow className="g-3">
                                 <TkCol lg={4}>
                                   <TkSelect
                                     id="leadSource"
@@ -1535,8 +1546,7 @@ function AddLead() {
                                     requiredStarOnLabel="true"
                                   />
                                 </TkCol>
-                              </TkRow>
-                              <TkRow className="mt-3 mb-5">
+                            
                                 <TkCol lg={4}>
                                   <TkSelect
                                     id="visitUpdate"
@@ -1575,12 +1585,18 @@ function AddLead() {
                                           setSelectedDate(e);
                                           setAllDurations({});
                                         }}
+                                        disabled={true}
                                         requiredStarOnLabel={true}
                                       />
                                     )}
                                   />
                                 </TkCol>
                               </TkRow>
+                              </div>
+                              </TkCol>
+                            </TkRow>
+
+                              <TkRow className="mt-3">
                               <TkCol>
                                 <TkCardHeader tag="h5" className="mb-4">
                                   <h4>Personal Details</h4>
@@ -1616,8 +1632,7 @@ function AddLead() {
                                         requiredStarOnLabel="true"
                                       />
                                     </TkCol>
-                                  </TkRow>
-                                  <TkRow className="mt-3 mb-4">
+                                 
                                     <TkCol lg={4}>
                                       <TkSelect
                                         id="enquiryBy"
@@ -1650,7 +1665,7 @@ function AddLead() {
                                   <h4>Company Details</h4>
                                 </TkCardHeader>
                                 <div>
-                                  <TkRow className="mt-3">
+                                <TkRow className="g-3">
                                     <TkCol lg={4}>
                                       <TkInput
                                         id="name"
@@ -1677,8 +1692,7 @@ function AddLead() {
                                         placeholder="Enter Email"
                                       />
                                     </TkCol>
-                                  </TkRow>
-                                  <TkRow className="mt-3">
+                                 
                                     <TkCol lg={4}>
                                       <TkInput
                                         id="address"
@@ -1706,8 +1720,7 @@ function AddLead() {
                                         placeholder="Enter CR No"
                                       />
                                     </TkCol>
-                                  </TkRow>
-                                  <TkRow className="mt-3">
+                                 
                                     <TkCol lg={4}>
                                       <TkInput
                                         id="vatNo"
@@ -1762,7 +1775,7 @@ function AddLead() {
                                     <TkCol>
                                       <div>
                                         <>
-                                          <TkRow className="mt-3">
+                                        <TkRow className="g-3">
                                             <TkCol lg={4}>
                                               <TkSelect
                                                 id="division"
@@ -1803,8 +1816,7 @@ function AddLead() {
                                                 placeholder="Enter Project Name"
                                               />
                                             </TkCol>
-                                          </TkRow>
-                                          <TkRow className="mt-3">
+                                         
                                             <TkCol lg={4}>
                                               <TkInput
                                                 id="duration"
@@ -1832,8 +1844,7 @@ function AddLead() {
                                                 placeholder="Enter Location"
                                               />
                                             </TkCol>
-                                          </TkRow>
-                                          <TkRow className="mt-3">
+                                         
                                             <TkCol lg={4}>
                                               <TkInput
                                                 id="locationContactPerson"
@@ -2041,8 +2052,7 @@ function AddLead() {
                                   ]}
                                 />
                               </TkCol>
-                            </TkRow>
-                            <TkRow className="mt-4">
+                           
                               <TkCol lg={4}>
                                 <TkInput
                                   id="reason"
@@ -2106,8 +2116,10 @@ function AddLead() {
                       <div>
                         {activeTab === "primary" && (
                           <div>
-                            <TkRow className="mt-3">
-                              <TkRow className="mt-3">
+                            <TkRow className="mt-4 mb-5">
+                              <TkCol>
+                                <div>
+                                <TkRow className="g-3">
                                 <TkCol lg={4}>
                                   <TkSelect
                                     id="leadSource"
@@ -2149,8 +2161,7 @@ function AddLead() {
                                     requiredStarOnLabel="true"
                                   />
                                 </TkCol>
-                              </TkRow>
-                              <TkRow className="mt-3 mb-5">
+                            
                                 <TkCol lg={4}>
                                   <Controller
                                     name="createdDate"
@@ -2170,12 +2181,19 @@ function AddLead() {
                                           setSelectedDate(e);
                                           setAllDurations({});
                                         }}
+                                        disabled={true}
                                         requiredStarOnLabel={true}
                                       />
                                     )}
                                   />
                                 </TkCol>
                               </TkRow>
+                              </div>
+                              </TkCol>
+                            </TkRow>
+
+
+                              <TkRow className="mt-3">
                               <TkCol>
                                 <TkCardHeader tag="h5" className="mb-4">
                                   <h4>Personal Details</h4>
@@ -2211,8 +2229,7 @@ function AddLead() {
                                         requiredStarOnLabel="true"
                                       />
                                     </TkCol>
-                                  </TkRow>
-                                  <TkRow className="mt-3 mb-4">
+                                 
                                     <TkCol lg={4}>
                                       <TkSelect
                                         id="enquiryBy"
@@ -2245,7 +2262,7 @@ function AddLead() {
                                   <h4>Company Details</h4>
                                 </TkCardHeader>
                                 <div>
-                                  <TkRow className="mt-3">
+                                <TkRow className="g-3">
                                     <TkCol lg={4}>
                                       <TkInput
                                         id="name"
@@ -2272,8 +2289,7 @@ function AddLead() {
                                         placeholder="Enter Email"
                                       />
                                     </TkCol>
-                                  </TkRow>
-                                  <TkRow className="mt-3">
+                                 
                                     <TkCol lg={4}>
                                       <TkInput
                                         id="address"
@@ -2301,8 +2317,7 @@ function AddLead() {
                                         placeholder="Enter CR No"
                                       />
                                     </TkCol>
-                                  </TkRow>
-                                  <TkRow className="mt-3">
+                                 
                                     <TkCol lg={4}>
                                       <TkInput
                                         id="vatNo"
@@ -2357,7 +2372,7 @@ function AddLead() {
                                     <TkCol>
                                       <div>
                                         <>
-                                          <TkRow className="mt-3">
+                                        <TkRow className="g-3">
                                             <TkCol lg={4}>
                                               <TkSelect
                                                 id="division"
@@ -2398,8 +2413,7 @@ function AddLead() {
                                                 placeholder="Enter Project Name"
                                               />
                                             </TkCol>
-                                          </TkRow>
-                                          <TkRow className="mt-3">
+                                         
                                             <TkCol lg={4}>
                                               <TkInput
                                                 id="duration"
@@ -2427,8 +2441,7 @@ function AddLead() {
                                                 placeholder="Enter Location"
                                               />
                                             </TkCol>
-                                          </TkRow>
-                                          <TkRow className="mt-3">
+                                        
                                             <TkCol lg={4}>
                                               <TkInput
                                                 id="locationContactPerson"
@@ -2636,8 +2649,7 @@ function AddLead() {
                                   ]}
                                 />
                               </TkCol>
-                            </TkRow>
-                            <TkRow className="mt-4">
+                           
                               <TkCol lg={4}>
                                 <TkInput
                                   id="reason"
@@ -2702,8 +2714,10 @@ function AddLead() {
                       <div>
                         {activeTab === "primary" && (
                           <div>
-                            <TkRow className="mt-3">
-                              <TkRow className="mt-3 ">
+                             <TkRow className="mt-4 mb-5">
+                              <TkCol>
+                                <div>
+                                  <TkRow className="g-3">
                                 <TkCol lg={4}>
                                   <TkSelect
                                     id="leadSource"
@@ -2739,8 +2753,7 @@ function AddLead() {
                                     requiredStarOnLabel="true"
                                   />
                                 </TkCol>
-                              </TkRow>
-                              <TkRow className="mt-3 mb-5">
+                             
                                 <TkCol lg={4}>
                                   <TkSelect
                                     id="visitUpdate"
@@ -2779,12 +2792,18 @@ function AddLead() {
                                           setSelectedDate(e);
                                           setAllDurations({});
                                         }}
+                                        disabled={true}
                                         requiredStarOnLabel={true}
                                       />
                                     )}
                                   />
                                 </TkCol>
                               </TkRow>
+                              </div>
+                              </TkCol>
+                            </TkRow>
+
+                            <TkRow className="mt-3">
                               <TkCol>
                                 <TkCardHeader tag="h5" className="mb-4">
                                   <h4>Personal Details</h4>
@@ -2820,8 +2839,7 @@ function AddLead() {
                                         requiredStarOnLabel="true"
                                       />
                                     </TkCol>
-                                  </TkRow>
-                                  <TkRow className="mt-3 mb-4">
+                                
                                     <TkCol lg={4}>
                                       <TkSelect
                                         id="enquiryBy"
@@ -2854,7 +2872,7 @@ function AddLead() {
                                   <h4>Company Details</h4>
                                 </TkCardHeader>
                                 <div>
-                                  <TkRow className="mt-3">
+                                <TkRow className="g-3">
                                     <TkCol lg={4}>
                                       <TkInput
                                         id="name"
@@ -2881,8 +2899,7 @@ function AddLead() {
                                         placeholder="Enter Email"
                                       />
                                     </TkCol>
-                                  </TkRow>
-                                  <TkRow className="mt-3">
+                                  
                                     <TkCol lg={4}>
                                       <TkInput
                                         id="address"
@@ -2910,8 +2927,7 @@ function AddLead() {
                                         placeholder="Enter CR No"
                                       />
                                     </TkCol>
-                                  </TkRow>
-                                  <TkRow className="mt-3">
+                                 
                                     <TkCol lg={4}>
                                       <TkInput
                                         id="vatNo"
@@ -2966,7 +2982,7 @@ function AddLead() {
                                     <TkCol>
                                       <div>
                                         <>
-                                          <TkRow className="mt-3">
+                                        <TkRow className="g-3">
                                             <TkCol lg={4}>
                                               <TkSelect
                                                 id="division"
@@ -3007,8 +3023,7 @@ function AddLead() {
                                                 placeholder="Enter Project Name"
                                               />
                                             </TkCol>
-                                          </TkRow>
-                                          <TkRow className="mt-3">
+                                         
                                             <TkCol lg={4}>
                                               <TkInput
                                                 id="duration"
@@ -3036,8 +3051,7 @@ function AddLead() {
                                                 placeholder="Enter Location"
                                               />
                                             </TkCol>
-                                          </TkRow>
-                                          <TkRow className="mt-3">
+                                          
                                             <TkCol lg={4}>
                                               <TkInput
                                                 id="locationContactPerson"
@@ -3245,8 +3259,7 @@ function AddLead() {
                                   ]}
                                 />
                               </TkCol>
-                            </TkRow>
-                            <TkRow className="mt-4">
+                           
                               <TkCol lg={4}>
                                 <TkInput
                                   id="reason"

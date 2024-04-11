@@ -75,6 +75,12 @@ const segmentTypes = [
   { value: "3", label: "Industry" },
 ];
 
+const leadSourceTypes = [
+  { value: "1", label: "Direct" },
+  { value: "2", label: "Refferal" },
+  { value: "3", label: "New" },
+];
+
 const divisionTypes = [
   { value: "1", label: "Energy" },
   { value: "2", label: "Cooling" },
@@ -141,10 +147,13 @@ const projectTypes = [
 const demoUserData = [
   {
     id: 1,
+    leadSource: "Direct",
+    createdBy: "John Doe",
     name: "John Doe",
     mobileNo: "7541259645",
     email: "john@gmail.com",
-    createdBy: "John Doe",
+    enquiryBy: "Steve Smith",
+    noote: "This is a personal details note",
     createdDate: "2021-06-01",
     leadValue: "100000",
     companyName: "PointsBet",
@@ -167,10 +176,13 @@ const demoUserData = [
   },
   {
     id: 2,
+    leadSource: "Refferal",
+    createdBy: "Steve Smith",
     name: "Steve Smith",
     mobileNo: "9547851245",
     email: "steve@gmail.com",
-    createdBy: "Steve Smith",
+    enquiryBy: "John Doe",
+    noote: "This is a personal details note",
     createdDate: "2021-06-01",
     leadValue: "200000",
     companyName: "LexisNexis",
@@ -194,10 +206,13 @@ const demoUserData = [
   },
   {
     id: 3,
+    leadSource: "New",
+    createdBy: "Michel Cole",
     name: "Will Smith",
     mobileNo: "8451274562",
     email: "will@gmail.com",
-    createdBy: "Will Smith",
+    enquiryBy: "Adam Miller",
+    noote: "This is a personal details note",
     createdDate: "2021-06-01",
     leadValue: "300000",
     companyName: "Infosys",
@@ -221,10 +236,13 @@ const demoUserData = [
   },
   {
     id: 4,
+    leadSource: "Refferal",
+    createdBy: "Adam Miller",
     name: "Adam Miller",
     mobileNo: "8451274562",
     email: "adammiller@gmail.com",
-    createdBy: "Adam Miller",
+    enquiryBy: "John Doe",
+    noote: "This is a personal details note",
     createdDate: "2021-06-01",
     leadValue: "400000",
     companyName: "TCS consultancy Services",
@@ -248,10 +266,13 @@ const demoUserData = [
   },
   {
     id: 5,
+    leadSource: "Direct",
+    createdBy: "Tom Riddle",
     name: "Tom Riddle",
     mobileNo: "9545123252",
     email: "tom@gmail.com",
-    createdBy: "Tom Riddle",
+    enquiryBy: "John Doe",
+    noote: "This is a personal details note",
     createdDate: "2021-06-01",
     leadValue: "500000",
     companyName: "Mindtree",
@@ -1494,6 +1515,7 @@ export {
   createdByNameTypes,
   clientTypes,
   segmentTypes,
+  leadSourceTypes,
   divisionTypes,
   requirementTypes,
   organizerTypes,
