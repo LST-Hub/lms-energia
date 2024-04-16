@@ -953,6 +953,23 @@ function AddLead() {
                                                 </FormErrorText>
                                               )}
                                             </TkCol>
+
+                                            <TkCol lg={4}>
+                                              <TkInput
+                                                {...register("unitOfMeasure")}
+                                                id="unitOfMeasure"
+                                                name="unitOfMeasure"
+                                                type="text"
+                                                labelName="Unit Of Measure"
+                                                placeholder="Enter Unit Of Measure"
+                                              />
+                                              {errors.unitOfMeasure && (
+                                                <FormErrorText>
+                                                  {errors.unitOfMeasure.message}
+                                                </FormErrorText>
+                                              )}
+                                            </TkCol>
+
                                             <TkCol lg={4}>
                                               <Controller
                                                 name="delivery"
@@ -1097,7 +1114,7 @@ function AddLead() {
                                               )}
                                             </TkCol>
 
-                                            <TkCol lg={4}>
+                                            <TkCol lg={12}>
                                               <TkInput
                                                 {...register("notes")}
                                                 id="note"
@@ -2012,6 +2029,22 @@ function AddLead() {
                                             </TkCol>
 
                                             <TkCol lg={4}>
+                                              <TkInput
+                                                {...register("unitOfMeasure")}
+                                                id="unitOfMeasure"
+                                                name="unitOfMeasure"
+                                                type="text"
+                                                labelName="Unit Of Measure"
+                                                placeholder="Enter Unit Of Measure"
+                                              />
+                                              {errors.unitOfMeasure && (
+                                                <FormErrorText>
+                                                  {errors.unitOfMeasure.message}
+                                                </FormErrorText>
+                                              )}
+                                            </TkCol>
+
+                                            <TkCol lg={4}>
                                               <Controller
                                                 name="delivery"
                                                 control={control}
@@ -2155,7 +2188,7 @@ function AddLead() {
                                               )}
                                             </TkCol>
 
-                                            <TkCol lg={4}>
+                                            <TkCol lg={12}>
                                               <TkInput
                                                 {...register("notes")}
                                                 id="note"
@@ -3131,6 +3164,22 @@ function AddLead() {
                                             </TkCol>
 
                                             <TkCol lg={4}>
+                                              <TkInput
+                                                {...register("unitOfMeasure")}
+                                                id="unitOfMeasure"
+                                                name="unitOfMeasure"
+                                                type="text"
+                                                labelName="Unit Of Measure"
+                                                placeholder="Enter Unit Of Measure"
+                                              />
+                                              {errors.unitOfMeasure && (
+                                                <FormErrorText>
+                                                  {errors.unitOfMeasure.message}
+                                                </FormErrorText>
+                                              )}
+                                            </TkCol>
+
+                                            <TkCol lg={4}>
                                               <Controller
                                                 name="delivery"
                                                 control={control}
@@ -3274,7 +3323,7 @@ function AddLead() {
                                               )}
                                             </TkCol>
 
-                                            <TkCol lg={4}>
+                                            <TkCol lg={12}>
                                               <TkInput
                                                 {...register("notes")}
                                                 id="note"
@@ -4216,6 +4265,22 @@ function AddLead() {
                                             </TkCol>
 
                                             <TkCol lg={4}>
+                                              <TkInput
+                                                {...register("unitOfMeasure")}
+                                                id="unitOfMeasure"
+                                                name="unitOfMeasure"
+                                                type="text"
+                                                labelName="Unit Of Measure"
+                                                placeholder="Enter Unit Of Measure"
+                                              />
+                                              {errors.unitOfMeasure && (
+                                                <FormErrorText>
+                                                  {errors.unitOfMeasure.message}
+                                                </FormErrorText>
+                                              )}
+                                            </TkCol>
+
+                                            <TkCol lg={4}>
                                               <Controller
                                                 name="delivery"
                                                 control={control}
@@ -4359,7 +4424,7 @@ function AddLead() {
                                               )}
                                             </TkCol>
 
-                                            <TkCol lg={4}>
+                                            <TkCol lg={12}>
                                               <TkInput
                                                 {...register("notes")}
                                                 id="note"
@@ -5334,6 +5399,22 @@ function AddLead() {
                                             </TkCol>
 
                                             <TkCol lg={4}>
+                                              <TkInput
+                                                {...register("unitOfMeasure")}
+                                                id="unitOfMeasure"
+                                                name="unitOfMeasure"
+                                                type="text"
+                                                labelName="Unit Of Measure"
+                                                placeholder="Enter Unit Of Measure"
+                                              />
+                                              {errors.unitOfMeasure && (
+                                                <FormErrorText>
+                                                  {errors.unitOfMeasure.message}
+                                                </FormErrorText>
+                                              )}
+                                            </TkCol>
+
+                                            <TkCol lg={4}>
                                               <Controller
                                                 name="delivery"
                                                 control={control}
@@ -5477,7 +5558,7 @@ function AddLead() {
                                               )}
                                             </TkCol>
 
-                                            <TkCol lg={4}>
+                                            <TkCol lg={12}>
                                               <TkInput
                                                 {...register("notes")}
                                                 id="note"

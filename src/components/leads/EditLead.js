@@ -925,6 +925,22 @@ function AddLead({ id, userData, mode }) {
                             </TkCol>
 
                             <TkCol lg={4}>
+                              <TkInput
+                                {...register("unitOfMeasure")}
+                                id="unitOfMeasure"
+                                name="unitOfMeasure"
+                                type="text"
+                                labelName="Unit Of Measure"
+                                placeholder="Enter Unit Of Measure"
+                              />
+                              {errors.unitOfMeasure && (
+                                <FormErrorText>
+                                  {errors.unitOfMeasure.message}
+                                </FormErrorText>
+                              )}
+                            </TkCol>
+
+                            <TkCol lg={4}>
                               <Controller
                                 name="delivery"
                                 control={control}
@@ -984,86 +1000,84 @@ function AddLead({ id, userData, mode }) {
                               )}
                             </TkCol>
                             <TkCol lg={4}>
-                                              <TkInput
-                                                {...register("contactPersonName")}
-                                                id="contactPersonName"
-                                                name="contactPersonName"
-                                                type="text"
-                                                labelName="Contact Person Name"
-                                                placeholder="Enter Contact Person Name"
-                                              />
-                                              {errors.contactPersonName && (
-                                                <FormErrorText>
-                                                  {errors.contactPersonName.message}
-                                                </FormErrorText>
-                                              )}
-                                            </TkCol>
+                              <TkInput
+                                {...register("contactPersonName")}
+                                id="contactPersonName"
+                                name="contactPersonName"
+                                type="text"
+                                labelName="Contact Person Name"
+                                placeholder="Enter Contact Person Name"
+                              />
+                              {errors.contactPersonName && (
+                                <FormErrorText>
+                                  {errors.contactPersonName.message}
+                                </FormErrorText>
+                              )}
+                            </TkCol>
 
-                                            <TkCol lg={4}>
-                                              <TkInput
-                                                {...register("contactPersonNumber")}
-                                                id="contactPersonNumber"
-                                                name="contactPersonNumber"
-                                                type="text"
-                                                labelName="Contact Person Number"
-                                                placeholder="Enter Contact Person Number"
-                                              />
-                                              {errors.contactPersonNumber && (
-                                                <FormErrorText>
-                                                  {errors.contactPersonNumber.message}
-                                                </FormErrorText>
-                                              )}
-                                            </TkCol>
+                            <TkCol lg={4}>
+                              <TkInput
+                                {...register("contactPersonNumber")}
+                                id="contactPersonNumber"
+                                name="contactPersonNumber"
+                                type="text"
+                                labelName="Contact Person Number"
+                                placeholder="Enter Contact Person Number"
+                              />
+                              {errors.contactPersonNumber && (
+                                <FormErrorText>
+                                  {errors.contactPersonNumber.message}
+                                </FormErrorText>
+                              )}
+                            </TkCol>
 
+                            <TkCol lg={4}>
+                              <TkInput
+                                {...register("contactPersonEmail")}
+                                id="contactPersonEmail"
+                                name="contactPersonEmail"
+                                type="text"
+                                labelName="Contact Person Email"
+                                placeholder="Enter Contact Person Email"
+                              />
+                              {errors.contactPersonEmail && (
+                                <FormErrorText>
+                                  {errors.contactPersonEmail.message}
+                                </FormErrorText>
+                              )}
+                            </TkCol>
 
-                                            <TkCol lg={4}>
-                                              <TkInput
-                                                {...register("contactPersonEmail")}
-                                                id="contactPersonEmail"
-                                                name="contactPersonEmail"
-                                                type="text"
-                                                labelName="Contact Person Email"
-                                                placeholder="Enter Contact Person Email"
-                                              />
-                                              {errors.contactPersonEmail && (
-                                                <FormErrorText>
-                                                  {errors.contactPersonEmail.message}
-                                                </FormErrorText>
-                                              )}
-                                            </TkCol>
+                            <TkCol lg={4}>
+                              <TkInput
+                                {...register("contactPersonDesignation")}
+                                id="contactPersonDesignation"
+                                name="contactPersonDesignation"
+                                type="text"
+                                labelName="Contact Person Designation"
+                                placeholder="Enter Contact Person Designation"
+                              />
+                              {errors.contactPersonDesignation && (
+                                <FormErrorText>
+                                  {errors.contactPersonDesignation.message}
+                                </FormErrorText>
+                              )}
+                            </TkCol>
 
-
-                                            <TkCol lg={4}>
-                                              <TkInput
-                                                {...register("contactPersonDesignation")}
-                                                id="contactPersonDesignation"
-                                                name="contactPersonDesignation"
-                                                type="text"
-                                                labelName="Contact Person Designation"
-                                                placeholder="Enter Contact Person Designation"
-                                              />
-                                              {errors.contactPersonDesignation && (
-                                                <FormErrorText>
-                                                  {errors.contactPersonDesignation.message}
-                                                </FormErrorText>
-                                              )}
-                                            </TkCol>
-
-                                            <TkCol lg={4}>
-                                              <TkInput
-                                                {...register("notes")}
-                                                id="note"
-                                                name="note"
-                                                type="textarea"
-                                                labelName="Notes"
-                                                placeholder="Enter Note"
-                                              />
-                                              {errors.notes && (
-                                                <FormErrorText>
-                                                  {errors.notes.message}
-                                                </FormErrorText>
-                                              )}
-                                            </TkCol>
+                            <TkCol lg={12}>
+                              <TkInput
+                                {...register("notes")}
+                                id="note"
+                                name="note"
+                                type="textarea"
+                                labelName="Notes"
+                                placeholder="Enter Note"
+                              />
+                              {errors.notes && (
+                                <FormErrorText>
+                                  {errors.notes.message}
+                                </FormErrorText>
+                              )}
+                            </TkCol>
                           </TkRow>
                         </>
                       </div>
