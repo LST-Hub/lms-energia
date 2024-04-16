@@ -137,19 +137,25 @@ const ActivityPopup = ({ isPopup }) => {
                       <TkRow className="g-3">
                         <TkCol lg={4}>
                           <Controller
-                            name="_activityType"
+                            name="activityType"
                             control={control}
                             render={({ field }) => (
                               <TkSelect
                                 {...field}
                                 labelName="Activity Type"
-                                labelId={"_activityType"}
-                                id="_activityType"
+                                labelId="activityType"
+                                id="activityType"
                                 options={leadActivityTypes}
                                 placeholder="Select Activity Type"
+                                requiredStarOnLabel={true}
                               />
                             )}
                           />
+                          {errors.activityType && (
+                            <FormErrorText>
+                              {errors.activityType.message}
+                            </FormErrorText>
+                          )}
                         </TkCol>
 
                         {/* <TkCol lg={4}>
@@ -173,10 +179,14 @@ const ActivityPopup = ({ isPopup }) => {
                             placeholder="Enter Lead Name"
                             requiredStarOnLabel={true}
                           />
+                          {errors.lead && (
+                            <FormErrorText>{errors.lead.message}</FormErrorText>
+                          )}
                         </TkCol>
 
                         <TkCol lg={4}>
                           <TkInput
+                            {...register("location")}
                             labelName="Location"
                             labelId={"location"}
                             id="location"
@@ -184,6 +194,11 @@ const ActivityPopup = ({ isPopup }) => {
                             placeholder="Enter Location"
                             requiredStarOnLabel={true}
                           />
+                          {errors.location && (
+                            <FormErrorText>
+                              {errors.location.message}
+                            </FormErrorText>
+                          )}
                         </TkCol>
 
                         <TkCol lg={4}>
@@ -196,6 +211,11 @@ const ActivityPopup = ({ isPopup }) => {
                             placeholder="Enter Phone Number"
                             requiredStarOnLabel={true}
                           />
+                          {errors.phoneNumber && (
+                            <FormErrorText>
+                              {errors.phoneNumber.message}
+                            </FormErrorText>
+                          )}
                         </TkCol>
 
                         <TkCol lg={4}>
@@ -214,6 +234,11 @@ const ActivityPopup = ({ isPopup }) => {
                               />
                             )}
                           />
+                          {errors.status && (
+                            <FormErrorText>
+                              {errors.status.message}
+                            </FormErrorText>
+                          )}
                         </TkCol>
 
                         <TkCol lg={4}>
@@ -235,6 +260,9 @@ const ActivityPopup = ({ isPopup }) => {
                               />
                             )}
                           />
+                          {errors.date && (
+                            <FormErrorText>{errors.date.message}</FormErrorText>
+                          )}
                         </TkCol>
 
                         <TkCol lg={4}>
@@ -262,25 +290,33 @@ const ActivityPopup = ({ isPopup }) => {
                                 convertToTimeFotTimeSheet(e.target.value)
                               );
                             }}
-                            labelName="Follow Up Time (HH:MM)"
+                            labelName="Time (HH:MM)"
                             id={"time"}
                             name="time"
                             type="text"
                             placeholder="Enter Time"
                             requiredStarOnLabel={true}
                           />
+                          {errors.time && (
+                            <FormErrorText>{errors.time.message}</FormErrorText>
+                          )}
                         </TkCol>
 
                         <TkCol lg={8}>
-                              <TkInput
-                                {...register("comments")}
-                                id="comments"
-                                name="comments"
-                                type="textarea"
-                                labelName="Comments"
-                                placeholder="Enter Comments"
-                              />
-                            </TkCol>
+                          <TkInput
+                            {...register("comments")}
+                            id="comments"
+                            name="comments"
+                            type="textarea"
+                            labelName="Comments"
+                            placeholder="Enter Comments"
+                          />
+                          {errors.comments && (
+                            <FormErrorText>
+                              {errors.comments.message}
+                            </FormErrorText>
+                          )}
+                        </TkCol>
 
                         <div className="d-flex mt-4 space-childern">
                           <div className="ms-auto" id="update-form-btns">

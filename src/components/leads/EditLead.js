@@ -13,6 +13,7 @@ import {
   leadSourceTypes,
   requirementTypes,
   segmentTypes,
+  smallInputMaxLength,
   urls,
 } from "../../../src/utils/Constants";
 import { useRouter } from "next/router";
@@ -51,17 +52,133 @@ import Link from "next/link";
 import { yupResolver } from "@hookform/resolvers/yup";
 import TkModal, { TkModalHeader } from "../TkModal";
 import ActivityPopup from "./ActivityPopup";
+import FormErrorText from "../forms/ErrorText";
 const schema = Yup.object({
-  name: Yup.string()
+  createdBy: Yup.string()
     .min(
       MinNameLength,
-      `First name should have at least ${MinNameLength} character.`
+      `Created By should have at least ${MinNameLength} character.`
     )
     .max(
       MaxNameLength,
-      `First name should have at most ${MaxNameLength} characters.`
+      `Created By should have at most ${MaxNameLength} characters.`
     )
-    .required("First name is required"),
+    .required("Created By is required"),
+
+  name: Yup.string()
+    .min(MinNameLength, `Name should have at least ${MinNameLength} character.`)
+    .max(MaxNameLength, `Name should have at most ${MaxNameLength} characters.`)
+    .required("Name is required"),
+
+  mobileNo: Yup.string()
+    .nullable()
+    .required("Mobile Number is Required")
+    .matches(/^[0-9+() -]*$/, "Mobile number must be number.")
+    .max(
+      MaxPhoneNumberLength,
+      `Mobile number must be at most ${MaxPhoneNumberLength} numbers.`
+    ),
+
+  email: Yup.string()
+    .nullable()
+    .required("Email is Required")
+    .email("Email must be valid.")
+    .min(
+      MinEmailLength,
+      `Email should have at least ${MinEmailLength} characters.`
+    )
+    .max(
+      MaxEmailLength,
+      `Email should have at most ${MaxEmailLength} characters.`
+    ),
+
+  note: Yup.string().max(
+    bigInpuMaxLength,
+    `Note should have at most ${bigInpuMaxLength} characters.`
+  ),
+
+  companyName: Yup.string()
+    .nullable()
+    .max(
+      smallInputMaxLength,
+      `Company name should have at most ${smallInputMaxLength} characters.`
+    ),
+
+  contactNo: Yup.string()
+    .nullable()
+    .required("Contact Number is Required")
+    .matches(/^[0-9+() -]*$/, "Contact number must be number.")
+    .max(
+      MaxPhoneNumberLength,
+      `Contact number must be at most ${MaxPhoneNumberLength} numbers.`
+    ),
+
+  companyEmail: Yup.string()
+    .nullable()
+    .email("Company Email must be valid.")
+    .min(
+      MinEmailLength,
+      `Company Email should have at least ${MinEmailLength} characters.`
+    )
+    .max(
+      MaxEmailLength,
+      `Company Email should have at most ${MaxEmailLength} characters.`
+    ),
+
+  companyAddress: Yup.string()
+    .nullable()
+    .max(
+      smallInputMaxLength,
+      `Company address should have at most ${smallInputMaxLength} characters.`
+    ),
+
+  projectName: Yup.string()
+    .min(
+      MinNameLength,
+      `Project Name should have at least ${MinNameLength} character.`
+    )
+    .max(
+      MaxNameLength,
+      `Project Name should have at most ${MaxNameLength} characters.`
+    ),
+
+  duration: Yup.string()
+    .matches(/^\d+(:[0-5][0-9]){0,2}$/, "duration cannot contain characters")
+    .test(
+      "duration",
+      "Duration should be less than 24 hours",
+      function (value) {
+        if (convertTimeToSec(value) > 86400 || value > 24) {
+          return false;
+        }
+        return true;
+      }
+    ),
+
+  location: Yup.string()
+    .min(
+      MinNameLength,
+      `Location should have at least ${MinNameLength} character.`
+    )
+    .max(
+      MaxNameLength,
+      `Location should have at most ${MaxNameLength} characters.`
+    ),
+
+  locationContactPerson: Yup.string()
+    .min(
+      MinNameLength,
+      `Location contact person should have at least ${MinNameLength} character.`
+    )
+    .max(
+      MaxNameLength,
+      `Location contact person should have at most ${MaxNameLength} characters.`
+    ),
+
+  notes: Yup.string().max(
+    bigInpuMaxLength,
+    `Notes should have at most ${bigInpuMaxLength} characters.`
+  ),
 }).required();
 // const tabs = {
 //   directCall: "directCall",
@@ -336,6 +453,11 @@ function AddLead({ id, userData, mode }) {
                           />
                         )}
                       />
+                      {errors.leadSource && (
+                        <FormErrorText>
+                          {errors.leadSource.message}
+                        </FormErrorText>
+                      )}
                     </TkCol>
 
                     {/* <TkCol lg={4}>
@@ -365,6 +487,11 @@ function AddLead({ id, userData, mode }) {
                         disabled={true}
                         requiredStarOnLabel="true"
                       />
+                      {errors.createdBy && (
+                        <FormErrorText>
+                          {errors.createdBy.message}
+                        </FormErrorText>
+                      )}
                     </TkCol>
                     <TkCol lg={4}>
                       <Controller
@@ -390,6 +517,11 @@ function AddLead({ id, userData, mode }) {
                           />
                         )}
                       />
+                      {errors.createdDate && (
+                        <FormErrorText>
+                          {errors.leadSource.message}
+                        </FormErrorText>
+                      )}
                     </TkCol>
                   </TkRow>
                 </div>
@@ -412,6 +544,9 @@ function AddLead({ id, userData, mode }) {
                         requiredStarOnLabel="true"
                         disabled={viewMode}
                       />
+                      {errors.name && (
+                        <FormErrorText>{errors.name.message}</FormErrorText>
+                      )}
                     </TkCol>
                     <TkCol lg={4}>
                       <TkInput
@@ -424,6 +559,9 @@ function AddLead({ id, userData, mode }) {
                         requiredStarOnLabel="true"
                         disabled={viewMode}
                       />
+                      {errors.mobileNo && (
+                        <FormErrorText>{errors.mobileNo.message}</FormErrorText>
+                      )}
                     </TkCol>
                     <TkCol lg={4}>
                       <TkInput
@@ -436,6 +574,9 @@ function AddLead({ id, userData, mode }) {
                         requiredStarOnLabel="true"
                         disabled={viewMode}
                       />
+                      {errors.email && (
+                        <FormErrorText>{errors.email.message}</FormErrorText>
+                      )}
                     </TkCol>
 
                     {/* <TkCol lg={4}>
@@ -470,6 +611,11 @@ function AddLead({ id, userData, mode }) {
                           />
                         )}
                       />
+                      {errors.enquiryBy && (
+                        <FormErrorText>
+                          {errors.enquiryBy.message}
+                        </FormErrorText>
+                      )}
                     </TkCol>
                     {/* <TkCol lg={4}>
                       <TkSelect
@@ -487,12 +633,16 @@ function AddLead({ id, userData, mode }) {
                     </TkCol> */}
                     <TkCol lg={8}>
                       <TkInput
-                        {...register("noote")}
+                        {...register("note")}
                         id="note"
                         type="text"
                         labelName="Note"
                         placeholder="Enter Note"
+                        disabled={viewMode}
                       />
+                      {errors.note && (
+                        <FormErrorText>{errors.note.message}</FormErrorText>
+                      )}
                     </TkCol>
                   </TkRow>
                 </div>
@@ -515,6 +665,11 @@ function AddLead({ id, userData, mode }) {
                         placeholder="Enter Company Name"
                         disabled={viewMode}
                       />
+                      {errors.companyName && (
+                        <FormErrorText>
+                          {errors.companyName.message}
+                        </FormErrorText>
+                      )}
                     </TkCol>
                     <TkCol lg={4}>
                       <TkInput
@@ -526,30 +681,45 @@ function AddLead({ id, userData, mode }) {
                         placeholder="Enter Contact No"
                         disabled={viewMode}
                       />
+                      {errors.contactNo && (
+                        <FormErrorText>
+                          {errors.contactNo.message}
+                        </FormErrorText>
+                      )}
                     </TkCol>
                     <TkCol lg={4}>
                       <TkInput
-                        {...register("cemail")}
-                        id="cemail"
-                        name="cemail"
+                        {...register("companyEmail")}
+                        id="companyEmail"
+                        name="companyEmail"
                         type="text"
                         labelName="Email"
                         placeholder="Enter Email"
                         disabled={viewMode}
                       />
+                      {errors.companyEmail && (
+                        <FormErrorText>
+                          {errors.companyEmail.message}
+                        </FormErrorText>
+                      )}
                     </TkCol>
                     {/* </TkRow>
                   <TkRow className="mt-3"> */}
                     <TkCol lg={4}>
                       <TkInput
-                        {...register("address")}
-                        id="address"
-                        name="address"
+                        {...register("companyAddress")}
+                        id="companyAddress"
+                        name="companyAddress"
                         type="text"
                         labelName="Address"
                         placeholder="Enter Address"
                         disabled={viewMode}
                       />
+                      {errors.companyAddress && (
+                        <FormErrorText>
+                          {errors.companyAddress.message}
+                        </FormErrorText>
+                      )}
                     </TkCol>
                     <TkCol lg={4}>
                       <TkInput
@@ -561,6 +731,9 @@ function AddLead({ id, userData, mode }) {
                         placeholder="Enter Region"
                         disabled={viewMode}
                       />
+                      {errors.region && (
+                        <FormErrorText>{errors.region.message}</FormErrorText>
+                      )}
                     </TkCol>
                     <TkCol lg={4}>
                       <TkInput
@@ -572,6 +745,9 @@ function AddLead({ id, userData, mode }) {
                         placeholder="Enter CR No"
                         disabled={viewMode}
                       />
+                      {errors.crno && (
+                        <FormErrorText>{errors.crno.message}</FormErrorText>
+                      )}
                     </TkCol>
                     {/* </TkRow>
                   <TkRow className="mt-3"> */}
@@ -585,6 +761,9 @@ function AddLead({ id, userData, mode }) {
                         placeholder="Enter VAT No"
                         disabled={viewMode}
                       />
+                      {errors.vatNo && (
+                        <FormErrorText>{errors.vatNo.message}</FormErrorText>
+                      )}
                     </TkCol>
 
                     <TkCol lg={4}>
@@ -604,6 +783,11 @@ function AddLead({ id, userData, mode }) {
                           />
                         )}
                       />
+                      {errors.clientType && (
+                        <FormErrorText>
+                          {errors.clientType.message}
+                        </FormErrorText>
+                      )}
                     </TkCol>
 
                     <TkCol lg={4}>
@@ -623,6 +807,9 @@ function AddLead({ id, userData, mode }) {
                           />
                         )}
                       />
+                      {errors.segment && (
+                        <FormErrorText>{errors.segment.message}</FormErrorText>
+                      )}
                     </TkCol>
                   </TkRow>
                 </div>
@@ -660,6 +847,11 @@ function AddLead({ id, userData, mode }) {
                                   />
                                 )}
                               />
+                              {errors.division && (
+                                <FormErrorText>
+                                  {errors.division.message}
+                                </FormErrorText>
+                              )}
                             </TkCol>
 
                             <TkCol lg={4}>
@@ -679,6 +871,11 @@ function AddLead({ id, userData, mode }) {
                                   />
                                 )}
                               />
+                              {errors.requirement && (
+                                <FormErrorText>
+                                  {errors.requirement.message}
+                                </FormErrorText>
+                              )}
                             </TkCol>
 
                             {/* <TkCol lg={4}>
@@ -702,6 +899,11 @@ function AddLead({ id, userData, mode }) {
                                 placeholder="Enter Project Name"
                                 disabled={viewMode}
                               />
+                              {errors.projectName && (
+                                <FormErrorText>
+                                  {errors.projectName.message}
+                                </FormErrorText>
+                              )}
                             </TkCol>
                             {/* </TkRow>
                           <TkRow className="mt-3"> */}
@@ -715,6 +917,11 @@ function AddLead({ id, userData, mode }) {
                                 placeholder="Enter Duration"
                                 disabled={viewMode}
                               />
+                              {errors.duration && (
+                                <FormErrorText>
+                                  {errors.duration.message}
+                                </FormErrorText>
+                              )}
                             </TkCol>
 
                             <TkCol lg={4}>
@@ -736,6 +943,11 @@ function AddLead({ id, userData, mode }) {
                                   />
                                 )}
                               />
+                              {errors.delivery && (
+                                <FormErrorText>
+                                  {errors.delivery.message}
+                                </FormErrorText>
+                              )}
                             </TkCol>
                             <TkCol lg={4}>
                               <TkInput
@@ -747,6 +959,11 @@ function AddLead({ id, userData, mode }) {
                                 placeholder="Enter Location"
                                 disabled={viewMode}
                               />
+                              {errors.location && (
+                                <FormErrorText>
+                                  {errors.location.message}
+                                </FormErrorText>
+                              )}
                             </TkCol>
                             {/* </TkRow>
                           <TkRow className="mt-3"> */}
@@ -760,18 +977,93 @@ function AddLead({ id, userData, mode }) {
                                 placeholder="Enter Location Contact Person"
                                 disabled={viewMode}
                               />
+                              {errors.locationContactPerson && (
+                                <FormErrorText>
+                                  {errors.locationContactPerson.message}
+                                </FormErrorText>
+                              )}
                             </TkCol>
-                            <TkCol lg={8}>
-                              <TkInput
-                                {...register("note")}
-                                id="note"
-                                name="note"
-                                type="textarea"
-                                labelName="Note"
-                                placeholder="Enter Note"
-                                disabled={viewMode}
-                              />
-                            </TkCol>
+                            <TkCol lg={4}>
+                                              <TkInput
+                                                {...register("contactPersonName")}
+                                                id="contactPersonName"
+                                                name="contactPersonName"
+                                                type="text"
+                                                labelName="Contact Person Name"
+                                                placeholder="Enter Contact Person Name"
+                                              />
+                                              {errors.contactPersonName && (
+                                                <FormErrorText>
+                                                  {errors.contactPersonName.message}
+                                                </FormErrorText>
+                                              )}
+                                            </TkCol>
+
+                                            <TkCol lg={4}>
+                                              <TkInput
+                                                {...register("contactPersonNumber")}
+                                                id="contactPersonNumber"
+                                                name="contactPersonNumber"
+                                                type="text"
+                                                labelName="Contact Person Number"
+                                                placeholder="Enter Contact Person Number"
+                                              />
+                                              {errors.contactPersonNumber && (
+                                                <FormErrorText>
+                                                  {errors.contactPersonNumber.message}
+                                                </FormErrorText>
+                                              )}
+                                            </TkCol>
+
+
+                                            <TkCol lg={4}>
+                                              <TkInput
+                                                {...register("contactPersonEmail")}
+                                                id="contactPersonEmail"
+                                                name="contactPersonEmail"
+                                                type="text"
+                                                labelName="Contact Person Email"
+                                                placeholder="Enter Contact Person Email"
+                                              />
+                                              {errors.contactPersonEmail && (
+                                                <FormErrorText>
+                                                  {errors.contactPersonEmail.message}
+                                                </FormErrorText>
+                                              )}
+                                            </TkCol>
+
+
+                                            <TkCol lg={4}>
+                                              <TkInput
+                                                {...register("contactPersonDesignation")}
+                                                id="contactPersonDesignation"
+                                                name="contactPersonDesignation"
+                                                type="text"
+                                                labelName="Contact Person Designation"
+                                                placeholder="Enter Contact Person Designation"
+                                              />
+                                              {errors.contactPersonDesignation && (
+                                                <FormErrorText>
+                                                  {errors.contactPersonDesignation.message}
+                                                </FormErrorText>
+                                              )}
+                                            </TkCol>
+
+                                            <TkCol lg={4}>
+                                              <TkInput
+                                                {...register("notes")}
+                                                id="note"
+                                                name="note"
+                                                type="textarea"
+                                                labelName="Notes"
+                                                placeholder="Enter Note"
+                                              />
+                                              {errors.notes && (
+                                                <FormErrorText>
+                                                  {errors.notes.message}
+                                                </FormErrorText>
+                                              )}
+                                            </TkCol>
                           </TkRow>
                         </>
                       </div>
