@@ -42,9 +42,6 @@ import TkContainer from "../TkContainer";
 import TkIcon from "../TkIcon";
 import ActivityPopup from "./ActivityPopup";
 import FormErrorText from "../forms/ErrorText";
-import getRestletScriptDeploymentId, {
-  postRestletScriptDeploymentId,
-} from "../../utils/NsAPIcal";
 import { convertTimeToSec, convertToTimeFotTimeSheet } from "../../utils/time";
 
 const tabs = {
