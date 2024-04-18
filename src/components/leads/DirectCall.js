@@ -1393,7 +1393,7 @@ function DirectCall() {
               </TkButton>
             </div>
           </div>
-          f
+          
           <TkModal
             isOpen={activityModal}
             leadActivityToggle={leadActivityToggle}
