@@ -18,27 +18,17 @@ import {
 } from "../../../src/utils/Constants";
 import { useRouter } from "next/router";
 import { TkCardBody, TkCardHeader } from "../../../src/components/TkCard";
-import DirectCall from "./DirectCall";
-import LeadAssigning from "./LeadAssigning";
-import LeadNurturing from "./LeadNurturing";
 import TkContainer from "../../../src/components/TkContainer";
-import LeadEmail from "./LeadEmail";
-import SocialMedia from "./SocialMedia";
-import LeadPortals from "./LeadPortals";
-import DirectMarketing from "./DirectMarketing";
 import TkRow, { TkCol } from "../../../src/components/TkRow";
 import TkSelect from "../../../src/components/forms/TkSelect";
 import TkInput from "../../../src/components/forms/TkInput";
-import { Controller, useForm } from "react-hook-form";
-import TkLabel from "../forms/TkLabel";
-import TkCheckBox from "../forms/TkCheckBox";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
 import TkIcon from "../TkIcon";
 import TkButton from "../TkButton";
 import TkDate from "../forms/TkDate";
 import TkForm from "../forms/TkForm";
 import * as Yup from "yup";
 import {
-  API_BASE_URL,
   MaxEmailLength,
   MaxPhoneNumberLength,
   MinEmailLength,
@@ -180,15 +170,6 @@ const schema = Yup.object({
     `Notes should have at most ${bigInpuMaxLength} characters.`
   ),
 }).required();
-// const tabs = {
-//   directCall: "directCall",
-//   email: "email",
-//   socialMedia: "socialMedia",
-//   portals: "portals",
-//   directMarketing: "directMarketing",
-//   leadAssigning: "leadAssigning",
-//   leadNurutring: "leadNurutring",
-// };
 
 const tabs = {
   directCall: "directCall",
@@ -197,8 +178,10 @@ const tabs = {
   socialMedia: "socialMedia",
   portals: "portals",
   directMarketing: "directMarketing",
+  requirementDetails: "requirementDetails",
+  locationDetails: "locationDetails",
 };
-function AddLead({ id, userData, mode }) {
+function EditLead({ id, userData, mode }) {
   const {
     control,
     register,
@@ -224,6 +207,7 @@ function AddLead({ id, userData, mode }) {
   const [isLeadEdit, setIsLeadEdit] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [allDurations, setAllDurations] = useState({});
+  const [activeSubTab, setActiveSubTab] = useState(tabs.requirementDetails);
   const [requirementDetailsSections, setRequirementDetailsSections] = useState([
     { id: 1, isVisible: true },
   ]);
@@ -414,6 +398,480 @@ function AddLead({ id, userData, mode }) {
     setValue("createdDate", new Date());
     setSelectedDate(new Date());
   }, [setValue]);
+
+  const [rows, setRows] = useState([
+    {
+      division: null,
+      requirement: "",
+      projectname: "",
+      duration: "",
+      unitOfMeasure: null,
+      delivery: "",
+    },
+  ]);
+  const [locationRows, setLocationRows] = useState([
+    {
+      location: "",
+      contactPersonName: "",
+      phoneNumber: "",
+      email: "",
+      designation: "",
+    },
+  ]);
+  const toggleTab = (tab) => {
+    if (activeTab !== tab) {
+      // setActiveTab(tab);
+      setActiveSubTab(tab);
+      // router.push(`${urls.leadEdit}?tab=${tab}`, undefined, {
+      //   scroll: false,
+      // });
+    }
+  };
+  const handleAddRow = () => {
+    setRows([
+      ...rows,
+      {
+        division: null,
+        requirement: "",
+        projectname: "",
+        duration: "",
+        unitOfMeasure: null,
+        delivery: "",
+      },
+    ]);
+  };
+
+  const handleAddLocationRow = () => {
+    setLocationRows([
+      ...locationRows,
+      {
+        location: "",
+        contactPersonName: "",
+        phoneNumber: "",
+        email: "",
+        designation: "",
+      },
+    ]);
+  };
+
+  const { remove: removeDivision } = useFieldArray({
+    control,
+    name: "division",
+  });
+  const { remove: removeRequirement } = useFieldArray({
+    control,
+    name: "requirement",
+  });
+  const { remove: removeProjectName } = useFieldArray({
+    control,
+    name: "projectname",
+  });
+  const { remove: removeDuration } = useFieldArray({
+    control,
+    name: "duration",
+  });
+  const { remove: removeUnitOfMeasure } = useFieldArray({
+    control,
+    name: "unitOfMeasure",
+  });
+  const { remove: removeDelivery } = useFieldArray({
+    control,
+    name: "delivery",
+  });
+  const { remove: removeLocation } = useFieldArray({
+    control,
+    name: "location",
+  });
+  const { remove: removeContactPersonName } = useFieldArray({
+    control,
+    name: "contactPersonName",
+  });
+  const { remove: removephoneNumber } = useFieldArray({
+    control,
+    name: "phoneNumber",
+  });
+  const { remove: removeEmail } = useFieldArray({
+    control,
+    name: "email",
+  });
+  const { remove: removeDesignation } = useFieldArray({
+    control,
+    name: "designation",
+  });
+
+  const handleRemoveRow = (index) => {
+    removeDivision(index);
+    removeRequirement(index);
+    removeProjectName(index);
+    removeDuration(index);
+    removeUnitOfMeasure(index);
+    removeDelivery(index);
+    removeLocation(index);
+    removeContactPersonName(index);
+    removephoneNumber(index);
+    removeEmail(index);
+    removeDesignation(index);
+    const newRows = [...rows];
+    newRows.splice(index, 1);
+    setRows(newRows);
+  };
+
+  const handleRemoveLocationRow = (i) => {
+    removeLocation(i);
+    removeContactPersonName(i);
+    removephoneNumber(i);
+    removeEmail(i);
+    removeDesignation(i);
+    const newLocationRows = [...locationRows];
+    newLocationRows.splice(i, 1);
+    setLocationRows(newLocationRows);
+  };
+  const requirementDetailsColumns = [
+    {
+      Header: "Division",
+      accessor: "division",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`division[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <TkSelect
+                  {...field}
+                  id={"division"}
+                  placeholder="Division"
+                  options={[
+                    {
+                      value: "1",
+                      label: "Energy",
+                    },
+                    {
+                      value: "2",
+                      label: "Cooling",
+                    },
+                    {
+                      value: "3",
+                      label: "Welding",
+                    },
+                  ]}
+                  requiredStarOnLabel={true}
+                  disabled={viewMode}
+                  style={{ width: "200px" }}
+                />
+              )}
+            />
+            {errors?.task?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.task?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+    {
+      Header: "Requirement",
+      accessor: "requirement",
+      Cell: (cellProps) => {
+        return (
+          <Controller
+            control={control}
+            name={`requirement[${cellProps.row.index}]`}
+            rules={{ required: "Employee is required" }}
+            render={({ field }) => (
+              <>
+                <TkSelect
+                  {...field}
+                  id="requirement"
+                  placeholder="Requirement"
+                  // loading={selectedTaskId && isUsersLoading}
+                  // options={allUsersData}
+                  // menuPlacement="top"
+                  style={{ width: "200px" }}
+                  disabled={viewMode}
+                />
+                {errors?.requirement?.[cellProps.row.index] && (
+                  <FormErrorText>
+                    {errors?.requirement?.[cellProps.row.index]?.message}
+                  </FormErrorText>
+                )}
+              </>
+            )}
+          />
+        );
+      },
+    },
+    {
+      Header: "Project Name",
+      accessor: "projectName",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              placeholder="Project Name"
+              disabled={viewMode}
+              {...register(`projectName[${cellProps.row.index}]`)}
+            />
+            {errors?.duration?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.duration?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+    {
+      Header: "Duration",
+      accessor: "duration",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              placeholder="Duration"
+              disabled={viewMode}
+              {...register(`duration[${cellProps.row.index}]`, {
+                required: "Duration is required",
+                validate: (value) => {
+                  if (value && !/^[0-9]*([.:][0-9]+)?$/.test(value)) {
+                    return "Invalid Duration";
+                  }
+                  if (convertTimeToSec(value) > 86400 || value > 24) {
+                    return "Duration should be less than 24 hours";
+                  }
+                },
+              })}
+              onBlur={(e) => {
+                setValue(
+                  `duration[${cellProps.row.index}]`,
+                  convertToTimeFotTimeSheet(e.target.value)
+                );
+              }}
+            />
+            {errors?.duration?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.duration?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Unit Of Measure",
+      accessor: "unitOfMeasure",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`unitOfMeasure[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <>
+                  <TkSelect
+                    {...field}
+                    id="unitOfMeasure"
+                    placeholder="Unit Of Measure"
+                    disabled={viewMode}
+                    // loading={selectedTaskId && isUsersLoading}
+                    // options={allUsersData}
+                    // menuPlacement="top"
+                  />
+                  {errors?.unitOfMeasure?.[cellProps.row.index] && (
+                    <FormErrorText>
+                      {errors?.unitOfMeasure?.[cellProps.row.index]?.message}
+                    </FormErrorText>
+                  )}
+                </>
+              )}
+            />
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Expected Delivery Date",
+      accessor: "delivery",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`delivery[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <>
+                  <TkDate
+                    {...field}
+                    id="delivery"
+                    placeholder="Expected Delivery Date"
+                    disabled={viewMode}
+                  />
+                  {errors?.delivery?.[cellProps.row.index] && (
+                    <FormErrorText>
+                      {errors?.delivery?.[cellProps.row.index]?.message}
+                    </FormErrorText>
+                  )}
+                </>
+              )}
+            />
+          </>
+        );
+      },
+    },
+    {
+      Header: "Action",
+      accessor: "action",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkButton
+              type={"button"}
+              onClick={() => {
+                handleRemoveRow(cellProps.row.index);
+              }}
+              disabled={rows.length === 1}
+            >
+              Delete
+            </TkButton>
+          </>
+        );
+      },
+    },
+  ];
+  const locationDetailsColumns = [
+    {
+      Header: "Location",
+      accessor: "location",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              placeholder="Location Name"
+              disabled={viewMode}
+              {...register(`location[${cellProps.row.index}]`)}
+            />
+            {errors?.location?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.location?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+    {
+      Header: "Contact Person Name",
+      accessor: "contactPersonName",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              placeholder="Contact Person Name"
+              disabled={viewMode}
+              {...register(`contactPersonName[${cellProps.row.index}]`)}
+            />
+            {errors?.contactPersonName?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.contactPersonName?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+    {
+      Header: "Phone Number",
+      accessor: "phoneNumber",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              placeholder="Phone Number"
+              disabled={viewMode}
+              {...register(`phoneNumber[${cellProps.row.index}]`)}
+            />
+            {errors?.phoneNumber?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.phoneNumber?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Email",
+      accessor: "email",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              placeholder="Email"
+              disabled={viewMode}
+              {...register(`email[${cellProps.row.index}]`)}
+            />
+            {errors?.email?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.email?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Designation",
+      accessor: "designation",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              placeholder="Designation"
+              disabled={viewMode}
+              {...register(`designation[${cellProps.row.index}]`)}
+            />
+            {errors?.designation?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.designation?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Action",
+      accessor: "action",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkButton
+              type={"button"}
+              onClick={() => {
+                handleRemoveLocationRow(cellProps.row.index);
+              }}
+              disabled={locationRows.length === 1}
+            >
+              Delete
+            </TkButton>
+          </>
+        );
+      },
+    },
+  ];
 
   return (
     <>
@@ -815,1365 +1273,68 @@ function AddLead({ id, userData, mode }) {
                 </div>
               </TkCol>
             </TkRow>
+
             <TkRow className="mt-5">
               <TkCol>
-                <TkCardHeader tag="h5" className="mb-3">
-                  <h4>Requirement Details</h4>
-                </TkCardHeader>
-              </TkCol>
-            </TkRow>
-            {requirementDetailsSections.map((section) => (
-              <div key={section.id}>
-                {section.isVisible && (
-                  <TkRow className=" mb-4">
-                    <TkCol>
-                      <div>
-                        <>
-                          <TkRow className="g-3">
-                            <TkCol lg={4}>
-                              <Controller
-                                name="division"
-                                control={control}
-                                render={({ field }) => (
-                                  <TkSelect
-                                    {...field}
-                                    labelName="Division "
-                                    labelId={"_division"}
-                                    id="division"
-                                    placeholder="Select Division"
-                                    options={divisionTypes}
-                                    requiredStarOnLabel={true}
-                                    disabled={viewMode}
-                                  />
-                                )}
-                              />
-                              {errors.division && (
-                                <FormErrorText>
-                                  {errors.division.message}
-                                </FormErrorText>
-                              )}
-                            </TkCol>
-
-                            <TkCol lg={4}>
-                              <Controller
-                                name="requirement"
-                                control={control}
-                                render={({ field }) => (
-                                  <TkSelect
-                                    {...field}
-                                    labelName="Requirement "
-                                    labelId={"_requirement"}
-                                    id="requirement"
-                                    placeholder="Select Requirement"
-                                    options={requirementTypes}
-                                    requiredStarOnLabel={true}
-                                    disabled={viewMode}
-                                  />
-                                )}
-                              />
-                              {errors.requirement && (
-                                <FormErrorText>
-                                  {errors.requirement.message}
-                                </FormErrorText>
-                              )}
-                            </TkCol>
-
-                            {/* <TkCol lg={4}>
-                          <TkInput
-                            {...register("requirement")}
-                            id="requirement"
-                            name="requirement"
-                            type="textarea"
-                            labelName="Requirement"
-                            placeholder="Enter Requirement"
-                            disabled={viewMode}
-                          />
-                        </TkCol> */}
-                            <TkCol lg={4}>
-                              <TkInput
-                                {...register("projectName")}
-                                id="projectName"
-                                name="projectName"
-                                type="text"
-                                labelName="Project Name"
-                                placeholder="Enter Project Name"
-                                disabled={viewMode}
-                              />
-                              {errors.projectName && (
-                                <FormErrorText>
-                                  {errors.projectName.message}
-                                </FormErrorText>
-                              )}
-                            </TkCol>
-                            {/* </TkRow>
-                          <TkRow className="mt-3"> */}
-                            <TkCol lg={4}>
-                              <TkInput
-                                {...register("duration")}
-                                id="duration"
-                                name="duration"
-                                type="text"
-                                labelName="Duration"
-                                placeholder="Enter Duration"
-                                disabled={viewMode}
-                              />
-                              {errors.duration && (
-                                <FormErrorText>
-                                  {errors.duration.message}
-                                </FormErrorText>
-                              )}
-                            </TkCol>
-
-                            <TkCol lg={4}>
-                              <TkInput
-                                {...register("unitOfMeasure")}
-                                id="unitOfMeasure"
-                                name="unitOfMeasure"
-                                type="text"
-                                labelName="Unit Of Measure"
-                                placeholder="Enter Unit Of Measure"
-                              />
-                              {errors.unitOfMeasure && (
-                                <FormErrorText>
-                                  {errors.unitOfMeasure.message}
-                                </FormErrorText>
-                              )}
-                            </TkCol>
-
-                            <TkCol lg={4}>
-                              <Controller
-                                name="delivery"
-                                control={control}
-                                render={({ field }) => (
-                                  <TkDate
-                                    {...field}
-                                    labelName="Expected Delivery Date"
-                                    id={"delivery"}
-                                    placeholder="Enter Expected Delivery Date"
-                                    options={{
-                                      altInput: true,
-                                      dateFormat: "d M, Y",
-                                    }}
-                                    requiredStarOnLabel={true}
-                                    disabled={viewMode}
-                                  />
-                                )}
-                              />
-                              {errors.delivery && (
-                                <FormErrorText>
-                                  {errors.delivery.message}
-                                </FormErrorText>
-                              )}
-                            </TkCol>
-                            <TkCol lg={4}>
-                              <TkInput
-                                {...register("location")}
-                                id="location"
-                                name="location"
-                                type="text"
-                                labelName="Location"
-                                placeholder="Enter Location"
-                                disabled={viewMode}
-                              />
-                              {errors.location && (
-                                <FormErrorText>
-                                  {errors.location.message}
-                                </FormErrorText>
-                              )}
-                            </TkCol>
-                            {/* </TkRow>
-                          <TkRow className="mt-3"> */}
-                            <TkCol lg={4}>
-                              <TkInput
-                                {...register("locationContactPerson")}
-                                id="locationContactPerson"
-                                name="locationContactPerson"
-                                type="text"
-                                labelName="Location Contact Person"
-                                placeholder="Enter Location Contact Person"
-                                disabled={viewMode}
-                              />
-                              {errors.locationContactPerson && (
-                                <FormErrorText>
-                                  {errors.locationContactPerson.message}
-                                </FormErrorText>
-                              )}
-                            </TkCol>
-                            <TkCol lg={4}>
-                              <TkInput
-                                {...register("contactPersonName")}
-                                id="contactPersonName"
-                                name="contactPersonName"
-                                type="text"
-                                labelName="Contact Person Name"
-                                placeholder="Enter Contact Person Name"
-                              />
-                              {errors.contactPersonName && (
-                                <FormErrorText>
-                                  {errors.contactPersonName.message}
-                                </FormErrorText>
-                              )}
-                            </TkCol>
-
-                            <TkCol lg={4}>
-                              <TkInput
-                                {...register("contactPersonNumber")}
-                                id="contactPersonNumber"
-                                name="contactPersonNumber"
-                                type="text"
-                                labelName="Contact Person Number"
-                                placeholder="Enter Contact Person Number"
-                              />
-                              {errors.contactPersonNumber && (
-                                <FormErrorText>
-                                  {errors.contactPersonNumber.message}
-                                </FormErrorText>
-                              )}
-                            </TkCol>
-
-                            <TkCol lg={4}>
-                              <TkInput
-                                {...register("contactPersonEmail")}
-                                id="contactPersonEmail"
-                                name="contactPersonEmail"
-                                type="text"
-                                labelName="Contact Person Email"
-                                placeholder="Enter Contact Person Email"
-                              />
-                              {errors.contactPersonEmail && (
-                                <FormErrorText>
-                                  {errors.contactPersonEmail.message}
-                                </FormErrorText>
-                              )}
-                            </TkCol>
-
-                            <TkCol lg={4}>
-                              <TkInput
-                                {...register("contactPersonDesignation")}
-                                id="contactPersonDesignation"
-                                name="contactPersonDesignation"
-                                type="text"
-                                labelName="Contact Person Designation"
-                                placeholder="Enter Contact Person Designation"
-                              />
-                              {errors.contactPersonDesignation && (
-                                <FormErrorText>
-                                  {errors.contactPersonDesignation.message}
-                                </FormErrorText>
-                              )}
-                            </TkCol>
-
-                            <TkCol lg={12}>
-                              <TkInput
-                                {...register("notes")}
-                                id="note"
-                                name="note"
-                                type="textarea"
-                                labelName="Notes"
-                                placeholder="Enter Note"
-                              />
-                              {errors.notes && (
-                                <FormErrorText>
-                                  {errors.notes.message}
-                                </FormErrorText>
-                              )}
-                            </TkCol>
-                          </TkRow>
-                        </>
-                      </div>
-
-                      <TkRow className="mt-3">
-                        <TkCol>
-                          <TkButton
-                            type="button"
-                            onClick={() => handleToggleVisibility(section.id)}
-                            className="bg-transparent border-0 ps-0 ms-0 text-center"
-                            disabled={viewMode}
-                          >
-                            {section.isVisible ? (
-                              <span className="ms-auto badge p-1 rounded-circle badge-soft-danger fs-4 me-3">
-                                <TkIcon className="ri-delete-bin-6-line"></TkIcon>
-                              </span>
-                            ) : (
-                              <TkIcon className="ri-add-line"></TkIcon>
-                            )}
-                          </TkButton>
-                        </TkCol>
-                      </TkRow>
-                    </TkCol>
-                  </TkRow>
-                )}
-              </div>
-            ))}
-            <TkRow className="justify-content-center">
-              <TkCol lg={2} className="text-center">
-                <TkButton
-                  type="button"
-                  color="primary"
-                  onClick={handleAddSection}
-                  disabled={viewMode}
-                >
-                  Add
-                </TkButton>
+                <Nav className="nav-tabs dropdown-tabs nav-tabs-custom mb-3">
+                  <NavItem>
+                    <NavLink
+                      href="#"
+                      className={classnames({
+                        active: activeSubTab === tabs.requirementDetails,
+                      })}
+                      onClick={() => toggleTab(tabs.requirementDetails)}
+                    >
+                      Requirement Details
+                    </NavLink>
+                  </NavItem>
+                  <NavItem>
+                    <NavLink
+                      href="#"
+                      className={classnames({
+                        active: activeSubTab === tabs.locationDetails,
+                      })}
+                      onClick={() => toggleTab(tabs.locationDetails)}
+                    >
+                      Location Details
+                    </NavLink>
+                  </NavItem>
+                </Nav>
               </TkCol>
             </TkRow>
 
-            {/* <TkCol md={1} lg={5} className="text-center text-md-end">
-              <TkButton
-                type="button"
-                className="bg-transparent border-0 ps-0 ms-0 text-center"
-                onClick={handleAddSection}
-                disabled={viewMode}
-              >
-                <span className="add-timsheet-btn badge p-1 rounded-circle badge-soft-dark fs-4">
-                  <TkIcon className="ri-add-line"></TkIcon>
-                </span>
-              </TkButton>
-            </TkCol> */}
+            <TkRow className="mt-3">
+              <TkCol>
+                <TabContent activeTab={activeSubTab}>
+                  <TabPane tabId={tabs.requirementDetails}>
+                    <TkTableContainer
+                      customPageSize={true}
+                      showAddButton={true}
+                      onClickAdd={handleAddRow}
+                      onclickDelete={handleRemoveRow}
+                      columns={requirementDetailsColumns}
+                      data={rows}
+                      thClass="text-dark"
+                      dynamicTable={true}
+                    />
+                  </TabPane>
+                  <TabPane tabId={tabs.locationDetails}>
+                    <TkTableContainer
+                      customPageSize={true}
+                      showAddButton={true}
+                      onClickAdd={handleAddLocationRow}
+                      onclickDelete={handleRemoveLocationRow}
+                      columns={locationDetailsColumns}
+                      data={locationRows}
+                      thClass="text-dark"
+                      dynamicTable={true}
+                    />
+                  </TabPane>
+                </TabContent>
+              </TkCol>
+            </TkRow>
+
             <TkRow className="g-3">
-              {/* <TkCardHeader>
-                <h5>Leads Events</h5>
-              </TkCardHeader> */}
-
-              {/* <TkCol lg={12}>
-                <TkRow className="justify-content-start mt-4">
-                  <TkCol xs={"auto"}>
-                    <TkCheckBox
-                      // {...register("directCallCheckbox")}
-                      id="directCallCheckbox"
-                      type="checkbox"
-                      onChange={(e) => setDirectCallCheckbox(e.target.checked)}
-                    />
-                    <TkLabel className="ms-3 me-lg-5" id="supervisor">
-                      Direct Call
-                    </TkLabel>
-                  </TkCol>
-
-                  <TkCol xs={"auto"}>
-                    <TkCheckBox
-                      // {...register("emailCheckbox")}
-                      id="emailCheckbox"
-                      type="checkbox"
-                      onChange={(e) => setEmailCheckbox(e.target.checked)}
-                    />
-                    <TkLabel className="ms-3 me-lg-5" id="privatePhoenCall">
-                      Email
-                    </TkLabel>
-                  </TkCol>
-
-                  <TkCol xs={"auto"}>
-                    <TkCheckBox
-                      // {...register("socialMediaCheckbox")}
-                      id="socialMediaCheckbox"
-                      type="checkbox"
-                      onChange={(e) => setSocialMediaCheckbox(e.target.checked)}
-                    />
-                    <TkLabel className="ms-3 me-lg-5" id="privatePhoenCall">
-                      Social Media
-                    </TkLabel>
-                  </TkCol>
-
-                  <TkCol xs={"auto"}>
-                    <TkCheckBox
-                      // {...register("portsCheckbox")}
-                      id="portsCheckbox"
-                      type="checkbox"
-                      onChange={(e) => setPortalsCheckbox(e.target.checked)}
-                    />
-                    <TkLabel className="ms-3 me-lg-5" id="privatePhoenCall">
-                      Portals
-                    </TkLabel>
-                  </TkCol>
-
-                  <TkCol xs={"auto"}>
-                    <TkCheckBox
-                      // {...register("directMarketingCheckbox")}
-                      id="directMarketingCheckbox"
-                      type="checkbox"
-                      onChange={(e) =>
-                        setDirectMarketingCheckbox(e.target.checked)
-                      }
-                    />
-                    <TkLabel className="ms-3 me-lg-5" id="privatePhoenCall">
-                      Direct Marketing
-                    </TkLabel>
-                  </TkCol>
-                </TkRow>
-              </TkCol> */}
-
-              {/* Direct Call */}
-              {/* <div>
-                {directCallCheckbox && (
-                  <>
-                    <TkRow className="justify-content-center mt-4">
-                      <TkCardHeader>
-                        <h4>Direct Call</h4>
-                      </TkCardHeader>
-                      <TkRow className="g-3 gx-4 ">
-                        <TkCol lg={4}>
-                          <TkSelect
-                            id="leadSource"
-                            name="leadSource"
-                            labelName="Lead Source"
-                            placeholder="Select Lead Source"
-                            requiredStarOnLabel="true"
-                            options={[
-                              { value: "1", label: "Direct" },
-                              { value: "2", label: "Refferal" },
-                              { value: "3", label: "New" },
-                            ]}
-                          />
-                        </TkCol>
-                      </TkRow>
-
-                      <TkRow className="mt-5">
-                        <TkCol>
-                          <TkCardHeader tag="h5" className="mb-3">
-                            <h4>Lead Assigning</h4>
-                          </TkCardHeader>
-                          <>
-                            <TkRow className="g-3">
-                              <TkCol lg={4}>
-                                <TkSelect
-                                  id="region"
-                                  name="region"
-                                  labelName="Region"
-                                  placeholder="Select Region"
-                                  options={[
-                                    { value: "1", label: "Region 1" },
-                                    { value: "2", label: "Region 2" },
-                                    { value: "3", label: "Region 3" },
-                                  ]}
-                                />
-                              </TkCol>
-                              <TkCol lg={4}>
-                                <TkSelect
-                                  id="salesTeam"
-                                  name="salesTeam"
-                                  labelName="Sales Team Name"
-                                  placeholder="Select Sales Team"
-                                  options={[
-                                    {
-                                      value: "1",
-                                      label: "Sales Team 1",
-                                    },
-                                    {
-                                      value: "2",
-                                      label: "Sales Team 2",
-                                    },
-                                    {
-                                      value: "3",
-                                      label: "Sales Team 3",
-                                    },
-                                  ]}
-                                />
-                              </TkCol>
-                            </TkRow>
-                          </>
-                        </TkCol>
-                      </TkRow>
-
-                      <TkRow className="mt-5">
-                        <TkCol>
-                          <TkCardHeader tag="h5" className="mb-3">
-                            <h4>Lead Nurturing</h4>
-                          </TkCardHeader>
-                          <div>
-                            <TkRow className="g-3">
-                              <TkCol lg={4}>
-                                <TkSelect
-                                  id="primaryAction"
-                                  name="primaryAction"
-                                  labelName="Primary Action"
-                                  placeholder="Select Primary Action"
-                                  options={[
-                                    { value: "1", label: "Replied" },
-                                    { value: "2", label: "Call" },
-                                    {
-                                      value: "3",
-                                      label: "Meeting appointment fixed",
-                                    },
-                                    {
-                                      value: "3",
-                                      label: "Meeting done",
-                                    },
-                                    {
-                                      value: "3",
-                                      label: "Waiting for the reply",
-                                    },
-                                    {
-                                      value: "3",
-                                      label: "Meeting postponed",
-                                    },
-                                  ]}
-                                />
-                              </TkCol>
-                              <TkCol lg={4}>
-                                <TkInput
-                                  id="leadValue"
-                                  name="leadValue"
-                                  labelName="Lead Value"
-                                  type="text"
-                                  placeholder="Enter Lead Value"
-                                />
-                              </TkCol>
-                              <TkCol lg={4}>
-                                <TkSelect
-                                  id="leadUpdate"
-                                  name="leadUpdate"
-                                  labelName="Lead Update"
-                                  placeholder="Select Lead Update"
-                                  options={[
-                                    {
-                                      value: "1",
-                                      label: "Qualified",
-                                    },
-                                    {
-                                      value: "2",
-                                      label: "Unqualified",
-                                    },
-                                  ]}
-                                />
-                              </TkCol>
-                            </TkRow>
-                            <TkRow className="mt-4">
-                              <TkCol lg={4}>
-                                <TkInput
-                                  id="reason"
-                                  name="reason"
-                                  labelName="Reason if unqualified lead"
-                                  type="text"
-                                  placeholder="Enter Reason"
-                                />
-                              </TkCol>
-                              <TkCol lg={4}>
-                                <TkSelect
-                                  id="prospectNurturing"
-                                  name="prospectNurturing"
-                                  labelName="Prospect Nurturing"
-                                  placeholder="Select Prospect Nurturing"
-                                  options={[
-                                    {
-                                      value: "1",
-                                      label: "Quotation Issued",
-                                    },
-                                    {
-                                      value: "2",
-                                      label: "Waiting fro the approval",
-                                    },
-                                    {
-                                      value: "3",
-                                      label: "Waiting for document",
-                                    },
-                                    {
-                                      value: "3",
-                                      label: "Waiting for the PO",
-                                    },
-                                  ]}
-                                />
-                              </TkCol>
-                            </TkRow>
-                          </div>
-                        </TkCol>
-                      </TkRow>
-                    </TkRow>
-                  </>
-                )}
-
-                {/* Email */}
-              {/* <>
-                  {emailCheckbox && (
-                    <>
-                      <TkRow className="justify-content-center mt-4">
-                        <TkCardHeader>
-                          <h4>Email</h4>
-                        </TkCardHeader>
-                        <TkRow className="g-3 gx-4 ">
-                          <TkCol lg={4}>
-                            <TkSelect
-                              id="leadSource"
-                              name="leadSource"
-                              labelName="Lead Source"
-                              placeholder="Select Lead Source"
-                              requiredStarOnLabel="true"
-                              options={[
-                                { value: "1", label: "Direct" },
-                                { value: "2", label: "Refferal" },
-                                { value: "3", label: "Portal" },
-                                { value: "4", label: "New" },
-                                { value: "5", label: "Existing" },
-                              ]}
-                            />
-                          </TkCol>
-                        </TkRow>
-
-                        <TkRow className="mt-5">
-                          <TkCol>
-                            <TkCardHeader tag="h5" className="mb-3">
-                              <h4>Lead Assigning</h4>
-                            </TkCardHeader>
-                            <div>
-                              <TkRow className="g-3">
-                                <TkCol lg={4}>
-                                  <TkSelect
-                                    id="region"
-                                    name="region"
-                                    labelName="Region"
-                                    placeholder="Select Region"
-                                    options={[
-                                      { value: "1", label: "Region 1" },
-                                      { value: "2", label: "Region 2" },
-                                      { value: "3", label: "Region 3" },
-                                    ]}
-                                  />
-                                </TkCol>
-                                <TkCol lg={4}>
-                                  <TkSelect
-                                    id="salesTeam"
-                                    name="salesTeam"
-                                    labelName="Sales Team Name"
-                                    placeholder="Select Sales Team"
-                                    options={[
-                                      {
-                                        value: "1",
-                                        label: "Sales Team 1",
-                                      },
-                                      {
-                                        value: "2",
-                                        label: "Sales Team 2",
-                                      },
-                                      {
-                                        value: "3",
-                                        label: "Sales Team 3",
-                                      },
-                                    ]}
-                                  />
-                                </TkCol>
-                              </TkRow>
-                            </div>
-                          </TkCol>
-                        </TkRow>
-
-                        <TkRow className="mt-5">
-                          <TkCol>
-                            <TkCardHeader tag="h5" className="mb-3">
-                              <h4>Lead Nurturing</h4>
-                            </TkCardHeader>
-                            <div>
-                              <TkRow className="g-3">
-                                <TkCol lg={4}>
-                                  <TkSelect
-                                    id="primaryAction"
-                                    name="primaryAction"
-                                    labelName="Primary Action"
-                                    placeholder="Select Primary Action"
-                                    options={[
-                                      { value: "1", label: "Replied" },
-                                      { value: "2", label: "Call" },
-                                      {
-                                        value: "3",
-                                        label: "Meeting appointment fixed",
-                                      },
-                                      {
-                                        value: "3",
-                                        label: "Meeting done",
-                                      },
-                                      {
-                                        value: "3",
-                                        label: "Waiting for the reply",
-                                      },
-                                      {
-                                        value: "3",
-                                        label: "Meeting postponed",
-                                      },
-                                    ]}
-                                  />
-                                </TkCol>
-                                <TkCol lg={4}>
-                                  <TkInput
-                                    id="leadValue"
-                                    name="leadValue"
-                                    labelName="Lead Value"
-                                    type="text"
-                                    placeholder="Enter Lead Value"
-                                  />
-                                </TkCol>
-                                <TkCol lg={4}>
-                                  <TkSelect
-                                    id="leadUpdate"
-                                    name="leadUpdate"
-                                    labelName="Lead Update"
-                                    placeholder="Select Lead Update"
-                                    options={[
-                                      {
-                                        value: "1",
-                                        label: "Qualified",
-                                      },
-                                      {
-                                        value: "2",
-                                        label: "Unqualified",
-                                      },
-                                    ]}
-                                  />
-                                </TkCol>
-                              </TkRow>
-                              <TkRow className="mt-4">
-                                <TkCol lg={4}>
-                                  <TkInput
-                                    id="reason"
-                                    name="reason"
-                                    labelName="Reason if unqualified lead"
-                                    type="text"
-                                    placeholder="Enter Reason"
-                                  />
-                                </TkCol>
-                                <TkCol lg={4}>
-                                  <TkSelect
-                                    id="prospectNurturing"
-                                    name="prospectNurturing"
-                                    labelName="Prospect Nurturing"
-                                    placeholder="Select Prospect Nurturing"
-                                    options={[
-                                      {
-                                        value: "1",
-                                        label: "Quotation Issued",
-                                      },
-                                      {
-                                        value: "2",
-                                        label: "Waiting fro the approval",
-                                      },
-                                      {
-                                        value: "3",
-                                        label: "Waiting for document",
-                                      },
-                                      {
-                                        value: "3",
-                                        label: "Waiting for the PO",
-                                      },
-                                    ]}
-                                  />
-                                </TkCol>
-                              </TkRow>
-                            </div>
-                          </TkCol>
-                        </TkRow>
-                      </TkRow>
-                    </>
-                  )}
-                </> */}
-
-              {/* Social Media */}
-              {/* <>
-                  {socialMediaCheckbox && (
-                    <>
-                      <TkRow className="justify-content-center mt-4">
-                        <TkCardHeader>
-                          <h4>Social Media</h4>
-                        </TkCardHeader>
-                        <TkRow className="g-3 gx-4 ">
-                          <TkCol lg={4}>
-                            <TkSelect
-                              id="leadSource"
-                              name="leadSource"
-                              labelName="Lead Source"
-                              placeholder="Select Lead Source"
-                              requiredStarOnLabel="true"
-                              options={[
-                                { value: "1", label: "New" },
-                                { value: "2", label: "Existing" },
-                              ]}
-                            />
-                          </TkCol>
-                          <TkCol lg={4}>
-                            <TkSelect
-                              id="platformType"
-                              name="platformType"
-                              labelName="Name Of Platform"
-                              placeholder="Select Platform"
-                              requiredStarOnLabel="true"
-                              options={[
-                                { value: "1", label: "Linkedin" },
-                                { value: "2", label: "Facebook" },
-                                { value: "3", label: "Instagram" },
-                                { value: "4", label: "Twitter" },
-                              ]}
-                            />
-                          </TkCol>
-                          <TkCol lg={4}>
-                            <TkInput
-                              id="campaignName"
-                              name="campaignName"
-                              type="text"
-                              labelName="Campaign Name"
-                              placeholder="Enter Campaign Name"
-                              requiredStarOnLabel="true"
-                            />
-                          </TkCol>
-                        </TkRow>
-
-                        <TkRow className="mt-5">
-                          <TkCol>
-                            <TkCardHeader tag="h5" className="mb-3">
-                              <h4>Lead Assigning</h4>
-                            </TkCardHeader>
-                            <div>
-                              <TkRow className="g-3">
-                                <TkCol lg={4}>
-                                  <TkSelect
-                                    id="region"
-                                    name="region"
-                                    labelName="Region"
-                                    placeholder="Select Region"
-                                    options={[
-                                      { value: "1", label: "Region 1" },
-                                      { value: "2", label: "Region 2" },
-                                      { value: "3", label: "Region 3" },
-                                    ]}
-                                  />
-                                </TkCol>
-                                <TkCol lg={4}>
-                                  <TkSelect
-                                    id="salesTeam"
-                                    name="salesTeam"
-                                    labelName="Sales Team Name"
-                                    placeholder="Select Sales Team"
-                                    options={[
-                                      {
-                                        value: "1",
-                                        label: "Sales Team 1",
-                                      },
-                                      {
-                                        value: "2",
-                                        label: "Sales Team 2",
-                                      },
-                                      {
-                                        value: "3",
-                                        label: "Sales Team 3",
-                                      },
-                                    ]}
-                                  />
-                                </TkCol>
-                              </TkRow>
-                            </div>
-                          </TkCol>
-                        </TkRow>
-
-                        <TkRow className="mt-5">
-                          <TkCol>
-                            <TkCardHeader tag="h5" className="mb-3">
-                              <h4>Lead Nurturing</h4>
-                            </TkCardHeader>
-                            <div>
-                              <TkRow className="g-3">
-                                <TkCol lg={4}>
-                                  <TkSelect
-                                    id="primaryAction"
-                                    name="primaryAction"
-                                    labelName="Primary Action"
-                                    placeholder="Select Primary Action"
-                                    options={[
-                                      { value: "1", label: "Replied" },
-                                      { value: "2", label: "Call" },
-                                      {
-                                        value: "3",
-                                        label: "Meeting appointment fixed",
-                                      },
-                                      {
-                                        value: "3",
-                                        label: "Meeting done",
-                                      },
-                                      {
-                                        value: "3",
-                                        label: "Waiting for the reply",
-                                      },
-                                      {
-                                        value: "3",
-                                        label: "Meeting postponed",
-                                      },
-                                    ]}
-                                  />
-                                </TkCol>
-                                <TkCol lg={4}>
-                                  <TkInput
-                                    id="leadValue"
-                                    name="leadValue"
-                                    labelName="Lead Value"
-                                    type="text"
-                                    placeholder="Enter Lead Value"
-                                  />
-                                </TkCol>
-                                <TkCol lg={4}>
-                                  <TkSelect
-                                    id="leadUpdate"
-                                    name="leadUpdate"
-                                    labelName="Lead Update"
-                                    placeholder="Select Lead Update"
-                                    options={[
-                                      {
-                                        value: "1",
-                                        label: "Qualified",
-                                      },
-                                      {
-                                        value: "2",
-                                        label: "Unqualified",
-                                      },
-                                    ]}
-                                  />
-                                </TkCol>
-                              </TkRow>
-                              <TkRow className="mt-4">
-                                <TkCol lg={4}>
-                                  <TkInput
-                                    id="reason"
-                                    name="reason"
-                                    labelName="Reason if unqualified lead"
-                                    type="text"
-                                    placeholder="Enter Reason"
-                                  />
-                                </TkCol>
-                                <TkCol lg={4}>
-                                  <TkSelect
-                                    id="prospectNurturing"
-                                    name="prospectNurturing"
-                                    labelName="Prospect Nurturing"
-                                    placeholder="Select Prospect Nurturing"
-                                    options={[
-                                      {
-                                        value: "1",
-                                        label: "Quotation Issued",
-                                      },
-                                      {
-                                        value: "2",
-                                        label: "Waiting fro the approval",
-                                      },
-                                      {
-                                        value: "3",
-                                        label: "Waiting for document",
-                                      },
-                                      {
-                                        value: "3",
-                                        label: "Waiting for the PO",
-                                      },
-                                    ]}
-                                  />
-                                </TkCol>
-                              </TkRow>
-                            </div>
-                          </TkCol>
-                        </TkRow>
-                      </TkRow>
-                    </>
-                  )}
-                </> */}
-
-              {/* Ports */}
-              {/* <>
-                  {portalsCheckbox && (
-                    <>
-                      <TkRow className="justify-content-center mt-4">
-                        <TkCardHeader>
-                          <h4>Portals</h4>
-                        </TkCardHeader>
-                        <TkRow className="g-3 gx-4 ">
-                          <TkCol lg={4}>
-                            <TkSelect
-                              id="leadSource"
-                              name="leadSource"
-                              labelName="Lead Source"
-                              placeholder="Select Lead Source"
-                              requiredStarOnLabel="true"
-                              options={[
-                                { value: "1", label: "New" },
-                                { value: "2", label: "Existing" },
-                              ]}
-                            />
-                          </TkCol>
-                          <TkCol lg={4}>
-                            <TkSelect
-                              id="portalType"
-                              name="portalType"
-                              labelName="Name Of Portal"
-                              placeholder="Select Portal"
-                              requiredStarOnLabel="true"
-                              options={[
-                                { value: "1", label: "Direct Marketing" },
-                                { value: "2", label: "Social Media" },
-                                { value: "3", label: "Website" },
-                                { value: "4", label: "Email" },
-                                { value: "5", label: "Referral" },
-                                { value: "6", label: "Other" },
-                              ]}
-                            />
-                          </TkCol>
-                        </TkRow>
-
-                        <TkRow className="mt-5">
-                          <TkCol>
-                            <TkCardHeader tag="h5" className="mb-3">
-                              <h4>Lead Assigning</h4>
-                            </TkCardHeader>
-                            <div>
-                              <TkRow className="g-3">
-                                <TkCol lg={4}>
-                                  <TkSelect
-                                    id="region"
-                                    name="region"
-                                    labelName="Region"
-                                    placeholder="Select Region"
-                                    options={[
-                                      { value: "1", label: "Region 1" },
-                                      { value: "2", label: "Region 2" },
-                                      { value: "3", label: "Region 3" },
-                                    ]}
-                                  />
-                                </TkCol>
-                                <TkCol lg={4}>
-                                  <TkSelect
-                                    id="salesTeam"
-                                    name="salesTeam"
-                                    labelName="Sales Team Name"
-                                    placeholder="Select Sales Team"
-                                    options={[
-                                      {
-                                        value: "1",
-                                        label: "Sales Team 1",
-                                      },
-                                      {
-                                        value: "2",
-                                        label: "Sales Team 2",
-                                      },
-                                      {
-                                        value: "3",
-                                        label: "Sales Team 3",
-                                      },
-                                    ]}
-                                  />
-                                </TkCol>
-                              </TkRow>
-                            </div>
-                          </TkCol>
-                        </TkRow>
-
-                        <TkRow className="mt-5">
-                          <TkCol>
-                            <TkCardHeader tag="h5" className="mb-3">
-                              <h4>Lead Nurturing</h4>
-                            </TkCardHeader>
-                            <div>
-                              <TkRow className="g-3">
-                                <TkCol lg={4}>
-                                  <TkSelect
-                                    id="primaryAction"
-                                    name="primaryAction"
-                                    labelName="Primary Action"
-                                    placeholder="Select Primary Action"
-                                    options={[
-                                      { value: "1", label: "Replied" },
-                                      { value: "2", label: "Call" },
-                                      {
-                                        value: "3",
-                                        label: "Meeting appointment fixed",
-                                      },
-                                      {
-                                        value: "3",
-                                        label: "Meeting done",
-                                      },
-                                      {
-                                        value: "3",
-                                        label: "Waiting for the reply",
-                                      },
-                                      {
-                                        value: "3",
-                                        label: "Meeting postponed",
-                                      },
-                                    ]}
-                                  />
-                                </TkCol>
-                                <TkCol lg={4}>
-                                  <TkInput
-                                    id="leadValue"
-                                    name="leadValue"
-                                    labelName="Lead Value"
-                                    type="text"
-                                    placeholder="Enter Lead Value"
-                                  />
-                                </TkCol>
-                                <TkCol lg={4}>
-                                  <TkSelect
-                                    id="leadUpdate"
-                                    name="leadUpdate"
-                                    labelName="Lead Update"
-                                    placeholder="Select Lead Update"
-                                    options={[
-                                      {
-                                        value: "1",
-                                        label: "Qualified",
-                                      },
-                                      {
-                                        value: "2",
-                                        label: "Unqualified",
-                                      },
-                                    ]}
-                                  />
-                                </TkCol>
-                              </TkRow>
-                              <TkRow className="mt-4">
-                                <TkCol lg={4}>
-                                  <TkInput
-                                    id="reason"
-                                    name="reason"
-                                    labelName="Reason if unqualified lead"
-                                    type="text"
-                                    placeholder="Enter Reason"
-                                  />
-                                </TkCol>
-                                <TkCol lg={4}>
-                                  <TkSelect
-                                    id="prospectNurturing"
-                                    name="prospectNurturing"
-                                    labelName="Prospect Nurturing"
-                                    placeholder="Select Prospect Nurturing"
-                                    options={[
-                                      {
-                                        value: "1",
-                                        label: "Quotation Issued",
-                                      },
-                                      {
-                                        value: "2",
-                                        label: "Waiting fro the approval",
-                                      },
-                                      {
-                                        value: "3",
-                                        label: "Waiting for document",
-                                      },
-                                      {
-                                        value: "3",
-                                        label: "Waiting for the PO",
-                                      },
-                                    ]}
-                                  />
-                                </TkCol>
-                              </TkRow>
-                            </div>
-                          </TkCol>
-                        </TkRow>
-                      </TkRow>
-                    </>
-                  )}
-                </> */}
-
-              {/* Direct Marketing */}
-              {/* {directMarketingCheckbox && (
-                  <>
-                    <TkRow className="justify-content-center mt-4">
-                      <TkCardHeader>
-                        <h4>Direct Marketing</h4>
-                      </TkCardHeader>
-                      <TkRow className="g-3 gx-4 ">
-                        <TkCol lg={4}>
-                          <TkSelect
-                            id="leadSource"
-                            name="leadSource"
-                            labelName="Lead Source"
-                            placeholder="Select Lead Source"
-                            requiredStarOnLabel="true"
-                            options={[
-                              { value: "1", label: "New" },
-                              { value: "2", label: "Existing" },
-                            ]}
-                          />
-                        </TkCol>
-                        <TkCol lg={4}>
-                          <TkSelect
-                            id="visitDate"
-                            name="visitDate"
-                            labelName="Date Of Visit"
-                            options={[]}
-                            placeholder="Select Visit Date"
-                            requiredStarOnLabel="true"
-                          />
-                        </TkCol>
-                        <TkCol lg={4}>
-                          <TkSelect
-                            id="visitTime"
-                            name="visitTime"
-                            labelName="Time Of Visit"
-                            options={[]}
-                            placeholder="Select Visit Time"
-                            requiredStarOnLabel="true"
-                          />
-                        </TkCol>
-                      </TkRow>
-                      <TkRow className="mt-3">
-                        <TkCol lg={4}>
-                          <TkSelect
-                            id="visitUpdate"
-                            name="visitUpdate"
-                            labelName="Visit Update"
-                            options={[]}
-                            placeholder="Select Visit Update"
-                            requiredStarOnLabel="true"
-                          />
-                        </TkCol>
-                      </TkRow>
-
-                      <TkRow className="mt-5">
-                        <TkCol>
-                          <TkCardHeader tag="h5" className="mb-3">
-                            <h4>Lead Assigning</h4>
-                          </TkCardHeader>
-                          <div>
-                            <TkRow className="g-3">
-                              <TkCol lg={4}>
-                                <TkSelect
-                                  id="region"
-                                  name="region"
-                                  labelName="Region"
-                                  placeholder="Select Region"
-                                  options={[
-                                    { value: "1", label: "Region 1" },
-                                    { value: "2", label: "Region 2" },
-                                    { value: "3", label: "Region 3" },
-                                  ]}
-                                />
-                              </TkCol>
-                              <TkCol lg={4}>
-                                <TkSelect
-                                  id="salesTeam"
-                                  name="salesTeam"
-                                  labelName="Sales Team Name"
-                                  placeholder="Select Sales Team"
-                                  options={[
-                                    {
-                                      value: "1",
-                                      label: "Sales Team 1",
-                                    },
-                                    {
-                                      value: "2",
-                                      label: "Sales Team 2",
-                                    },
-                                    {
-                                      value: "3",
-                                      label: "Sales Team 3",
-                                    },
-                                  ]}
-                                />
-                              </TkCol>
-                            </TkRow>
-                          </div>
-                        </TkCol>
-                      </TkRow>
-
-                      <TkRow className="mt-5">
-                        <TkCol>
-                          <TkCardHeader tag="h5" className="mb-3">
-                            <h4>Lead Nurturing</h4>
-                          </TkCardHeader>
-                          <div>
-                            <TkRow className="g-3">
-                              <TkCol lg={4}>
-                                <TkSelect
-                                  id="primaryAction"
-                                  name="primaryAction"
-                                  labelName="Primary Action"
-                                  placeholder="Select Primary Action"
-                                  options={[
-                                    { value: "1", label: "Replied" },
-                                    { value: "2", label: "Call" },
-                                    {
-                                      value: "3",
-                                      label: "Meeting appointment fixed",
-                                    },
-                                    {
-                                      value: "3",
-                                      label: "Meeting done",
-                                    },
-                                    {
-                                      value: "3",
-                                      label: "Waiting for the reply",
-                                    },
-                                    {
-                                      value: "3",
-                                      label: "Meeting postponed",
-                                    },
-                                  ]}
-                                />
-                              </TkCol>
-                              <TkCol lg={4}>
-                                <TkInput
-                                  id="leadValue"
-                                  name="leadValue"
-                                  labelName="Lead Value"
-                                  type="text"
-                                  placeholder="Enter Lead Value"
-                                />
-                              </TkCol>
-                              <TkCol lg={4}>
-                                <TkSelect
-                                  id="leadUpdate"
-                                  name="leadUpdate"
-                                  labelName="Lead Update"
-                                  placeholder="Select Lead Update"
-                                  options={[
-                                    {
-                                      value: "1",
-                                      label: "Qualified",
-                                    },
-                                    {
-                                      value: "2",
-                                      label: "Unqualified",
-                                    },
-                                  ]}
-                                />
-                              </TkCol>
-                            </TkRow>
-                            <TkRow className="mt-4">
-                              <TkCol lg={4}>
-                                <TkInput
-                                  id="reason"
-                                  name="reason"
-                                  labelName="Reason if unqualified lead"
-                                  type="text"
-                                  placeholder="Enter Reason"
-                                />
-                              </TkCol>
-                              <TkCol lg={4}>
-                                <TkSelect
-                                  id="prospectNurturing"
-                                  name="prospectNurturing"
-                                  labelName="Prospect Nurturing"
-                                  placeholder="Select Prospect Nurturing"
-                                  options={[
-                                    {
-                                      value: "1",
-                                      label: "Quotation Issued",
-                                    },
-                                    {
-                                      value: "2",
-                                      label: "Waiting fro the approval",
-                                    },
-                                    {
-                                      value: "3",
-                                      label: "Waiting for document",
-                                    },
-                                    {
-                                      value: "3",
-                                      label: "Waiting for the PO",
-                                    },
-                                  ]}
-                                />
-                              </TkCol>
-                            </TkRow>
-                          </div>
-                        </TkCol>
-                      </TkRow>
-                    </TkRow>
-                  </>
-                )} */}
-              {/* </div>  */}
-
-              {/* <h5>Lead History</h5> */}
-
               <div className="d-flex mt-4 space-childern">
                 {editMode ? (
                   <div className="ms-auto" id="update-form-btns">
@@ -2198,9 +1359,6 @@ function AddLead({ id, userData, mode }) {
                     className={classnames({
                       active: activeTab === tabs.phoneCall,
                     })}
-                    // onClick={() => {
-                    //   toggleTab(tabs.phoneCall);
-                    // }}
                   >
                     Lead Activity
                   </NavLink>
@@ -2249,4 +1407,4 @@ function AddLead({ id, userData, mode }) {
   );
 }
 
-export default AddLead;
+export default EditLead;

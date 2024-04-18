@@ -221,13 +221,12 @@ function AddLead() {
   const [activityModal, setActivityModal] = useState(false);
   const [selectedButton, setSelectedButton] = useState("directCall");
   const [isLead, setIsLead] = useState(false);
-  const [rSelected, setRSelected] = useState(0);
   const [activeTab, setActiveTab] = useState(tabs.directCall);
   const [activeSubTab, setActiveSubTab] = useState(tabs.requirementDetails);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showForm, setShowForm] = useState(false);
   const [buttonsDisabled, setButtonsDisabled] = useState(false);
-  const [taskDropdown, setTaskDropdown] = useState([]);
+  const [hiddenButtons, setHiddenButtons] = useState([]);
   const [rows, setRows] = useState([
     {
       division: null,
@@ -297,18 +296,30 @@ function AddLead() {
     setSelectedDate(now);
   }, [setValue]);
 
+  // const handleButtonClick = (button) => {
+  //   setSelectedButton(button);
+  //   setShowForm(true);
+  //   setButtonsDisabled(true);
+  // };
+
   const handleButtonClick = (button) => {
     setSelectedButton(button);
     setShowForm(true);
-    setButtonsDisabled(true);
+    setHiddenButtons(
+      [
+        "directCall",
+        "email",
+        "socialMedia",
+        "portals",
+        "directMarketing",
+      ].filter((b) => b !== button)
+    );
   };
 
   const handleFormSubmit = (event) => {
     event.preventDefault();
     setShowForm(false);
   };
-
-  
 
   const toggleTab = (tab) => {
     if (activeTab !== tab) {
@@ -769,13 +780,14 @@ function AddLead() {
                 <h4>Lead Types</h4>
               </TkCardHeader>
               <div>
-                <Button
+                {/* <Button
                   color="primary"
                   outline
                   style={{ marginRight: "20px", marginBottom: "20px" }}
                   active={selectedButton === "directCall"}
                   onClick={() => handleButtonClick("directCall")}
-                  disabled={buttonsDisabled} // Disable the button if buttonsDisabled is true
+                  // disabled={buttonsDisabled} // Disable the button if buttonsDisabled is true
+                  className={hiddenButtons.includes("directCall") ? "d-none" : ""}
                 >
                   Direct Call
                 </Button>
@@ -788,15 +800,53 @@ function AddLead() {
                   disabled={buttonsDisabled} // Disable the button if buttonsDisabled is true
                 >
                   Email
+                </Button> */}
+
+                <Button
+                  color="primary"
+                  outline
+                  style={{
+                    marginRight: "20px",
+                    marginBottom: "20px",
+                    display: hiddenButtons.includes("directCall")
+                      ? "none"
+                      : "inline-block",
+                  }}
+                  active={selectedButton === "directCall"}
+                  onClick={() => handleButtonClick("directCall")}
+                >
+                  Direct Call
                 </Button>
 
                 <Button
                   color="primary"
                   outline
-                  style={{ marginRight: "20px", marginBottom: "20px" }}
+                  style={{
+                    marginRight: "20px",
+                    marginBottom: "20px",
+                    display: hiddenButtons.includes("email")
+                      ? "none"
+                      : "inline-block",
+                  }}
+                  active={selectedButton === "email"}
+                  onClick={() => handleButtonClick("email")}
+                >
+                  Email
+                </Button>
+
+                <Button
+                  color="primary"
+                  outline
+                  style={{
+                    marginRight: "20px",
+                    marginBottom: "20px",
+                    display: hiddenButtons.includes("socialMedia")
+                      ? "none"
+                      : "inline-block",
+                  }}
                   active={selectedButton === "socialMedia"}
                   onClick={() => handleButtonClick("socialMedia")}
-                  disabled={buttonsDisabled} // Disable the button if buttonsDisabled is true
+                  // disabled={buttonsDisabled} // Disable the button if buttonsDisabled is true
                 >
                   SocialMedia
                 </Button>
@@ -804,7 +854,9 @@ function AddLead() {
                 <Button
                   color="primary"
                   outline
-                  style={{ marginRight: "20px", marginBottom: "20px" }}
+                  style={{ marginRight: "20px", marginBottom: "20px", display: hiddenButtons.includes("portals")
+                  ? "none"
+                  : "inline-block", }}
                   active={selectedButton === "portals"}
                   onClick={() => handleButtonClick("portals")}
                   disabled={buttonsDisabled} // Disable the button if buttonsDisabled is true
@@ -815,7 +867,9 @@ function AddLead() {
                 <Button
                   color="primary"
                   outline
-                  style={{ marginRight: "20px", marginBottom: "20px" }}
+                  style={{ marginRight: "20px", marginBottom: "20px", display: hiddenButtons.includes("directMarketing")
+                  ? "none"
+                  : "inline-block",   }}
                   active={selectedButton === "directMarketing"}
                   onClick={() => handleButtonClick("directMarketing")}
                   disabled={buttonsDisabled} // Disable the button if buttonsDisabled is true
