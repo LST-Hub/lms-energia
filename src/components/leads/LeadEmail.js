@@ -488,6 +488,7 @@ function LeadEmail() {
           <>
             <TkInput
               type="text"
+              placeholder="Enter Project Name"
               {...register(`projectName[${cellProps.row.index}]`)}
             />
             {errors?.duration?.[cellProps.row.index] && (
@@ -507,6 +508,7 @@ function LeadEmail() {
           <>
             <TkInput
               type="text"
+              placeholder="Enter Duration"
               {...register(`duration[${cellProps.row.index}]`, {
                 required: "Duration is required",
                 validate: (value) => {
@@ -571,7 +573,9 @@ function LeadEmail() {
               name={`delivery[${cellProps.row.index}]`}
               render={({ field }) => (
                 <>
-                  <TkDate {...field} id="delivery" />
+                  <TkDate {...field} id="delivery" 
+                   placeholder="Select Delivery Date"
+                  />
                   {errors?.delivery?.[cellProps.row.index] && (
                     <FormErrorText>
                       {errors?.delivery?.[cellProps.row.index]?.message}
@@ -613,6 +617,7 @@ function LeadEmail() {
           <>
             <TkInput
               type="text"
+              placeholder="Enter Location"
               {...register(`location[${cellProps.row.index}]`)}
             />
             {errors?.location?.[cellProps.row.index] && (
@@ -632,6 +637,7 @@ function LeadEmail() {
           <>
             <TkInput
               type="text"
+              placeholder="Enter Person Name"
               {...register(`contactPersonName[${cellProps.row.index}]`)}
             />
             {errors?.contactPersonName?.[cellProps.row.index] && (
@@ -651,6 +657,7 @@ function LeadEmail() {
           <>
             <TkInput
               type="text"
+              placeholder="Enter Phone Number"
               {...register(`phoneNumber[${cellProps.row.index}]`)}
             />
             {errors?.phoneNumber?.[cellProps.row.index] && (
@@ -671,6 +678,7 @@ function LeadEmail() {
           <>
             <TkInput
               type="text"
+              placeholder="Enter Email"
               {...register(`email[${cellProps.row.index}]`)}
             />
             {errors?.email?.[cellProps.row.index] && (
@@ -691,6 +699,7 @@ function LeadEmail() {
           <>
             <TkInput
               type="text"
+              placeholder="Enter Designation"
               {...register(`designation[${cellProps.row.index}]`)}
             />
             {errors?.designation?.[cellProps.row.index] && (

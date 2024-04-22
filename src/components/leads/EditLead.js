@@ -608,6 +608,7 @@ function EditLead({ id, userData, mode }) {
           <>
             <TkInput
               type="text"
+              placeholder="Enter Project Name"
               disabled={viewMode}
               {...register(`projectName[${cellProps.row.index}]`)}
             />
@@ -628,6 +629,7 @@ function EditLead({ id, userData, mode }) {
           <>
             <TkInput
               type="text"
+              placeholder="Enter Duration"
               disabled={viewMode}
               {...register(`duration[${cellProps.row.index}]`, {
                 required: "Duration is required",
@@ -702,7 +704,7 @@ function EditLead({ id, userData, mode }) {
                 <>
                   <TkDate
                     {...field}
-                    placeholder="Expected Delivery Date"
+                    placeholder="Enter Delivery Date"
                     disabled={viewMode}
                   />
                   {errors?.delivery?.[cellProps.row.index] && (
@@ -746,6 +748,7 @@ function EditLead({ id, userData, mode }) {
           <>
             <TkInput
               type="text"
+              placeholder="Enter Location"
               disabled={viewMode}
               {...register(`location[${cellProps.row.index}]`)}
             />
@@ -766,6 +769,7 @@ function EditLead({ id, userData, mode }) {
           <>
             <TkInput
               type="text"
+              placeholder="Enter Person Name"
               disabled={viewMode}
               {...register(`contactPersonName[${cellProps.row.index}]`)}
             />
@@ -786,6 +790,7 @@ function EditLead({ id, userData, mode }) {
           <>
             <TkInput
               type="text"
+              placeholder="Enter Phone Number"
               disabled={viewMode}
               {...register(`phoneNumber[${cellProps.row.index}]`)}
             />
@@ -807,6 +812,7 @@ function EditLead({ id, userData, mode }) {
           <>
             <TkInput
               type="text"
+              placeholder="Enter Email"
               disabled={viewMode}
               {...register(`email[${cellProps.row.index}]`)}
             />
@@ -828,6 +834,7 @@ function EditLead({ id, userData, mode }) {
           <>
             <TkInput
               type="text"
+              placeholder="Enter Designation"
               disabled={viewMode}
               {...register(`designation[${cellProps.row.index}]`)}
             />
