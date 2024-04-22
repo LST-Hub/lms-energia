@@ -1296,28 +1296,32 @@ function EditLead({ id, userData, mode }) {
               <TkCol>
                 <TabContent activeTab={activeSubTab}>
                   <TabPane tabId={tabs.requirementDetails}>
-                    <TkTableContainer
-                      customPageSize={true}
-                      showAddButton={true}
-                      onClickAdd={handleAddRow}
-                      onclickDelete={handleRemoveRow}
-                      columns={requirementDetailsColumns}
-                      data={rows}
-                      thClass="text-dark"
-                      dynamicTable={true}
-                    />
+                    <TkContainer>
+                      <TkTableContainer
+                        customPageSize={true}
+                        showAddButton={true}
+                        onClickAdd={handleAddRow}
+                        onclickDelete={handleRemoveRow}
+                        columns={requirementDetailsColumns}
+                        data={rows}
+                        thClass="text-dark"
+                        dynamicTable={true}
+                      />
+                    </TkContainer>
                   </TabPane>
                   <TabPane tabId={tabs.locationDetails}>
-                    <TkTableContainer
-                      customPageSize={true}
-                      showAddButton={true}
-                      onClickAdd={handleAddLocationRow}
-                      onclickDelete={handleRemoveLocationRow}
-                      columns={locationDetailsColumns}
-                      data={locationRows}
-                      thClass="text-dark"
-                      dynamicTable={true}
-                    />
+                    <TkContainer>
+                      <TkTableContainer
+                        customPageSize={true}
+                        showAddButton={true}
+                        onClickAdd={handleAddLocationRow}
+                        onclickDelete={handleRemoveLocationRow}
+                        columns={locationDetailsColumns}
+                        data={locationRows}
+                        thClass="text-dark"
+                        dynamicTable={true}
+                      />
+                    </TkContainer>
                   </TabPane>
                 </TabContent>
               </TkCol>
