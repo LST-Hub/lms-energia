@@ -425,7 +425,6 @@ function DirectMarketing() {
                 <TkSelect
                   {...field}
                   id={"division"}
-                  placeholder="Division"
                   options={[
                     {
                       value: "1",
@@ -468,7 +467,6 @@ function DirectMarketing() {
                 <TkSelect
                   {...field}
                   id="requirement"
-                  placeholder="Requirement"
                   // loading={selectedTaskId && isUsersLoading}
                   // options={allUsersData}
                   // menuPlacement="top"
@@ -493,7 +491,6 @@ function DirectMarketing() {
           <>
             <TkInput
               type="text"
-              placeholder="Project Name"
               {...register(`projectName[${cellProps.row.index}]`)}
             />
             {errors?.duration?.[cellProps.row.index] && (
@@ -513,7 +510,6 @@ function DirectMarketing() {
           <>
             <TkInput
               type="text"
-              placeholder="Duration"
               {...register(`duration[${cellProps.row.index}]`, {
                 required: "Duration is required",
                 validate: (value) => {
@@ -556,7 +552,6 @@ function DirectMarketing() {
                   <TkSelect
                     {...field}
                     id="unitOfMeasure"
-                    placeholder="Unit Of Measure"
                     // loading={selectedTaskId && isUsersLoading}
                     // options={allUsersData}
                     // menuPlacement="top"
@@ -588,7 +583,6 @@ function DirectMarketing() {
                   <TkDate
                     {...field}
                     id="delivery"
-                    placeholder="Expected Delivery Date"
                   />
                   {errors?.delivery?.[cellProps.row.index] && (
                     <FormErrorText>
@@ -631,7 +625,6 @@ function DirectMarketing() {
           <>
             <TkInput
               type="text"
-              placeholder="Location Name"
               {...register(`location[${cellProps.row.index}]`)}
             />
             {errors?.location?.[cellProps.row.index] && (
@@ -651,7 +644,6 @@ function DirectMarketing() {
           <>
             <TkInput
               type="text"
-              placeholder="Contact Person Name"
               {...register(`contactPersonName[${cellProps.row.index}]`)}
             />
             {errors?.contactPersonName?.[cellProps.row.index] && (
@@ -671,7 +663,6 @@ function DirectMarketing() {
           <>
             <TkInput
               type="text"
-              placeholder="Phone Number"
               {...register(`phoneNumber[${cellProps.row.index}]`)}
             />
             {errors?.phoneNumber?.[cellProps.row.index] && (
@@ -692,7 +683,6 @@ function DirectMarketing() {
           <>
             <TkInput
               type="text"
-              placeholder="Email"
               {...register(`email[${cellProps.row.index}]`)}
             />
             {errors?.email?.[cellProps.row.index] && (
@@ -713,7 +703,6 @@ function DirectMarketing() {
           <>
             <TkInput
               type="text"
-              placeholder="Designation"
               {...register(`designation[${cellProps.row.index}]`)}
             />
             {errors?.designation?.[cellProps.row.index] && (
@@ -754,7 +743,7 @@ function DirectMarketing() {
             <TkCol>
               <div>
                 <TkRow className="g-3">
-                  <TkCol lg={4}>
+                  <TkCol lg={3}>
                     <Controller
                       name="leadSource"
                       control={control}
@@ -778,7 +767,7 @@ function DirectMarketing() {
                     )}
                   </TkCol>
 
-                  <TkCol lg={4}>
+                  <TkCol lg={3}>
                     <Controller
                       name="visitDate"
                       control={control}
@@ -798,7 +787,7 @@ function DirectMarketing() {
                       <FormErrorText>{errors.visitDate.message}</FormErrorText>
                     )}
                   </TkCol>
-                  <TkCol lg={4}>
+                  <TkCol lg={3}>
                     <Controller
                       name="visitTime"
                       control={control}
@@ -819,7 +808,7 @@ function DirectMarketing() {
                     )}
                   </TkCol>
 
-                  <TkCol lg={4}>
+                  <TkCol lg={3}>
                     <Controller
                       name="visitUpdate"
                       control={control}
@@ -842,7 +831,7 @@ function DirectMarketing() {
                     )}
                   </TkCol>
 
-                  <TkCol lg={4}>
+                  <TkCol lg={3}>
                     <TkInput
                       {...register("createdBy")}
                       id="createdBy"
@@ -856,7 +845,7 @@ function DirectMarketing() {
                     )}
                   </TkCol>
 
-                  <TkCol lg={4}>
+                  <TkCol lg={3}>
                     <Controller
                       name="createdDate"
                       control={control}
@@ -1290,7 +1279,7 @@ function DirectMarketing() {
                 <TabPane tabId={tabs.leadNurutring}>
                   <div>
                     <TkRow className="g-3">
-                      <TkCol lg={4}>
+                      <TkCol lg={3}>
                         <Controller
                           name="primaryAction"
                           control={control}
@@ -1328,7 +1317,7 @@ function DirectMarketing() {
                         )}
                       </TkCol>
 
-                      <TkCol lg={4}>
+                      <TkCol lg={3}>
                         <TkInput
                           {...register("dateTime")}
                           id="dateTime"
@@ -1340,7 +1329,7 @@ function DirectMarketing() {
                         />
                       </TkCol>
 
-                      <TkCol lg={4}>
+                      <TkCol lg={3}>
                         <TkInput
                           {...register("leadValue")}
                           id="leadValue"
@@ -1355,7 +1344,7 @@ function DirectMarketing() {
                           </FormErrorText>
                         )}
                       </TkCol>
-                      <TkCol lg={4}>
+                      <TkCol lg={3}>
                         <Controller
                           name="leadUpdate"
                           control={control}
@@ -1392,7 +1381,7 @@ function DirectMarketing() {
                           id="reason"
                           name="reason"
                           labelName="Reason if unqualified lead"
-                          type="text"
+                          type="textarea"
                           placeholder="Enter Reason"
                         />
                         {errors.reason && (

@@ -540,7 +540,6 @@ function EditLead({ id, userData, mode }) {
                 <TkSelect
                   {...field}
                   id={"division"}
-                  placeholder="Division"
                   options={[
                     {
                       value: "1",
@@ -584,7 +583,6 @@ function EditLead({ id, userData, mode }) {
                 <TkSelect
                   {...field}
                   id="requirement"
-                  placeholder="Requirement"
                   // loading={selectedTaskId && isUsersLoading}
                   // options={allUsersData}
                   // menuPlacement="top"
@@ -610,7 +608,6 @@ function EditLead({ id, userData, mode }) {
           <>
             <TkInput
               type="text"
-              placeholder="Project Name"
               disabled={viewMode}
               {...register(`projectName[${cellProps.row.index}]`)}
             />
@@ -631,7 +628,6 @@ function EditLead({ id, userData, mode }) {
           <>
             <TkInput
               type="text"
-              placeholder="Duration"
               disabled={viewMode}
               {...register(`duration[${cellProps.row.index}]`, {
                 required: "Duration is required",
@@ -675,7 +671,6 @@ function EditLead({ id, userData, mode }) {
                   <TkSelect
                     {...field}
                     id="unitOfMeasure"
-                    placeholder="Unit Of Measure"
                     disabled={viewMode}
                     // loading={selectedTaskId && isUsersLoading}
                     // options={allUsersData}
@@ -707,7 +702,6 @@ function EditLead({ id, userData, mode }) {
                 <>
                   <TkDate
                     {...field}
-                    id="delivery"
                     placeholder="Expected Delivery Date"
                     disabled={viewMode}
                   />
@@ -752,7 +746,6 @@ function EditLead({ id, userData, mode }) {
           <>
             <TkInput
               type="text"
-              placeholder="Location Name"
               disabled={viewMode}
               {...register(`location[${cellProps.row.index}]`)}
             />
@@ -773,7 +766,6 @@ function EditLead({ id, userData, mode }) {
           <>
             <TkInput
               type="text"
-              placeholder="Contact Person Name"
               disabled={viewMode}
               {...register(`contactPersonName[${cellProps.row.index}]`)}
             />
@@ -794,7 +786,6 @@ function EditLead({ id, userData, mode }) {
           <>
             <TkInput
               type="text"
-              placeholder="Phone Number"
               disabled={viewMode}
               {...register(`phoneNumber[${cellProps.row.index}]`)}
             />
@@ -816,7 +807,6 @@ function EditLead({ id, userData, mode }) {
           <>
             <TkInput
               type="text"
-              placeholder="Email"
               disabled={viewMode}
               {...register(`email[${cellProps.row.index}]`)}
             />
@@ -838,7 +828,6 @@ function EditLead({ id, userData, mode }) {
           <>
             <TkInput
               type="text"
-              placeholder="Designation"
               disabled={viewMode}
               {...register(`designation[${cellProps.row.index}]`)}
             />

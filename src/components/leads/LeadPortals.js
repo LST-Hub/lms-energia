@@ -425,7 +425,6 @@ function LeadPortals() {
                 <TkSelect
                   {...field}
                   id={"division"}
-                  placeholder="Division"
                   options={[
                     {
                       value: "1",
@@ -468,7 +467,6 @@ function LeadPortals() {
                 <TkSelect
                   {...field}
                   id="requirement"
-                  placeholder="Requirement"
                   // loading={selectedTaskId && isUsersLoading}
                   // options={allUsersData}
                   // menuPlacement="top"
@@ -493,7 +491,6 @@ function LeadPortals() {
           <>
             <TkInput
               type="text"
-              placeholder="Project Name"
               {...register(`projectName[${cellProps.row.index}]`)}
             />
             {errors?.duration?.[cellProps.row.index] && (
@@ -513,7 +510,6 @@ function LeadPortals() {
           <>
             <TkInput
               type="text"
-              placeholder="Duration"
               {...register(`duration[${cellProps.row.index}]`, {
                 required: "Duration is required",
                 validate: (value) => {
@@ -556,7 +552,6 @@ function LeadPortals() {
                   <TkSelect
                     {...field}
                     id="unitOfMeasure"
-                    placeholder="Unit Of Measure"
                     // loading={selectedTaskId && isUsersLoading}
                     // options={allUsersData}
                     // menuPlacement="top"
@@ -588,7 +583,6 @@ function LeadPortals() {
                   <TkDate
                     {...field}
                     id="delivery"
-                    placeholder="Expected Delivery Date"
                   />
                   {errors?.delivery?.[cellProps.row.index] && (
                     <FormErrorText>
@@ -631,7 +625,6 @@ function LeadPortals() {
           <>
             <TkInput
               type="text"
-              placeholder="Location Name"
               {...register(`location[${cellProps.row.index}]`)}
             />
             {errors?.location?.[cellProps.row.index] && (
@@ -651,7 +644,6 @@ function LeadPortals() {
           <>
             <TkInput
               type="text"
-              placeholder="Contact Person Name"
               {...register(`contactPersonName[${cellProps.row.index}]`)}
             />
             {errors?.contactPersonName?.[cellProps.row.index] && (
@@ -671,7 +663,6 @@ function LeadPortals() {
           <>
             <TkInput
               type="text"
-              placeholder="Phone Number"
               {...register(`phoneNumber[${cellProps.row.index}]`)}
             />
             {errors?.phoneNumber?.[cellProps.row.index] && (
@@ -692,7 +683,6 @@ function LeadPortals() {
           <>
             <TkInput
               type="text"
-              placeholder="Email"
               {...register(`email[${cellProps.row.index}]`)}
             />
             {errors?.email?.[cellProps.row.index] && (
@@ -713,7 +703,6 @@ function LeadPortals() {
           <>
             <TkInput
               type="text"
-              placeholder="Designation"
               {...register(`designation[${cellProps.row.index}]`)}
             />
             {errors?.designation?.[cellProps.row.index] && (
@@ -754,7 +743,7 @@ function LeadPortals() {
             <TkCol>
               <div>
                 <TkRow className="g-3">
-                  <TkCol lg={4}>
+                  <TkCol lg={3}>
                     <Controller
                       name="leadSource"
                       control={control}
@@ -778,7 +767,7 @@ function LeadPortals() {
                     )}
                   </TkCol>
 
-                  <TkCol lg={4}>
+                  <TkCol lg={3}>
                     <Controller
                       name="portalType"
                       control={control}
@@ -812,7 +801,7 @@ function LeadPortals() {
                     )}
                   </TkCol>
 
-                  <TkCol lg={4}>
+                  <TkCol lg={3}>
                     <TkInput
                       {...register("createdBy")}
                       id="createdBy"
@@ -826,7 +815,7 @@ function LeadPortals() {
                     )}
                   </TkCol>
 
-                  <TkCol lg={4}>
+                  <TkCol lg={3}>
                     <Controller
                       name="createdDate"
                       control={control}
@@ -1260,7 +1249,7 @@ function LeadPortals() {
                 <TabPane tabId={tabs.leadNurutring}>
                   <div>
                     <TkRow className="g-3">
-                      <TkCol lg={4}>
+                      <TkCol lg={3}>
                         <Controller
                           name="primaryAction"
                           control={control}
@@ -1298,7 +1287,7 @@ function LeadPortals() {
                         )}
                       </TkCol>
 
-                      <TkCol lg={4}>
+                      <TkCol lg={3}>
                         <TkInput
                           {...register("dateTime")}
                           id="dateTime"
@@ -1310,7 +1299,7 @@ function LeadPortals() {
                         />
                       </TkCol>
 
-                      <TkCol lg={4}>
+                      <TkCol lg={3}>
                         <TkInput
                           {...register("leadValue")}
                           id="leadValue"
@@ -1325,7 +1314,7 @@ function LeadPortals() {
                           </FormErrorText>
                         )}
                       </TkCol>
-                      <TkCol lg={4}>
+                      <TkCol lg={3}>
                         <Controller
                           name="leadUpdate"
                           control={control}
@@ -1362,7 +1351,7 @@ function LeadPortals() {
                           id="reason"
                           name="reason"
                           labelName="Reason if unqualified lead"
-                          type="text"
+                          type="textarea"
                           placeholder="Enter Reason"
                         />
                         {errors.reason && (
@@ -1370,7 +1359,7 @@ function LeadPortals() {
                         )}
                       </TkCol>
 
-                      <TkCol lg={4}>
+                      <TkCol lg={3}>
                         <Controller
                           name="prospectNurturing"
                           control={control}

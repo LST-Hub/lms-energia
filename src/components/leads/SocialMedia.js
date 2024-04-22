@@ -425,7 +425,6 @@ function SocialMedia() {
                 <TkSelect
                   {...field}
                   id={"division"}
-                  placeholder="Division"
                   options={[
                     {
                       value: "1",
@@ -468,7 +467,6 @@ function SocialMedia() {
                 <TkSelect
                   {...field}
                   id="requirement"
-                  placeholder="Requirement"
                   // loading={selectedTaskId && isUsersLoading}
                   // options={allUsersData}
                   // menuPlacement="top"
@@ -493,7 +491,6 @@ function SocialMedia() {
           <>
             <TkInput
               type="text"
-              placeholder="Project Name"
               {...register(`projectName[${cellProps.row.index}]`)}
             />
             {errors?.duration?.[cellProps.row.index] && (
@@ -513,7 +510,6 @@ function SocialMedia() {
           <>
             <TkInput
               type="text"
-              placeholder="Duration"
               {...register(`duration[${cellProps.row.index}]`, {
                 required: "Duration is required",
                 validate: (value) => {
@@ -556,10 +552,6 @@ function SocialMedia() {
                   <TkSelect
                     {...field}
                     id="unitOfMeasure"
-                    placeholder="Unit Of Measure"
-                    // loading={selectedTaskId && isUsersLoading}
-                    // options={allUsersData}
-                    // menuPlacement="top"
                   />
                   {errors?.unitOfMeasure?.[cellProps.row.index] && (
                     <FormErrorText>
@@ -588,7 +580,6 @@ function SocialMedia() {
                   <TkDate
                     {...field}
                     id="delivery"
-                    placeholder="Expected Delivery Date"
                   />
                   {errors?.delivery?.[cellProps.row.index] && (
                     <FormErrorText>
@@ -631,7 +622,6 @@ function SocialMedia() {
           <>
             <TkInput
               type="text"
-              placeholder="Location Name"
               {...register(`location[${cellProps.row.index}]`)}
             />
             {errors?.location?.[cellProps.row.index] && (
@@ -651,7 +641,6 @@ function SocialMedia() {
           <>
             <TkInput
               type="text"
-              placeholder="Contact Person Name"
               {...register(`contactPersonName[${cellProps.row.index}]`)}
             />
             {errors?.contactPersonName?.[cellProps.row.index] && (
@@ -671,7 +660,6 @@ function SocialMedia() {
           <>
             <TkInput
               type="text"
-              placeholder="Phone Number"
               {...register(`phoneNumber[${cellProps.row.index}]`)}
             />
             {errors?.phoneNumber?.[cellProps.row.index] && (
@@ -692,7 +680,6 @@ function SocialMedia() {
           <>
             <TkInput
               type="text"
-              placeholder="Email"
               {...register(`email[${cellProps.row.index}]`)}
             />
             {errors?.email?.[cellProps.row.index] && (
@@ -713,7 +700,6 @@ function SocialMedia() {
           <>
             <TkInput
               type="text"
-              placeholder="Designation"
               {...register(`designation[${cellProps.row.index}]`)}
             />
             {errors?.designation?.[cellProps.row.index] && (
@@ -754,7 +740,7 @@ function SocialMedia() {
             <TkCol>
               <div>
                 <TkRow className="g-3">
-                  <TkCol lg={4}>
+                  <TkCol lg={3}>
                     <Controller
                       name="leadSource"
                       control={control}
@@ -778,7 +764,7 @@ function SocialMedia() {
                     )}
                   </TkCol>
 
-                  <TkCol lg={4}>
+                  <TkCol lg={3}>
                     <Controller
                       name="platformType"
                       control={control}
@@ -809,7 +795,7 @@ function SocialMedia() {
                     )}
                   </TkCol>
 
-                  <TkCol lg={4}>
+                  <TkCol lg={3}>
                     <TkInput
                       {...register("campaignName")}
                       id="campaignName"
@@ -826,7 +812,7 @@ function SocialMedia() {
                     )}
                   </TkCol>
 
-                  <TkCol lg={4}>
+                  <TkCol lg={3}>
                     <Controller
                       name="visitUpdate"
                       control={control}
@@ -849,7 +835,7 @@ function SocialMedia() {
                     )}
                   </TkCol>
 
-                  <TkCol lg={4}>
+                  <TkCol lg={3}>
                     <TkInput
                       {...register("createdBy")}
                       id="createdBy"
@@ -863,7 +849,7 @@ function SocialMedia() {
                     )}
                   </TkCol>
 
-                  <TkCol lg={4}>
+                  <TkCol lg={3}>
                     <Controller
                       name="createdDate"
                       control={control}
@@ -1297,7 +1283,7 @@ function SocialMedia() {
                 <TabPane tabId={tabs.leadNurutring}>
                   <div>
                     <TkRow className="g-3">
-                      <TkCol lg={4}>
+                      <TkCol lg={3}>
                         <Controller
                           name="primaryAction"
                           control={control}
@@ -1335,7 +1321,7 @@ function SocialMedia() {
                         )}
                       </TkCol>
 
-                      <TkCol lg={4}>
+                      <TkCol lg={3}>
                         <TkInput
                           {...register("dateTime")}
                           id="dateTime"
@@ -1347,7 +1333,7 @@ function SocialMedia() {
                         />
                       </TkCol>
 
-                      <TkCol lg={4}>
+                      <TkCol lg={3}>
                         <TkInput
                           {...register("leadValue")}
                           id="leadValue"
@@ -1362,7 +1348,7 @@ function SocialMedia() {
                           </FormErrorText>
                         )}
                       </TkCol>
-                      <TkCol lg={4}>
+                      <TkCol lg={3}>
                         <Controller
                           name="leadUpdate"
                           control={control}
@@ -1399,7 +1385,7 @@ function SocialMedia() {
                           id="reason"
                           name="reason"
                           labelName="Reason if unqualified lead"
-                          type="text"
+                          type="textarea"
                           placeholder="Enter Reason"
                         />
                         {errors.reason && (
@@ -1407,7 +1393,7 @@ function SocialMedia() {
                         )}
                       </TkCol>
 
-                      <TkCol lg={4}>
+                      <TkCol lg={3}>
                         <Controller
                           name="prospectNurturing"
                           control={control}
