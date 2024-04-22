@@ -262,7 +262,7 @@ export default function TkTableContainer(props) {
           <div>
             {showAddButton && (
               <TkButton type="button" className="ms-3" disabled={disableAddButton} onClick={onClickAdd}>
-                +
+                Add
               </TkButton>
             )}
           </div>

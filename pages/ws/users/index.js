@@ -23,11 +23,11 @@ const Users = () => {
       </TkPageHead>
 
       <div className="page-content">
-        <BreadCrumb
+        {/* <BreadCrumb
           pageTitle={"Users"}
           buttonText={"Add User"}
           onButtonClick={handleButtonClick}
-        />
+        /> */}
         <TkContainer>
           <AllUsers />
         </TkContainer>
