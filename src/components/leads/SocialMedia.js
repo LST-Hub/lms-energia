@@ -23,6 +23,7 @@ import {
   MinNameLength,
   bigInpuMaxLength,
   createdByNameTypes,
+  leadActivityTypes,
   smallInputMaxLength,
   urls,
 } from "../../../src/utils/Constants";
@@ -55,7 +56,7 @@ const tabs = {
   leadNurutring: "nurturing",
   requirementDetails: "requirementDetails",
   locationDetails: "locationDetails",
-  test: "test",
+  leadActivity: "leadActivity",
 };
 
 const schema = Yup.object({
@@ -230,6 +231,7 @@ function SocialMedia() {
       projectname: "",
       duration: "",
       unitOfMeasure: null,
+      value: "",
       delivery: "",
     },
   ]);
@@ -321,6 +323,7 @@ function SocialMedia() {
         projectname: "",
         duration: "",
         unitOfMeasure: null,
+        value: "",
         delivery: "",
       },
     ]);
@@ -359,6 +362,10 @@ function SocialMedia() {
     control,
     name: "unitOfMeasure",
   });
+  const { remove: removeValue } = useFieldArray({
+    control,
+    name: "value",
+  });
   const { remove: removeDelivery } = useFieldArray({
     control,
     name: "delivery",
@@ -390,6 +397,7 @@ function SocialMedia() {
     removeProjectName(index);
     removeDuration(index);
     removeUnitOfMeasure(index);
+    removeValue(index);
     removeDelivery(index);
     removeLocation(index);
     removeContactPersonName(index);
@@ -560,6 +568,27 @@ function SocialMedia() {
                 </>
               )}
             />
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Value",
+      accessor: "value",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              placeholder="Enter Value"
+              {...register(`projectName[${cellProps.row.index}]`)}
+            />
+            {errors?.value?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.value?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
           </>
         );
       },
@@ -801,14 +830,20 @@ function SocialMedia() {
                   </TkCol>
 
                   <TkCol lg={3}>
-                    <TkInput
-                      {...register("campaignName")}
-                      id="campaignName"
+                    <Controller
                       name="campaignName"
-                      type="text"
-                      labelName="Campaign Name"
-                      placeholder="Enter Campaign Name"
-                      requiredStarOnLabel="true"
+                      control={control}
+                      render={({ field }) => (
+                        <TkSelect
+                          {...field}
+                          id="campaignName"
+                          name="campaignName"
+                          labelName="Campaign Name"
+                          placeholder="Enter Campaign Name"
+                          requiredStarOnLabel="true"
+                          options={[]}
+                        />
+                      )}
                     />
                     {errors.campaignName && (
                       <FormErrorText>
@@ -882,6 +917,27 @@ function SocialMedia() {
                       <FormErrorText>
                         {errors.createdDate.message}
                       </FormErrorText>
+                    )}
+                  </TkCol>
+
+                  <TkCol lg={3}>
+                    <Controller
+                      name="primarySubsidiary"
+                      control={control}
+                      render={({ field }) => (
+                        <TkSelect
+                          {...field}
+                          id="primarySubsidiary"
+                          name="primarySubsidiary"
+                          labelName="Primary Subsidiary"
+                          placeholder="Select Primary Subsidiary"
+                          requiredStarOnLabel="true"
+                          options={[]}
+                        />
+                      )}
+                    />
+                    {errors.leadSource && (
+                      <FormErrorText>{errors.leadSource.message}</FormErrorText>
                     )}
                   </TkCol>
                 </TkRow>
@@ -1188,6 +1244,18 @@ function SocialMedia() {
                     Lead Nurturing
                   </NavLink>
                 </NavItem>
+
+                <NavItem>
+                  <NavLink
+                    href="#"
+                    className={classnames({
+                      active: activeSubTab === tabs.leadActivity,
+                    })}
+                    onClick={() => toggleTab(tabs.leadActivity)}
+                  >
+                    Lead Activity
+                  </NavLink>
+                </NavItem>
               </Nav>
             </TkCol>
           </TkRow>
@@ -1441,7 +1509,7 @@ function SocialMedia() {
                         )}
                       </TkCol>
 
-                      <TkCol lg={4}>
+                      {/* <TkCol lg={4}>
                         <TkButton
                           type="button"
                           color="primary"
@@ -1450,6 +1518,193 @@ function SocialMedia() {
                         >
                           Add Activity
                         </TkButton>
+                      </TkCol> */}
+                    </TkRow>
+                  </div>
+                </TabPane>
+
+                <TabPane tabId={tabs.leadActivity}>
+                  <div>
+                    <TkRow className="g-3">
+                      <TkCol lg={4}>
+                        <Controller
+                          name="activityType"
+                          control={control}
+                          render={({ field }) => (
+                            <TkSelect
+                              {...field}
+                              labelName="Activity Type"
+                              labelId="activityType"
+                              id="activityType"
+                              options={leadActivityTypes}
+                              placeholder="Select Activity Type"
+                              requiredStarOnLabel={true}
+                            />
+                          )}
+                        />
+                        {errors.activityType && (
+                          <FormErrorText>
+                            {errors.activityType.message}
+                          </FormErrorText>
+                        )}
+                      </TkCol>
+
+                      {/* <TkCol lg={4}>
+                          <TkSelect
+                            labelName="Lead"
+                            labelId={"_lead"}
+                            id="lead"
+                            options={leadTypes}
+                            placeholder="Select Lead"
+                            requiredStarOnLabel={true}
+                          />
+                        </TkCol> */}
+
+                      <TkCol lg={4}>
+                        <TkInput
+                          {...register("lead")}
+                          id="lead"
+                          name="lead"
+                          type="text"
+                          labelName="Lead Name"
+                          placeholder="Enter Lead Name"
+                          requiredStarOnLabel={true}
+                        />
+                        {errors.lead && (
+                          <FormErrorText>{errors.lead.message}</FormErrorText>
+                        )}
+                      </TkCol>
+
+                      <TkCol lg={4}>
+                        <TkInput
+                          {...register("location")}
+                          labelName="Location"
+                          labelId={"location"}
+                          id="location"
+                          type="text"
+                          placeholder="Enter Location"
+                          requiredStarOnLabel={true}
+                        />
+                        {errors.location && (
+                          <FormErrorText>
+                            {errors.location.message}
+                          </FormErrorText>
+                        )}
+                      </TkCol>
+
+                      <TkCol lg={4}>
+                        <TkInput
+                          {...register("phoneNumber")}
+                          id="phoneNumber"
+                          name="phoneNumber"
+                          type="text"
+                          labelName="Phone Number"
+                          placeholder="Enter Phone Number"
+                          requiredStarOnLabel={true}
+                        />
+                        {errors.phoneNumber && (
+                          <FormErrorText>
+                            {errors.phoneNumber.message}
+                          </FormErrorText>
+                        )}
+                      </TkCol>
+
+                      <TkCol lg={4}>
+                        <Controller
+                          name="status"
+                          control={control}
+                          render={({ field }) => (
+                            <TkSelect
+                              {...field}
+                              labelName="Status"
+                              labelId={"_status"}
+                              id="status"
+                              options={[]}
+                              placeholder="Select Type"
+                              requiredStarOnLabel={true}
+                            />
+                          )}
+                        />
+                        {errors.status && (
+                          <FormErrorText>{errors.status.message}</FormErrorText>
+                        )}
+                      </TkCol>
+
+                      <TkCol lg={4}>
+                        <Controller
+                          name="date"
+                          control={control}
+                          rules={{ required: "Date is required" }}
+                          render={({ field }) => (
+                            <TkDate
+                              {...field}
+                              labelName="Date"
+                              id={"date"}
+                              placeholder="Select Date"
+                              options={{
+                                altInput: true,
+                                dateFormat: "d M, Y",
+                              }}
+                              requiredStarOnLabel={true}
+                            />
+                          )}
+                        />
+                        {errors.date && (
+                          <FormErrorText>{errors.date.message}</FormErrorText>
+                        )}
+                      </TkCol>
+
+                      <TkCol lg={4}>
+                        <TkInput
+                          {...register(`time`, {
+                            required: "Time is required",
+                            validate: (value) => {
+                              if (
+                                value &&
+                                !/^[0-9]*([.:][0-9]+)?$/.test(value)
+                              ) {
+                                return "Invalid Time";
+                              }
+                              if (
+                                convertTimeToSec(value) > 86400 ||
+                                value > 24
+                              ) {
+                                return "Time should be less than 24 hours";
+                              }
+                            },
+                          })}
+                          onBlur={(e) => {
+                            setValue(
+                              `time`,
+                              convertToTimeFotTimeSheet(e.target.value)
+                            );
+                          }}
+                          labelName="Time (HH:MM)"
+                          id={"time"}
+                          name="time"
+                          type="text"
+                          placeholder="Enter Time"
+                          requiredStarOnLabel={true}
+                        />
+                        {errors.time && (
+                          <FormErrorText>{errors.time.message}</FormErrorText>
+                        )}
+                      </TkCol>
+
+                      <TkCol lg={8}>
+                        <TkInput
+                          {...register("comments")}
+                          id="comments"
+                          name="comments"
+                          type="textarea"
+                          labelName="Comments"
+                          placeholder="Enter Comments"
+                        />
+                        {errors.comments && (
+                          <FormErrorText>
+                            {errors.comments.message}
+                          </FormErrorText>
+                        )}
                       </TkCol>
                     </TkRow>
                   </div>
