@@ -4,6 +4,7 @@ import BreadCrumb from "../../../src/utils/BreadCrumb";
 import { Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
 import classnames from "classnames";
 import {
+  API_BASE_URL,
   MaxNameLength,
   MinNameLength,
   clientTypes,
@@ -44,35 +45,38 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import TkModal, { TkModalHeader } from "../TkModal";
 import ActivityPopup from "./ActivityPopup";
 import FormErrorText from "../forms/ErrorText";
+import { useMutation, useQueries, useQuery } from "@tanstack/react-query";
+import tkFetch from "../../utils/fetch";
+import { TkToastError, TkToastSuccess } from "../TkToastContainer";
+import LeadTaskPopup from "./LeadTaskPopup";
+import LeadEventPopup from "./LeadEventPopup";
 const schema = Yup.object({
-  createdBy: Yup.string()
-    .min(
-      MinNameLength,
-      `Created By should have at least ${MinNameLength} character.`
-    )
-    .max(
-      MaxNameLength,
-      `Created By should have at most ${MaxNameLength} characters.`
-    )
-    .required("Created By is required"),
+  custentity_lms_leadsource: Yup.object()
+    .nullable()
+    .required("Lead source is required"),
 
-  name: Yup.string()
+  subsidiary: Yup.object().required("Primary subsidairy is required"),
+  custentity_lms_name: Yup.string()
     .min(MinNameLength, `Name should have at least ${MinNameLength} character.`)
     .max(MaxNameLength, `Name should have at most ${MaxNameLength} characters.`)
-    .required("Name is required"),
+    .required("First Name is required"),
 
-  mobileNo: Yup.string()
+  // lastName: Yup.string()
+  //   .min(MinNameLength, `Name should have at least ${MinNameLength} character.`)
+  //   .max(MaxNameLength, `Name should have at most ${MaxNameLength} characters.`)
+  //   .required("Last Name is required"),
+
+  custentity_lms_personal_phonenumber: Yup.string()
     .nullable()
-    .required("Mobile Number is Required")
+    .required("Phone number is Required")
     .matches(/^[0-9+() -]*$/, "Mobile number must be number.")
     .max(
       MaxPhoneNumberLength,
       `Mobile number must be at most ${MaxPhoneNumberLength} numbers.`
     ),
-
-  email: Yup.string()
+  custentity_lms_personal_email: Yup.string()
     .nullable()
-    .required("Email is Required")
+    .required("Email is required")
     .email("Email must be valid.")
     .min(
       MinEmailLength,
@@ -82,93 +86,54 @@ const schema = Yup.object({
       MaxEmailLength,
       `Email should have at most ${MaxEmailLength} characters.`
     ),
-
-  note: Yup.string().max(
+  custentity_lms_enquiryby: Yup.object().required("Enquiry by is required"),
+  custentity_lms_noteother: Yup.string().max(
     bigInpuMaxLength,
     `Note should have at most ${bigInpuMaxLength} characters.`
   ),
-
   companyName: Yup.string()
     .nullable()
     .max(
       smallInputMaxLength,
       `Company name should have at most ${smallInputMaxLength} characters.`
     ),
-
-  contactNo: Yup.string()
+  phone: Yup.string()
     .nullable()
-    .required("Contact Number is Required")
-    .matches(/^[0-9+() -]*$/, "Contact number must be number.")
+    .matches(/^[0-9+() -]*$/, "Phone number must be number.")
     .max(
       MaxPhoneNumberLength,
-      `Contact number must be at most ${MaxPhoneNumberLength} numbers.`
+      `Phone number must be at most ${MaxPhoneNumberLength} numbers.`
     ),
-
-  companyEmail: Yup.string()
+  email: Yup.string()
     .nullable()
-    .email("Company Email must be valid.")
-    .min(
-      MinEmailLength,
-      `Company Email should have at least ${MinEmailLength} characters.`
-    )
+    .email("Email must be valid.")
     .max(
       MaxEmailLength,
-      `Company Email should have at most ${MaxEmailLength} characters.`
+      `Email should have at most ${MaxEmailLength} characters.`
     ),
-
-  companyAddress: Yup.string()
-    .nullable()
+  addr1: Yup.string()
     .max(
       smallInputMaxLength,
-      `Company address should have at most ${smallInputMaxLength} characters.`
-    ),
-
-  projectName: Yup.string()
-    .min(
-      MinNameLength,
-      `Project Name should have at least ${MinNameLength} character.`
+      `Address 1 should have at most ${smallInputMaxLength} characters.`
     )
+    .nullable(),
+  city: Yup.string()
     .max(
-      MaxNameLength,
-      `Project Name should have at most ${MaxNameLength} characters.`
-    ),
+      smallInputMaxLength,
+      `City should have at most ${smallInputMaxLength} characters.`
+    )
+    .nullable(),
 
-  duration: Yup.string()
-    .matches(/^\d+(:[0-5][0-9]){0,2}$/, "duration cannot contain characters")
-    .test(
-      "duration",
-      "Duration should be less than 24 hours",
-      function (value) {
-        if (convertTimeToSec(value) > 86400 || value > 24) {
-          return false;
-        }
+  zip: Yup.string().test(
+    "test-name",
+    "Zip code does not accept characters",
+    function (value) {
+      if (value === "" || value === null || value === undefined) {
         return true;
+      } else {
+        return value.trim().match(/^[0-9]*$/, "Zip code must be numeric.");
       }
-    ),
-
-  location: Yup.string()
-    .min(
-      MinNameLength,
-      `Location should have at least ${MinNameLength} character.`
-    )
-    .max(
-      MaxNameLength,
-      `Location should have at most ${MaxNameLength} characters.`
-    ),
-
-  locationContactPerson: Yup.string()
-    .min(
-      MinNameLength,
-      `Location contact person should have at least ${MinNameLength} character.`
-    )
-    .max(
-      MaxNameLength,
-      `Location contact person should have at most ${MaxNameLength} characters.`
-    ),
-
-  notes: Yup.string().max(
-    bigInpuMaxLength,
-    `Notes should have at most ${bigInpuMaxLength} characters.`
+    }
   ),
 }).required();
 
@@ -181,6 +146,8 @@ const tabs = {
   directMarketing: "directMarketing",
   requirementDetails: "requirementDetails",
   locationDetails: "locationDetails",
+  leadAssigning: "leadAssigning",
+  leadNurutring: "leadNurutring",
   leadActivity: "leadActivity",
 };
 function EditLead({ id, userData, mode }) {
@@ -201,15 +168,400 @@ function EditLead({ id, userData, mode }) {
   const editMode = mode === modes.edit;
   const lid = Number(id);
   const [activityModal, setActivityModal] = useState(false);
-  const [directCallCheckbox, setDirectCallCheckbox] = useState(false);
-  const [emailCheckbox, setEmailCheckbox] = useState(false);
-  const [socialMediaCheckbox, setSocialMediaCheckbox] = useState(false);
-  const [portalsCheckbox, setPortalsCheckbox] = useState(false);
-  const [directMarketingCheckbox, setDirectMarketingCheckbox] = useState(false);
+  const [leadTaskModal, setLeadTaskModal] = useState(false);
+  const [leadEventModal, setLeadEventModal] = useState(false);
+
   const [isLeadEdit, setIsLeadEdit] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [allDurations, setAllDurations] = useState({});
   const [activeSubTab, setActiveSubTab] = useState(tabs.requirementDetails);
+  const [allPrimarySubsidiaryData, setAllPrimarySubsidiaryData] = useState([
+    {},
+  ]);
+  const [allEnquiryByData, setAllEnquiryByData] = useState([{}]);
+  const [allClientTypeData, setAllClientTypeData] = useState([{}]);
+  const [allSegmentData, setAllSegmentData] = useState([{}]);
+  const [allDivisionData, setAllDivisionData] = useState([{}]);
+  const [allUnitOfMeasureData, setAllUnitOfMeasureData] = useState([{}]);
+  const [allRegionData, setAllRegionData] = useState([{}]);
+  const [allSalesTeamData, setAllSalesTeamData] = useState([{}]);
+  const [allPrimaryActionData, setAllPrimaryActioData] = useState([{}]);
+  const [allProspectNurturingData, setAllProspectNurturingData] = useState([
+    {},
+  ]);
+  const [allleadSourceData, setAllleadSourceData] = useState([{}]);
+  const [allCountryData, setAllCountryData] = useState([{}]);
+  const [fullAddress, setFullAddress] = useState(false);
+  const [editLeadId, setEditLeadId] = useState(null);
+  const [directCallId, setDirectCallId] = useState(null);
+  const [newAddress, setNewAddress] = useState(null);
+
+  const results = useQueries({
+    queries: [
+      {
+        queryKey: [RQ.allPrimarySubsidiary],
+        queryFn: tkFetch.get(`${API_BASE_URL}/primary-subsidiary`),
+      },
+
+      {
+        queryKey: [RQ.allEnquiryBy],
+        queryFn: tkFetch.get(`${API_BASE_URL}/enquiry-by`),
+      },
+      {
+        queryKey: [RQ.allClientType],
+        queryFn: tkFetch.get(`${API_BASE_URL}/client-type`),
+      },
+
+      {
+        queryKey: [RQ.allSegment],
+        queryFn: tkFetch.get(`${API_BASE_URL}/segment`),
+      },
+      {
+        queryKey: [RQ.allDivision],
+        queryFn: tkFetch.get(`${API_BASE_URL}/division`),
+      },
+      {
+        queryKey: [RQ.allUnitOfMeasure],
+        queryFn: tkFetch.get(`${API_BASE_URL}/unit-of-measure`),
+      },
+      {
+        queryKey: [RQ.allRegion],
+        queryFn: tkFetch.get(`${API_BASE_URL}/region`),
+      },
+
+      {
+        queryKey: [RQ.allSalesTeam],
+        queryFn: tkFetch.get(`${API_BASE_URL}/sales-team`),
+      },
+
+      {
+        queryKey: [RQ.allPrimaryAction],
+        queryFn: tkFetch.get(`${API_BASE_URL}/primary-action`),
+      },
+
+      {
+        queryKey: [RQ.allProspectNurturing],
+        queryFn: tkFetch.get(`${API_BASE_URL}/prospect-nurturing`),
+      },
+
+      {
+        queryKey: [RQ.allleadSource],
+        queryFn: tkFetch.get(`${API_BASE_URL}/lead-source`),
+      },
+      {
+        queryKey: [RQ.allCountry],
+        queryFn: tkFetch.get(`${API_BASE_URL}/country`),
+      },
+    ],
+  });
+
+  const [
+    primarySubisdiary,
+    enquiryBy,
+    clientType,
+    segment,
+    division,
+    unitOfMeasure,
+    region,
+    salesTeam,
+    primaryAction,
+    prospectNurturing,
+    leadSource,
+    country,
+  ] = results;
+  const {
+    data: primarySubisdiaryData,
+    isLoading: primarySubisdiaryLoading,
+    isError: primarySubisdiaryIsError,
+    error: primarySubisdiaryError,
+  } = primarySubisdiary;
+
+  const {
+    data: enquiryByData,
+    isLoading: enquiryByLoading,
+    isError: enquiryByIsError,
+    error: enquiryByError,
+  } = enquiryBy;
+
+  const {
+    data: clientTypeData,
+    isLoading: clientTypeLoading,
+    isError: clientTypeIsError,
+    error: clientTypeError,
+  } = clientType;
+
+  const {
+    data: segmentData,
+    isLoading: segmentLoading,
+    isError: segmentIsError,
+    error: segmentError,
+  } = segment;
+
+  const {
+    data: divisionData,
+    isLoading: divisionLoading,
+    isError: divisionIsError,
+    error: divisionError,
+  } = division;
+
+  const {
+    data: unitOfMeasureData,
+    isLoading: unitOfMeasureLoading,
+    isError: unitOfMeasureIsError,
+    error: unitOfMeasureError,
+  } = unitOfMeasure;
+
+  const {
+    data: regionData,
+    isLoading: regionLoading,
+    isError: regionIsError,
+    error: regionError,
+  } = region;
+
+  const {
+    data: salesTeamData,
+    isLoading: salesTeamLoading,
+    isError: salesTeamIsError,
+    error: salesTeamError,
+  } = salesTeam;
+
+  const {
+    data: primaryActionData,
+    isLoading: primaryActionLoading,
+    isError: primaryActionIsError,
+    error: primaryActionError,
+  } = primaryAction;
+
+  const {
+    data: prospectNurturingData,
+    isLoading: prospectNurturingLoading,
+    isError: prospectNurturingIsError,
+    error: prospectNurturingError,
+  } = prospectNurturing;
+
+  const {
+    data: leadSourceData,
+    isLoading: leadSourceLoading,
+    isError: leadSourceIsError,
+    error: leadSourceError,
+  } = leadSource;
+
+  const {
+    data: countryData,
+    isLoading: countryLoading,
+    isError: countryIsError,
+    error: countryError,
+  } = country;
+
+  useEffect(() => {
+    if (primarySubisdiaryIsError) {
+      console.log("primarySubisdiaryIsError", primarySubisdiaryError);
+      TkToastError(primarySubisdiaryError.message);
+    }
+
+    if (enquiryByIsError) {
+      console.log("enquiryByIsError", enquiryByError);
+      TkToastError(enquiryByError.message);
+    }
+
+    if (clientTypeIsError) {
+      console.log("clientTypeIsError", clientTypeError);
+      TkToastError(clientTypeError.message);
+    }
+
+    if (segmentIsError) {
+      console.log("segmentIsError", segmentError);
+      TkToastError(segmentError.message);
+    }
+
+    if (divisionIsError) {
+      console.log("divisionIsError", divisionError);
+      TkToastError(divisionError.message);
+    }
+
+    if (unitOfMeasureIsError) {
+      console.log("unitOfMeasureIsError", unitOfMeasureError);
+      TkToastError(unitOfMeasureError.message);
+    }
+
+    if (regionIsError) {
+      console.log("regionIsError", regionError);
+      TkToastError(regionError.message);
+    }
+
+    if (salesTeamIsError) {
+      console.log("salesTeamIsError", salesTeamError);
+      TkToastError(salesTeamError.message);
+    }
+
+    if (primaryActionIsError) {
+      console.log("primaryActionIsError", primaryActionError);
+      TkToastError(primaryActionError.message);
+    }
+
+    if (prospectNurturingIsError) {
+      console.log("prospectNurturingIsError", prospectNurturingError);
+      TkToastError(prospectNurturingError.message);
+    }
+
+    if (leadSourceIsError) {
+      console.log("leadSourceIsError", leadSourceError);
+      TkToastError(leadSourceError.message);
+    }
+
+    if (countryIsError) {
+      console.log("countryIsError", countryError);
+      TkToastError(countryError.message);
+    }
+  }, [
+    primarySubisdiaryIsError,
+    primarySubisdiaryError,
+    enquiryByIsError,
+    enquiryByError,
+    clientTypeIsError,
+    clientTypeError,
+    segmentIsError,
+    segmentError,
+    divisionIsError,
+    divisionError,
+    unitOfMeasureIsError,
+    unitOfMeasureError,
+    regionIsError,
+    regionError,
+    salesTeamIsError,
+    salesTeamError,
+    primaryActionIsError,
+    primaryActionError,
+    prospectNurturingIsError,
+    prospectNurturingError,
+    leadSourceIsError,
+    leadSourceError,
+    countryIsError,
+    countryError,
+  ]);
+
+  useEffect(() => {
+    if (primarySubisdiaryData) {
+      setAllPrimarySubsidiaryData(
+        primarySubisdiaryData?.items?.map((primarySubisdiary) => ({
+          label: primarySubisdiary.name,
+          value: primarySubisdiary.id,
+        }))
+      );
+    }
+
+    if (enquiryByData) {
+      setAllEnquiryByData(
+        enquiryByData?.items?.map((enquiryBy) => ({
+          label: enquiryBy.name,
+          value: enquiryBy.id,
+        }))
+      );
+    }
+
+    if (clientTypeData) {
+      setAllClientTypeData(
+        clientTypeData?.items?.map((clientType) => ({
+          label: clientType.name,
+          value: clientType.id,
+        }))
+      );
+    }
+
+    if (segmentData) {
+      setAllSegmentData(
+        segmentData?.items?.map((segmentType) => ({
+          label: segmentType.name,
+          value: segmentType.id,
+        }))
+      );
+    }
+
+    if (divisionData) {
+      setAllDivisionData(
+        divisionData?.items?.map((divisionType) => ({
+          label: divisionType.name,
+          value: divisionType.id,
+        }))
+      );
+    }
+
+    if (unitOfMeasureData) {
+      setAllUnitOfMeasureData(
+        unitOfMeasureData?.items?.map((unitOfMeasureType) => ({
+          label: unitOfMeasureType.name,
+          value: unitOfMeasureType.id,
+        }))
+      );
+    }
+
+    if (regionData) {
+      setAllRegionData(
+        regionData?.items?.map((regionType) => ({
+          label: regionType.name,
+          value: regionType.id,
+        }))
+      );
+    }
+
+    if (salesTeamData) {
+      setAllSalesTeamData(
+        salesTeamData?.items?.map((salesTeamType) => ({
+          label: salesTeamType.firstname,
+          value: salesTeamType.entityid,
+        }))
+      );
+    }
+
+    if (primaryActionData) {
+      setAllPrimaryActioData(
+        primaryActionData?.items?.map((primaryActionType) => ({
+          label: primaryActionType.name,
+          value: primaryActionType.id,
+        }))
+      );
+    }
+
+    if (prospectNurturingData) {
+      setAllProspectNurturingData(
+        prospectNurturingData?.items?.map((prospectNurturingType) => ({
+          label: prospectNurturingType.name,
+          value: prospectNurturingType.id,
+        }))
+      );
+    }
+
+    if (leadSourceData) {
+      setAllleadSourceData(
+        leadSourceData?.items?.map((leadSourceType) => ({
+          label: leadSourceType.name,
+          value: leadSourceType.id,
+        }))
+      );
+    }
+
+    if (countryData) {
+      setAllCountryData(
+        countryData?.items?.map((countryType) => ({
+          label: countryType.name,
+          value: countryType.id,
+        }))
+      );
+    }
+  }, [
+    primarySubisdiaryData,
+    enquiryByData,
+    clientTypeData,
+    segmentData,
+    divisionData,
+    unitOfMeasureData,
+    regionData,
+    salesTeamData,
+    primaryActionData,
+    prospectNurturingData,
+    leadSourceData,
+    countryData,
+  ]);
   const [requirementDetailsSections, setRequirementDetailsSections] = useState([
     { id: 1, isVisible: true },
   ]);
@@ -221,6 +573,26 @@ function EditLead({ id, userData, mode }) {
       setActivityModal(true);
     }
   }, [activityModal]);
+
+
+  const leadTaskActivityToggle = useCallback(() => {
+    if (leadTaskModal) {
+      setLeadTaskModal(false);
+    } else {
+      setLeadTaskModal(true);
+    }
+  }, [leadTaskModal]);
+
+  const leadEventActivityToggle = useCallback(() => {
+    if (leadEventModal) {
+      setLeadEventModal(false);
+    } else {
+      setLeadEventModal(true);
+    }
+  }, [leadEventModal]);
+
+
+
 
   useEffect(() => {
     setIsLeadEdit(true);
@@ -251,58 +623,64 @@ function EditLead({ id, userData, mode }) {
   //   }
   // };
 
-  const DirectCallData = [
-    {
-      id: 1,
-      _activityType: "Phone",
-      lead: "John Doe",
-      phoneNumber: "1234567890",
-      date: "2021-09-01",
-      comments: "Lead Mangement Demo",
-    },
-    {
-      id: 2,
-      _activityType: "Email",
-      lead: "Steave Smith",
-      phoneNumber: "1234567890",
-      date: "2021-09-01",
-      comments: "Lead Mangement Module Demo",
-    },
-    {
-      id: 3,
-      _activityType: "Meeting",
-      lead: "Will Smith",
-      phoneNumber: "1234567890",
-      date: "2021-09-01",
-      comments: "Lead Mangement Module Demo",
-    },
-  ];
   const columns = useMemo(
     () => [
-      // {
-      //   Header: "View",
-      //   accessor: "view",
-      //   filterable: false,
-      //   Cell: (cellProps) => {
-      //     return (
-      //       <div className="d-flex align-items-center">
-      //         <ul className="ps-0 mb-0">
-      //           <li className="list-inline-item">
-      //             <Link
-      //               href={`${urls.phoneCallView}/${cellProps.row.original.id}`}
-      //             >
-      //               <a>
-      //                 <TkButton color="none">
-      //                   <TkIcon className="ri-eye-fill align-bottom text-muted"></TkIcon>
-      //                 </TkButton>
-      //               </a>
-      //             </Link>
-      //           </li>
-      //         </ul>
-      //       </div>
-      //     );
-      //   },
-      // },
+      {
+        Header: "Edit | Delete ",
+        accessor: "id",
+        filterable: false,
+        Cell: (cellProps) => {
+          return (
+            <>
+              <div style={{ display: "flex" }}>
+                <div
+                  onClick={() =>
+                    toggle([
+                      {
+                        // id: cellProps.row.original.id,
+                        // repeatId: cellProps.row.original.repeatId,
+                        // project: { ...cellProps.row.original.project },
+                        // task: { ...cellProps.row.original.task },
+                        // allocatedUser: { ...cellProps.row.original.allocatedUser },
+                        // date: cellProps.row.original.date,
+                        // duration: cellProps.row.original.duration,
+                        // repetationType: cellProps.row.original.repetationType,
+                      },
+                    ])
+                  }
+                >
+                  {/* <Link href={`${urls.resourceAllocationView}/${cellProps.value}`}> */}
+                  <span className="table-text flex-grow-1 fw-medium link-primary cursor-pointer">
+                    {accessLevel >= perAccessIds.edit ? (
+                      <i className="ri-edit-line fs-4"></i>
+                    ) : (
+                      <TkButton color="none">
+                        <TkIcon className="ri-eye-fill align-bottom me-2 text-muted"></TkIcon>
+                      </TkButton>
+                    )}
+                  </span>
+                </div>
+                <span style={{ marginLeft: "20px" }}></span>
+
+                <div
+                  onClick={() => {
+                    setEditLeadId(cellProps.row.original.id);
+                    toggleDeleteModelPopup();
+                  }}
+                >
+                  <span className="table-text flex-grow-1 fw-medium link-danger cursor-pointer">
+                    {accessLevel >= perAccessIds.edit ? (
+                      <i className="ri-delete-bin-line fs-4"></i>
+                    ) : (
+                      <TkIcon className="table-text flex-grow-1 fw-medium link-danger cursor-pointer"></TkIcon>
+                    )}
+                  </span>
+                </div>
+              </div>
+            </>
+          );
+        },
+      },
       {
         Header: "Activity Type",
         accessor: "_activityType",
@@ -346,59 +724,190 @@ function EditLead({ id, userData, mode }) {
     ],
     []
   );
+  const { data, isLoading, isFetched, isError, error } = useQuery({
+    queryKey: [RQ.lead, lid],
+    queryFn: tkFetch.get(`${API_BASE_URL}/lead/${lid}`),
+    enabled: !!lid,
+  });
 
+  const concatenateAddress = useCallback(() => {
+    const addr1 = getValues("addr1") || "";
+    const addr2 = getValues("addr2") || "";
+    const city = getValues("city") || "";
+    const state = getValues("state") || "";
+    const zip = getValues("zip") || "";
+    const country = getValues("country");
+    const countryLabel = Array.isArray(country)
+      ? country.map((c) => c.label).join(", ")
+      : country?.label || "";
+    const fullAddress = `${addr1.trim()}, ${addr2.trim()}, ${city.trim()}, ${state.trim()}, ${zip.trim()}, ${countryLabel}`;
+    setFullAddress(fullAddress.replace(/,\s*,/g, ","));
+  }, [getValues, setFullAddress]);
+
+  const handleInputBlur = (e) => {
+    concatenateAddress();
+  };
   useEffect(() => {
-    if (userData) {
-      setValue("leadSource", {
-        value: userData.leadSource,
-        label: userData.leadSource,
-      });
-      setValue("createdBy", userData.createdBy);
-      setValue("name", userData.name);
-      setValue("mobileNo", userData.mobileNo);
-      setValue("email", userData.email);
-      setValue("enquiryBy", {
-        value: userData.enquiryBy,
-        label: userData.enquiryBy,
-      });
-      setValue("noote", userData.noote);
-      setValue("createdDate", userData.createdDate);
-      setValue("leadValue", userData.leadValue);
-      setValue("companyName", userData.companyName);
-      setValue("contactNo", userData.contactNo);
-      setValue("cemail", userData.cemail);
-      setValue("address", userData.address);
-      setValue("region", userData.region);
-      setValue("crno", userData.crNo);
-      setValue("vatNo", userData.vatNo);
-      setValue("clientType", {
-        value: userData.clientType,
-        label: userData.clientType,
-      });
-      setValue("segment", {
-        value: userData.segment,
-        label: userData.segment,
-      });
-      setValue("division", {
-        value: userData.division,
-        label: userData.division,
-      });
-      setValue("requirement", {
-        value: userData.requirement,
-        label: userData.requirement,
-      });
-      setValue("projectName", userData.projectName);
-      setValue("duration", userData.duration);
-      setValue("delivery", userData.delivery);
-      setValue("location", userData.location);
-      setValue("locationContactPerson", userData.locationContactPerson);
-      setValue("note", userData.note);
+    if (fullAddress) {
+      setValue("addrtext", fullAddress);
     }
-  }, [setValue, userData]);
+  }, [fullAddress, setValue]);
 
   useEffect(() => {
-    setValue("createdDate", new Date());
-    setSelectedDate(new Date());
+    if (isFetched && Array.isArray(data) && data.length > 0) {
+      const {
+        custentity_lms_leadsource,
+        custentity_lms_createdby,
+        subsidiary,
+        custentity_lms_name,
+        // middleName,
+        // lastName,
+        custentity_lms_personal_phonenumber,
+        custentity_lms_personal_email,
+        custentity_lms_enquiryby,
+        custentity_lms_noteother,
+        companyName,
+        phone,
+        email,
+        custentity_lms_cr_no,
+        custentity3,
+        custentity_lms_client_type,
+        custentity_market_segment,
+        defaultAddress,
+      } = data[0];
+      // const address = defaultAddress.split(",");
+      const address = defaultAddress ? defaultAddress.split(", ") : [];
+
+      setValue("custentity_lms_leadsource", {
+        label: custentity_lms_leadsource?.refName,
+        value: custentity_lms_leadsource?.id,
+      });
+      setValue("custentity_lms_createdby", custentity_lms_createdby?.refName);
+      setValue("subsidiary", {
+        label: subsidiary?.refName,
+        value: subsidiary?.id,
+      });
+      setValue("custentity_lms_name", custentity_lms_name);
+      // setValue("middleName", middleName),
+      //   setValue("lastName", lastName),
+      setValue(
+        "custentity_lms_personal_phonenumber",
+        custentity_lms_personal_phonenumber
+      );
+      setValue("custentity_lms_personal_email", custentity_lms_personal_email);
+      setValue("custentity_lms_enquiryby", {
+        label: custentity_lms_enquiryby?.refName,
+        value: custentity_lms_enquiryby?.id,
+      });
+      setValue("custentity_lms_noteother", custentity_lms_noteother);
+      setValue("companyName", companyName);
+      setValue("phone", phone);
+      setValue("email", email);
+      setValue("custentity_lms_cr_no", custentity_lms_cr_no);
+      setValue("custentity3", custentity3);
+      setValue("custentity_lms_client_type", {
+        label: custentity_lms_client_type?.refName,
+        value: custentity_lms_client_type?.id,
+      });
+      setValue("custentity_market_segment", {
+        label: custentity_market_segment?.refName,
+        value: custentity_market_segment?.id,
+      });
+      setValue("addr1", address[0]);
+      setValue("addr2", address[1]);
+      setValue("city", address[2]);
+      setValue("state", address[3]);
+      setValue("zip", address[4]);
+      setValue("country", {
+        label: address[5],
+        value: address[5],
+      });
+
+      // setValue("addrtext", defaultAddress);
+      concatenateAddress();
+    }
+  }, [data, isFetched, setValue, concatenateAddress]);
+
+  const leadPost = useMutation({
+    mutationFn: tkFetch.patchWithIdInUrl(`${API_BASE_URL}/lead`),
+  });
+
+  const onSubmit = (formData) => {
+    if (!editMode) return;
+    const apiData = {
+      id: lid,
+      custentity_lms_leadsource: {
+        id: formData.custentity_lms_leadsource.value,
+        refName: formData.custentity_lms_leadsource.label,
+      },
+      custentity_lms_createddate: formData.custentity_lms_createddate,
+      subsidiary: {
+        id: formData.subsidiary.value,
+      },
+      custentity_lms_name: formData.custentity_lms_name,
+      custentity_lms_personal_phonenumber:
+        formData.custentity_lms_personal_phonenumber,
+      custentity_lms_personal_email: formData.custentity_lms_personal_email,
+      custentity_lms_enquiryby: {
+        id: formData.custentity_lms_enquiryby.value,
+      },
+      custentity_lms_noteother: formData.custentity_lms_noteother,
+      companyName: formData.companyName,
+      phone: formData.phone,
+      email: formData.email,
+      custentity_lms_cr_no: formData.custentity_lms_cr_no,
+      custentity3: formData.custentity3,
+      custentity_lms_client_type: {
+        id: formData.custentity_lms_client_type.value,
+      },
+      custentity_market_segment: {
+        id: formData.custentity_market_segment.value,
+      },
+      // addressBook: {
+      //   items: [
+      //     {
+      //       addressBookAddress: {
+      //         addr1: formData.addr1,
+      //         addr2: formData.addr2,
+      //         city: formData.city,
+      //         state: formData.state,
+      //         zip: formData.zip,
+      //         country: {
+      //           id: formData.country?.value,
+      //           refName: formData.country?.label,
+      //         },
+      //       },
+      //       defaultBilling: true,
+      //       defaultShipping: true,
+      //       addrtext: formData.addrtext,
+      //     },
+      //   ],
+      // },
+    };
+
+    leadPost.mutate(apiData, {
+      onSuccess: (data) => {
+        TkToastSuccess("Lead updated Successfully");
+        router.push(`${urls.lead}`);
+      },
+      onError: (error) => {
+        TkToastError("Lead not updated", error);
+      },
+    });
+  };
+  useEffect(() => {
+    const now = new Date();
+    const formattedDate = now.toLocaleString("en-GB", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
+    setValue("custentity_lms_createddate", now);
+    setValue("custentity_lms_lastactivitydate", formattedDate);
+    setSelectedDate(now);
   }, [setValue]);
 
   const [rows, setRows] = useState([
@@ -478,7 +987,7 @@ function EditLead({ id, userData, mode }) {
     control,
     name: "unitOfMeasure",
   });
-  const {remove: removeValue } = useFieldArray({
+  const { remove: removeValue } = useFieldArray({
     control,
     name: "value",
   });
@@ -544,34 +1053,23 @@ function EditLead({ id, userData, mode }) {
           <>
             <Controller
               control={control}
-              name={`division[${cellProps.row.index}]`}
+              name={`custrecord_lms_division[${cellProps.row.index}]`}
               render={({ field }) => (
                 <TkSelect
                   {...field}
-                  id={"division"}
-                  options={[
-                    {
-                      value: "1",
-                      label: "Energy",
-                    },
-                    {
-                      value: "2",
-                      label: "Cooling",
-                    },
-                    {
-                      value: "3",
-                      label: "Welding",
-                    },
-                  ]}
+                  id={"custrecord_lms_division"}
+                  options={allDivisionData}
                   requiredStarOnLabel={true}
-                  disabled={viewMode}
                   style={{ width: "200px" }}
                 />
               )}
             />
-            {errors?.task?.[cellProps.row.index] && (
+            {errors?.custrecord_lms_division?.[cellProps.row.index] && (
               <FormErrorText>
-                {errors?.task?.[cellProps.row.index]?.message}
+                {
+                  errors?.custrecord_lms_division?.[cellProps.row.index]
+                    ?.message
+                }
               </FormErrorText>
             )}
           </>
@@ -580,50 +1078,50 @@ function EditLead({ id, userData, mode }) {
     },
     {
       Header: "Requirement",
-      accessor: "requirement",
-      Cell: (cellProps) => {
-        return (
-          <Controller
-            control={control}
-            name={`requirement[${cellProps.row.index}]`}
-            rules={{ required: "Employee is required" }}
-            render={({ field }) => (
-              <>
-                <TkSelect
-                  {...field}
-                  id="requirement"
-                  // loading={selectedTaskId && isUsersLoading}
-                  // options={allUsersData}
-                  // menuPlacement="top"
-                  style={{ width: "200px" }}
-                  disabled={viewMode}
-                />
-                {errors?.requirement?.[cellProps.row.index] && (
-                  <FormErrorText>
-                    {errors?.requirement?.[cellProps.row.index]?.message}
-                  </FormErrorText>
-                )}
-              </>
-            )}
-          />
-        );
-      },
-    },
-    {
-      Header: "Project Name",
-      accessor: "projectName",
+      accessor: "custrecord_lms_requirement",
       Cell: (cellProps) => {
         return (
           <>
             <TkInput
               type="text"
-              placeholder="Enter Project Name"
-              disabled={viewMode}
-              {...register(`projectName[${cellProps.row.index}]`)}
+              id="custrecord_lms_requirement"
+              placeholder="Enter Requirement"
+              {...register(
+                `custrecord_lms_requirement[${cellProps.row.index}]`
+              )}
             />
-            {errors?.duration?.[cellProps.row.index] && (
+            {errors?.custrecord_lms_requirement?.[cellProps.row.index] && (
               <FormErrorText>
-                {errors?.duration?.[cellProps.row.index]?.message}
+                {
+                  errors?.custrecord_lms_requirement?.[cellProps.row.index]
+                    ?.message
+                }
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+    {
+      Header: "Project Name",
+      accessor: "custrecord_lms_project_name",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              id="custrecord_lms_project_name"
+              placeholder="Enter Project Name"
+              {...register(
+                `custrecord_lms_project_name[${cellProps.row.index}]`
+              )}
+            />
+            {errors?.custrecord_lms_project_name?.[cellProps.row.index] && (
+              <FormErrorText>
+                {
+                  errors?.custrecord_lms_project_name?.[cellProps.row.index]
+                    ?.message
+                }
               </FormErrorText>
             )}
           </>
@@ -638,8 +1136,8 @@ function EditLead({ id, userData, mode }) {
           <>
             <TkInput
               type="text"
+              id="custrecord_lms_duration"
               placeholder="Enter Duration"
-              disabled={viewMode}
               {...register(`duration[${cellProps.row.index}]`, {
                 required: "Duration is required",
                 validate: (value) => {
@@ -658,9 +1156,12 @@ function EditLead({ id, userData, mode }) {
                 );
               }}
             />
-            {errors?.duration?.[cellProps.row.index] && (
+            {errors?.custrecord_lms_duration?.[cellProps.row.index] && (
               <FormErrorText>
-                {errors?.duration?.[cellProps.row.index]?.message}
+                {
+                  errors?.custrecord_lms_duration?.[cellProps.row.index]
+                    ?.message
+                }
               </FormErrorText>
             )}
           </>
@@ -669,27 +1170,33 @@ function EditLead({ id, userData, mode }) {
     },
 
     {
-      Header: "Unit Of Measure",
-      accessor: "unitOfMeasure",
+      Header: "UOM",
+      accessor: "custrecord_lms_unit_of_measure",
       Cell: (cellProps) => {
         return (
           <>
             <Controller
               control={control}
-              name={`unitOfMeasure[${cellProps.row.index}]`}
+              name={`custrecord_lms_unit_of_measure[${cellProps.row.index}]`}
               render={({ field }) => (
                 <>
                   <TkSelect
                     {...field}
-                    id="unitOfMeasure"
-                    disabled={viewMode}
+                    id="custrecord_lms_unit_of_measure"
+                    options={allUnitOfMeasureData}
                     // loading={selectedTaskId && isUsersLoading}
                     // options={allUsersData}
                     // menuPlacement="top"
                   />
-                  {errors?.unitOfMeasure?.[cellProps.row.index] && (
+                  {errors?.custrecord_lms_unit_of_measure?.[
+                    cellProps.row.index
+                  ] && (
                     <FormErrorText>
-                      {errors?.unitOfMeasure?.[cellProps.row.index]?.message}
+                      {
+                        errors?.custrecord_lms_unit_of_measure?.[
+                          cellProps.row.index
+                        ]?.message
+                      }
                     </FormErrorText>
                   )}
                 </>
@@ -702,18 +1209,19 @@ function EditLead({ id, userData, mode }) {
 
     {
       Header: "Value",
-      accessor: "value",
+      accessor: "custrecord_lms_value",
       Cell: (cellProps) => {
         return (
           <>
             <TkInput
               type="text"
               placeholder="Enter Value"
+              id="custrecord_lms_value"
               {...register(`projectName[${cellProps.row.index}]`)}
             />
-            {errors?.value?.[cellProps.row.index] && (
+            {errors?.custrecord_lms_value?.[cellProps.row.index] && (
               <FormErrorText>
-                {errors?.value?.[cellProps.row.index]?.message}
+                {errors?.custrecord_lms_value?.[cellProps.row.index]?.message}
               </FormErrorText>
             )}
           </>
@@ -723,23 +1231,29 @@ function EditLead({ id, userData, mode }) {
 
     {
       Header: "Expected Delivery Date",
-      accessor: "delivery",
+      accessor: "custrecord_lms_expected_delivery_date",
       Cell: (cellProps) => {
         return (
           <>
             <Controller
               control={control}
-              name={`delivery[${cellProps.row.index}]`}
+              name={`custrecord_lms_expected_delivery_date[${cellProps.row.index}]`}
               render={({ field }) => (
                 <>
                   <TkDate
                     {...field}
-                    placeholder="Enter Delivery Date"
-                    disabled={viewMode}
+                    id="custrecord_lms_expected_delivery_date"
+                    placeholder="Select Delivery Date"
                   />
-                  {errors?.delivery?.[cellProps.row.index] && (
+                  {errors?.custrecord_lms_expected_delivery_date?.[
+                    cellProps.row.index
+                  ] && (
                     <FormErrorText>
-                      {errors?.delivery?.[cellProps.row.index]?.message}
+                      {
+                        errors?.custrecord_lms_expected_delivery_date?.[
+                          cellProps.row.index
+                        ]?.message
+                      }
                     </FormErrorText>
                   )}
                 </>
@@ -772,19 +1286,22 @@ function EditLead({ id, userData, mode }) {
   const locationDetailsColumns = [
     {
       Header: "Location",
-      accessor: "location",
+      accessor: "custrecord_lms_location",
       Cell: (cellProps) => {
         return (
           <>
             <TkInput
               type="text"
               placeholder="Enter Location"
-              disabled={viewMode}
-              {...register(`location[${cellProps.row.index}]`)}
+              id="custrecord_lms_location"
+              {...register(`custrecord_lms_location[${cellProps.row.index}]`)}
             />
-            {errors?.location?.[cellProps.row.index] && (
+            {errors?.custrecord_lms_location?.[cellProps.row.index] && (
               <FormErrorText>
-                {errors?.location?.[cellProps.row.index]?.message}
+                {
+                  errors?.custrecord_lms_location?.[cellProps.row.index]
+                    ?.message
+                }
               </FormErrorText>
             )}
           </>
@@ -793,19 +1310,27 @@ function EditLead({ id, userData, mode }) {
     },
     {
       Header: "Contact Person Name",
-      accessor: "contactPersonName",
+      accessor: "custrecord_lms_contactperson_name",
       Cell: (cellProps) => {
         return (
           <>
             <TkInput
               type="text"
               placeholder="Enter Person Name"
-              disabled={viewMode}
-              {...register(`contactPersonName[${cellProps.row.index}]`)}
+              id="custrecord_lms_contactperson_name"
+              {...register(
+                `custrecord_lms_contactperson_name[${cellProps.row.index}]`
+              )}
             />
-            {errors?.contactPersonName?.[cellProps.row.index] && (
+            {errors?.custrecord_lms_contactperson_name?.[
+              cellProps.row.index
+            ] && (
               <FormErrorText>
-                {errors?.contactPersonName?.[cellProps.row.index]?.message}
+                {
+                  errors?.custrecord_lms_contactperson_name?.[
+                    cellProps.row.index
+                  ]?.message
+                }
               </FormErrorText>
             )}
           </>
@@ -814,19 +1339,24 @@ function EditLead({ id, userData, mode }) {
     },
     {
       Header: "Phone Number",
-      accessor: "phoneNumber",
+      accessor: "custrecord_lms_phonenumber",
       Cell: (cellProps) => {
         return (
           <>
             <TkInput
               type="text"
               placeholder="Enter Phone Number"
-              disabled={viewMode}
-              {...register(`phoneNumber[${cellProps.row.index}]`)}
+              id="custrecord_lms_phonenumber"
+              {...register(
+                `custrecord_lms_phonenumber[${cellProps.row.index}]`
+              )}
             />
-            {errors?.phoneNumber?.[cellProps.row.index] && (
+            {errors?.custrecord_lms_phonenumber?.[cellProps.row.index] && (
               <FormErrorText>
-                {errors?.phoneNumber?.[cellProps.row.index]?.message}
+                {
+                  errors?.custrecord_lms_phonenumber?.[cellProps.row.index]
+                    ?.message
+                }
               </FormErrorText>
             )}
           </>
@@ -836,19 +1366,21 @@ function EditLead({ id, userData, mode }) {
 
     {
       Header: "Email",
-      accessor: "email",
+      accessor: "custrecord_location_email",
       Cell: (cellProps) => {
         return (
           <>
             <TkInput
               type="text"
               placeholder="Enter Email"
-              disabled={viewMode}
-              {...register(`email[${cellProps.row.index}]`)}
+              {...register(`custrecord_location_email[${cellProps.row.index}]`)}
             />
-            {errors?.email?.[cellProps.row.index] && (
+            {errors?.custrecord_location_email?.[cellProps.row.index] && (
               <FormErrorText>
-                {errors?.email?.[cellProps.row.index]?.message}
+                {
+                  errors?.custrecord_location_email?.[cellProps.row.index]
+                    ?.message
+                }
               </FormErrorText>
             )}
           </>
@@ -858,19 +1390,23 @@ function EditLead({ id, userData, mode }) {
 
     {
       Header: "Designation",
-      accessor: "designation",
+      accessor: "custrecord_lms_designation",
       Cell: (cellProps) => {
         return (
           <>
             <TkInput
               type="text"
               placeholder="Enter Designation"
-              disabled={viewMode}
-              {...register(`designation[${cellProps.row.index}]`)}
+              {...register(
+                `custrecord_lms_designation[${cellProps.row.index}]`
+              )}
             />
-            {errors?.designation?.[cellProps.row.index] && (
+            {errors?.custrecord_lms_designation?.[cellProps.row.index] && (
               <FormErrorText>
-                {errors?.designation?.[cellProps.row.index]?.message}
+                {
+                  errors?.custrecord_lms_designation?.[cellProps.row.index]
+                    ?.message
+                }
               </FormErrorText>
             )}
           </>
@@ -898,758 +1434,1061 @@ function EditLead({ id, userData, mode }) {
       },
     },
   ];
+  const toggleDeleteModelPopup = () => {
+    setDeleteModal(true);
+  };
 
   return (
     <>
       {isLeadEdit && (
         <div>
-          <TkForm>
-            {/* <TkRow>
-              <TkCol lg={12} className="d-flex justify-content-end">
-                <TkButton
-                  type="button"
-                  color="primary"
-                  onClick={leadActivityToggle}
-                  disabled={viewMode}
-                >
-                  Add Activity
-                </TkButton>
-              </TkCol>
-            </TkRow> */}
-            <TkRow className="mt-3 mb-5">
-              <TkCol>
-                <div>
-                  <TkRow className="g-3">
-                    <TkCol lg={3}>
-                      <Controller
-                        name="leadSource"
-                        control={control}
-                        render={({ field }) => (
-                          <TkSelect
-                            {...field}
-                            labelName="Lead Source"
-                            labelId={"_leadSource"}
-                            id="leadSource"
-                            placeholder="Select Lead Source"
-                            options={leadSourceTypes}
-                            requiredStarOnLabel={true}
-                            disabled={viewMode}
-                          />
-                        )}
-                      />
-                      {errors.leadSource && (
-                        <FormErrorText>
-                          {errors.leadSource.message}
-                        </FormErrorText>
-                      )}
-                    </TkCol>
+          <TkRow>
+            <TkCol>
+              <TkRow className="justify-content-center">
+                <TkCol lg={12}>
+                  <TkCardBody className="mt-4">
+                    <TkForm onSubmit={handleSubmit(onSubmit)}>
+                      <div>
+                        <TkRow className="mt-3 mb-5">
+                          <TkCol>
+                            <div>
+                              <TkRow className="g-3">
+                                <TkCol lg={3}>
+                                  <Controller
+                                    name="custentity_lms_leadsource"
+                                    control={control}
+                                    render={({ field }) => (
+                                      <TkSelect
+                                        {...field}
+                                        id="custentity_lms_leadsource"
+                                        name="custentity_lms_leadsource"
+                                        labelName="Lead Source"
+                                        placeholder="Select Source"
+                                        requiredStarOnLabel="true"
+                                        options={allleadSourceData}
+                                        disabled={viewMode}
+                                      />
+                                    )}
+                                  />
+                                  {errors.custentity_lms_leadsource && (
+                                    <FormErrorText>
+                                      {errors.custentity_lms_leadsource.message}
+                                    </FormErrorText>
+                                  )}
+                                </TkCol>
 
-                    {/* <TkCol lg={4}>
-                      <Controller
-                        name="leadSource"
-                        control={control}
-                        render={({ field }) => (
-                          <TkSelect
-                            id="leadSource"
-                            name="leadSource"
-                            labelName="Lead Source"
-                            placeholder="Select Lead Source"
-                            requiredStarOnLabel="true"
-                            options={leadSourceTypes}
-                            disabled={viewMode}
-                          />
-                        )}
-                      />
-                    </TkCol> */}
-                    <TkCol lg={3}>
-                      <TkInput
-                        {...register("createdBy")}
-                        id="createdBy"
-                        type="text"
-                        labelName="Created By"
-                        placeholder="Enter Created By"
-                        disabled={true}
-                        requiredStarOnLabel="true"
-                      />
-                      {errors.createdBy && (
-                        <FormErrorText>
-                          {errors.createdBy.message}
-                        </FormErrorText>
-                      )}
-                    </TkCol>
-                    <TkCol lg={3}>
-                      <Controller
-                        name="createdDate"
-                        control={control}
-                        render={({ field }) => (
-                          <TkDate
-                            {...field}
-                            labelName="Created Date"
-                            id={"createdDate"}
-                            placeholder="Enter Created Date"
-                            options={{
-                              altInput: true,
-                              dateFormat: "d M, Y",
-                            }}
-                            onChange={(e) => {
-                              field.onChange(e);
-                              setSelectedDate(e);
-                              setAllDurations({});
-                            }}
-                            disabled={true}
-                            requiredStarOnLabel={true}
-                          />
-                        )}
-                      />
-                      {errors.createdDate && (
-                        <FormErrorText>
-                          {errors.leadSource.message}
-                        </FormErrorText>
-                      )}
-                    </TkCol>
+                                <TkCol lg={3}>
+                                  <TkInput
+                                    {...register("custentity_lms_createdby")}
+                                    id="custentity_lms_createdby"
+                                    type="text"
+                                    labelName="Created By"
+                                    placeholder="Enter Created By"
+                                    requiredStarOnLabel="true"
+                                    disabled={viewMode}
+                                  />
+                                  {errors.custentity_lms_createdby && (
+                                    <FormErrorText>
+                                      {errors.custentity_lms_createdby.message}
+                                    </FormErrorText>
+                                  )}
+                                </TkCol>
+                                <TkCol lg={3}>
+                                  <Controller
+                                    name="custentity_lms_createddate"
+                                    control={control}
+                                    render={({ field }) => (
+                                      <TkDate
+                                        {...field}
+                                        labelName="Created Date"
+                                        id={"custentity_lms_createddate"}
+                                        placeholder="Enter Created Date"
+                                        options={{
+                                          altInput: true,
+                                          dateFormat: "d M, Y",
+                                        }}
+                                        onChange={(e) => {
+                                          field.onChange(e);
+                                          setSelectedDate(e);
+                                          setAllDurations({});
+                                        }}
+                                        disabled={true}
+                                        requiredStarOnLabel={true}
+                                      />
+                                    )}
+                                  />
+                                  {errors.custentity_lms_createddate && (
+                                    <FormErrorText>
+                                      {
+                                        errors.custentity_lms_createddate
+                                          .message
+                                      }
+                                    </FormErrorText>
+                                  )}
+                                </TkCol>
 
-                    <TkCol lg={3}>
-                    <Controller
-                      name="primarySubsidiary"
-                      control={control}
-                      render={({ field }) => (
-                        <TkSelect
-                          {...field}
-                          id="primarySubsidiary"
-                          name="primarySubsidiary"
-                          labelName="Primary Subsidiary"
-                          placeholder="Select Primary Subsidiary"
-                          requiredStarOnLabel="true"
-                          options={[]}
-                        />
-                      )}
-                    />
-                    {errors.leadSource && (
-                      <FormErrorText>{errors.leadSource.message}</FormErrorText>
-                    )}
-                  </TkCol>
-                  </TkRow>
-                </div>
-              </TkCol>
-            </TkRow>
-            <TkRow className="mt-4">
-              <TkCol>
-                <TkCardHeader tag="h5" className="mb-4">
-                  <h4>Personal Details</h4>
-                </TkCardHeader>
-                <div>
-                  <TkRow className="g-3">
-                    <TkCol lg={4}>
-                      <TkInput
-                        {...register("name")}
-                        id="name"
-                        type="text"
-                        labelName="Name"
-                        placeholder="Enter Name"
-                        requiredStarOnLabel="true"
-                        disabled={viewMode}
-                      />
-                      {errors.name && (
-                        <FormErrorText>{errors.name.message}</FormErrorText>
-                      )}
-                    </TkCol>
-                    <TkCol lg={4}>
-                      <TkInput
-                        {...register("mobileNo")}
-                        id="mobileNo"
-                        name="mobileNo"
-                        type="text"
-                        labelName="Phone No"
-                        placeholder="Enter Phone No"
-                        requiredStarOnLabel="true"
-                        disabled={viewMode}
-                      />
-                      {errors.mobileNo && (
-                        <FormErrorText>{errors.mobileNo.message}</FormErrorText>
-                      )}
-                    </TkCol>
-                    <TkCol lg={4}>
-                      <TkInput
-                        {...register("email")}
-                        id="email"
-                        name="email"
-                        type="text"
-                        labelName="Email"
-                        placeholder="Enter Email"
-                        requiredStarOnLabel="true"
-                        disabled={viewMode}
-                      />
-                      {errors.email && (
-                        <FormErrorText>{errors.email.message}</FormErrorText>
-                      )}
-                    </TkCol>
+                                <TkCol lg={3}>
+                                  <Controller
+                                    name="subsidiary"
+                                    control={control}
+                                    render={({ field }) => (
+                                      <TkSelect
+                                        {...field}
+                                        id="subsidiary"
+                                        name="subsidiary"
+                                        labelName="Primary Subsidiary"
+                                        placeholder="Select Primary Subsidiary"
+                                        requiredStarOnLabel="true"
+                                        options={allPrimarySubsidiaryData}
+                                        disabled={viewMode}
+                                      />
+                                    )}
+                                  />
+                                  {errors.subsidiary && (
+                                    <FormErrorText>
+                                      {errors.subsidiary.message}
+                                    </FormErrorText>
+                                  )}
+                                </TkCol>
+                              </TkRow>
+                            </div>
+                          </TkCol>
+                        </TkRow>
 
-                    {/* <TkCol lg={4}>
+                        <TkRow className="mt-4">
+                          <TkCol>
+                            <TkCardHeader tag="h5" className="mb-4">
+                              <h4>Personal Details</h4>
+                            </TkCardHeader>
+                            <div>
+                              <TkRow className="g-3">
+                                <TkCol lg={3}>
+                                  <TkInput
+                                    {...register("custentity_lms_name")}
+                                    id="custentity_lms_name"
+                                    type="text"
+                                    labelName="Name"
+                                    placeholder="Enter Name"
+                                    requiredStarOnLabel="true"
+                                    disabled={viewMode}
+                                  />
+                                  {errors.custentity_lms_name && (
+                                    <FormErrorText>
+                                      {errors.custentity_lms_name.message}
+                                    </FormErrorText>
+                                  )}
+                                </TkCol>
+                                {/* <TkCol lg={3}>
+                                  <TkInput
+                                    {...register("firstName")}
+                                    id="firstName"
+                                    type="text"
+                                    labelName="First Name"
+                                    placeholder="Enter First Name"
+                                    requiredStarOnLabel="true"
+                                    disabled={viewMode}
+                                  />
+                                  {errors.firstName && (
+                                    <FormErrorText>
+                                      {errors.firstName.message}
+                                    </FormErrorText>
+                                  )}
+                                </TkCol>
+                                <TkCol lg={2}>
+                                  <TkInput
+                                    {...register("middleName")}
+                                    id="middleName"
+                                    type="text"
+                                    labelName="Middle Name"
+                                    placeholder="Enter Middle Name"
+                                    disabled={viewMode}
+                                  />
+                                  {errors.middleName && (
+                                    <FormErrorText>
+                                      {errors.middleName.message}
+                                    </FormErrorText>
+                                  )}
+                                </TkCol>
+
+                                <TkCol lg={3}>
+                                  <TkInput
+                                    {...register("lastName")}
+                                    id="lastName"
+                                    type="text"
+                                    labelName="Last Name"
+                                    placeholder="Enter Last Name"
+                                    requiredStarOnLabel="true"
+                                    disabled={viewMode}
+                                  />
+                                  {errors.lastName && (
+                                    <FormErrorText>
+                                      {errors.lastName.message}
+                                    </FormErrorText>
+                                  )}
+                                </TkCol> */}
+                                <TkCol lg={3}>
+                                  <TkInput
+                                    {...register(
+                                      "custentity_lms_personal_phonenumber"
+                                    )}
+                                    id="custentity_lms_personal_phonenumber"
+                                    name="custentity_lms_personal_phonenumber"
+                                    type="text"
+                                    labelName="Phone No"
+                                    placeholder="Enter Phone No"
+                                    requiredStarOnLabel="true"
+                                    disabled={viewMode}
+                                  />
+                                  {errors.custentity_lms_personal_phonenumber && (
+                                    <FormErrorText>
+                                      {
+                                        errors
+                                          .custentity_lms_personal_phonenumber
+                                          .message
+                                      }
+                                    </FormErrorText>
+                                  )}
+                                </TkCol>
+                                <TkCol lg={3}>
+                                  <TkInput
+                                    {...register(
+                                      "custentity_lms_personal_email"
+                                    )}
+                                    id="custentity_lms_personal_email"
+                                    name="custentity_lms_personal_email"
+                                    type="text"
+                                    labelName="Email"
+                                    placeholder="Enter Email"
+                                    requiredStarOnLabel="true"
+                                    disabled={viewMode}
+                                  />
+                                  {errors.custentity_lms_personal_email && (
+                                    <FormErrorText>
+                                      {
+                                        errors.custentity_lms_personal_email
+                                          .message
+                                      }
+                                    </FormErrorText>
+                                  )}
+                                </TkCol>
+                                <TkCol lg={3}>
+                                  <Controller
+                                    name="custentity_lms_enquiryby"
+                                    control={control}
+                                    render={({ field }) => (
+                                      <TkSelect
+                                        {...field}
+                                        id="custentity_lms_enquiryby"
+                                        name="custentity_lms_enquiryby"
+                                        labelName="Enquiry By"
+                                        placeholder="Enquiry By"
+                                        requiredStarOnLabel="true"
+                                        options={allEnquiryByData}
+                                        disabled={viewMode}
+                                      />
+                                    )}
+                                  />
+                                  {errors.custentity_lms_enquiryby && (
+                                    <FormErrorText>
+                                      {errors.custentity_lms_enquiryby.message}
+                                    </FormErrorText>
+                                  )}
+                                </TkCol>
+
+                                <TkCol lg={12}>
+                                  <TkInput
+                                    {...register("custentity_lms_noteother")}
+                                    id="custentity_lms_noteother"
+                                    type="text"
+                                    labelName="Note"
+                                    placeholder="Enter Note"
+                                    disabled={viewMode}
+                                  />
+                                  {errors.custentity_lms_noteother && (
+                                    <FormErrorText>
+                                      {errors.custentity_lms_noteother.message}
+                                    </FormErrorText>
+                                  )}
+                                </TkCol>
+                              </TkRow>
+                            </div>
+                          </TkCol>
+                        </TkRow>
+
+                        <TkRow className="mt-5">
+                          <TkCol>
+                            <TkCardHeader tag="h5" className="mb-4">
+                              <h4>Company Details</h4>
+                            </TkCardHeader>
+                            <div>
+                              <TkRow className="g-3">
+                                <TkCol lg={4}>
+                                  <TkInput
+                                    {...register("companyName")}
+                                    id="companyName"
+                                    type="text"
+                                    labelName="Company Name"
+                                    placeholder="Enter Company Name"
+                                    disabled={viewMode}
+                                  />
+                                  {errors.companyName && (
+                                    <FormErrorText>
+                                      {errors.companyName.message}
+                                    </FormErrorText>
+                                  )}
+                                </TkCol>
+                                <TkCol lg={4}>
+                                  <TkInput
+                                    {...register("phone")}
+                                    id="phone"
+                                    name="phone"
+                                    type="text"
+                                    labelName="Contact No"
+                                    placeholder="Enter Contact No"
+                                    disabled={viewMode}
+                                  />
+                                  {errors.phone && (
+                                    <FormErrorText>
+                                      {errors.phone.message}
+                                    </FormErrorText>
+                                  )}
+                                </TkCol>
+                                <TkCol lg={4}>
+                                  <TkInput
+                                    {...register("email")}
+                                    id="email"
+                                    name="email"
+                                    type="text"
+                                    labelName="Email"
+                                    placeholder="Enter Email"
+                                    disabled={viewMode}
+                                  />
+                                  {errors.email && (
+                                    <FormErrorText>
+                                      {errors.email.message}
+                                    </FormErrorText>
+                                  )}
+                                </TkCol>
+
+                                <TkCol lg={4}>
+                                  <TkInput
+                                    {...register("custentity_lms_cr_no")}
+                                    id="custentity_lms_cr_no"
+                                    name="custentity_lms_cr_no"
+                                    type="text"
+                                    labelName="CR No"
+                                    placeholder="Enter CR No"
+                                    disabled={viewMode}
+                                  />
+                                  {errors.custentity_lms_cr_no && (
+                                    <FormErrorText>
+                                      {errors.custentity_lms_cr_no.message}
+                                    </FormErrorText>
+                                  )}
+                                </TkCol>
+
+                                <TkCol lg={4}>
+                                  <TkInput
+                                    {...register("custentity3")}
+                                    id="custentity3"
+                                    name="custentity3"
+                                    type="text"
+                                    labelName="VAT No"
+                                    placeholder="Enter VAT No"
+                                    disabled={viewMode}
+                                  />
+                                  {errors.custentity3 && (
+                                    <FormErrorText>
+                                      {errors.custentity3.message}
+                                    </FormErrorText>
+                                  )}
+                                </TkCol>
+                                <TkCol lg={4}>
+                                  <Controller
+                                    name="custentity_lms_client_type"
+                                    control={control}
+                                    render={({ field }) => (
+                                      <TkSelect
+                                        {...field}
+                                        id="custentity_lms_client_type"
+                                        name="custentity_lms_client_type"
+                                        labelName="Client Type"
+                                        placeholder="Select Client Type"
+                                        disabled={viewMode}
+                                        options={allClientTypeData}
+                                      />
+                                    )}
+                                  />
+                                  {errors.custentity_lms_client_type && (
+                                    <FormErrorText>
+                                      {
+                                        errors.custentity_lms_client_type
+                                          .message
+                                      }
+                                    </FormErrorText>
+                                  )}
+                                </TkCol>
+                                <TkCol lg={2}>
+                                  <Controller
+                                    name="custentity_market_segment"
+                                    control={control}
+                                    render={({ field }) => (
+                                      <TkSelect
+                                        {...field}
+                                        id="custentity_market_segment"
+                                        name="custentity_market_segment"
+                                        labelName="Segment"
+                                        placeholder="Select Segment"
+                                        options={allSegmentData}
+                                        disabled={viewMode}
+                                      />
+                                    )}
+                                  />
+                                  {errors.custentity_market_segment && (
+                                    <FormErrorText>
+                                      {errors.custentity_market_segment.message}
+                                    </FormErrorText>
+                                  )}
+                                </TkCol>
+
+                                <TkCol lg={5}>
+                                  <TkInput
+                                    {...register("addr1")}
+                                    id="addr1"
+                                    name="addr1"
+                                    type="textarea"
+                                    labelName="Address 1"
+                                    placeholder="Enter Address 1"
+                                    onBlur={handleInputBlur}
+                                    disabled={viewMode}
+                                  />
+                                  {errors.addr1 && (
+                                    <FormErrorText>
+                                      {errors.addr1.message}
+                                    </FormErrorText>
+                                  )}
+                                </TkCol>
+
+                                <TkCol lg={5}>
+                                  <TkInput
+                                    {...register("addr2")}
+                                    id="addr2"
+                                    name="addr2"
+                                    type="textarea"
+                                    labelName="Address 2"
+                                    placeholder="Enter Address 2"
+                                    onBlur={handleInputBlur}
+                                    disabled={viewMode}
+                                  />
+                                  {errors.addr2 && (
+                                    <FormErrorText>
+                                      {errors.addr2.message}
+                                    </FormErrorText>
+                                  )}
+                                </TkCol>
+
+                                <TkCol lg={3}>
+                                  <TkInput
+                                    {...register("city")}
+                                    id="city"
+                                    name="city"
+                                    type="text"
+                                    labelName="City"
+                                    placeholder="Enter City"
+                                    onBlur={handleInputBlur}
+                                    disabled={viewMode}
+                                  />
+                                  {errors.city && (
+                                    <FormErrorText>
+                                      {errors.city.message}
+                                    </FormErrorText>
+                                  )}
+                                </TkCol>
+
+                                <TkCol lg={3}>
+                                  <TkInput
+                                    {...register("state")}
+                                    id="state"
+                                    name="state"
+                                    type="text"
+                                    labelName="State"
+                                    placeholder="Enter State"
+                                    onBlur={handleInputBlur}
+                                    disabled={viewMode}
+                                  />
+                                  {errors.state && (
+                                    <FormErrorText>
+                                      {errors.state.message}
+                                    </FormErrorText>
+                                  )}
+                                </TkCol>
+
+                                <TkCol lg={3}>
+                                  <TkInput
+                                    {...register("zip")}
+                                    id="zip"
+                                    name="zip"
+                                    type="text"
+                                    labelName="Zip"
+                                    placeholder="Enter Zip"
+                                    onBlur={handleInputBlur}
+                                    disabled={viewMode}
+                                  />
+                                  {errors.zip && (
+                                    <FormErrorText>
+                                      {errors.zip.message}
+                                    </FormErrorText>
+                                  )}
+                                </TkCol>
+
+                                <TkCol lg={3}>
+                                  <Controller
+                                    name="country"
+                                    control={control}
+                                    render={({ field }) => (
+                                      <TkSelect
+                                        {...field}
+                                        labelName="Country"
+                                        tooltip="Select Country"
+                                        labelId={"_country"}
+                                        id="country"
+                                        options={allCountryData}
+                                        placeholder="Select Country"
+                                        onBlur={handleInputBlur}
+                                        disabled={viewMode}
+                                      />
+                                    )}
+                                  />
+
+                                  {errors.country && (
+                                    <FormErrorText>
+                                      {errors.country.message}
+                                    </FormErrorText>
+                                  )}
+                                </TkCol>
+
+                                <TkCol lg={12}>
+                                  <TkInput
+                                    {...register("addrtext")}
+                                    id="addrtext"
+                                    name="addrtext"
+                                    type="textarea"
+                                    labelName="Address "
+                                    placeholder="Enter Address"
+                                    disabled={true}
+                                  />
+                                  {errors.addrtext && (
+                                    <FormErrorText>
+                                      {errors.addrtext.message}
+                                    </FormErrorText>
+                                  )}
+                                </TkCol>
+
+                                {/* <TkCol lg={7}>
                     <TkInput
-                    {...register("leadValue")}
-                      id="leadValue"
-                      type="text"
-                      labelName="Lead Value"
-                      placeholder="Enter Lead Value"
-                      requiredStarOnLabel="true"
+                      {...register("defaultaddress")}
+                      id="defaultaddress"
+                      name="defaultaddress"
+                      type="textarea"
+                      labelName="Address"
+                      placeholder="Enter Address"
                       disabled={viewMode}
                     />
+                    {errors.defaultaddress && (
+                      <FormErrorText>
+                        {errors.defaultaddress.message}
+                      </FormErrorText>
+                    )}
                   </TkCol> */}
-                    <TkCol lg={4}>
-                      <Controller
-                        name="enquiryBy"
-                        control={control}
-                        render={({ field }) => (
-                          <TkSelect
-                            {...field}
-                            labelName="Enquiry By"
-                            labelId={"_enquiryBy"}
-                            id="enquiryBy"
-                            placeholder="Enquiry By"
-                            options={[
-                              { value: "1", label: "Direct" },
-                              { value: "2", label: "Consultant" },
-                              { value: "3", label: "Other" },
-                            ]}
-                            requiredStarOnLabel={true}
-                            disabled={viewMode}
-                          />
-                        )}
-                      />
-                      {errors.enquiryBy && (
-                        <FormErrorText>
-                          {errors.enquiryBy.message}
-                        </FormErrorText>
-                      )}
-                    </TkCol>
-                    {/* <TkCol lg={4}>
-                      <TkSelect
-                        id="enquiryBy"
-                        name="enquiryBy"
-                        labelName="Enquiry By"
-                        placeholder="Enquiry By"
-                        requiredStarOnLabel="true"
-                        options={[
-                          { value: "1", label: "Direct" },
-                          { value: "2", label: "Consultant" },
-                          { value: "3", label: "Other" },
-                        ]}
-                      />
-                    </TkCol> */}
-                    <TkCol lg={8}>
-                      <TkInput
-                        {...register("note")}
-                        id="note"
-                        type="text"
-                        labelName="Note"
-                        placeholder="Enter Note"
-                        disabled={viewMode}
-                      />
-                      {errors.note && (
-                        <FormErrorText>{errors.note.message}</FormErrorText>
-                      )}
-                    </TkCol>
-                  </TkRow>
-                </div>
-              </TkCol>
-            </TkRow>
-
-            <TkRow className="mt-5">
-              <TkCol>
-                <TkCardHeader tag="h5" className="mb-4">
-                  <h4>Company Details</h4>
-                </TkCardHeader>
-                <div>
-                  <TkRow className="g-3">
-                    <TkCol lg={4}>
-                      <TkInput
-                        {...register("companyName")}
-                        id="companyName"
-                        type="text"
-                        labelName="Company Name"
-                        placeholder="Enter Company Name"
-                        disabled={viewMode}
-                      />
-                      {errors.companyName && (
-                        <FormErrorText>
-                          {errors.companyName.message}
-                        </FormErrorText>
-                      )}
-                    </TkCol>
-                    <TkCol lg={4}>
-                      <TkInput
-                        {...register("contactNo")}
-                        id="contactNo"
-                        name="contactNo"
-                        type="text"
-                        labelName="Contact No"
-                        placeholder="Enter Contact No"
-                        disabled={viewMode}
-                      />
-                      {errors.contactNo && (
-                        <FormErrorText>
-                          {errors.contactNo.message}
-                        </FormErrorText>
-                      )}
-                    </TkCol>
-                    <TkCol lg={4}>
-                      <TkInput
-                        {...register("companyEmail")}
-                        id="companyEmail"
-                        name="companyEmail"
-                        type="text"
-                        labelName="Email"
-                        placeholder="Enter Email"
-                        disabled={viewMode}
-                      />
-                      {errors.companyEmail && (
-                        <FormErrorText>
-                          {errors.companyEmail.message}
-                        </FormErrorText>
-                      )}
-                    </TkCol>
-                    {/* </TkRow>
-                  <TkRow className="mt-3"> */}
-                    <TkCol lg={4}>
-                      <TkInput
-                        {...register("companyAddress")}
-                        id="companyAddress"
-                        name="companyAddress"
-                        type="text"
-                        labelName="Address"
-                        placeholder="Enter Address"
-                        disabled={viewMode}
-                      />
-                      {errors.companyAddress && (
-                        <FormErrorText>
-                          {errors.companyAddress.message}
-                        </FormErrorText>
-                      )}
-                    </TkCol>
-                    <TkCol lg={4}>
-                      <TkInput
-                        {...register("region")}
-                        id="region"
-                        name="region"
-                        type="text"
-                        labelName="Region"
-                        placeholder="Enter Region"
-                        disabled={viewMode}
-                      />
-                      {errors.region && (
-                        <FormErrorText>{errors.region.message}</FormErrorText>
-                      )}
-                    </TkCol>
-                    <TkCol lg={4}>
-                      <TkInput
-                        {...register("crno")}
-                        id="crno"
-                        name="crno"
-                        type="text"
-                        labelName="CR No"
-                        placeholder="Enter CR No"
-                        disabled={viewMode}
-                      />
-                      {errors.crno && (
-                        <FormErrorText>{errors.crno.message}</FormErrorText>
-                      )}
-                    </TkCol>
-                    {/* </TkRow>
-                  <TkRow className="mt-3"> */}
-                    <TkCol lg={4}>
-                      <TkInput
-                        {...register("vatNo")}
-                        id="vatNo"
-                        name="vatNo"
-                        type="text"
-                        labelName="VAT No"
-                        placeholder="Enter VAT No"
-                        disabled={viewMode}
-                      />
-                      {errors.vatNo && (
-                        <FormErrorText>{errors.vatNo.message}</FormErrorText>
-                      )}
-                    </TkCol>
-
-                    <TkCol lg={4}>
-                      <Controller
-                        name="clientType"
-                        control={control}
-                        render={({ field }) => (
-                          <TkSelect
-                            {...field}
-                            labelName="Client Type "
-                            labelId={"_clientType"}
-                            id="lead"
-                            placeholder="Select Leads"
-                            options={createdByNameTypes}
-                            requiredStarOnLabel={true}
-                            disabled={viewMode}
-                          />
-                        )}
-                      />
-                      {errors.clientType && (
-                        <FormErrorText>
-                          {errors.clientType.message}
-                        </FormErrorText>
-                      )}
-                    </TkCol>
-
-                    <TkCol lg={4}>
-                      <Controller
-                        name="segment"
-                        control={control}
-                        render={({ field }) => (
-                          <TkSelect
-                            {...field}
-                            labelName="Segment "
-                            labelId={"_segment"}
-                            id="lead"
-                            placeholder="Select Segment"
-                            options={segmentTypes}
-                            requiredStarOnLabel={true}
-                            disabled={viewMode}
-                          />
-                        )}
-                      />
-                      {errors.segment && (
-                        <FormErrorText>{errors.segment.message}</FormErrorText>
-                      )}
-                    </TkCol>
-                  </TkRow>
-                </div>
-              </TkCol>
-            </TkRow>
-
-            <TkRow className="mt-5">
-              <TkCol>
-                <Nav className="nav-tabs dropdown-tabs nav-tabs-custom mb-3">
-                  <NavItem>
-                    <NavLink
-                      href="#"
-                      className={classnames({
-                        active: activeSubTab === tabs.requirementDetails,
-                      })}
-                      onClick={() => toggleTab(tabs.requirementDetails)}
-                    >
-                      Requirement Details
-                    </NavLink>
-                  </NavItem>
-                  <NavItem>
-                    <NavLink
-                      href="#"
-                      className={classnames({
-                        active: activeSubTab === tabs.locationDetails,
-                      })}
-                      onClick={() => toggleTab(tabs.locationDetails)}
-                    >
-                      Location Details
-                    </NavLink>
-                  </NavItem>
-                  <NavItem>
-                  <NavLink
-                    href="#"
-                    className={classnames({
-                      active: activeSubTab === tabs.leadActivity,
-                    })}
-                    onClick={() => toggleTab(tabs.leadActivity)}
-                  >
-                    Lead Activity
-                  </NavLink>
-                </NavItem>
-                </Nav>
-              </TkCol>
-            </TkRow>
-
-            <TkRow className="mt-3">
-              <TkCol>
-                <TabContent activeTab={activeSubTab}>
-                  <TabPane tabId={tabs.requirementDetails}>
-                    <TkContainer>
-                      <TkTableContainer
-                        customPageSize={true}
-                        showAddButton={true}
-                        onClickAdd={handleAddRow}
-                        onclickDelete={handleRemoveRow}
-                        columns={requirementDetailsColumns}
-                        data={rows}
-                        thClass="text-dark"
-                        dynamicTable={true}
-                      />
-                    </TkContainer>
-                  </TabPane>
-                  <TabPane tabId={tabs.locationDetails}>
-                    <TkContainer>
-                      <TkTableContainer
-                        customPageSize={true}
-                        showAddButton={true}
-                        onClickAdd={handleAddLocationRow}
-                        onclickDelete={handleRemoveLocationRow}
-                        columns={locationDetailsColumns}
-                        data={locationRows}
-                        thClass="text-dark"
-                        dynamicTable={true}
-                      />
-                    </TkContainer>
-                  </TabPane>
-
-                  <TabPane tabId={tabs.leadActivity}>
-                  <div>
-                    <TkRow className="g-3">
-                      <TkCol lg={4}>
-                        <Controller
-                          name="activityType"
-                          control={control}
-                          render={({ field }) => (
-                            <TkSelect
-                              {...field}
-                              labelName="Activity Type"
-                              labelId="activityType"
-                              id="activityType"
-                              options={leadActivityTypes}
-                              placeholder="Select Activity Type"
-                              requiredStarOnLabel={true}
-                            />
-                          )}
-                        />
-                        {errors.activityType && (
-                          <FormErrorText>
-                            {errors.activityType.message}
-                          </FormErrorText>
-                        )}
-                      </TkCol>
-
-                      {/* <TkCol lg={4}>
-                          <TkSelect
-                            labelName="Lead"
-                            labelId={"_lead"}
-                            id="lead"
-                            options={leadTypes}
-                            placeholder="Select Lead"
-                            requiredStarOnLabel={true}
-                          />
-                        </TkCol> */}
-
-                      <TkCol lg={4}>
-                        <TkInput
-                          {...register("lead")}
-                          id="lead"
-                          name="lead"
-                          type="text"
-                          labelName="Lead Name"
-                          placeholder="Enter Lead Name"
-                          requiredStarOnLabel={true}
-                        />
-                        {errors.lead && (
-                          <FormErrorText>{errors.lead.message}</FormErrorText>
-                        )}
-                      </TkCol>
-
-                      <TkCol lg={4}>
-                        <TkInput
-                          {...register("location")}
-                          labelName="Location"
-                          labelId={"location"}
-                          id="location"
-                          type="text"
-                          placeholder="Enter Location"
-                          requiredStarOnLabel={true}
-                        />
-                        {errors.location && (
-                          <FormErrorText>
-                            {errors.location.message}
-                          </FormErrorText>
-                        )}
-                      </TkCol>
-
-                      <TkCol lg={4}>
-                        <TkInput
-                          {...register("phoneNumber")}
-                          id="phoneNumber"
-                          name="phoneNumber"
-                          type="text"
-                          labelName="Phone Number"
-                          placeholder="Enter Phone Number"
-                          requiredStarOnLabel={true}
-                        />
-                        {errors.phoneNumber && (
-                          <FormErrorText>
-                            {errors.phoneNumber.message}
-                          </FormErrorText>
-                        )}
-                      </TkCol>
-
-                      <TkCol lg={4}>
-                        <Controller
-                          name="status"
-                          control={control}
-                          render={({ field }) => (
-                            <TkSelect
-                              {...field}
-                              labelName="Status"
-                              labelId={"_status"}
-                              id="status"
-                              options={[]}
-                              placeholder="Select Type"
-                              requiredStarOnLabel={true}
-                            />
-                          )}
-                        />
-                        {errors.status && (
-                          <FormErrorText>{errors.status.message}</FormErrorText>
-                        )}
-                      </TkCol>
-
-                      <TkCol lg={4}>
-                        <Controller
-                          name="date"
-                          control={control}
-                          rules={{ required: "Date is required" }}
-                          render={({ field }) => (
-                            <TkDate
-                              {...field}
-                              labelName="Date"
-                              id={"date"}
-                              placeholder="Select Date"
-                              options={{
-                                altInput: true,
-                                dateFormat: "d M, Y",
-                              }}
-                              requiredStarOnLabel={true}
-                            />
-                          )}
-                        />
-                        {errors.date && (
-                          <FormErrorText>{errors.date.message}</FormErrorText>
-                        )}
-                      </TkCol>
-
-                      <TkCol lg={4}>
-                        <TkInput
-                          {...register(`time`, {
-                            required: "Time is required",
-                            validate: (value) => {
-                              if (
-                                value &&
-                                !/^[0-9]*([.:][0-9]+)?$/.test(value)
-                              ) {
-                                return "Invalid Time";
-                              }
-                              if (
-                                convertTimeToSec(value) > 86400 ||
-                                value > 24
-                              ) {
-                                return "Time should be less than 24 hours";
-                              }
-                            },
-                          })}
-                          onBlur={(e) => {
-                            setValue(
-                              `time`,
-                              convertToTimeFotTimeSheet(e.target.value)
-                            );
-                          }}
-                          labelName="Time (HH:MM)"
-                          id={"time"}
-                          name="time"
-                          type="text"
-                          placeholder="Enter Time"
-                          requiredStarOnLabel={true}
-                        />
-                        {errors.time && (
-                          <FormErrorText>{errors.time.message}</FormErrorText>
-                        )}
-                      </TkCol>
-
-                      <TkCol lg={8}>
-                        <TkInput
-                          {...register("comments")}
-                          id="comments"
-                          name="comments"
-                          type="textarea"
-                          labelName="Comments"
-                          placeholder="Enter Comments"
-                        />
-                        {errors.comments && (
-                          <FormErrorText>
-                            {errors.comments.message}
-                          </FormErrorText>
-                        )}
-                      </TkCol>
-                    </TkRow>
-                  </div>
-                </TabPane>
-                </TabContent>
-              </TkCol>
-            </TkRow>
-
-            <TkRow className="g-3">
-              <div className="d-flex mt-4 space-childern">
-                {editMode ? (
-                  <div className="ms-auto" id="update-form-btns">
+                                {/* <TkCol lg={2}>
                     <TkButton
-                      color="secondary"
-                      onClick={() => router.push(`${urls.lead}`)}
                       type="button"
+                      color="primary"
+                      className="mt-4"
+                      onClick={leadActivityToggle}
                     >
-                      Cancel
-                    </TkButton>{" "}
-                    <TkButton type="submit" color="primary">
-                      Update
+                      Add Address
                     </TkButton>
-                  </div>
-                ) : null}
-              </div>
+                  </TkCol> */}
+                              </TkRow>
+                            </div>
+                          </TkCol>
+                        </TkRow>
 
-              <Nav className="nav-tabs dropdown-tabs nav-tabs-custom mb-3 mt-3">
-                <NavItem>
-                  <NavLink
-                    // href="#"
-                    className={classnames({
-                      active: activeTab === tabs.phoneCall,
-                    })}
-                  >
-                    Lead Activity
-                  </NavLink>
-                </NavItem>
-              </Nav>
+                        <TkRow className="mt-5">
+                          <TkCol>
+                            <Nav className="nav-tabs dropdown-tabs nav-tabs-custom mb-3">
+                              <NavItem>
+                                <NavLink
+                                  href="#"
+                                  className={classnames({
+                                    active:
+                                      activeSubTab === tabs.requirementDetails,
+                                  })}
+                                  onClick={() =>
+                                    toggleTab(tabs.requirementDetails)
+                                  }
+                                >
+                                  Requirement Details
+                                </NavLink>
+                              </NavItem>
+                              <NavItem>
+                                <NavLink
+                                  href="#"
+                                  className={classnames({
+                                    active:
+                                      activeSubTab === tabs.locationDetails,
+                                  })}
+                                  onClick={() =>
+                                    toggleTab(tabs.locationDetails)
+                                  }
+                                >
+                                  Location Details
+                                </NavLink>
+                              </NavItem>
+                              <NavItem>
+                                <NavLink
+                                  href="#"
+                                  className={classnames({
+                                    active: activeSubTab === tabs.leadAssigning,
+                                  })}
+                                  onClick={() => toggleTab(tabs.leadAssigning)}
+                                >
+                                  Lead Assigning
+                                </NavLink>
+                              </NavItem>
+                              <NavItem>
+                                <NavLink
+                                  href="#"
+                                  className={classnames({
+                                    active: activeSubTab === tabs.leadNurutring,
+                                  })}
+                                  onClick={() => toggleTab(tabs.leadNurutring)}
+                                >
+                                  Lead Nurturing
+                                </NavLink>
+                              </NavItem>
+                              <NavItem>
+                                <NavLink
+                                  href="#"
+                                  className={classnames({
+                                    active: activeSubTab === tabs.leadActivity,
+                                  })}
+                                  onClick={() => toggleTab(tabs.leadActivity)}
+                                >
+                                  Activity
+                                </NavLink>
+                              </NavItem>
+                            </Nav>
+                          </TkCol>
+                        </TkRow>
 
-              <TabContent activeTab={activeTab}>
-                <TabPane tabId={tabs.directCall}>
-                  <TkCardBody className="table-padding pt-0">
-                    <TkTableContainer
-                      columns={columns}
-                      data={DirectCallData || []}
-                      isSearch={false}
-                      defaultPageSize={10}
-                      isFilters={true}
-                      showPagination={true}
-                    />
+                        <TkRow className="mt-3">
+                          <TkCol>
+                            <TabContent activeTab={activeSubTab}>
+                              <TabPane tabId={tabs.requirementDetails}>
+                                <TkContainer>
+                                  <TkTableContainer
+                                    customPageSize={true}
+                                    showAddButton={true}
+                                    onClickAdd={handleAddRow}
+                                    onclickDelete={handleRemoveRow}
+                                    columns={requirementDetailsColumns}
+                                    data={rows}
+                                    thClass="text-dark"
+                                    dynamicTable={true}
+                                  />
+                                </TkContainer>
+                              </TabPane>
+                              <TabPane tabId={tabs.locationDetails}>
+                                <TkContainer>
+                                  <TkTableContainer
+                                    customPageSize={true}
+                                    showAddButton={true}
+                                    onClickAdd={handleAddLocationRow}
+                                    onclickDelete={handleRemoveLocationRow}
+                                    columns={locationDetailsColumns}
+                                    data={locationRows}
+                                    thClass="text-dark"
+                                    dynamicTable={true}
+                                  />
+                                </TkContainer>
+                              </TabPane>
+
+                              <TabPane tabId={tabs.leadAssigning}>
+                                <div>
+                                  <TkRow className="g-3">
+                                    <TkCol lg={4}>
+                                      <Controller
+                                        name="region"
+                                        control={control}
+                                        render={({ field }) => (
+                                          <TkSelect
+                                            {...field}
+                                            id="region"
+                                            name="region"
+                                            labelName="Region"
+                                            placeholder="Select Region"
+                                            options={allRegionData}
+                                          />
+                                        )}
+                                      />
+                                      {errors.region && (
+                                        <FormErrorText>
+                                          {errors.region.message}
+                                        </FormErrorText>
+                                      )}
+                                    </TkCol>
+
+                                    <TkCol lg={4}>
+                                      <Controller
+                                        name="salesTeam"
+                                        control={control}
+                                        render={({ field }) => (
+                                          <TkSelect
+                                            {...field}
+                                            id="salesTeam"
+                                            name="salesTeam"
+                                            labelName="Sales Team Name"
+                                            placeholder="Select Sales Team"
+                                            options={allSalesTeamData}
+                                          />
+                                        )}
+                                      />
+                                      {errors.salesTeam && (
+                                        <FormErrorText>
+                                          {errors.salesTeam.message}
+                                        </FormErrorText>
+                                      )}
+                                    </TkCol>
+                                  </TkRow>
+                                </div>
+                              </TabPane>
+
+                              <TabPane tabId={tabs.leadNurutring}>
+                                <div>
+                                  <TkRow className="g-3">
+                                    <TkCol lg={3}>
+                                      <Controller
+                                        name="custentity_lms_primary_action"
+                                        control={control}
+                                        render={({ field }) => (
+                                          <TkSelect
+                                            {...field}
+                                            id="custentity_lms_primary_action"
+                                            name="custentity_lms_primary_action"
+                                            labelName="Primary Action"
+                                            placeholder="Select Primary Action"
+                                            options={allPrimaryActionData}
+                                          />
+                                        )}
+                                      />
+                                      {errors.custentity_lms_primary_action && (
+                                        <FormErrorText>
+                                          {
+                                            errors.custentity_lms_primary_action
+                                              .message
+                                          }
+                                        </FormErrorText>
+                                      )}
+                                    </TkCol>
+
+                                    <TkCol lg={3}>
+                                      <TkInput
+                                        {...register(
+                                          "custentity_lms_lastactivitydate"
+                                        )}
+                                        id="custentity_lms_lastactivitydate"
+                                        name="custentity_lms_lastactivitydate"
+                                        labelName="Date Time"
+                                        type="text"
+                                        disabled={true}
+                                      />
+                                    </TkCol>
+
+                                    <TkCol lg={3}>
+                                      <TkInput
+                                        {...register(
+                                          "custentity_lms_lead_value"
+                                        )}
+                                        id="custentity_lms_lead_value"
+                                        name="custentity_lms_lead_value"
+                                        labelName="Lead Value"
+                                        type="text"
+                                        placeholder="Enter Lead Value"
+                                      />
+                                      {errors.custentity_lms_lead_value && (
+                                        <FormErrorText>
+                                          {
+                                            errors.custentity_lms_lead_value
+                                              .message
+                                          }
+                                        </FormErrorText>
+                                      )}
+                                    </TkCol>
+                                    <TkCol lg={3}>
+                                      <Controller
+                                        name="entitystatus"
+                                        control={control}
+                                        render={({ field }) => (
+                                          <TkSelect
+                                            {...field}
+                                            id="entitystatus"
+                                            name="entitystatus"
+                                            labelName="Lead Update"
+                                            placeholder="Select Lead Update"
+                                            options={[
+                                              {
+                                                value: "1",
+                                                label: "Qualified",
+                                              },
+                                              {
+                                                value: "2",
+                                                label: "Unqualified",
+                                              },
+                                            ]}
+                                          />
+                                        )}
+                                      />
+                                      {errors.entitystatus && (
+                                        <FormErrorText>
+                                          {errors.entitystatus.message}
+                                        </FormErrorText>
+                                      )}
+                                    </TkCol>
+
+                                    <TkCol lg={4}>
+                                      <TkInput
+                                        {...register(
+                                          "custentity_lms_lead_unqualified"
+                                        )}
+                                        id="custentity_lms_lead_unqualified"
+                                        name="custentity_lms_lead_unqualified"
+                                        labelName="Reason if unqualified lead"
+                                        type="textarea"
+                                        placeholder="Enter Reason"
+                                      />
+                                      {errors.custentity_lms_lead_unqualified && (
+                                        <FormErrorText>
+                                          {
+                                            errors
+                                              .custentity_lms_lead_unqualified
+                                              .message
+                                          }
+                                        </FormErrorText>
+                                      )}
+                                    </TkCol>
+
+                                    <TkCol lg={3}>
+                                      <Controller
+                                        name="custentity_lms_prospect_nurturing"
+                                        control={control}
+                                        render={({ field }) => (
+                                          <TkSelect
+                                            {...field}
+                                            id="custentity_lms_prospect_nurturing"
+                                            name="custentity_lms_prospect_nurturing"
+                                            labelName="Prospect Nurturing"
+                                            placeholder="Select Prospect Nurturing"
+                                            options={allProspectNurturingData}
+                                          />
+                                        )}
+                                      />
+                                      {errors.custentity_lms_prospect_nurturing && (
+                                        <FormErrorText>
+                                          {
+                                            errors
+                                              .custentity_lms_prospect_nurturing
+                                              .message
+                                          }
+                                        </FormErrorText>
+                                      )}
+                                    </TkCol>
+                                  </TkRow>
+                                </div>
+                              </TabPane>
+
+                              <TabPane tabId={tabs.leadActivity}>
+                                <div>
+                                  <TkRow className="g-3">
+                                  <TkCol lg={2}>
+                            <TkButton
+                              type="button"
+                              color="primary"
+                              onClick={leadActivityToggle}
+                              style={{ width: "80%" }}
+                            >
+                              Phone Call
+                            </TkButton>
+                          </TkCol>
+                          <TkCol lg={2}>
+                            <TkButton
+                              type="button"
+                              color="primary"
+                              onClick={leadTaskActivityToggle}
+                              style={{ width: "80%" }}
+                            >
+                              Task
+                            </TkButton>
+                          </TkCol>
+                          <TkCol lg={2}>
+                            <TkButton
+                              type="button"
+                              color="primary"
+                              onClick={leadEventActivityToggle}
+                              style={{ width: "80%" }}
+                            >
+                              Event
+                            </TkButton>
+                          </TkCol>
+                                  </TkRow>
+                                </div>
+                              </TabPane>
+                            </TabContent>
+                          </TkCol>
+                        </TkRow>
+
+                        <div className="d-flex mt-4 space-childern">
+                          {editMode ? (
+                            <div className="ms-auto" id="update-form-btns">
+                              <TkButton
+                                color="secondary"
+                                onClick={() => router.push(`${urls.lead}`)}
+                                type="button"
+                                disabled={leadPost.isLoading}
+                              >
+                                Cancel
+                              </TkButton>{" "}
+                              <TkButton
+                                type="submit"
+                                color="primary"
+                                loading={leadPost.isLoading}
+                              >
+                                Update
+                              </TkButton>
+                            </div>
+                          ) : null}
+                        </div>
+                      </div>
+                    </TkForm>
                   </TkCardBody>
-                </TabPane>
-              </TabContent>
-            </TkRow>
-          </TkForm>
-          <TkModal
-            isOpen={activityModal}
-            leadActivityToggle={leadActivityToggle}
-            centered
-            size="lg"
-            className="border-0"
-            modalClassName="modal fade zoomIn"
-          >
-            <TkModalHeader
-              className="p-3 bg-soft-info"
-              partnerToggle={leadActivityToggle}
+                </TkCol>
+              </TkRow>
+            </TkCol>
+
+            <TkModal
+              isOpen={activityModal}
+              toggle={leadActivityToggle}
+              leadActivityToggle={leadActivityToggle}
+              centered
+              size="lg"
+              className="border-0"
+              modalClassName="modal fade zoomIn"
             >
-              {"Add Lead Activity"}
-            </TkModalHeader>
-            <TkContainer>
-              <TkCardBody>
-                <ActivityPopup isPopup={true} />
-              </TkCardBody>
-            </TkContainer>
-          </TkModal>
+              <TkModalHeader
+                className="p-3 bg-soft-info"
+                partnerToggle={leadActivityToggle}
+                toggle={leadActivityToggle}
+              >
+                {"Phone Call"}
+              </TkModalHeader>
+              <TkContainer>
+                <TkCardBody>
+                  <ActivityPopup
+                    leadActivityToggle={leadActivityToggle}
+                    isPopup={true}
+                    directCallId={directCallId}
+                    setNewAddress={setNewAddress}
+                  />
+                </TkCardBody>
+              </TkContainer>
+
+              
+            </TkModal>
+
+            <TkModal
+              isOpen={leadTaskModal}
+              toggle={leadTaskActivityToggle}
+              leadTaskActivityToggle={leadTaskActivityToggle}
+              centered
+              size="lg"
+              className="border-0"
+              modalClassName="modal fade zoomIn"
+            >
+              <TkModalHeader
+                className="p-3 bg-soft-info"
+                partnerToggle={leadTaskActivityToggle}
+                toggle={leadTaskActivityToggle}
+              >
+                {"Task"}
+              </TkModalHeader>
+              <TkContainer>
+                <TkCardBody>
+                  <LeadTaskPopup
+                    leadTaskActivityToggle={leadTaskActivityToggle}
+                    isPopup={true}
+                    directCallId={directCallId}
+                    setNewAddress={setNewAddress}
+                  />
+                </TkCardBody>
+              </TkContainer>
+            </TkModal>
+
+            <TkModal
+              isOpen={leadEventModal}
+              toggle={leadEventActivityToggle}
+              leadEventActivityToggle={leadEventActivityToggle}
+              centered
+              size="lg"
+              className="border-0"
+              modalClassName="modal fade zoomIn"
+            >
+              <TkModalHeader
+                className="p-3 bg-soft-info"
+                partnerToggle={leadEventActivityToggle}
+                toggle={leadEventActivityToggle}
+              >
+                {"Event"}
+              </TkModalHeader>
+              <TkContainer>
+                <TkCardBody>
+                  <LeadEventPopup
+                    leadEventActivityToggle={leadEventActivityToggle}
+                    isPopup={true}
+                    directCallId={directCallId}
+                    setNewAddress={setNewAddress}
+                  />
+                </TkCardBody>
+              </TkContainer>
+            </TkModal>
+            <Nav className="nav-tabs dropdown-tabs nav-tabs-custom mb-3 mt-3">
+              <NavItem>
+                <NavLink
+                  // href="#"
+                  className={classnames({
+                    active: activeTab === tabs.phoneCall,
+                  })}
+                >
+                  Lead Activity
+                </NavLink>
+              </NavItem>
+            </Nav>
+
+            <TabContent activeTab={activeTab}>
+              <TabPane tabId={tabs.directCall}>
+                <TkCardBody className="table-padding pt-0">
+                  <TkTableContainer
+                    columns={columns}
+                    data={[]}
+                    isSearch={false}
+                    defaultPageSize={10}
+                    isFilters={true}
+                    showPagination={true}
+                  />
+                </TkCardBody>
+              </TabPane>
+            </TabContent>
+          </TkRow>
         </div>
       )}
     </>

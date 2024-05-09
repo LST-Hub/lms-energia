@@ -3,50 +3,20 @@ import Link from "next/link";
 import TkInput from "../forms/TkInput";
 import { TkCardBody } from "../TkCard";
 import TkRow, { TkCol } from "../TkRow";
-import { filterFields, minSearchLength, urls } from "../../utils/Constants";
+import {
+  API_BASE_URL,
+  RQ,
+  filterFields,
+  minSearchLength,
+  urls,
+} from "../../utils/Constants";
 import { isSearchonUI, searchDebounce } from "../../utils/utilsFunctions";
 import TkTableContainer from "../TkTableContainer";
 import { useMemo } from "react";
 import TkButton from "../TkButton";
 import TkIcon from "../TkIcon";
-
-  const data = [
-    {
-      id: 1,
-      name: "John Doe",
-      companyName: "PointsBet",
-      region: "Region 1",
-      crNo: "105",
-    },
-    {
-      id: 2,
-      name: "Steave Smith",
-      companyName: "LexisNexis",
-      region: "Region 2",
-      crNo: "845",
-    },
-    {
-      id: 3,
-      name: "Will Smith",
-      companyName: "Infosys",
-      region: "Region 3",
-      crNo: "954",
-    },
-    {
-      id: 4,
-      name: "Adam Miller",
-      companyName: "TCS Consultancy Services",
-      region: "Region 4",
-      crNo: "974",
-    },
-    {
-      id: 5,
-      name: "Tom Riddle",
-      companyName: "Mindtree",
-      region: "Region 5",
-      crNo: "325",
-    },
-  ];
+import { useMutation, useQuery } from "@tanstack/react-query";
+import tkFetch from "../../utils/fetch";
 
 function TableToolBar() {
   return (
@@ -60,22 +30,25 @@ function TableToolBar() {
               isSearchField={true}
             />
           </TkCol>
-
-          {/* <TkCol lg={2}>
-            <TkSelect
-              placeholder="Active/Inactive"
-              options={[]}
-              // onChange={onActiveChange}
-            />
-          </TkCol> */}
         </TkRow>
       </TkCardBody>
     </>
   );
 }
 
-const AllLead = () => {
+const AllLead = ({ mounted }) => {
   const searchOnUI = isSearchonUI([]);
+
+  const {
+    data: leadData,
+    isLoading: isBackLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: [RQ.allLeads],
+    queryFn: tkFetch.get(`${API_BASE_URL}/lead`),
+    enabled: true,
+  });
 
   const updateSearchText = (e) => {
     if (e.target.value.length >= minSearchLength) {
@@ -85,10 +58,10 @@ const AllLead = () => {
     }
   };
 
-  const [isClient, setIsClient] = useState(false);
+  const [isLead, setIsLead] = useState(false);
 
   useEffect(() => {
-    setIsClient(true);
+    setIsLead(true);
   }, []);
 
   const columns = useMemo(
@@ -99,7 +72,6 @@ const AllLead = () => {
         filterable: false,
         Cell: (cellProps) => {
           return (
-            //   <div className="flex-grow-1 tasks_name">{cellProps.value}</div>
             <div className="d-flex align-items-center">
               <ul className="ps-0 mb-0">
                 <li className="list-inline-item">
@@ -128,33 +100,83 @@ const AllLead = () => {
           );
         },
       },
+
       {
         Header: "Name",
-        accessor: "name",
-        filterable: false,
+        accessor: "companyname",
         Cell: (cellProps) => {
-          return <div className="table-text">{cellProps.value}</div>;
+          return (
+            <>
+              <div className="table-text">
+                {cellProps.value || <span> — </span>}
+              </div>
+            </>
+          );
         },
       },
       {
-        Header: "Company Name",
-        accessor: "companyName",
+        Header: "Lead Status",
+        accessor: "entitystatus_name",
         Cell: (cellProps) => {
-          return <div className="table-text">{cellProps.value}</div>;
+          return (
+            <>
+              <div className="table-text">
+                {cellProps.value || <span> — </span>}
+              </div>
+            </>
+          );
         },
       },
       {
-        Header: "Region",
-        accessor: "region",
+        Header: "Phone",
+        accessor: "phone",
         Cell: (cellProps) => {
-          return <div className="table-text">{cellProps.value}</div>;
+          return (
+            <>
+              <div className="table-text">
+                {cellProps.value || <span> — </span>}
+              </div>
+            </>
+          );
         },
       },
       {
-        Header: "CR No",
-        accessor: "crNo",
+        Header: "Email",
+        accessor: "email",
         Cell: (cellProps) => {
-          return <div className="table-text">{cellProps.value}</div>;
+          return (
+            <>
+              <div className="table-text">
+                {cellProps.value || <span> — </span>}
+              </div>
+            </>
+          );
+        },
+      },
+      {
+        Header: "Client Type",
+        accessor: "custentity_lms_client_type_name",
+        Cell: (cellProps) => {
+          return (
+            <>
+              <div className="table-text">
+                {cellProps.value || <span> — </span>}
+              </div>
+            </>
+          );
+        },
+      },
+      {
+        Header: "Enquiry By",
+        accessor: "custentity_lms_enquiryby_name",
+        Cell: (cellProps) => {
+          return (
+            <>
+              <div className="table-text">
+                {cellProps.value || <span> — </span>}
+              </div>
+            </>
+          );
         },
       },
     ],
@@ -163,14 +185,15 @@ const AllLead = () => {
 
   return (
     <>
-      {isClient ? (
+      {isLead ? (
         <TkRow>
           <>
             <TkCol lg={12}>
               <TkCardBody className="pt-0">
                 <TkTableContainer
                   columns={columns}
-                  data={data || []}
+                  data={leadData?.items || []}
+                  loading={isBackLoading}
                   Toolbar={
                     <TableToolBar
                       onSearchChange={searchDebounce(

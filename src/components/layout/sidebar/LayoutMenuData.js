@@ -6,18 +6,34 @@ function NavData(user, sessionData) {
   const [isLead, setIsLead] = useState(false);
   const [iscurrentState, setIscurrentState] = useState(null);
 
+  function updateIconSidebar(e) {
+    if (e && e.target && e.target.getAttribute("subitems")) {
+      const ul = document.getElementById("two-column-menu");
+      const iconItems = ul.querySelectorAll(".nav-icon.active");
+      let activeIconItems = [...iconItems];
+      activeIconItems.forEach((item) => {
+        item.classList.remove("active");
+        var id = item.getAttribute("subitems");
+        console.log("id", id);
+        if (document.getElementById(id))
+          document.getElementById(id).classList.remove("show");
+      });
+    }
+  }
+
+  function handleLeadClick(e) {
+    e.preventDefault();
+    setIsLead(!isLead);
+    setIscurrentState("lead");
+    updateIconSidebar(e);
+  }
+
   useEffect(() => {
     document.body.classList.remove("twocolumn-panel");
-    if (iscurrentState !== "lead") {
+    if (iscurrentState !== "leads") {
       setIsLead(false);
     }
   }, [iscurrentState]);
-  const [userEmail, setUserEmail] = useState(null);
-
-  useEffect(() => {
-    const email = localStorage.getItem("email");
-    setUserEmail(email);
-  }, []);
 
   const menuItemsForAll = [
     {
@@ -29,28 +45,60 @@ function NavData(user, sessionData) {
 
     {
       id: "leads",
-      label: "Lead",
-      icon: "ri-links-line",
-      link: `${urls.lead}`,
+      label: "Leads",
+      icon: "ri-team-fill",
+      link: "/#",
+      stateVariables: isLead,
+      click: handleLeadClick,
+      subItems: [
+        {
+          id: "add-leads",
+          label: "Add Lead",
+          icon: "ri-links-line",
+          link: `${urls.lead}`,
+          parentId: "leads",
+        },
+
+        {
+          id: "activity",
+          label: "Activity",
+          icon: "ri-links-line",
+          link: `${urls.activity}`,
+          parentId: "leads",
+        },
+      ],
     },
+
     // {
-    //   id: "phone call",
-    //   label: "Phone Call",
-    //   icon: "ri-phone-fill",
-    //   link: `${urls.phoneCall}`,
+    //   id: "leads",
+    //   label: "Lead",
+    //   icon: "ri-links-line",
+    //   link: "/#",
+    //   stateVariables: isLead,
+    //   click: handleLeadClick,
+    //   subItems: [
+    //     {
+    //       id: "add-lead",
+    //       label: "add Lead",
+    //       link: `${urls.lead}`,
+    //       parentId: "leads",
+    //     },
+    //     {
+    //       id: "activity",
+    //       label: "Activity",
+    //       link: `${urls.activity}`,
+    //       parentId: "leads",
+    //     },
+    //   ],
     // },
+
     // {
-    //   id: "task",
-    //   label: "Task",
-    //   icon: "ri-task-line",
-    //   link: `${urls.taskk}`,
+    //   id: "leads",
+    //   label: "Lead",
+    //   icon: "ri-links-line",
+    //   link: `${urls.lead}`,
     // },
-    // {
-    //   id: "meeting",
-    //   label: "Meeting",
-    //   icon: "ri-calendar-line",
-    //   link: `${urls.meeting}`,
-    // },
+
     {
       id: "users",
       label: "Users",
@@ -70,39 +118,6 @@ function NavData(user, sessionData) {
       link: `${urls.settings}`,
     },
   ];
-
-  // if (userEmail == "saleshead@gmail.com") {
-  //   menuItemsForAll.push(
-  //     {
-  //       id: "users",
-  //       label: "Users",
-  //       icon: "ri-group-line",
-  //       link: `${urls.users}`,
-  //     },
-  //     {
-  //       id: "roles",
-  //       label: "Roles",
-  //       icon: "ri-user-settings-fill",
-  //       link: `${urls.roles}`,
-  //     },
-  //     {
-  //       id: "settings",
-  //       label: "Settings",
-  //       icon: "ri-settings-4-fill",
-  //       link: `${urls.settings}`,
-  //     }
-  //   );
-  // }
-  // if (userEmail == "salesmanager@gmail.com") {
-  //   menuItemsForAll.push({
-  //     id: "users",
-  //     label: "Users",
-  //     icon: "ri-group-line",
-  //     link: `${urls.users}`,
-  //   });
-  // }
-
-  
 
   return menuItemsForAll;
 }

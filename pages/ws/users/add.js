@@ -13,7 +13,8 @@ const UserDetailsPage = () => {
       </TkPageHead>
 
       <div className="page-content">
-        <BreadCrumb pageTitle={"Add User"} parentTitle="Users" parentLink={`${urls.users}`} />
+        <BreadCrumb pageTitle={"Add User"} parentTitle="Users" parentLink={`${urls.users}`} 
+        />
         <TkContainer>
           <AddUser />
         </TkContainer>

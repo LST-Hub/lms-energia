@@ -239,4 +239,97 @@ function convertToTimeFotTimeSheet(timeStr) {
   return String(time);
 }
 
-export { convertSecToTime, convertTimeToSec, convertToDayTime, convertToTime, convertToTimeFotTimeSheet };
+
+function timeWithMaridian(timeStr) {
+  if (!timeStr) return "0:00 AM";
+
+  // Check if timeStr contains characters
+  if (timeStr && !/^\d*(\.\d+)?$/.test(timeStr)) {
+    return timeStr;
+  }
+
+  if (timeStr && timeStr.startsWith(":")) {
+    timeStr = "0" + timeStr;
+  }
+
+  let str = String(timeStr).trim();
+  const times = String(str).split(":");
+
+  if (times.length > 2) {
+    str = times[0] + ":" + times[1];
+  }
+
+  const timeRegex = /^(\d{1,5}|100000)((:\d{1,2})|(:\d{1,2})?)$/;
+
+  if (timeRegex.test(str)) {
+    if (String(str).includes(":")) {
+      const nums = String(str).split(":");
+      if (nums[1].length === 1) {
+        const n = Number(nums[1]);
+        if (n < 6) {
+          return `${nums[0]}:${nums[1]}0 AM`;
+        }
+        return `${nums[0]}:0${nums[1]} AM`;
+      }
+    }
+
+    // Check if hours are less than 24
+    const hours = parseInt(times[0]);
+    if (hours > 24) {
+      return str;
+    }
+
+    let ampm = "AM";
+    let formattedHours = hours;
+    if (hours >= 12) {
+      ampm = "PM";
+      formattedHours = hours === 12 ? 12 : hours - 12;
+    } else if (hours === 0) {
+      formattedHours = 12;
+    }
+
+    const minute = times[1] || "00";
+    return `${formattedHours}:${minute} ${ampm}`;
+  }
+
+  // This string contains ':' but not in the right format, then return '0:00 AM'
+  if (times.length > 1) return "0:00 AM";
+
+  const numRegex = /^(\d{1,5}|100000)(\.\d{1,2})?$/;
+  if (!numRegex.test(String(str))) {
+    return "0:00 AM";
+  }
+
+  let time = Number(str);
+
+  // Separate the integer from the decimal part
+  let hour = Math.floor(time);
+  let decpart = time - hour;
+  let min = 1 / 60;
+
+  // Round to nearest minute
+  decpart = min * Math.round(decpart / min);
+  let minute = Math.floor(decpart * 60) + "";
+
+  // Add padding if needed
+  if (minute.length < 2) {
+    minute = "0" + minute;
+  }
+
+  // Check if hours are less than 24
+  if (hour > 24) {
+    return str;
+  }
+
+  let ampm = "AM";
+  if (hour >= 12) {
+    ampm = "PM";
+    hour = hour === 12 ? 12 : hour - 12;
+  } else if (hour === 0) {
+    hour = 12;
+  }
+
+  // Concatenate hours and minutes with AM/PM
+  return `${hour}:${minute} ${ampm}`;
+}
+export { convertSecToTime, convertTimeToSec, convertToDayTime, convertToTime, convertToTimeFotTimeSheet,timeWithMaridian };

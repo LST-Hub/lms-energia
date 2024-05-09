@@ -23,6 +23,7 @@ import {
   countries,
   smallInputMaxLength,
   leadActivityTypes,
+  RQ,
 } from "../../utils/Constants";
 import tkFetch from "../../utils/fetch";
 import { useMutation, useQueries } from "@tanstack/react-query";
@@ -34,84 +35,32 @@ import TkDate from "../forms/TkDate";
 import { convertTimeToSec, convertToTimeFotTimeSheet } from "../../utils/time";
 
 const schema = Yup.object({
-  name: Yup.string()
-    .required("Name is Required")
-    .min(
-      MinNameLength,
-      `Partner name should have at least ${MinNameLength} character.`
-    )
-    .max(
-      MaxNameLength,
-      `Partner name should have at most ${MaxNameLength} characters.`
-    ),
-  jobTitle: Yup.string()
-    .required("Job Title is Required")
-    .min(
-      MinNameLength,
-      `Job title should have at least ${MinNameLength} character.`
-    )
-    .max(
-      MaxNameLength,
-      `Job title should have at most ${MaxNameLength} characters.`
-    ),
-  phoneNumber: Yup.string()
-    .required("Phone Number is Required")
+  title: Yup.string().required("Subject is required").nullable(),
+
+  company: Yup.string().required("Lead name is required").nullable(),
+
+  phone: Yup.string()
+    .nullable()
     .matches(/^[0-9+() -]*$/, "Phone number must be number.")
     .max(
       MaxPhoneNumberLength,
       `Phone number must be at most ${MaxPhoneNumberLength} numbers.`
-    )
-    .nullable(),
-  email: Yup.string()
-    .nullable()
-    .required("Email is Required")
-    .email("Email must be valid.")
-    .min(
-      MinEmailLength,
-      `Email should have at least ${MinEmailLength} characters.`
-    )
-    .max(
-      MaxEmailLength,
-      `Email should have at most ${MaxEmailLength} characters.`
     ),
-  address: Yup.string().max(
-    bigInpuMaxLength,
-    `Address must be at most ${bigInpuMaxLength} characters.`
-  ),
-  address1: Yup.string()
-    .max(
-      smallInputMaxLength,
-      `Address 1 should have at most ${smallInputMaxLength} characters.`
-    )
-    .nullable(),
-  address2: Yup.string()
-    .max(
-      smallInputMaxLength,
-      `Address 2 should have at most ${smallInputMaxLength} characters.`
-    )
-    .nullable(),
-  city: Yup.string()
-    .max(
-      smallInputMaxLength,
-      `City should have at most ${smallInputMaxLength} characters.`
-    )
-    .nullable(),
-  state: Yup.string()
-    .max(
-      smallInputMaxLength,
-      `State should have at most ${smallInputMaxLength} characters.`
-    )
-    .nullable(),
 
-  comments: Yup.string().max(
-    bigInpuMaxLength,
-    `Comments must be at most ${bigInpuMaxLength} characters.`
-  ),
+  status: Yup.object().required("Status is required").nullable(),
+  assigned: Yup.object().required("Organizer is required").nullable(),
+  startDate: Yup.string().required("Date is required").nullable(),
 }).required();
 
-const ActivityPopup = ({ isPopup }) => {
-  const accessLevel = useUserAccessLevel(permissionTypeIds.partner);
+const ActivityPopup = ({
+  leadActivityToggle,
+  isPopup,
+  directCallId,
+  setNewAddress,
+}) => {
+  // const accessLevel = useUserAccessLevel(permissionTypeIds.partner);
 
+  // const [fullAddress, setFullAddress] = useState(false);
   const {
     register,
     control,
@@ -124,96 +73,69 @@ const ActivityPopup = ({ isPopup }) => {
   });
   const router = useRouter();
 
+  const onSubmit = (data) => {
+    // console.log("Address is:", data);
+    // setNewAddress(fullAddress);
+    // leadActivityToggle();
+  };
+
   return (
     <>
       <TkRow className="justify-content-center">
         <TkCol lg={12}>
           <TkCardBody className="mt-4">
-            <TkForm>
+            <TkForm onSubmit={handleSubmit(onSubmit)}>
               <div>
                 <TkRow className="mt-3">
                   <TkCol>
                     <div>
                       <TkRow className="g-3">
                         <TkCol lg={4}>
-                          <Controller
-                            name="activityType"
-                            control={control}
-                            render={({ field }) => (
-                              <TkSelect
-                                {...field}
-                                labelName="Activity Type"
-                                labelId="activityType"
-                                id="activityType"
-                                options={leadActivityTypes}
-                                placeholder="Select Activity Type"
-                                requiredStarOnLabel={true}
-                              />
-                            )}
+                          <TkInput
+                            {...register("title")}
+                            id="title"
+                            name="title"
+                            type="text"
+                            labelName="Subject"
+                            placeholder="Enter Subject"
+                            requiredStarOnLabel={true}
                           />
-                          {errors.activityType && (
+                          {errors.title && (
                             <FormErrorText>
-                              {errors.activityType.message}
+                              {errors.title.message}
                             </FormErrorText>
                           )}
                         </TkCol>
-
-                        {/* <TkCol lg={4}>
-                          <TkSelect
-                            labelName="Lead"
-                            labelId={"_lead"}
-                            id="lead"
-                            options={leadTypes}
-                            placeholder="Select Lead"
-                            requiredStarOnLabel={true}
-                          />
-                        </TkCol> */}
-
                         <TkCol lg={4}>
                           <TkInput
-                            {...register("lead")}
-                            id="lead"
-                            name="lead"
+                            {...register("company")}
+                            id="company"
+                            name="company"
                             type="text"
                             labelName="Lead Name"
                             placeholder="Enter Lead Name"
                             requiredStarOnLabel={true}
                           />
-                          {errors.lead && (
-                            <FormErrorText>{errors.lead.message}</FormErrorText>
-                          )}
-                        </TkCol>
-
-                        <TkCol lg={4}>
-                          <TkInput
-                            {...register("location")}
-                            labelName="Location"
-                            labelId={"location"}
-                            id="location"
-                            type="text"
-                            placeholder="Enter Location"
-                            requiredStarOnLabel={true}
-                          />
-                          {errors.location && (
+                          {errors.company && (
                             <FormErrorText>
-                              {errors.location.message}
+                              {errors.company.message}
                             </FormErrorText>
                           )}
                         </TkCol>
 
                         <TkCol lg={4}>
                           <TkInput
-                            {...register("phoneNumber")}
-                            id="phoneNumber"
-                            name="phoneNumber"
+                            {...register("phone")}
+                            id="phone"
+                            name="phone"
                             type="text"
                             labelName="Phone Number"
                             placeholder="Enter Phone Number"
-                            requiredStarOnLabel={true}
+                            requiredStarOnLabel="true"
                           />
-                          {errors.phoneNumber && (
+                          {errors.phone && (
                             <FormErrorText>
-                              {errors.phoneNumber.message}
+                              {errors.phone.message}
                             </FormErrorText>
                           )}
                         </TkCol>
@@ -243,14 +165,37 @@ const ActivityPopup = ({ isPopup }) => {
 
                         <TkCol lg={4}>
                           <Controller
-                            name="date"
+                            name="assigned"
+                            control={control}
+                            render={({ field }) => (
+                              <TkSelect
+                                {...field}
+                                labelName="Organizer"
+                                labelId={"assigned"}
+                                id="assigned"
+                                options={[]}
+                                placeholder="Select Organizer"
+                                requiredStarOnLabel={true}
+                              />
+                            )}
+                          />
+                          {errors.assigned && (
+                            <FormErrorText>
+                              {errors.assigned.message}
+                            </FormErrorText>
+                          )}
+                        </TkCol>
+
+                        <TkCol lg={4}>
+                          <Controller
+                            name="startDate"
                             control={control}
                             rules={{ required: "Date is required" }}
                             render={({ field }) => (
                               <TkDate
                                 {...field}
                                 labelName="Date"
-                                id={"date"}
+                                id={"startDate"}
                                 placeholder="Select Date"
                                 options={{
                                   altInput: true,
@@ -260,77 +205,53 @@ const ActivityPopup = ({ isPopup }) => {
                               />
                             )}
                           />
-                          {errors.date && (
-                            <FormErrorText>{errors.date.message}</FormErrorText>
-                          )}
-                        </TkCol>
-
-                        <TkCol lg={4}>
-                          <TkInput
-                            {...register(`time`, {
-                              required: "Time is required",
-                              validate: (value) => {
-                                if (
-                                  value &&
-                                  !/^[0-9]*([.:][0-9]+)?$/.test(value)
-                                ) {
-                                  return "Invalid Time";
-                                }
-                                if (
-                                  convertTimeToSec(value) > 86400 ||
-                                  value > 24
-                                ) {
-                                  return "Time should be less than 24 hours";
-                                }
-                              },
-                            })}
-                            onBlur={(e) => {
-                              setValue(
-                                `time`,
-                                convertToTimeFotTimeSheet(e.target.value)
-                              );
-                            }}
-                            labelName="Time (HH:MM)"
-                            id={"time"}
-                            name="time"
-                            type="text"
-                            placeholder="Enter Time"
-                            requiredStarOnLabel={true}
-                          />
-                          {errors.time && (
-                            <FormErrorText>{errors.time.message}</FormErrorText>
-                          )}
-                        </TkCol>
-
-                        <TkCol lg={8}>
-                          <TkInput
-                            {...register("comments")}
-                            id="comments"
-                            name="comments"
-                            type="textarea"
-                            labelName="Comments"
-                            placeholder="Enter Comments"
-                          />
-                          {errors.comments && (
+                          {errors.startDate && (
                             <FormErrorText>
-                              {errors.comments.message}
+                              {errors.startDate.message}
                             </FormErrorText>
                           )}
                         </TkCol>
 
-                        <div className="d-flex mt-4 space-childern">
-                          <div className="ms-auto" id="update-form-btns">
+                        <TkCol lg={4}>
+                          <Controller
+                            name="completeddate"
+                            control={control}
+                            rules={{ required: "Date Completed is required" }}
+                            render={({ field }) => (
+                              <TkDate
+                                {...field}
+                                labelName="Date Completed"
+                                id={"completeddate"}
+                                placeholder="Select Date Completed"
+                                options={{
+                                  altInput: true,
+                                  dateFormat: "d M, Y",
+                                }}
+                              />
+                            )}
+                          />
+                          {errors.completeddate && (
+                            <FormErrorText>
+                              {errors.completeddate.message}
+                            </FormErrorText>
+                          )}
+                        </TkCol>
+
+                        <div className="modal-footer">
+                          <div className="hstack gap-2 justify-content-end">
                             <TkButton
                               color="secondary"
-                              onClick={() => {
-                                router.push(`${urls.lead}`);
-                              }}
+                              onClick={leadActivityToggle}
                               type="button"
                             >
                               Cancel
                             </TkButton>{" "}
-                            <TkButton type="submit" color="primary">
-                              Save
+                            <TkButton
+                              type="submit"
+                              color="primary"
+                              // onClick={onClick}
+                            >
+                              Add
                             </TkButton>
                           </div>
                         </div>

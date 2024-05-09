@@ -18,7 +18,9 @@ const tkFetch = {
           if (resData && resData.message) {
             throw new Error(resData.message);
           } else {
-            throw new Error("Something went wrong on our side. Please try again later.");
+            throw new Error(
+              "Something went wrong on our side. Please try again later."
+            );
           }
         });
   },
@@ -39,12 +41,14 @@ const tkFetch = {
           if (resData && resData.message) {
             throw new Error(resData.message);
           } else {
-            throw new Error("Something went wrong on our side. Please try again later.");
+            throw new Error(
+              "Something went wrong on our side. Please try again later."
+            );
           }
         });
   },
 
-  postWithBody(url,body, options) {
+  postWithBody(url, body, options) {
     return () =>
       axios
         .post(url, body, options)
@@ -60,7 +64,9 @@ const tkFetch = {
           if (resData && resData.message) {
             throw new Error(resData.message);
           } else {
-            throw new Error("Something went wrong on our side. Please try again later.");
+            throw new Error(
+              "Something went wrong on our side. Please try again later."
+            );
           }
         });
   },
@@ -82,7 +88,9 @@ const tkFetch = {
         if (resData && resData.message) {
           throw new Error(resData.message);
         } else {
-          throw new Error("Something went wrong on our side. Please try again later.");
+          throw new Error(
+            "Something went wrong on our side. Please try again later."
+          );
         }
       }
     };
@@ -104,7 +112,9 @@ const tkFetch = {
           if (resData && resData.message) {
             throw new Error(resData.message);
           } else {
-            throw new Error("Something went wrong on our side. Please try again later.");
+            throw new Error(
+              "Something went wrong on our side. Please try again later."
+            );
           }
         });
   },
@@ -126,7 +136,9 @@ const tkFetch = {
         if (resData && resData.message) {
           throw new Error(resData.message);
         } else {
-          throw new Error("Something went wrong on our side. Please try again later.");
+          throw new Error(
+            "Something went wrong on our side. Please try again later."
+          );
         }
       }
     };
@@ -148,7 +160,9 @@ const tkFetch = {
           if (resData && resData.message) {
             throw new Error(resData.message);
           } else {
-            throw new Error("Something went wrong on our side. Please try again later.");
+            throw new Error(
+              "Something went wrong on our side. Please try again later."
+            );
           }
         });
   },
@@ -170,7 +184,9 @@ const tkFetch = {
         if (resData && resData.message) {
           throw new Error(resData.message);
         } else {
-          throw new Error("Something went wrong on our side. Please try again later.");
+          throw new Error(
+            "Something went wrong on our side. Please try again later."
+          );
         }
       }
     };
@@ -192,7 +208,9 @@ const tkFetch = {
           if (resData && resData.message) {
             throw new Error(resData.message);
           } else {
-            throw new Error("Something went wrong on our side. Please try again later.");
+            throw new Error(
+              "Something went wrong on our side. Please try again later."
+            );
           }
         });
   },
@@ -214,7 +232,9 @@ const tkFetch = {
         if (resData && resData.message) {
           throw new Error(resData.message);
         } else {
-          throw new Error("Something went wrong on our side. Please try again later.");
+          throw new Error(
+            "Something went wrong on our side. Please try again later."
+          );
         }
       }
     };

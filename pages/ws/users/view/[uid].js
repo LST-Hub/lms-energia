@@ -4,8 +4,11 @@ import TkPageHead from "../../../../src/components/TkPageHead";
 import UserDetails from "../../../../src/components/users/UserDetails";
 import { modes, urls } from "../../../../src/utils/Constants";
 import TkContainer from "../../../../src/components/TkContainer";
+import { useRouter } from "next/router";
 
 const UserDetailsPage = () => {
+  const router = useRouter();
+  const { uid } = router.query;
   return (
     <>
       <TkPageHead>
@@ -16,7 +19,7 @@ const UserDetailsPage = () => {
         <BreadCrumb pageTitle={"User Details"} parentTitle="Users" parentLink={`${urls.users}`} />
 
         <TkContainer>
-          <UserDetails mode={modes.view} />
+          <UserDetails id={uid} mode={modes.view} />
         </TkContainer>
       </div>
     </>
