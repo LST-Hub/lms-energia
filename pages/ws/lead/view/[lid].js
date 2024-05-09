@@ -9,7 +9,6 @@ import { useRouter } from "next/router";
 const LeadDetailsPage = () => {
   const router = useRouter();
   const { lid } = router.query;
-  const user = demoUserData.find((user) => user.id === parseInt(lid));
   return (
     <>
       <TkPageHead>
@@ -20,7 +19,7 @@ const LeadDetailsPage = () => {
         <BreadCrumb pageTitle={"Lead Details"} parentTitle="Lead" parentLink={`${urls.lead}`} />
 
         <TkContainer>
-          <EditLead id={lid} userData={user} mode={modes.view} />
+          <EditLead id={lid}  mode={modes.view} />
         </TkContainer>
       </div>
     </>

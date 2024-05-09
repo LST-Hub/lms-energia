@@ -22,7 +22,7 @@ const ActivityDetailsPage = () => {
           parentLink={`${urls.activity}`}
         />
         <TkContainer>
-          <EditActivity id={aid} userData={user} mode={modes.edit} />
+          <EditActivity id={aid}  mode={modes.edit} />
         </TkContainer>
       </div>
     </>

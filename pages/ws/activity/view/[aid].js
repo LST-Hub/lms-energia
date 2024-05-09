@@ -19,7 +19,7 @@ const LeadDetailsPage = () => {
         <BreadCrumb pageTitle={"Activity Details"} parentTitle="Activity" parentLink={`${urls.activity}`} />
 
         <TkContainer>
-          <EditActivity id={aid} userData={user} mode={modes.view} />
+          <EditActivity id={aid}  mode={modes.view} />
         </TkContainer>
       </div>
     </>

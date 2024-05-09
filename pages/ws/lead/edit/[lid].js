@@ -9,7 +9,6 @@ import { useRouter } from "next/router";
 const LeadDetailsPage = () => {
   const router = useRouter();
   const { lid } = router.query;
-  const user = demoUserData.find((user) => user.id === parseInt(lid));
   return (
     <>
       <TkPageHead>
@@ -23,7 +22,7 @@ const LeadDetailsPage = () => {
           parentLink={`${urls.lead}`}
         />
         <TkContainer>
-          <EditLead id={lid} userData={user} mode={modes.edit} />
+          <EditLead id={lid}  mode={modes.edit} />
         </TkContainer>
       </div>
     </>
