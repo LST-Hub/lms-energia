@@ -1,7 +1,7 @@
 import React from "react";
 import BreadCrumb from "../../../../src/utils/BreadCrumb";
 import TkPageHead from "../../../../src/components/TkPageHead";
-import { demoUserData, modes, urls } from "../../../../src/utils/Constants";
+import {  modes, urls } from "../../../../src/utils/Constants";
 import TkContainer from "../../../../src/components/TkContainer";
 import EditLead from "../../../../src/components/leads/EditLead";
 import { useRouter } from "next/router";
