@@ -69,6 +69,8 @@ const EditActivity = ({
   isPopup,
   directCallId,
   setNewAddress,
+  id,
+  mode,
 }) => {
   const accessLevel = useUserAccessLevel(permissionTypeIds.partner);
 
