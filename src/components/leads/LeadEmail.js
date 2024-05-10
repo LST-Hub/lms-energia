@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import TkPageHead from "../../../src/components/TkPageHead";
 import BreadCrumb from "../../../src/utils/BreadCrumb";
 import {
@@ -51,6 +51,8 @@ import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { useMutation, useQueries } from "@tanstack/react-query";
 import tkFetch from "../../utils/fetch";
 import { TkToastError, TkToastSuccess } from "../TkToastContainer";
+import LeadEventPopup from "./LeadEventPopup";
+import LeadTaskPopup from "./LeadTaskPopup";
 const tabs = {
   directCall: "primary",
   email: "email",
@@ -120,31 +122,31 @@ const schema = Yup.object({
       `Email should have at most ${MaxEmailLength} characters.`
     ),
   addr1: Yup.string()
-    .required("Address 1 is required")
     .max(
       smallInputMaxLength,
       `Address 1 should have at most ${smallInputMaxLength} characters.`
     )
     .nullable(),
   city: Yup.string()
-    .required("City is required")
     .max(
       smallInputMaxLength,
       `City should have at most ${smallInputMaxLength} characters.`
     )
     .nullable(),
 
-  state: Yup.string().required("State is required").nullable(),
+  state: Yup.string().nullable(),
 
-  zip: Yup.string()
-    .required("Zip is required")
-    .test("test-name", "Zip code does not accept characters", function (value) {
+  zip: Yup.string().test(
+    "test-name",
+    "Zip code does not accept characters",
+    function (value) {
       if (value === "" || value === null || value === undefined) {
         return true;
       } else {
         return value.trim().match(/^[0-9]*$/, "Zip code must be numeric.");
       }
-    }),
+    }
+  ),
 }).required();
 function LeadEmail({ selectedButton }) {
   const {
@@ -160,6 +162,9 @@ function LeadEmail({ selectedButton }) {
   });
   const router = useRouter();
   const [activityModal, setActivityModal] = useState(false);
+  const [leadTaskModal, setLeadTaskModal] = useState(false);
+  const [leadEventModal, setLeadEventModal] = useState(false);
+
   const [isLead, setIsLead] = useState(false);
   const [rSelected, setRSelected] = useState(0);
   const [activeTab, setActiveTab] = useState(tabs.directCall);
@@ -563,48 +568,6 @@ function LeadEmail({ selectedButton }) {
   });
 
   const onSubmit = (formData) => {
-    // const apiData = {
-    //   customForm: {
-    //     id: "135",
-    //     refName: "LMS CRM FORM",
-    //   },
-    //   entitystatus: {
-    //     id: "7",
-    //     refName: "LEAD-Qualified",
-    //   },
-    //   custentity_lms_channel_lead: {
-    //     id: selectedButton.id,
-    //   },
-    //   custentity_lms_leadsource: {
-    //     id: formData.custentity_lms_leadsource.value,
-    //   },
-    //   custentity_lms_createdby: formData.custentity_lms_createdby,
-    //   custentity_lms_createddate: formData.custentity_lms_createddate,
-    //   subsidiary: {
-    //     id: formData.subsidiary.value,
-    //   },
-    //   firstname: formData.firstname,
-    //   custentity_lms_personal_phonenumber:
-    //     formData.custentity_lms_personal_phonenumber,
-    //   custentity_lms_personal_email: formData.custentity_lms_personal_email,
-    //   custentity_lms_enquiryby: {
-    //     id: formData.custentity_lms_enquiryby.value,
-    //   },
-    //   custentity_lms_noteother: formData.custentity_lms_noteother,
-    //   companyname: formData.companyname,
-    //   phone: formData.phone,
-    //   email: formData.email,
-    //   custentity_lms_cr_no: formData.custentity_lms_cr_no,
-    //   custentity3: formData.custentity3,
-    //   custentity_lms_client_type: {
-    //     id: formData.custentity_lms_client_type.value,
-    //   },
-    //   custentity_market_segment: {
-    //     id: formData.custentity_market_segment.value,
-    //   },
-    //   defaultaddress: formData.defaultaddress,
-    // };
-
     const apiData = {
       customForm: {
         id: "135",
@@ -678,22 +641,22 @@ function LeadEmail({ selectedButton }) {
   };
   const [rows, setRows] = useState([
     {
-      division: null,
-      requirement: "",
-      projectname: "",
-      duration: "",
-      unitOfMeasure: null,
-      value: "",
+      custrecord_lms_duration: null,
+      custrecord_lms_requirement: "",
+      custrecord_lms_project_name: "",
+      custrecord_lms_duration: "",
+      custrecord_lms_unit_of_measure: null,
+      custrecord_lms_value: "",
       delivery: "",
     },
   ]);
   const [locationRows, setLocationRows] = useState([
     {
-      location: "",
-      contactPersonName: "",
-      phoneNumber: "",
-      email: "",
-      designation: "",
+      custrecord_lms_location: "",
+      custrecord_lms_contactperson_name: "",
+      custrecord_lms_phonenumber: "",
+      custrecord_location_email: "",
+      custrecord_lms_designation: "",
     },
   ]);
 
@@ -709,33 +672,37 @@ function LeadEmail({ selectedButton }) {
     }
   }, [activityModal]);
 
-  useEffect(() => {
-    setValue("defaultaddress", newAddress);
-    console.log("defaultaddress", newAddress);
-    setActivityModal(false);
-  }, [setValue, newAddress]);
+  const leadTaskActivityToggle = useCallback(() => {
+    if (leadTaskModal) {
+      setLeadTaskModal(false);
+    } else {
+      setLeadTaskModal(true);
+    }
+  }, [leadTaskModal]);
+
+  const leadEventActivityToggle = useCallback(() => {
+    if (leadEventModal) {
+      setLeadEventModal(false);
+    } else {
+      setLeadEventModal(true);
+    }
+  }, [leadEventModal]);
 
   useEffect(() => {
-    setIsLead(true);
-  }, []);
+    if (fullAddress) {
+      setValue("addrtext", fullAddress);
+    }
+  }, [fullAddress, setValue]);
 
-  const handleAddSection = () => {
-    const newId = requirementDetailsSections.length + 1;
-    setRequirementDetailsSections([
-      ...requirementDetailsSections,
-      { id: newId, isVisible: true },
-    ]);
-  };
+  // useEffect(() => {
+  //   setValue("defaultaddress", newAddress);
+  //   console.log("defaultaddress", newAddress);
+  //   setActivityModal(false);
+  // }, [setValue, newAddress]);
 
-  const handleToggleVisibility = (id) => {
-    setRequirementDetailsSections((prevSections) =>
-      prevSections.map((section) =>
-        section.id === id
-          ? { ...section, isVisible: !section.isVisible }
-          : section
-      )
-    );
-  };
+  // useEffect(() => {
+  //   setIsLead(true);
+  // }, []);
 
   useEffect(() => {
     const now = new Date();
@@ -751,12 +718,6 @@ function LeadEmail({ selectedButton }) {
     setValue("custentity_lms_lastactivitydate", formattedDate);
     setSelectedDate(now);
   }, [setValue]);
-
-  const handleButtonClick = (button) => {
-    setSelectedButton(button);
-    setShowForm(true);
-    setButtonsDisabled(true);
-  };
 
   const handleFormSubmit = (event) => {
     event.preventDefault();
@@ -776,13 +737,13 @@ function LeadEmail({ selectedButton }) {
     setRows([
       ...rows,
       {
-        division: null,
-        requirement: "",
-        projectname: "",
-        duration: "",
-        unitOfMeasure: null,
-        value: "",
-        delivery: "",
+        custrecord_lms_duration: null,
+        custrecord_lms_requirement: "",
+        custrecord_lms_project_name: "",
+        custrecord_lms_duration: "",
+        custrecord_lms_unit_of_measure: null,
+        custrecord_lms_value: "",
+        custrecord_lms_expected_delivery_date: "",
       },
     ]);
   };
@@ -791,62 +752,62 @@ function LeadEmail({ selectedButton }) {
     setLocationRows([
       ...locationRows,
       {
-        location: "",
-        contactPersonName: "",
-        phoneNumber: "",
-        email: "",
-        designation: "",
+        custrecord_lms_location: "",
+        custrecord_lms_contactperson_name: "",
+        custrecord_lms_phonenumber: "",
+        custrecord_location_email: "",
+        custrecord_lms_designation: "",
       },
     ]);
   };
 
   const { remove: removeDivision } = useFieldArray({
     control,
-    name: "division",
+    name: "custrecord_lms_division",
   });
   const { remove: removeRequirement } = useFieldArray({
     control,
-    name: "requirement",
+    name: "custrecord_lms_requirement",
   });
   const { remove: removeProjectName } = useFieldArray({
     control,
-    name: "projectname",
+    name: "custrecord_lms_project_name",
   });
   const { remove: removeDuration } = useFieldArray({
     control,
-    name: "duration",
+    name: "custrecord_lms_duration",
   });
   const { remove: removeUnitOfMeasure } = useFieldArray({
     control,
-    name: "unitOfMeasure",
+    name: "custrecord_lms_unit_of_measure",
   });
   const { remove: removeValue } = useFieldArray({
     control,
-    name: "value",
+    name: "custrecord_lms_value",
   });
   const { remove: removeDelivery } = useFieldArray({
     control,
-    name: "delivery",
+    name: "custrecord_lms_expected_delivery_date",
   });
   const { remove: removeLocation } = useFieldArray({
     control,
-    name: "location",
+    name: "custrecord_lms_location",
   });
   const { remove: removeContactPersonName } = useFieldArray({
     control,
-    name: "contactPersonName",
+    name: "custrecord_lms_contactperson_name",
   });
   const { remove: removephoneNumber } = useFieldArray({
     control,
-    name: "phoneNumber",
+    name: "custrecord_lms_phonenumber",
   });
   const { remove: removeEmail } = useFieldArray({
     control,
-    name: "email",
+    name: "custrecord_location_email",
   });
   const { remove: removeDesignation } = useFieldArray({
     control,
-    name: "designation",
+    name: "custrecord_lms_designation",
   });
 
   const handleRemoveRow = (index) => {
@@ -877,16 +838,18 @@ function LeadEmail({ selectedButton }) {
     newLocationRows.splice(i, 1);
     setLocationRows(newLocationRows);
   };
+
   const requirementDetailsColumns = [
     {
-      Header: "Division",
-      accessor: "division",
+      Header: "Division *",
+      accessor: "custrecord_lms_division",
       Cell: (cellProps) => {
         return (
           <>
             <Controller
               control={control}
               name={`custrecord_lms_division[${cellProps.row.index}]`}
+              rules={{ required: "Division is required" }}
               render={({ field }) => (
                 <TkSelect
                   {...field}
@@ -894,6 +857,7 @@ function LeadEmail({ selectedButton }) {
                   options={allDivisionData}
                   requiredStarOnLabel={true}
                   style={{ width: "200px" }}
+                  loading={divisionLoading}
                 />
               )}
             />
@@ -909,6 +873,7 @@ function LeadEmail({ selectedButton }) {
         );
       },
     },
+
     {
       Header: "Requirement",
       accessor: "custrecord_lms_requirement",
@@ -922,6 +887,7 @@ function LeadEmail({ selectedButton }) {
               {...register(
                 `custrecord_lms_requirement[${cellProps.row.index}]`
               )}
+              rules={{ required: "Requirement is required" }}
             />
             {errors?.custrecord_lms_requirement?.[cellProps.row.index] && (
               <FormErrorText>
@@ -1017,9 +983,7 @@ function LeadEmail({ selectedButton }) {
                     {...field}
                     id="custrecord_lms_unit_of_measure"
                     options={allUnitOfMeasureData}
-                    // loading={selectedTaskId && isUsersLoading}
-                    // options={allUsersData}
-                    // menuPlacement="top"
+                    loading={unitOfMeasureLoading}
                   />
                   {errors?.custrecord_lms_unit_of_measure?.[
                     cellProps.row.index
@@ -1268,6 +1232,108 @@ function LeadEmail({ selectedButton }) {
     },
   ];
 
+  const columns = useMemo(
+    () => [
+      {
+        Header: "Edit | Delete ",
+        accessor: "id",
+        filterable: false,
+        Cell: (cellProps) => {
+          return (
+            <>
+              <div style={{ display: "flex" }}>
+                <div
+                  onClick={() =>
+                    toggle([
+                      {
+                        // id: cellProps.row.original.id,
+                        // repeatId: cellProps.row.original.repeatId,
+                        // project: { ...cellProps.row.original.project },
+                        // task: { ...cellProps.row.original.task },
+                        // allocatedUser: { ...cellProps.row.original.allocatedUser },
+                        // date: cellProps.row.original.date,
+                        // duration: cellProps.row.original.duration,
+                        // repetationType: cellProps.row.original.repetationType,
+                      },
+                    ])
+                  }
+                >
+                  {/* <Link href={`${urls.resourceAllocationView}/${cellProps.value}`}> */}
+                  <span className="table-text flex-grow-1 fw-medium link-primary cursor-pointer">
+                    {accessLevel >= perAccessIds.edit ? (
+                      <i className="ri-edit-line fs-4"></i>
+                    ) : (
+                      <TkButton color="none">
+                        <TkIcon className="ri-eye-fill align-bottom me-2 text-muted"></TkIcon>
+                      </TkButton>
+                    )}
+                  </span>
+                </div>
+                <span style={{ marginLeft: "20px" }}></span>
+
+                <div
+                  onClick={() => {
+                    setEditLeadId(cellProps.row.original.id);
+                    toggleDeleteModelPopup();
+                  }}
+                >
+                  <span className="table-text flex-grow-1 fw-medium link-danger cursor-pointer">
+                    {accessLevel >= perAccessIds.edit ? (
+                      <i className="ri-delete-bin-line fs-4"></i>
+                    ) : (
+                      <TkIcon className="table-text flex-grow-1 fw-medium link-danger cursor-pointer"></TkIcon>
+                    )}
+                  </span>
+                </div>
+              </div>
+            </>
+          );
+        },
+      },
+      {
+        Header: "Activity Type",
+        accessor: "_activityType",
+        filterable: false,
+        Cell: (cellProps) => {
+          return <div className="table-text">{cellProps.value}</div>;
+        },
+      },
+      {
+        Header: "Lead Name",
+        accessor: "lead",
+        filterable: false,
+        Cell: (cellProps) => {
+          return <div className="table-text">{cellProps.value}</div>;
+        },
+      },
+      {
+        Header: "Phone Number",
+        accessor: "phoneNumber",
+        filterable: false,
+        Cell: (cellProps) => {
+          return <div className="table-text">{cellProps.value}</div>;
+        },
+      },
+      {
+        Header: "Date",
+        accessor: "date",
+        filterable: false,
+        Cell: (cellProps) => {
+          return <div className="table-text">{cellProps.value}</div>;
+        },
+      },
+      {
+        Header: "Comments",
+        accessor: "comments",
+        filterable: false,
+        Cell: (cellProps) => {
+          return <div className="table-text">{cellProps.value}</div>;
+        },
+      },
+    ],
+    []
+  );
+
   const concatenateAddress = () => {
     const addr1 = getValues("addr1") || "";
     const addr2 = getValues("addr2") || "";
@@ -1416,52 +1482,7 @@ function LeadEmail({ selectedButton }) {
                           </FormErrorText>
                         )}
                       </TkCol>
-                      {/* <TkCol lg={3}>
-                        <TkInput
-                          {...register("firstname")}
-                          id="firstname"
-                          type="text"
-                          labelName="First Name"
-                          placeholder="Enter First Name"
-                          requiredStarOnLabel="true"
-                        />
-                        {errors.firstname && (
-                          <FormErrorText>
-                            {errors.firstname.message}
-                          </FormErrorText>
-                        )}
-                      </TkCol>
 
-                      <TkCol lg={2}>
-                        <TkInput
-                          {...register("middleName")}
-                          id="middleName"
-                          type="text"
-                          labelName="Middle Name"
-                          placeholder="Enter Middle Name"
-                        />
-                        {errors.middleName && (
-                          <FormErrorText>
-                            {errors.middleName.message}
-                          </FormErrorText>
-                        )}
-                      </TkCol>
-
-                      <TkCol lg={3}>
-                        <TkInput
-                          {...register("lastName")}
-                          id="lastName"
-                          type="text"
-                          labelName="Last Name"
-                          placeholder="Enter Last Name"
-                          requiredStarOnLabel="true"
-                        />
-                        {errors.lastName && (
-                          <FormErrorText>
-                            {errors.lastName.message}
-                          </FormErrorText>
-                        )}
-                      </TkCol> */}
                       <TkCol lg={3}>
                         <TkInput
                           {...register("custentity_lms_personal_phonenumber")}
@@ -1541,6 +1562,240 @@ function LeadEmail({ selectedButton }) {
                     <h4>Company Details</h4>
                   </TkCardHeader>
                   <div>
+                    {/* <TkRow className="g-3">
+                      <TkCol lg={4}>
+                        <TkInput
+                          {...register("companyName")}
+                          id="companyName"
+                          type="text"
+                          labelName="Company Name"
+                          placeholder="Enter Company Name"
+                        />
+                        {errors.companyName && (
+                          <FormErrorText>
+                            {errors.companyName.message}
+                          </FormErrorText>
+                        )}
+                      </TkCol>
+                      <TkCol lg={4}>
+                        <TkInput
+                          {...register("phone")}
+                          id="phone"
+                          name="phone"
+                          type="text"
+                          labelName="Contact No"
+                          placeholder="Enter Contact No"
+                        />
+                        {errors.phone && (
+                          <FormErrorText>{errors.phone.message}</FormErrorText>
+                        )}
+                      </TkCol>
+                      <TkCol lg={4}>
+                        <TkInput
+                          {...register("email")}
+                          id="email"
+                          name="email"
+                          type="text"
+                          labelName="Email"
+                          placeholder="Enter Email"
+                        />
+                        {errors.email && (
+                          <FormErrorText>{errors.email.message}</FormErrorText>
+                        )}
+                      </TkCol>
+
+                      <TkCol lg={4}>
+                        <TkInput
+                          {...register("custentity_lms_cr_no")}
+                          id="custentity_lms_cr_no"
+                          name="custentity_lms_cr_no"
+                          type="text"
+                          labelName="CR No"
+                          placeholder="Enter CR No"
+                        />
+                        {errors.custentity_lms_cr_no && (
+                          <FormErrorText>
+                            {errors.custentity_lms_cr_no.message}
+                          </FormErrorText>
+                        )}
+                      </TkCol>
+
+                      <TkCol lg={4}>
+                        <TkInput
+                          {...register("custentity3")}
+                          id="custentity3"
+                          name="custentity3"
+                          type="text"
+                          labelName="VAT No"
+                          placeholder="Enter VAT No"
+                        />
+                        {errors.custentity3 && (
+                          <FormErrorText>
+                            {errors.custentity3.message}
+                          </FormErrorText>
+                        )}
+                      </TkCol>
+                      <TkCol lg={4}>
+                        <Controller
+                          name="custentity_lms_client_type"
+                          control={control}
+                          render={({ field }) => (
+                            <TkSelect
+                              {...field}
+                              id="custentity_lms_client_type"
+                              name="custentity_lms_client_type"
+                              labelName="Client Type"
+                              placeholder="Select Client Type"
+                              options={allClientTypeData}
+                              loading={clientTypeLoading}
+                            />
+                          )}
+                        />
+                        {errors.custentity_lms_client_type && (
+                          <FormErrorText>
+                            {errors.custentity_lms_client_type.message}
+                          </FormErrorText>
+                        )}
+                      </TkCol>
+                      <TkCol lg={2}>
+                        <Controller
+                          name="custentity_market_segment"
+                          control={control}
+                          render={({ field }) => (
+                            <TkSelect
+                              {...field}
+                              id="custentity_market_segment"
+                              name="custentity_market_segment"
+                              labelName="Segment"
+                              placeholder="Select Segment"
+                              options={allSegmentData}
+                              loading={segmentLoading}
+                            />
+                          )}
+                        />
+                        {errors.custentity_market_segment && (
+                          <FormErrorText>
+                            {errors.custentity_market_segment.message}
+                          </FormErrorText>
+                        )}
+                      </TkCol>
+                      <TkCol lg={5}>
+                        <TkInput
+                          {...register("addr1")}
+                          id="addr1"
+                          name="addr1"
+                          type="textarea"
+                          labelName="Address 1"
+                          placeholder="Enter Address 1"
+                          onBlur={handleInputBlur}
+                        />
+                        {errors.addr1 && (
+                          <FormErrorText>{errors.addr1.message}</FormErrorText>
+                        )}
+                      </TkCol>
+
+                      <TkCol lg={5}>
+                        <TkInput
+                          {...register("addr2")}
+                          id="addr2"
+                          name="addr2"
+                          type="textarea"
+                          labelName="Address 2"
+                          placeholder="Enter Address 2"
+                          onBlur={handleInputBlur}
+                        />
+                        {errors.addr2 && (
+                          <FormErrorText>{errors.addr2.message}</FormErrorText>
+                        )}
+                      </TkCol>
+
+                      <TkCol lg={3}>
+                        <TkInput
+                          {...register("city")}
+                          id="city"
+                          name="city"
+                          type="text"
+                          labelName="City"
+                          placeholder="Enter City"
+                          onBlur={handleInputBlur}
+                        />
+                        {errors.city && (
+                          <FormErrorText>{errors.city.message}</FormErrorText>
+                        )}
+                      </TkCol>
+
+                      <TkCol lg={3}>
+                        <TkInput
+                          {...register("state")}
+                          id="state"
+                          name="state"
+                          type="text"
+                          labelName="State"
+                          placeholder="Enter State"
+                          onBlur={handleInputBlur}
+                        />
+                        {errors.state && (
+                          <FormErrorText>{errors.state.message}</FormErrorText>
+                        )}
+                      </TkCol>
+
+                      <TkCol lg={3}>
+                        <TkInput
+                          {...register("zip")}
+                          id="zip"
+                          name="zip"
+                          type="text"
+                          labelName="Zip"
+                          placeholder="Enter Zip"
+                          onBlur={handleInputBlur}
+                        />
+                        {errors.zip && (
+                          <FormErrorText>{errors.zip.message}</FormErrorText>
+                        )}
+                      </TkCol>
+
+                      <TkCol lg={3}>
+                        <Controller
+                          name="country"
+                          control={control}
+                          render={({ field }) => (
+                            <TkSelect
+                              {...field}
+                              labelName="Country"
+                              tooltip="Select Country"
+                              labelId={"_country"}
+                              id="country"
+                              options={allCountryData}
+                              placeholder="Select Country"
+                              onBlur={handleInputBlur}
+                            />
+                          )}
+                        />
+
+                        {errors.country && (
+                          <FormErrorText>
+                            {errors.country.message}
+                          </FormErrorText>
+                        )}
+                      </TkCol>
+
+                      <TkCol lg={12}>
+                        <TkInput
+                          {...register("addrtext")}
+                          id="addrtext"
+                          name="addrtext"
+                          type="textarea"
+                          labelName="Address "
+                          placeholder="Enter Address"
+                          disabled={true}
+                        />
+                        {errors.addrtext && (
+                          <FormErrorText>
+                            {errors.addrtext.message}
+                          </FormErrorText>
+                        )}
+                      </TkCol>
+                    </TkRow> */}
                     <TkRow className="g-3">
                       <TkCol lg={4}>
                         <TkInput
@@ -1833,7 +2088,7 @@ function LeadEmail({ selectedButton }) {
                         })}
                         onClick={() => toggleTab(tabs.leadActivity)}
                       >
-                        Add Lead Activity
+                       Activity
                       </NavLink>
                     </NavItem>
                   </Nav>
@@ -2054,182 +2309,64 @@ function LeadEmail({ selectedButton }) {
                     <TabPane tabId={tabs.leadActivity}>
                       <div>
                         <TkRow className="g-3">
-                          <TkCol lg={4}>
-                            <Controller
-                              name="activityType"
-                              control={control}
-                              render={({ field }) => (
-                                <TkSelect
-                                  {...field}
-                                  labelName="Activity Type"
-                                  labelId="activityType"
-                                  id="activityType"
-                                  options={leadActivityTypes}
-                                  placeholder="Select Activity Type"
-                                  requiredStarOnLabel={true}
+                          <TkCol lg={2}>
+                            <TkButton
+                              type="button"
+                              color="primary"
+                              onClick={leadActivityToggle}
+                              style={{ width: "80%" }}
+                            >
+                              Phone Call
+                            </TkButton>
+                          </TkCol>
+                          <TkCol lg={2}>
+                            <TkButton
+                              type="button"
+                              color="primary"
+                              onClick={leadTaskActivityToggle}
+                              style={{ width: "80%" }}
+                            >
+                              Task
+                            </TkButton>
+                          </TkCol>
+                          <TkCol lg={2}>
+                            <TkButton
+                              type="button"
+                              color="primary"
+                              onClick={leadEventActivityToggle}
+                              style={{ width: "80%" }}
+                            >
+                              Event
+                            </TkButton>
+                          </TkCol>
+
+                          <Nav className="nav-tabs dropdown-tabs nav-tabs-custom mb-3 mt-4">
+                            <NavItem>
+                              <NavLink
+                                // href="#"
+                                className={classnames({
+                                  active: activeTab === tabs.phoneCall,
+                                })}
+                              >
+                                Lead Activity
+                              </NavLink>
+                            </NavItem>
+                          </Nav>
+
+                          <TabContent activeTab={activeTab}>
+                            <TabPane tabId={tabs.leadActivity}>
+                              <TkCardBody className="table-padding pt-0">
+                                <TkTableContainer
+                                  columns={columns}
+                                  data={[]}
+                                  isSearch={false}
+                                  defaultPageSize={10}
+                                  isFilters={true}
+                                  showPagination={true}
                                 />
-                              )}
-                            />
-                            {errors.activityType && (
-                              <FormErrorText>
-                                {errors.activityType.message}
-                              </FormErrorText>
-                            )}
-                          </TkCol>
-                          <TkCol lg={4}>
-                            <TkInput
-                              {...register("lead")}
-                              id="lead"
-                              name="lead"
-                              type="text"
-                              labelName="Lead Name"
-                              placeholder="Enter Lead Name"
-                              requiredStarOnLabel={true}
-                            />
-                            {errors.lead && (
-                              <FormErrorText>
-                                {errors.lead.message}
-                              </FormErrorText>
-                            )}
-                          </TkCol>
-
-                          <TkCol lg={4}>
-                            <TkInput
-                              {...register("location")}
-                              labelName="Location"
-                              labelId={"location"}
-                              id="location"
-                              type="text"
-                              placeholder="Enter Location"
-                              requiredStarOnLabel={true}
-                            />
-                            {errors.location && (
-                              <FormErrorText>
-                                {errors.location.message}
-                              </FormErrorText>
-                            )}
-                          </TkCol>
-
-                          <TkCol lg={4}>
-                            <TkInput
-                              {...register("phoneNumber")}
-                              id="phoneNumber"
-                              name="phoneNumber"
-                              type="text"
-                              labelName="Phone Number"
-                              placeholder="Enter Phone Number"
-                              requiredStarOnLabel={true}
-                            />
-                            {errors.phoneNumber && (
-                              <FormErrorText>
-                                {errors.phoneNumber.message}
-                              </FormErrorText>
-                            )}
-                          </TkCol>
-
-                          <TkCol lg={4}>
-                            <Controller
-                              name="status"
-                              control={control}
-                              render={({ field }) => (
-                                <TkSelect
-                                  {...field}
-                                  labelName="Status"
-                                  labelId={"_status"}
-                                  id="status"
-                                  options={[]}
-                                  placeholder="Select Type"
-                                  requiredStarOnLabel={true}
-                                />
-                              )}
-                            />
-                            {errors.status && (
-                              <FormErrorText>
-                                {errors.status.message}
-                              </FormErrorText>
-                            )}
-                          </TkCol>
-
-                          <TkCol lg={4}>
-                            <Controller
-                              name="date"
-                              control={control}
-                              rules={{ required: "Date is required" }}
-                              render={({ field }) => (
-                                <TkDate
-                                  {...field}
-                                  labelName="Date"
-                                  id={"date"}
-                                  placeholder="Select Date"
-                                  options={{
-                                    altInput: true,
-                                    dateFormat: "d M, Y",
-                                  }}
-                                  requiredStarOnLabel={true}
-                                />
-                              )}
-                            />
-                            {errors.date && (
-                              <FormErrorText>
-                                {errors.date.message}
-                              </FormErrorText>
-                            )}
-                          </TkCol>
-
-                          <TkCol lg={4}>
-                            <TkInput
-                              {...register(`time`, {
-                                required: "Time is required",
-                                validate: (value) => {
-                                  if (
-                                    value &&
-                                    !/^[0-9]*([.:][0-9]+)?$/.test(value)
-                                  ) {
-                                    return "Invalid Time";
-                                  }
-                                  if (
-                                    convertTimeToSec(value) > 86400 ||
-                                    value > 24
-                                  ) {
-                                    return "Time should be less than 24 hours";
-                                  }
-                                },
-                              })}
-                              onBlur={(e) => {
-                                setValue(
-                                  `time`,
-                                  convertToTimeFotTimeSheet(e.target.value)
-                                );
-                              }}
-                              labelName="Time (HH:MM)"
-                              id={"time"}
-                              name="time"
-                              type="text"
-                              placeholder="Enter Time"
-                              requiredStarOnLabel={true}
-                            />
-                            {errors.time && (
-                              <FormErrorText>
-                                {errors.time.message}
-                              </FormErrorText>
-                            )}
-                          </TkCol>
-
-                          <TkCol lg={8}>
-                            <TkInput
-                              {...register("comments")}
-                              id="comments"
-                              name="comments"
-                              type="textarea"
-                              labelName="Comments"
-                              placeholder="Enter Comments"
-                            />
-                            {errors.comments && (
-                              <FormErrorText>
-                                {errors.comments.message}
-                              </FormErrorText>
-                            )}
-                          </TkCol>
+                              </TkCardBody>
+                            </TabPane>
+                          </TabContent>
                         </TkRow>
                       </div>
                     </TabPane>
@@ -2277,12 +2414,68 @@ function LeadEmail({ selectedButton }) {
                 partnerToggle={leadActivityToggle}
                 toggle={leadActivityToggle}
               >
-                {"Add Address"}
+                {"Phone Call"}
               </TkModalHeader>
               <TkContainer>
                 <TkCardBody>
                   <ActivityPopup
                     leadActivityToggle={leadActivityToggle}
+                    isPopup={true}
+                    directCallId={directCallId}
+                    setNewAddress={setNewAddress}
+                  />
+                </TkCardBody>
+              </TkContainer>
+            </TkModal>
+
+            <TkModal
+              isOpen={leadTaskModal}
+              toggle={leadTaskActivityToggle}
+              leadTaskActivityToggle={leadTaskActivityToggle}
+              centered
+              size="lg"
+              className="border-0"
+              modalClassName="modal fade zoomIn"
+            >
+              <TkModalHeader
+                className="p-3 bg-soft-info"
+                partnerToggle={leadTaskActivityToggle}
+                toggle={leadTaskActivityToggle}
+              >
+                {"Task"}
+              </TkModalHeader>
+              <TkContainer>
+                <TkCardBody>
+                  <LeadTaskPopup
+                    leadTaskActivityToggle={leadTaskActivityToggle}
+                    isPopup={true}
+                    directCallId={directCallId}
+                    setNewAddress={setNewAddress}
+                  />
+                </TkCardBody>
+              </TkContainer>
+            </TkModal>
+
+            <TkModal
+              isOpen={leadEventModal}
+              toggle={leadEventActivityToggle}
+              leadEventActivityToggle={leadEventActivityToggle}
+              centered
+              size="lg"
+              className="border-0"
+              modalClassName="modal fade zoomIn"
+            >
+              <TkModalHeader
+                className="p-3 bg-soft-info"
+                partnerToggle={leadEventActivityToggle}
+                toggle={leadEventActivityToggle}
+              >
+                {"Event"}
+              </TkModalHeader>
+              <TkContainer>
+                <TkCardBody>
+                  <LeadEventPopup
+                    leadEventActivityToggle={leadEventActivityToggle}
                     isPopup={true}
                     directCallId={directCallId}
                     setNewAddress={setNewAddress}

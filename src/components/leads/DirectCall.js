@@ -108,7 +108,7 @@ const schema = Yup.object({
     bigInpuMaxLength,
     `Note should have at most ${bigInpuMaxLength} characters.`
   ),
-  companyname: Yup.string()
+  companyName: Yup.string()
     .nullable()
     .max(
       smallInputMaxLength,
@@ -129,21 +129,19 @@ const schema = Yup.object({
       `Email should have at most ${MaxEmailLength} characters.`
     ),
   addr1: Yup.string()
-    .required("Address 1 is required")
     .max(
       smallInputMaxLength,
       `Address 1 should have at most ${smallInputMaxLength} characters.`
     )
     .nullable(),
   city: Yup.string()
-    .required("City is required")
     .max(
       smallInputMaxLength,
       `City should have at most ${smallInputMaxLength} characters.`
     )
     .nullable(),
 
-  state: Yup.string().required("State is required").nullable(),
+  state: Yup.string().nullable(),
 
   zip: Yup.string()
     .required("Zip is required")
@@ -581,11 +579,11 @@ function DirectCall({ selectedButton }) {
   ]);
   const [locationRows, setLocationRows] = useState([
     {
-      location: "",
-      contactPersonName: "",
-      phoneNumber: "",
-      email: "",
-      designation: "",
+      custrecord_lms_location: "",
+      custrecord_lms_contactperson_name: "",
+      custrecord_lms_phonenumber: "",
+      custrecord_location_email: "",
+      custrecord_lms_designation: "",
     },
   ]);
 
@@ -2109,16 +2107,6 @@ function DirectCall({ selectedButton }) {
                     <TabPane tabId={tabs.leadActivity}>
                       <div>
                         <TkRow className="g-3">
-                          {/* <TkCol lg={2}>
-                            <TkButton
-                              type="button"
-                              color="primary"
-                              // className="mt-4"
-                              onClick={leadActivityToggle}
-                            >
-                              Add Activity
-                            </TkButton>
-                          </TkCol> */}
                           <TkCol lg={2}>
                             <TkButton
                               type="button"
@@ -2236,8 +2224,6 @@ function DirectCall({ selectedButton }) {
                   />
                 </TkCardBody>
               </TkContainer>
-
-              
             </TkModal>
 
             <TkModal

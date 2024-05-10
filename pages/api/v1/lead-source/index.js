@@ -5,14 +5,13 @@ export default async function handler(req, res) {
   try {
     if (req.method === "GET") {
       const query = `SELECT id, name FROM CUSTOMLIST_LMS_LEADSOURCE WHERE isinactive='F'`;
-      // const query = `SELECT entityid, firstName, lastname, id, email, hireDate, releasedate, BUILTIN.DF( employeetype ) AS employeetype, BUILTIN.DF( employeestatus ) AS employeestatus, BUILTIN.DF( department ) AS department, BUILTIN.DF( location ) AS location, BUILTIN.DF( supervisor ) AS supervisor FROM employee`;
       const leadSourceData = await getLeadSourceRestletScriptDeploymentId(query);
       response({
         res,
         success: true,
         status_code: 200,
         data: leadSourceData,
-        message: "Primary Action Fetched successfully",
+        message: "Lead Source Fetched successfully",
       });
     } else if (req.method === "POST") {
       //   try {

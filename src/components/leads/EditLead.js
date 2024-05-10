@@ -1860,7 +1860,7 @@ function EditLead({ id, userData, mode }) {
                                     labelName="Address 1"
                                     placeholder="Enter Address 1"
                                     onBlur={handleInputBlur}
-                                    disabled={viewMode}
+                                    disabled={true}
                                   />
                                   {errors.addr1 && (
                                     <FormErrorText>
@@ -1878,7 +1878,7 @@ function EditLead({ id, userData, mode }) {
                                     labelName="Address 2"
                                     placeholder="Enter Address 2"
                                     onBlur={handleInputBlur}
-                                    disabled={viewMode}
+                                    disabled={true}
                                   />
                                   {errors.addr2 && (
                                     <FormErrorText>
@@ -1896,7 +1896,7 @@ function EditLead({ id, userData, mode }) {
                                     labelName="City"
                                     placeholder="Enter City"
                                     onBlur={handleInputBlur}
-                                    disabled={viewMode}
+                                    disabled={true}
                                   />
                                   {errors.city && (
                                     <FormErrorText>
@@ -1914,7 +1914,7 @@ function EditLead({ id, userData, mode }) {
                                     labelName="State"
                                     placeholder="Enter State"
                                     onBlur={handleInputBlur}
-                                    disabled={viewMode}
+                                    disabled={true}
                                   />
                                   {errors.state && (
                                     <FormErrorText>
@@ -1932,7 +1932,7 @@ function EditLead({ id, userData, mode }) {
                                     labelName="Zip"
                                     placeholder="Enter Zip"
                                     onBlur={handleInputBlur}
-                                    disabled={viewMode}
+                                    disabled={true}
                                   />
                                   {errors.zip && (
                                     <FormErrorText>
@@ -1955,7 +1955,7 @@ function EditLead({ id, userData, mode }) {
                                         options={allCountryData}
                                         placeholder="Select Country"
                                         onBlur={handleInputBlur}
-                                        disabled={viewMode}
+                                        disabled={true}
                                       />
                                     )}
                                   />
