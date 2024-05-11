@@ -17,7 +17,42 @@ import TkButton from "../TkButton";
 import TkIcon from "../TkIcon";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import tkFetch from "../../utils/fetch";
+import TkDate from "../forms/TkDate";
+import TkSelect from "../forms/TkSelect";
 
+function TableToolBar() {
+  return (
+    <>
+      <TkCardBody className="table-toolbar mt-3">
+        <TkRow className="mb-3">
+          <TkCol lg={3}>
+            <TkInput
+              // onChange={onSearchChange}
+              placeholder="Search by Lead Name"
+              isSearchField={true}
+            />
+          </TkCol>
+
+          <TkCol lg={3}>
+            <TkDate
+              className="form-control"
+              placeholder="Select Date Range"
+              options={{
+                mode: "range",
+                dateFormat: "d M, Y",
+              }}
+            />
+          </TkCol>
+          <TkCol lg={2}>
+            <TkSelect
+              placeholder="Select Status"
+            />
+          </TkCol>
+        </TkRow>
+      </TkCardBody>
+    </>
+  );
+}
 const AllActivity = ({ mounted }) => {
   const searchOnUI = isSearchonUI([]);
 
@@ -159,6 +194,32 @@ const AllActivity = ({ mounted }) => {
                 <TkTableContainer
                   columns={columns}
                   data={[]}
+                  Toolbar={
+                    <TableToolBar
+                      onSearchChange={searchDebounce(
+                        updateSearchText,
+                        searchOnUI
+                      )}
+                      // accessLevel={accessLevel}
+                      onSupervisorChange={(item) => {
+                        updateFilters({
+                          [filterFields.users.supervisor]: item
+                            ? item.value
+                            : null,
+                        });
+                      }}
+                      onRoleChange={(item) => {
+                        updateFilters({
+                          [filterFields.users.role]: item ? item.value : null,
+                        });
+                      }}
+                      onActiveChange={(item) => {
+                        updateFilters({
+                          [filterFields.users.active]: item ? item.value : null,
+                        });
+                      }}
+                    />
+                  }
                   defaultPageSize={10}
                   customPageSize={true}
                   showPagination={true}

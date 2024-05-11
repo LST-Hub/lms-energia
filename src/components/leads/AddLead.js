@@ -131,7 +131,7 @@ function AddLead() {
                   active={selectedButton.refName === "socialMedia"}
                   onClick={() => handleButtonClick({id: 3, refName: "socialMedia"})}
                 >
-                  SocialMedia
+                  Social Media
                 </Button>
 
                 <Button

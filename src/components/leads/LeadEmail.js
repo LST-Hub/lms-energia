@@ -73,16 +73,19 @@ const schema = Yup.object({
 
   subsidiary: Yup.object().required("Primary subsidairy is required"),
   custentity_lms_name: Yup.string()
+    .required("Name is required")
     .min(MinNameLength, `Name should have at least ${MinNameLength} character.`)
-    .max(MaxNameLength, `Name should have at most ${MaxNameLength} characters.`)
-    .required("Name is required"),
+    .max(
+      MaxNameLength,
+      `Name should have at most ${MaxNameLength} characters.`
+    ),
   custentity_lms_personal_phonenumber: Yup.string()
     .nullable()
     .required("Phone number is Required")
-    .matches(/^[0-9+() -]*$/, "Mobile number must be number.")
+    .matches(/^[0-9+() -]*$/, "Phone number must be number.")
     .max(
       MaxPhoneNumberLength,
-      `Mobile number must be at most ${MaxPhoneNumberLength} numbers.`
+      `Phone number must be at most ${MaxPhoneNumberLength} numbers.`
     ),
   custentity_lms_personal_email: Yup.string()
     .nullable()
@@ -103,23 +106,24 @@ const schema = Yup.object({
   ),
   companyName: Yup.string()
     .nullable()
+    .required("Company name is required")
     .max(
       smallInputMaxLength,
       `Company name should have at most ${smallInputMaxLength} characters.`
     ),
   phone: Yup.string()
     .nullable()
-    .matches(/^[0-9+() -]*$/, "Phone number must be number.")
+    .matches(/^[0-9+() -]*$/, "Contact number must be number.")
     .max(
       MaxPhoneNumberLength,
-      `Phone number must be at most ${MaxPhoneNumberLength} numbers.`
+      `Contact number must be at most ${MaxPhoneNumberLength} numbers.`
     ),
   email: Yup.string()
     .nullable()
     .email("Email must be valid.")
     .max(
       MaxEmailLength,
-      `Email should have at most ${MaxEmailLength} characters.`
+      `Company Email should have at most ${MaxEmailLength} characters.`
     ),
   addr1: Yup.string()
     .max(
@@ -597,36 +601,74 @@ function LeadEmail({ selectedButton }) {
         id: formData.custentity_lms_enquiryby.value,
       },
       custentity_lms_noteother: formData.custentity_lms_noteother,
-      companyName: formData.companyName,
-      phone: formData.phone,
-      email: formData.email,
-      custentity_lms_cr_no: formData.custentity_lms_cr_no,
-      custentity3: formData.custentity3,
-      custentity_lms_client_type: {
-        id: formData.custentity_lms_client_type.value,
-      },
-      custentity_market_segment: {
-        id: formData.custentity_market_segment.value,
-      },
-      addressBook: {
-        items: [
-          {
-            addressBookAddress: {
-              addr1: formData.addr1,
-              addr2: formData.addr2,
-              city: formData.city,
-              state: formData.state,
-              zip: formData.zip,
-              country: {
-                id: formData.country.value,
-              },
-              defaultBilling: true,
-              defaultShipping: true,
-              addrtext: formData.addrtext,
-            },
-          },
-        ],
-      },
+      companyName: formData.companyName ?? "", // Use empty string if companyName is null or undefined
+      phone: formData.phone ?? "", // Use empty string if phone is null or undefined
+      email: formData.email ?? "", // Use empty string if email is null or undefined
+      custentity_lms_cr_no: formData.custentity_lms_cr_no ?? "", // Use empty string if custentity_lms_cr_no is null or undefined
+      custentity3: formData.custentity3 ?? "", // Use empty string if custentity3 is null or undefined
+      custentity_lms_client_type: formData.custentity_lms_client_type?.value
+        ? { id: formData.custentity_lms_client_type.value }
+        : null, // Use null if custentity_lms_client_type is null or undefined
+      custentity_market_segment: formData.custentity_market_segment?.value
+        ? { id: formData.custentity_market_segment.value }
+        : null, // Use null if custentity_market_segment is null or undefined
+      addressBook:
+        formData.addr1 ||
+        formData.addr2 ||
+        formData.city ||
+        formData.state ||
+        formData.zip ||
+        formData.country
+          ? {
+              items: [
+                {
+                  addressBookAddress: {
+                    addr1: formData.addr1 ?? "",
+                    addr2: formData.addr2 ?? "",
+                    city: formData.city ?? "",
+                    state: formData.state ?? "",
+                    zip: formData.zip ?? "",
+                    country: formData.country?.value
+                      ? { id: formData.country.value }
+                      : null,
+                    defaultBilling: true,
+                    defaultShipping: true,
+                    addrtext: formData.addrtext ?? "",
+                  },
+                },
+              ],
+            }
+          : null,
+      // companyName: formData.companyName,
+      // phone: formData.phone,
+      // email: formData.email,
+      // custentity_lms_cr_no: formData.custentity_lms_cr_no,
+      // custentity3: formData.custentity3,
+      // custentity_lms_client_type: {
+      //   id: formData.custentity_lms_client_type.value,
+      // },
+      // custentity_market_segment: {
+      //   id: formData.custentity_market_segment.value,
+      // },
+      // addressBook: {
+      //   items: [
+      //     {
+      //       addressBookAddress: {
+      //         addr1: formData.addr1,
+      //         addr2: formData.addr2,
+      //         city: formData.city,
+      //         state: formData.state,
+      //         zip: formData.zip,
+      //         country: {
+      //           id: formData.country.value,
+      //         },
+      //         defaultBilling: true,
+      //         defaultShipping: true,
+      //         addrtext: formData.addrtext,
+      //       },
+      //     },
+      //   ],
+      // },
     };
 
     leadPost.mutate(apiData, {
@@ -1804,6 +1846,7 @@ function LeadEmail({ selectedButton }) {
                           type="text"
                           labelName="Company Name"
                           placeholder="Enter Company Name"
+                          requiredStarOnLabel="true"
                         />
                         {errors.companyName && (
                           <FormErrorText>
@@ -2088,7 +2131,7 @@ function LeadEmail({ selectedButton }) {
                         })}
                         onClick={() => toggleTab(tabs.leadActivity)}
                       >
-                       Activity
+                        Activity
                       </NavLink>
                     </NavItem>
                   </Nav>
@@ -2394,7 +2437,7 @@ function LeadEmail({ selectedButton }) {
                     color="primary"
                     loading={leadPost.isLoading}
                   >
-                    Save
+                    Submit
                   </TkButton>
                 </div>
               </div>

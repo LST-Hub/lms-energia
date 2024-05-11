@@ -57,10 +57,12 @@ const schema = Yup.object({
 
   subsidiary: Yup.object().required("Primary subsidairy is required"),
   custentity_lms_name: Yup.string()
+    .required("Name is required")
     .min(MinNameLength, `Name should have at least ${MinNameLength} character.`)
-    .max(MaxNameLength, `Name should have at most ${MaxNameLength} characters.`)
-    .required("First Name is required"),
-
+    .max(
+      MaxNameLength,
+      `Name should have at most ${MaxNameLength} characters.`
+    ),
   // lastName: Yup.string()
   //   .min(MinNameLength, `Name should have at least ${MinNameLength} character.`)
   //   .max(MaxNameLength, `Name should have at most ${MaxNameLength} characters.`)
@@ -69,10 +71,10 @@ const schema = Yup.object({
   custentity_lms_personal_phonenumber: Yup.string()
     .nullable()
     .required("Phone number is Required")
-    .matches(/^[0-9+() -]*$/, "Mobile number must be number.")
+    .matches(/^[0-9+() -]*$/, "Phone number must be number.")
     .max(
       MaxPhoneNumberLength,
-      `Mobile number must be at most ${MaxPhoneNumberLength} numbers.`
+      `Phone number must be at most ${MaxPhoneNumberLength} numbers.`
     ),
   custentity_lms_personal_email: Yup.string()
     .nullable()
@@ -93,23 +95,24 @@ const schema = Yup.object({
   ),
   companyName: Yup.string()
     .nullable()
+    .required("Company Name is required")
     .max(
       smallInputMaxLength,
       `Company name should have at most ${smallInputMaxLength} characters.`
     ),
   phone: Yup.string()
     .nullable()
-    .matches(/^[0-9+() -]*$/, "Phone number must be number.")
+    .matches(/^[0-9+() -]*$/, "Contact number must be number.")
     .max(
       MaxPhoneNumberLength,
-      `Phone number must be at most ${MaxPhoneNumberLength} numbers.`
+      `Contact number must be at most ${MaxPhoneNumberLength} numbers.`
     ),
   email: Yup.string()
     .nullable()
     .email("Email must be valid.")
     .max(
       MaxEmailLength,
-      `Email should have at most ${MaxEmailLength} characters.`
+      `Company Email should have at most ${MaxEmailLength} characters.`
     ),
   addr1: Yup.string()
     .max(
@@ -574,7 +577,6 @@ function EditLead({ id, userData, mode }) {
     }
   }, [activityModal]);
 
-
   const leadTaskActivityToggle = useCallback(() => {
     if (leadTaskModal) {
       setLeadTaskModal(false);
@@ -590,9 +592,6 @@ function EditLead({ id, userData, mode }) {
       setLeadEventModal(true);
     }
   }, [leadEventModal]);
-
-
-
 
   useEffect(() => {
     setIsLeadEdit(true);
@@ -800,6 +799,8 @@ function EditLead({ id, userData, mode }) {
         value: custentity_lms_enquiryby?.id,
       });
       setValue("custentity_lms_noteother", custentity_lms_noteother);
+      // Use empty string if companyName is null or undefined
+      setValue("companyName", companyName ?? "");
       setValue("companyName", companyName);
       setValue("phone", phone);
       setValue("email", email);
@@ -852,17 +853,28 @@ function EditLead({ id, userData, mode }) {
         id: formData.custentity_lms_enquiryby.value,
       },
       custentity_lms_noteother: formData.custentity_lms_noteother,
-      companyName: formData.companyName,
-      phone: formData.phone,
-      email: formData.email,
-      custentity_lms_cr_no: formData.custentity_lms_cr_no,
-      custentity3: formData.custentity3,
-      custentity_lms_client_type: {
-        id: formData.custentity_lms_client_type.value,
-      },
-      custentity_market_segment: {
-        id: formData.custentity_market_segment.value,
-      },
+      companyName: formData.companyName ?? "", // Use empty string if companyName is null or undefined
+      phone: formData.phone ?? "", // Use empty string if phone is null or undefined
+      email: formData.email ?? "", // Use empty string if email is null or undefined
+      custentity_lms_cr_no: formData.custentity_lms_cr_no ?? "", // Use empty string if custentity_lms_cr_no is null or undefined
+      custentity3: formData.custentity3 ?? "", // Use empty string if custentity3 is null or undefined
+      custentity_lms_client_type: formData.custentity_lms_client_type?.value
+        ? { id: formData.custentity_lms_client_type.value }
+        : null, // Use null if custentity_lms_client_type is null or undefined
+      custentity_market_segment: formData.custentity_market_segment?.value
+        ? { id: formData.custentity_market_segment.value }
+        : null,
+      // companyName: formData.companyName,
+      // phone: formData.phone,
+      // email: formData.email,
+      // custentity_lms_cr_no: formData.custentity_lms_cr_no,
+      // custentity3: formData.custentity3,
+      // custentity_lms_client_type: {
+      //   id: formData.custentity_lms_client_type.value,
+      // },
+      // custentity_market_segment: {
+      //   id: formData.custentity_market_segment.value,
+      // },
       // addressBook: {
       //   items: [
       //     {
@@ -1729,6 +1741,7 @@ function EditLead({ id, userData, mode }) {
                                     type="text"
                                     labelName="Company Name"
                                     placeholder="Enter Company Name"
+                                    requiredStarOnLabel="true"
                                     disabled={viewMode}
                                   />
                                   {errors.companyName && (
@@ -2311,36 +2324,36 @@ function EditLead({ id, userData, mode }) {
                               <TabPane tabId={tabs.leadActivity}>
                                 <div>
                                   <TkRow className="g-3">
-                                  <TkCol lg={2}>
-                            <TkButton
-                              type="button"
-                              color="primary"
-                              onClick={leadActivityToggle}
-                              style={{ width: "80%" }}
-                            >
-                              Phone Call
-                            </TkButton>
-                          </TkCol>
-                          <TkCol lg={2}>
-                            <TkButton
-                              type="button"
-                              color="primary"
-                              onClick={leadTaskActivityToggle}
-                              style={{ width: "80%" }}
-                            >
-                              Task
-                            </TkButton>
-                          </TkCol>
-                          <TkCol lg={2}>
-                            <TkButton
-                              type="button"
-                              color="primary"
-                              onClick={leadEventActivityToggle}
-                              style={{ width: "80%" }}
-                            >
-                              Event
-                            </TkButton>
-                          </TkCol>
+                                    <TkCol lg={2}>
+                                      <TkButton
+                                        type="button"
+                                        color="primary"
+                                        onClick={leadActivityToggle}
+                                        style={{ width: "80%" }}
+                                      >
+                                        Phone Call
+                                      </TkButton>
+                                    </TkCol>
+                                    <TkCol lg={2}>
+                                      <TkButton
+                                        type="button"
+                                        color="primary"
+                                        onClick={leadTaskActivityToggle}
+                                        style={{ width: "80%" }}
+                                      >
+                                        Task
+                                      </TkButton>
+                                    </TkCol>
+                                    <TkCol lg={2}>
+                                      <TkButton
+                                        type="button"
+                                        color="primary"
+                                        onClick={leadEventActivityToggle}
+                                        style={{ width: "80%" }}
+                                      >
+                                        Event
+                                      </TkButton>
+                                    </TkCol>
                                   </TkRow>
                                 </div>
                               </TabPane>
@@ -2402,8 +2415,6 @@ function EditLead({ id, userData, mode }) {
                   />
                 </TkCardBody>
               </TkContainer>
-
-              
             </TkModal>
 
             <TkModal
