@@ -101,11 +101,17 @@ const schema = Yup.object({
       MaxEmailLength,
       `Email should have at most ${MaxEmailLength} characters.`
     ),
-  custentity_lms_enquiryby: Yup.object().required("Enquiry by is required"),
-  custentity_lms_noteother: Yup.string().max(
-    bigInpuMaxLength,
-    `Note should have at most ${bigInpuMaxLength} characters.`
-  ),
+  custentity_lms_enquiryby: Yup.object()
+    .nullable()
+    .required("Enquiry by is required"),
+
+  // custentity_lms_noteother: Yup.string()
+  //   .nullable()
+  //   .max(
+  //     bigInpuMaxLength,
+  //     `Note should have at most ${bigInpuMaxLength} characters.`
+  //   ),
+
   companyName: Yup.string()
     .nullable()
     .required("Company Name is required")
@@ -197,7 +203,7 @@ function DirectCall({ selectedButton }) {
   const [newAddress, setNewAddress] = useState(null);
   const [allCountryData, setAllCountryData] = useState([{}]);
   const [fullAddress, setFullAddress] = useState(false);
-  const [selectedEnquiryBy, setSelectedEnquiryBy] = useState("");
+  const [selectedEnquiryBy, setSelectedEnquiryBy] = useState(false);
 
   const results = useQueries({
     queries: [
@@ -852,17 +858,17 @@ function DirectCall({ selectedButton }) {
       custentity_lms_personal_email: formData.custentity_lms_personal_email,
       custentity_lms_enquiryby: { id: formData.custentity_lms_enquiryby.value },
       custentity_lms_noteother: formData.custentity_lms_noteother,
-      companyName: formData.companyName ?? "", // Use empty string if companyName is null or undefined
-      phone: formData.phone ?? "", // Use empty string if phone is null or undefined
-      email: formData.email ?? "", // Use empty string if email is null or undefined
-      custentity_lms_cr_no: formData.custentity_lms_cr_no ?? "", // Use empty string if custentity_lms_cr_no is null or undefined
-      custentity3: formData.custentity3 ?? "", // Use empty string if custentity3 is null or undefined
+      companyName: formData.companyName ?? "",
+      phone: formData.phone ?? "",
+      email: formData.email ?? "",
+      custentity_lms_cr_no: formData.custentity_lms_cr_no ?? "",
+      custentity3: formData.custentity3 ?? "",
       custentity_lms_client_type: formData.custentity_lms_client_type?.value
         ? { id: formData.custentity_lms_client_type.value }
-        : null, // Use null if custentity_lms_client_type is null or undefined
+        : null,
       custentity_market_segment: formData.custentity_market_segment?.value
         ? { id: formData.custentity_market_segment.value }
-        : null, // Use null if custentity_market_segment is null or undefined
+        : null,
       addressBook:
         formData.addr1 ||
         formData.addr2 ||
@@ -889,9 +895,8 @@ function DirectCall({ selectedButton }) {
                 },
               ],
             }
-          : null, // Use null if all address fields are null or undefined
+          : null,
     };
-
 
     leadPost.mutate(apiData, {
       onSuccess: (data) => {
@@ -1594,6 +1599,16 @@ function DirectCall({ selectedButton }) {
                               placeholder="Enquiry By"
                               requiredStarOnLabel="true"
                               options={allEnquiryByData}
+                              onChange={(e) => {
+                                console.log("e", e);
+                                field.onChange(e);
+                                if (e.value === "3") {
+                                  // replace "value_for_other" with the actual value for "Other"
+                                  setSelectedEnquiryBy(true);
+                                } else {
+                                  setSelectedEnquiryBy(false);
+                                }
+                              }}
                             />
                           )}
                         />
@@ -1605,11 +1620,16 @@ function DirectCall({ selectedButton }) {
                       </TkCol>
                       <TkCol lg={12}>
                         <TkInput
-                          {...register("custentity_lms_noteother")}
+                          {...register("custentity_lms_noteother", {
+                            required: selectedEnquiryBy
+                              ? "Notes is required"
+                              : false,
+                          })}
                           id="custentity_lms_noteother"
                           type="textarea"
                           labelName="Notes"
                           placeholder="Enter Notes"
+                          requiredStarOnLabel={selectedEnquiryBy}
                         />
                         {errors.custentity_lms_noteother && (
                           <FormErrorText>
