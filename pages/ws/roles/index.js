@@ -23,8 +23,8 @@ const Roles = () => {
       <div className="page-content">
         <BreadCrumb
           pageTitle={"Roles And Permisssions"}
-          // buttonText={"Add Role"}
-          // onButtonClick={handleButtonClick}
+          buttonText={"Add Role"}
+          onButtonClick={handleButtonClick}
         />
         <TkContainer>
           <AllRoles />

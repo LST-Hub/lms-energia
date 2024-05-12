@@ -14,11 +14,11 @@ const permissionTypeIds = {
 const appPermissions = [
   {
     id: permissionTypeIds.projAndTask,
-    name: "Projects & Tasks",
+    name: "Leads",
   },
   {
     id: permissionTypeIds.clients,
-    name: "Clients",
+    name: "Activity",
   },
   {
     id: permissionTypeIds.users,
@@ -34,16 +34,16 @@ const appPermissions = [
   // },
   {
     id: permissionTypeIds.reports,
-    name: "Export Reports",
+    name: "Settings",
   },
-  {
-    id: permissionTypeIds.approvals,
-    name: "Approvals",
-  },
-  {
-    id: permissionTypeIds.resourceAllocation,
-    name: "Resource Allocation",
-  },
+  // {
+  //   id: permissionTypeIds.approvals,
+  //   name: "Approvals",
+  // },
+  // {
+  //   id: permissionTypeIds.resourceAllocation,
+  //   name: "Resource Allocation",
+  // },
 ];
 
 const workspaceTypes = [
