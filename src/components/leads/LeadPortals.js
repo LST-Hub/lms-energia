@@ -202,6 +202,7 @@ function LeadPortals({ selectedButton }) {
   const [newAddress, setNewAddress] = useState(null);
   const [fullAddress, setFullAddress] = useState(false);
   const [allCountryData, setAllCountryData] = useState([{}]);
+  const [selectedEnquiryBy, setSelectedEnquiryBy] = useState(false);
 
   const results = useQueries({
     queries: [
@@ -834,38 +835,38 @@ function LeadPortals({ selectedButton }) {
         id: formData.custentity_lms_enquiryby.value,
       },
       custentity_lms_noteother: formData.custentity_lms_noteother,
-    //   companyName: formData.companyName,
-    //   phone: formData.phone,
-    //   email: formData.email,
-    //   custentity_lms_cr_no: formData.custentity_lms_cr_no,
-    //   custentity3: formData.custentity3,
-    //   custentity_lms_client_type: {
-    //     id: formData.custentity_lms_client_type.value,
-    //   },
-    //   custentity_market_segment: {
-    //     id: formData.custentity_market_segment.value,
-    //   },
-    //   addressBook: {
-    //     items: [
-    //       {
-    //         addressBookAddress: {
-    //           addr1: formData.addr1,
-    //           addr2: formData.addr2,
-    //           city: formData.city,
-    //           state: formData.state,
-    //           zip: formData.zip,
-    //           country: {
-    //             id: formData.country.value,
-    //           },
-    //           defaultBilling: true,
-    //           defaultShipping: true,
-    //           addrtext: formData.addrtext,
-    //         },
-    //       },
-    //     ],
-    //   },
-    // };
-    companyName: formData.companyName ?? "", // Use empty string if companyName is null or undefined
+      //   companyName: formData.companyName,
+      //   phone: formData.phone,
+      //   email: formData.email,
+      //   custentity_lms_cr_no: formData.custentity_lms_cr_no,
+      //   custentity3: formData.custentity3,
+      //   custentity_lms_client_type: {
+      //     id: formData.custentity_lms_client_type.value,
+      //   },
+      //   custentity_market_segment: {
+      //     id: formData.custentity_market_segment.value,
+      //   },
+      //   addressBook: {
+      //     items: [
+      //       {
+      //         addressBookAddress: {
+      //           addr1: formData.addr1,
+      //           addr2: formData.addr2,
+      //           city: formData.city,
+      //           state: formData.state,
+      //           zip: formData.zip,
+      //           country: {
+      //             id: formData.country.value,
+      //           },
+      //           defaultBilling: true,
+      //           defaultShipping: true,
+      //           addrtext: formData.addrtext,
+      //         },
+      //       },
+      //     ],
+      //   },
+      // };
+      companyName: formData.companyName ?? "", // Use empty string if companyName is null or undefined
       phone: formData.phone ?? "", // Use empty string if phone is null or undefined
       email: formData.email ?? "", // Use empty string if email is null or undefined
       custentity_lms_cr_no: formData.custentity_lms_cr_no ?? "", // Use empty string if custentity_lms_cr_no is null or undefined
@@ -1646,6 +1647,16 @@ function LeadPortals({ selectedButton }) {
                               placeholder="Enquiry By"
                               requiredStarOnLabel="true"
                               options={allEnquiryByData}
+                              onChange={(e) => {
+                                console.log("e", e);
+                                field.onChange(e);
+                                if (e.value === "3") {
+                                  // replace "value_for_other" with the actual value for "Other"
+                                  setSelectedEnquiryBy(true);
+                                } else {
+                                  setSelectedEnquiryBy(false);
+                                }
+                              }}
                             />
                           )}
                         />
@@ -1657,11 +1668,16 @@ function LeadPortals({ selectedButton }) {
                       </TkCol>
                       <TkCol lg={12}>
                         <TkInput
-                          {...register("custentity_lms_noteother")}
+                          {...register("custentity_lms_noteother", {
+                            required: selectedEnquiryBy
+                              ? "Notes is required"
+                              : false,
+                          })}
                           id="custentity_lms_noteother"
                           type="textarea"
                           labelName="Notes"
                           placeholder="Enter Notes"
+                          requiredStarOnLabel={selectedEnquiryBy}
                         />
                         {errors.custentity_lms_noteother && (
                           <FormErrorText>

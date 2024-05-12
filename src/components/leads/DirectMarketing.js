@@ -224,6 +224,7 @@ function DirectMarketing({ selectedButton }) {
   const [allDurations, setAllDurations] = useState({});
   const [allCountryData, setAllCountryData] = useState([{}]);
   const [fullAddress, setFullAddress] = useState(false);
+  const [selectedEnquiryBy, setSelectedEnquiryBy] = useState(false);
 
   const results = useQueries({
     queries: [
@@ -1747,6 +1748,16 @@ function DirectMarketing({ selectedButton }) {
                               placeholder="Enquiry By"
                               requiredStarOnLabel="true"
                               options={allEnquiryByData}
+                              onChange={(e) => {
+                                console.log("e", e);
+                                field.onChange(e);
+                                if (e.value === "3") {
+                                  // replace "value_for_other" with the actual value for "Other"
+                                  setSelectedEnquiryBy(true);
+                                } else {
+                                  setSelectedEnquiryBy(false);
+                                }
+                              }}
                             />
                           )}
                         />
@@ -1758,11 +1769,16 @@ function DirectMarketing({ selectedButton }) {
                       </TkCol>
                       <TkCol lg={12}>
                         <TkInput
-                          {...register("custentity_lms_noteother")}
+                          {...register("custentity_lms_noteother", {
+                            required: selectedEnquiryBy
+                              ? "Notes is required"
+                              : false,
+                          })}
                           id="custentity_lms_noteother"
                           type="textarea"
                           labelName="Notes"
                           placeholder="Enter Notes"
+                          requiredStarOnLabel={selectedEnquiryBy}
                         />
                         {errors.custentity_lms_noteother && (
                           <FormErrorText>

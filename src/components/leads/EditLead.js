@@ -153,7 +153,7 @@ const tabs = {
   leadNurutring: "leadNurutring",
   leadActivity: "leadActivity",
 };
-function EditLead({ id, userData, mode }) {
+function EditLead({ id, userData, mode, selectedButton }) {
   const {
     control,
     register,
@@ -198,6 +198,7 @@ function EditLead({ id, userData, mode }) {
   const [editLeadId, setEditLeadId] = useState(null);
   const [directCallId, setDirectCallId] = useState(null);
   const [newAddress, setNewAddress] = useState(null);
+  const [selectedEnquiryBy, setSelectedEnquiryBy] = useState(false);
 
   const results = useQueries({
     queries: [
@@ -799,8 +800,6 @@ function EditLead({ id, userData, mode }) {
         value: custentity_lms_enquiryby?.id,
       });
       setValue("custentity_lms_noteother", custentity_lms_noteother);
-      // Use empty string if companyName is null or undefined
-      setValue("companyName", companyName ?? "");
       setValue("companyName", companyName);
       setValue("phone", phone);
       setValue("email", email);
@@ -1696,7 +1695,16 @@ function EditLead({ id, userData, mode }) {
                                         placeholder="Enquiry By"
                                         requiredStarOnLabel="true"
                                         options={allEnquiryByData}
-                                        disabled={viewMode}
+                                        onChange={(e) => {
+                                          console.log("e", e);
+                                          field.onChange(e);
+                                          if (e.value === "3") {
+                                            // replace "value_for_other" with the actual value for "Other"
+                                            setSelectedEnquiryBy(true);
+                                          } else {
+                                            setSelectedEnquiryBy(false);
+                                          }
+                                        }}
                                       />
                                     )}
                                   />
@@ -1706,15 +1714,18 @@ function EditLead({ id, userData, mode }) {
                                     </FormErrorText>
                                   )}
                                 </TkCol>
-
                                 <TkCol lg={12}>
                                   <TkInput
-                                    {...register("custentity_lms_noteother")}
+                                    {...register("custentity_lms_noteother", {
+                                      required: selectedEnquiryBy
+                                        ? "Notes is required"
+                                        : false,
+                                    })}
                                     id="custentity_lms_noteother"
-                                    type="text"
-                                    labelName="Note"
-                                    placeholder="Enter Note"
-                                    disabled={viewMode}
+                                    type="textarea"
+                                    labelName="Notes"
+                                    placeholder="Enter Notes"
+                                    requiredStarOnLabel={selectedEnquiryBy}
                                   />
                                   {errors.custentity_lms_noteother && (
                                     <FormErrorText>

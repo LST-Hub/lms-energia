@@ -169,6 +169,7 @@ const AddActivity = ({
                                             labelName="Lead Name"
                                             placeholder="Enter Lead Name"
                                             requiredStarOnLabel={true}
+                                            disabled={true}
                                           />
                                           {errors.company && (
                                             <FormErrorText>

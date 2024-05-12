@@ -75,18 +75,21 @@ const schema = Yup.object({
     "Name Of Platform is required"
   ),
 
-    custentity_lms_campaign_name: Yup.object().required(
+  custentity_lms_campaign_name: Yup.object().required(
     "Campaign Name is required"
   ),
-  
-    custentity_lms_visit_update: Yup.object().required(
+
+  custentity_lms_visit_update: Yup.object().required(
     "Visit Update is required"
   ),
   subsidiary: Yup.object().required("Primary subsidairy is required"),
   custentity_lms_name: Yup.string()
-  .required("Name is required")
+    .required("Name is required")
     .min(MinNameLength, `Name should have at least ${MinNameLength} character.`)
-    .max(MaxNameLength, `Name should have at most ${MaxNameLength} characters.`),
+    .max(
+      MaxNameLength,
+      `Name should have at most ${MaxNameLength} characters.`
+    ),
 
   custentity_lms_personal_phonenumber: Yup.string()
     .nullable()
@@ -134,7 +137,7 @@ const schema = Yup.object({
       MaxEmailLength,
       `Company Email should have at most ${MaxEmailLength} characters.`
     ),
-    addr1: Yup.string()
+  addr1: Yup.string()
     .max(
       smallInputMaxLength,
       `Address 1 should have at most ${smallInputMaxLength} characters.`
@@ -161,7 +164,6 @@ const schema = Yup.object({
     }
   ),
 }).required();
-
 
 function SocialMedia({ selectedButton }) {
   const {
@@ -210,6 +212,7 @@ function SocialMedia({ selectedButton }) {
   const [newAddress, setNewAddress] = useState(null);
   const [allCountryData, setAllCountryData] = useState([{}]);
   const [fullAddress, setFullAddress] = useState(false);
+  const [selectedEnquiryBy, setSelectedEnquiryBy] = useState(false);
 
   const results = useQueries({
     queries: [
@@ -300,7 +303,7 @@ function SocialMedia({ selectedButton }) {
     leadPlatform,
     leadCampaign,
     leadVisitUpdate,
-    country
+    country,
   ] = results;
   const {
     data: primarySubisdiaryData,
@@ -406,7 +409,6 @@ function SocialMedia({ selectedButton }) {
     isError: countryIsError,
     error: countryError,
   } = country;
-
 
   useEffect(() => {
     if (primarySubisdiaryIsError) {
@@ -667,7 +669,7 @@ function SocialMedia({ selectedButton }) {
     leadVisitUpdateData,
     countryData,
   ]);
- const [rows, setRows] = useState([
+  const [rows, setRows] = useState([
     {
       division: null,
       requirement: "",
@@ -720,13 +722,11 @@ function SocialMedia({ selectedButton }) {
     if (fullAddress) {
       setValue("addrtext", fullAddress);
     }
-  }, [fullAddress, setValue]);;
+  }, [fullAddress, setValue]);
 
   useEffect(() => {
     setIsLead(true);
   }, []);
-
-  
 
   useEffect(() => {
     const now = new Date();
@@ -742,8 +742,6 @@ function SocialMedia({ selectedButton }) {
     setValue("custentity_lms_lastactivitydate", formattedDate);
     setSelectedDate(now);
   }, [setValue]);
-
- 
 
   const toggleTab = (tab) => {
     if (activeTab !== tab) {
@@ -910,38 +908,38 @@ function SocialMedia({ selectedButton }) {
         id: formData.custentity_lms_enquiryby.value,
       },
       custentity_lms_noteother: formData.custentity_lms_noteother,
-    //   companyName: formData.companyName,
-    //   phone: formData.phone,
-    //   email: formData.email,
-    //   custentity_lms_cr_no: formData.custentity_lms_cr_no,
-    //   custentity3: formData.custentity3,
-    //   custentity_lms_client_type: {
-    //     id: formData.custentity_lms_client_type.value,
-    //   },
-    //   custentity_market_segment: {
-    //     id: formData.custentity_market_segment.value,
-    //   },
-    //   addressBook: {
-    //     items: [
-    //       {
-    //         addressBookAddress: {
-    //           addr1: formData.addr1,
-    //           addr2: formData.addr2,
-    //           city: formData.city,
-    //           state: formData.state,
-    //           zip: formData.zip,
-    //           country: {
-    //             id: formData.country.value,
-    //           },
-    //           defaultBilling: true,
-    //           defaultShipping: true,
-    //           addrtext: formData.addrtext,
-    //         },
-    //       },
-    //     ],
-    //   },
-    // };
-    companyName: formData.companyName ?? "", // Use empty string if companyName is null or undefined
+      //   companyName: formData.companyName,
+      //   phone: formData.phone,
+      //   email: formData.email,
+      //   custentity_lms_cr_no: formData.custentity_lms_cr_no,
+      //   custentity3: formData.custentity3,
+      //   custentity_lms_client_type: {
+      //     id: formData.custentity_lms_client_type.value,
+      //   },
+      //   custentity_market_segment: {
+      //     id: formData.custentity_market_segment.value,
+      //   },
+      //   addressBook: {
+      //     items: [
+      //       {
+      //         addressBookAddress: {
+      //           addr1: formData.addr1,
+      //           addr2: formData.addr2,
+      //           city: formData.city,
+      //           state: formData.state,
+      //           zip: formData.zip,
+      //           country: {
+      //             id: formData.country.value,
+      //           },
+      //           defaultBilling: true,
+      //           defaultShipping: true,
+      //           addrtext: formData.addrtext,
+      //         },
+      //       },
+      //     ],
+      //   },
+      // };
+      companyName: formData.companyName ?? "", // Use empty string if companyName is null or undefined
       phone: formData.phone ?? "", // Use empty string if phone is null or undefined
       email: formData.email ?? "", // Use empty string if email is null or undefined
       custentity_lms_cr_no: formData.custentity_lms_cr_no ?? "", // Use empty string if custentity_lms_cr_no is null or undefined
@@ -1518,7 +1516,6 @@ function SocialMedia({ selectedButton }) {
     concatenateAddress();
   };
 
-
   return (
     <>
       <TkRow className="justify-content-center">
@@ -1709,7 +1706,7 @@ function SocialMedia({ selectedButton }) {
                     <h4>Personal Details</h4>
                   </TkCardHeader>
                   <div>
-                  <TkRow className="g-3">
+                    <TkRow className="g-3">
                       <TkCol lg={3}>
                         <TkInput
                           {...register("custentity_lms_name")}
@@ -1772,6 +1769,16 @@ function SocialMedia({ selectedButton }) {
                               placeholder="Enquiry By"
                               requiredStarOnLabel="true"
                               options={allEnquiryByData}
+                              onChange={(e) => {
+                                console.log("e", e);
+                                field.onChange(e);
+                                if (e.value === "3") {
+                                  // replace "value_for_other" with the actual value for "Other"
+                                  setSelectedEnquiryBy(true);
+                                } else {
+                                  setSelectedEnquiryBy(false);
+                                }
+                              }}
                             />
                           )}
                         />
@@ -1783,11 +1790,16 @@ function SocialMedia({ selectedButton }) {
                       </TkCol>
                       <TkCol lg={12}>
                         <TkInput
-                          {...register("custentity_lms_noteother")}
+                          {...register("custentity_lms_noteother", {
+                            required: selectedEnquiryBy
+                              ? "Notes is required"
+                              : false,
+                          })}
                           id="custentity_lms_noteother"
                           type="textarea"
                           labelName="Notes"
                           placeholder="Enter Notes"
+                          requiredStarOnLabel={selectedEnquiryBy}
                         />
                         {errors.custentity_lms_noteother && (
                           <FormErrorText>
@@ -1806,7 +1818,7 @@ function SocialMedia({ selectedButton }) {
                     <h4>Company Details</h4>
                   </TkCardHeader>
                   <div>
-                  <TkRow className="g-3">
+                    <TkRow className="g-3">
                       <TkCol lg={4}>
                         <TkInput
                           {...register("companyName")}
