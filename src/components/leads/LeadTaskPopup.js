@@ -37,11 +37,15 @@ import { convertTimeToSec, convertToTimeFotTimeSheet } from "../../utils/time";
 const schema = Yup.object({
   title: Yup.string().required("Subject is required").nullable(),
   company: Yup.string().required("Lead name is required").nullable(),
-  assigned: Yup.object().required("Organizer is required").nullable(),
-  status: Yup.object().required("Status is required").nullable(),
+  priority: Yup.object().required("Priority is required").nullable(),
   startDate: Yup.string().required("Start date is required").nullable(),
   dueDate: Yup.string().required("Due date is required").nullable(),
-
+  message: Yup.string()
+    .nullable()
+    .max(
+      bigInpuMaxLength,
+      `Message should have at most ${bigInpuMaxLength} characters.`
+    ),
 }).required();
 
 const LeadTaskPopup = ({
@@ -115,29 +119,6 @@ const LeadTaskPopup = ({
 
                         <TkCol lg={4}>
                           <Controller
-                            name="assigned"
-                            control={control}
-                            render={({ field }) => (
-                              <TkSelect
-                                {...field}
-                                labelName="Assigned To"
-                                labelId={"assigned"}
-                                id="assigned"
-                                options={[]}
-                                placeholder="Select Assigned To"
-                                requiredStarOnLabel={true}
-                              />
-                            )}
-                          />
-                          {errors.assigned && (
-                            <FormErrorText>
-                              {errors.assigned.message}
-                            </FormErrorText>
-                          )}
-                        </TkCol>
-
-                        <TkCol lg={4}>
-                          <Controller
                             name="priority"
                             control={control}
                             render={({ field }) => (
@@ -155,29 +136,6 @@ const LeadTaskPopup = ({
                           {errors.priority && (
                             <FormErrorText>
                               {errors.priority.message}
-                            </FormErrorText>
-                          )}
-                        </TkCol>
-
-                        <TkCol lg={4}>
-                          <Controller
-                            name="status"
-                            control={control}
-                            render={({ field }) => (
-                              <TkSelect
-                                {...field}
-                                labelName="Status"
-                                labelId={"_status"}
-                                id="status"
-                                options={[]}
-                                placeholder="Select Type"
-                                requiredStarOnLabel={true}
-                              />
-                            )}
-                          />
-                          {errors.status && (
-                            <FormErrorText>
-                              {errors.status.message}
                             </FormErrorText>
                           )}
                         </TkCol>
@@ -232,6 +190,20 @@ const LeadTaskPopup = ({
                             </FormErrorText>
                           )}
                         </TkCol>
+                        <TkCol lg={12}>
+                          <TkInput
+                            {...register("message")}
+                            id="message"
+                            type="textarea"
+                            labelName="Message"
+                            placeholder="Enter Message"
+                          />
+                          {errors.message && (
+                            <FormErrorText>
+                              {errors.message.message}
+                            </FormErrorText>
+                          )}
+                        </TkCol>
 
                         <div className="modal-footer">
                           <div className="hstack gap-2 justify-content-end">
@@ -247,7 +219,7 @@ const LeadTaskPopup = ({
                               color="primary"
                               // onClick={onClick}
                             >
-                              Add
+                              Submit
                             </TkButton>
                           </div>
                         </div>

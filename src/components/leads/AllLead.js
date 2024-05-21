@@ -67,7 +67,7 @@ const AllLead = ({ mounted }) => {
   const columns = useMemo(
     () => [
       {
-        Header: "View | Edit",
+        Header: "View | Edit ",
         accessor: "id",
         filterable: false,
         Cell: (cellProps) => {
@@ -114,32 +114,7 @@ const AllLead = ({ mounted }) => {
           );
         },
       },
-      // {
-      //   Header: "Lead Name",
-      //   accessor: "custentity_lms_name",
-      //   Cell: (cellProps) => {
-      //     return (
-      //       <>
-      //         <div className="table-text">
-      //           {cellProps.value || <span> — </span>}
-      //         </div>
-      //       </>
-      //     );
-      //   },
-      // },
-      {
-        Header: "Lead Status",
-        accessor: "entitystatus_name",
-        Cell: (cellProps) => {
-          return (
-            <>
-              <div className="table-text">
-                {cellProps.value || <span> — </span>}
-              </div>
-            </>
-          );
-        },
-      },
+
       {
         Header: "Phone",
         accessor: "phone",

@@ -48,8 +48,13 @@ const schema = Yup.object({
     ),
 
   status: Yup.object().required("Status is required").nullable(),
-  assigned: Yup.object().required("Organizer is required").nullable(),
-  startDate: Yup.string().required("Date is required").nullable(),
+  organizer: Yup.object().required("Organizer is required").nullable(),
+  message: Yup.string()
+    .nullable()
+    .max(
+      bigInpuMaxLength,
+      `Message should have at most ${bigInpuMaxLength} characters.`
+    ),
 }).required();
 
 const ActivityPopup = ({
@@ -165,23 +170,23 @@ const ActivityPopup = ({
 
                         <TkCol lg={4}>
                           <Controller
-                            name="assigned"
+                            name="organizer"
                             control={control}
                             render={({ field }) => (
                               <TkSelect
                                 {...field}
                                 labelName="Organizer"
-                                labelId={"assigned"}
-                                id="assigned"
+                                labelId={"organizer"}
+                                id="organizer"
                                 options={[]}
                                 placeholder="Select Organizer"
                                 requiredStarOnLabel={true}
                               />
                             )}
                           />
-                          {errors.assigned && (
+                          {errors.organizer && (
                             <FormErrorText>
-                              {errors.assigned.message}
+                              {errors.organizer.message}
                             </FormErrorText>
                           )}
                         </TkCol>
@@ -212,27 +217,17 @@ const ActivityPopup = ({
                           )}
                         </TkCol>
 
-                        <TkCol lg={4}>
-                          <Controller
-                            name="completeddate"
-                            control={control}
-                            rules={{ required: "Date Completed is required" }}
-                            render={({ field }) => (
-                              <TkDate
-                                {...field}
-                                labelName="Date Completed"
-                                id={"completeddate"}
-                                placeholder="Select Date Completed"
-                                options={{
-                                  altInput: true,
-                                  dateFormat: "d M, Y",
-                                }}
-                              />
-                            )}
+                        <TkCol lg={12}>
+                          <TkInput
+                            {...register("message")}
+                            id="message"
+                            type="textarea"
+                            labelName="Message"
+                            placeholder="Enter Message"
                           />
-                          {errors.completeddate && (
+                          {errors.message && (
                             <FormErrorText>
-                              {errors.completeddate.message}
+                              {errors.message.message}
                             </FormErrorText>
                           )}
                         </TkCol>
@@ -251,7 +246,7 @@ const ActivityPopup = ({
                               color="primary"
                               // onClick={onClick}
                             >
-                              Add
+                              Submit
                             </TkButton>
                           </div>
                         </div>

@@ -750,6 +750,7 @@ const RQ = {
   allPrimaryAction: "allPrimaryAction",
   allProspectNurturing: "allProspectNurturing",
   allleadSource: "allleadSource",
+  allNurturingStatus: "allNurturingStatus",
   allLeadPlatform: "allLeadPlatform",
   allLeadCampaign: "allLeadCampaign",
   allVisitUpdate: "allVisitUpdate",

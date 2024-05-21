@@ -65,6 +65,7 @@ const tabs = {
   requirementDetails: "requirementDetails",
   locationDetails: "locationDetails",
   leadActivity: "leadActivity",
+  address: "address",
 };
 
 const schema = Yup.object({
@@ -105,14 +106,14 @@ const schema = Yup.object({
     .nullable()
     .required("Enquiry by is required"),
 
-  // custentity_lms_noteother: Yup.string()
-  //   .nullable()
-  //   .max(
-  //     bigInpuMaxLength,
-  //     `Note should have at most ${bigInpuMaxLength} characters.`
-  //   ),
+  custentity_lms_noteother: Yup.string()
+    .nullable()
+    .max(
+      bigInpuMaxLength,
+      `Note should have at most ${bigInpuMaxLength} characters.`
+    ),
 
-  companyName: Yup.string()
+  companyname: Yup.string()
     .nullable()
     .required("Company Name is required")
     .max(
@@ -121,6 +122,7 @@ const schema = Yup.object({
     ),
   phone: Yup.string()
     .nullable()
+    .required("Contact number is Required")
     .matches(/^[0-9+() -]*$/, "Contact number must be number.")
     .max(
       MaxPhoneNumberLength,
@@ -128,11 +130,26 @@ const schema = Yup.object({
     ),
   email: Yup.string()
     .nullable()
+    .required("Email is required")
     .email("Email must be valid.")
     .max(
       MaxEmailLength,
       `Company Email should have at most ${MaxEmailLength} characters.`
     ),
+  custentity_lms_cr_no: Yup.string()
+    .nullable()
+    .required("CR Number is required"),
+
+  custentity3: Yup.string().nullable().required("VAT Number is required"),
+
+  custentity_lms_client_type: Yup.object()
+    .nullable()
+    .required("Client Type is required"),
+
+  custentity_market_segment: Yup.object()
+    .nullable()
+    .required("Segment is required"),
+
   addr1: Yup.string().max(
     smallInputMaxLength,
     `Address 1 should have at most ${smallInputMaxLength} characters.`
@@ -175,15 +192,9 @@ function DirectCall({ selectedButton }) {
   const [activityModal, setActivityModal] = useState(false);
   const [leadTaskModal, setLeadTaskModal] = useState(false);
   const [leadEventModal, setLeadEventModal] = useState(false);
-
-  // const [selectedButton, setSelectedButton] = useState("directCall");
-  // const [isLead, setIsLead] = useState(false);
   const [activeTab, setActiveTab] = useState(tabs.directCall);
   const [activeSubTab, setActiveSubTab] = useState(tabs.requirementDetails);
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [showForm, setShowForm] = useState(false);
-  const [buttonsDisabled, setButtonsDisabled] = useState(false);
-  const [taskDropdown, setTaskDropdown] = useState([]);
   const [allPrimarySubsidiaryData, setAllPrimarySubsidiaryData] = useState([
     {},
   ]);
@@ -202,8 +213,10 @@ function DirectCall({ selectedButton }) {
   const [allleadSourceData, setAllleadSourceData] = useState([{}]);
   const [newAddress, setNewAddress] = useState(null);
   const [allCountryData, setAllCountryData] = useState([{}]);
-  const [fullAddress, setFullAddress] = useState(false);
+  // const [fullAddress, setFullAddress] = useState(false);
+  const [fullAddress, setFullAddress] = useState('');
   const [selectedEnquiryBy, setSelectedEnquiryBy] = useState(false);
+  const [allNurturStatusData, setAllNurturStatusData] = useState([{}]);
 
   const results = useQueries({
     queries: [
@@ -258,8 +271,8 @@ function DirectCall({ selectedButton }) {
         queryFn: tkFetch.get(`${API_BASE_URL}/lead-source`),
       },
       {
-        queryKey: [RQ.allCountry],
-        queryFn: tkFetch.get(`${API_BASE_URL}/country`),
+        queryKey: [RQ.allNurturingStatus],
+        queryFn: tkFetch.get(`${API_BASE_URL}/nurtur-status`),
       },
     ],
   });
@@ -277,7 +290,9 @@ function DirectCall({ selectedButton }) {
     prospectNurturing,
     leadSource,
     country,
+    status,
   ] = results;
+
   const {
     data: primarySubisdiaryData,
     isLoading: primarySubisdiaryLoading,
@@ -362,6 +377,13 @@ function DirectCall({ selectedButton }) {
     error: countryError,
   } = country;
 
+  // const {
+  //   data: statusNurturData,
+  //   isLoading: statusNurturLoading,
+  //   isError: statusNurturIsError,
+  //   error: statusNurturError,
+  // } = status;
+
   useEffect(() => {
     if (primarySubisdiaryIsError) {
       console.log("primarySubisdiaryIsError", primarySubisdiaryError);
@@ -422,6 +444,11 @@ function DirectCall({ selectedButton }) {
       console.log("countryIsError", countryError);
       TkToastError(countryError.message);
     }
+
+    // if (statusNurturIsError) {
+    //   console.log("statusNurturIsError", statusNurturError);
+    //   TkToastError(statusNurturError.message);
+    // }
   }, [
     primarySubisdiaryIsError,
     primarySubisdiaryError,
@@ -447,6 +474,8 @@ function DirectCall({ selectedButton }) {
     leadSourceError,
     countryIsError,
     countryError,
+    // statusNurturIsError,
+    // statusNurturError,
   ]);
 
   useEffect(() => {
@@ -557,6 +586,15 @@ function DirectCall({ selectedButton }) {
         }))
       );
     }
+
+    // if (statusNurturData) {
+    //   setAllNurturStatusData(
+    //     statusNurturData?.items?.map((nurturStatusType) => ({
+    //       label: nurturStatusType.name,
+    //       value: nurturStatusType.id,
+    //     }))
+    //   );
+    // }
   }, [
     primarySubisdiaryData,
     enquiryByData,
@@ -570,22 +608,23 @@ function DirectCall({ selectedButton }) {
     prospectNurturingData,
     leadSourceData,
     countryData,
+    // statusNurturData,
   ]);
 
   const [rows, setRows] = useState([
     {
-      custrecord_lms_duration: null,
+      custrecord_lms_division: null,
       custrecord_lms_requirement: "",
       custrecord_lms_project_name: "",
       custrecord_lms_duration: "",
       custrecord_lms_unit_of_measure: null,
       custrecord_lms_value: "",
-      delivery: "",
+      custrecord_lms_expected_delivery_date: "",
     },
   ]);
   const [locationRows, setLocationRows] = useState([
     {
-      custrecord_lms_location: "",
+      custrecordlms_location: "",
       custrecord_lms_contactperson_name: "",
       custrecord_lms_phonenumber: "",
       custrecord_location_email: "",
@@ -593,8 +632,16 @@ function DirectCall({ selectedButton }) {
     },
   ]);
 
-  const [requirementDetailsSections, setRequirementDetailsSections] = useState([
-    { id: 1, isVisible: true },
+  const [addressRows, setAddressRows] = useState([
+    {
+      addr1: "",
+      addr2: "",
+      city: "",
+      state: "",
+      zip: "",
+      country: "",
+      addrtext: "",
+    },
   ]);
 
   const leadActivityToggle = useCallback(() => {
@@ -621,11 +668,7 @@ function DirectCall({ selectedButton }) {
     }
   }, [leadEventModal]);
 
-  useEffect(() => {
-    if (fullAddress) {
-      setValue("addrtext", fullAddress);
-    }
-  }, [fullAddress, setValue]);
+  
 
   // useEffect(() => {
   //   setIsLead(true);
@@ -642,7 +685,7 @@ function DirectCall({ selectedButton }) {
     });
 
     setValue("custentity_lms_createddate", now);
-    setValue("custentity_lms_lastactivitydate", formattedDate);
+    setValue("custrecord_lms_datetime", formattedDate);
     setSelectedDate(now);
   }, [setValue]);
 
@@ -659,7 +702,7 @@ function DirectCall({ selectedButton }) {
     setRows([
       ...rows,
       {
-        custrecord_lms_duration: null,
+        custrecord_lms_division: null,
         custrecord_lms_requirement: "",
         custrecord_lms_project_name: "",
         custrecord_lms_duration: "",
@@ -674,11 +717,26 @@ function DirectCall({ selectedButton }) {
     setLocationRows([
       ...locationRows,
       {
-        custrecord_lms_location: "",
+        custrecordlms_location: "",
         custrecord_lms_contactperson_name: "",
         custrecord_lms_phonenumber: "",
         custrecord_location_email: "",
         custrecord_lms_designation: "",
+      },
+    ]);
+  };
+
+  const handleAddAddressRow = () => {
+    setAddressRows([
+      ...addressRows,
+      {
+        addr1: "",
+        addr2: "",
+        city: "",
+        state: "",
+        zip: "",
+        country: "",
+        addrtext: "",
       },
     ]);
   };
@@ -713,7 +771,7 @@ function DirectCall({ selectedButton }) {
   });
   const { remove: removeLocation } = useFieldArray({
     control,
-    name: "custrecord_lms_location",
+    name: "custrecordlms_location",
   });
   const { remove: removeContactPersonName } = useFieldArray({
     control,
@@ -731,6 +789,30 @@ function DirectCall({ selectedButton }) {
     control,
     name: "custrecord_lms_designation",
   });
+  const { remove: removeAddr1 } = useFieldArray({
+    control,
+    name: "addr1",
+  });
+  const { remove: removeAddr2 } = useFieldArray({
+    control,
+    name: "addr2",
+  });
+  const { remove: removeCity } = useFieldArray({
+    control,
+    name: "city",
+  });
+  const { remove: removeZip } = useFieldArray({
+    control,
+    name: "zip",
+  });
+  const { remove: removeCountry } = useFieldArray({
+    control,
+    name: "country",
+  });
+  const { remove: removeAddrtext1 } = useFieldArray({
+    control,
+    name: "addrtext",
+  });
 
   const handleRemoveRow = (index) => {
     removeDivision(index);
@@ -745,6 +827,7 @@ function DirectCall({ selectedButton }) {
     removephoneNumber(index);
     removeEmail(index);
     removeDesignation(index);
+
     const newRows = [...rows];
     newRows.splice(index, 1);
     setRows(newRows);
@@ -761,143 +844,201 @@ function DirectCall({ selectedButton }) {
     setLocationRows(newLocationRows);
   };
 
+  const handleRemoveAddressRow = (index) => {
+    removeAddr1(index);
+    removeAddr2(index);
+    removeCity(index);
+    removeZip(index);
+    removeCountry(index);
+    removeAddrtext1(index);
+
+    const newAddressRows = [...addressRows];
+    newAddressRows.splice(index, 1);
+    setAddressRows(newAddressRows);
+  };
+
   const leadPost = useMutation({
     mutationFn: tkFetch.post(`${API_BASE_URL}/lead`),
   });
 
-  // const onSubmit = (formData) => {
-  //   const apiData = {
-  //     customForm: {
-  //       id: "135",
-  //       refName: "LMS CRM FORM",
-  //     },
-  //     entitystatus: {
-  //       id: "7",
-  //       refName: "LEAD-Qualified",
-  //     },
-
-  //     custentity_lms_channel_lead: {
-  //       id: selectedButton.id,
-  //     },
-  //     custentity_lms_leadsource: {
-  //       id: formData.custentity_lms_leadsource.value,
-  //     },
-  //     custentity_lms_createdby: formData.custentity_lms_createdby,
-  //     custentity_lms_createddate: formData.custentity_lms_createddate,
-  //     subsidiary: {
-  //       id: formData.subsidiary.value,
-  //     },
-  //     custentity_lms_name: formData.custentity_lms_name,
-  //     custentity_lms_personal_phonenumber:
-  //       formData.custentity_lms_personal_phonenumber,
-  //     custentity_lms_personal_email: formData.custentity_lms_personal_email,
-  //     custentity_lms_enquiryby: {
-  //       id: formData.custentity_lms_enquiryby.value,
-  //     },
-  //     custentity_lms_noteother: formData.custentity_lms_noteother,
-  //     companyName: formData.companyName,
-  //     phone: formData.phone,
-  //     email: formData.email,
-  //     custentity_lms_cr_no: formData.custentity_lms_cr_no,
-  //     custentity3: formData.custentity3,
-  //     custentity_lms_client_type: {
-  //       id: formData.custentity_lms_client_type?.value,
-  //     },
-  //     custentity_market_segment: {
-  //       id: formData.custentity_market_segment?.value,
-  //     },
-  //     addressBook: {
-  //       items: [
-  //         {
-  //           addressBookAddress: {
-  //             addr1: formData.addr1,
-  //             addr2: formData.addr2,
-  //             city: formData.city,
-  //             state: formData.state,
-  //             zip: formData.zip,
-  //             country: {
-  //               id: formData.country?.value,
-  //             },
-  //             defaultBilling: true,
-  //             defaultShipping: true,
-  //             addrtext: formData.addrtext,
-  //           },
-  //         },
-  //       ],
-  //     },
-
-  //   };
-  //   console.log("apiData", apiData);
-
-  //   leadPost.mutate(apiData, {
-  //     onSuccess: (data) => {
-  //       TkToastSuccess("Lead Created Successfully");
-  //       router.push(`${urls.lead}`);
-  //     },
-
-  //     onError: (error) => {
-  //       TkToastError("error while creating Lead", error);
-  //     },
-  //   });
-  // };
+  
 
   const onSubmit = (formData) => {
     const apiData = {
-      customForm: { id: "135", refName: "LMS CRM FORM" },
-      entitystatus: { id: "7", refName: "LEAD-Qualified" },
-      custentity_lms_channel_lead: { id: selectedButton.id },
-      custentity_lms_leadsource: {
-        id: formData.custentity_lms_leadsource.value,
+      resttype: "Add",
+      recordtype: "lead",
+      bodyfields: {
+        customform: { value: "135", text: "LMS CRM FORM" },
+        entitystatus: { value: "7", text: "LEAD-Qualified" },
+        custentity_lms_channel_lead: { value: selectedButton.id },
+        custentity_lms_leadsource: {
+          value: formData.custentity_lms_leadsource.value,
+          label: formData.custentity_lms_leadsource.text,
+        },
+        custentity_lms_createdby: formData.custentity_lms_createdby,
+        custentity_lms_createddate: formData.custentity_lms_createddate,
+        subsidiary: {
+          value: formData.subsidiary.value,
+          label: formData.subsidiary.text,
+        },
+        custentity_lms_name: formData.custentity_lms_name,
+        custentity_lms_personal_phonenumber:
+          formData.custentity_lms_personal_phonenumber,
+        custentity_lms_personal_email: formData.custentity_lms_personal_email,
+        custentity_lms_enquiryby: {
+          value: formData.custentity_lms_enquiryby.value,
+          label: formData.custentity_lms_enquiryby.text,
+        },
+        custentity_lms_noteother: formData.custentity_lms_noteother,
+        companyname: formData.companyname,
+        phone: formData.phone,
+        email: formData.email,
+        custentity_lms_cr_no: formData.custentity_lms_cr_no,
+        custentity3: formData.custentity3,
+        custentity_lms_client_type: {
+          value: formData.custentity_lms_client_type.value,
+          label: formData.custentity_lms_client_type.text,
+        },
+        custentity_market_segment: {
+          value: formData.custentity_market_segment.value,
+          label: formData.custentity_market_segment.text,
+        },
       },
-      custentity_lms_createdby: formData.custentity_lms_createdby,
-      custentity_lms_createddate: formData.custentity_lms_createddate,
-      subsidiary: { id: formData.subsidiary.value },
-      custentity_lms_name: formData.custentity_lms_name,
-      custentity_lms_personal_phonenumber:
-        formData.custentity_lms_personal_phonenumber,
-      custentity_lms_personal_email: formData.custentity_lms_personal_email,
-      custentity_lms_enquiryby: { id: formData.custentity_lms_enquiryby.value },
-      custentity_lms_noteother: formData.custentity_lms_noteother,
-      companyName: formData.companyName ?? "",
-      phone: formData.phone ?? "",
-      email: formData.email ?? "",
-      custentity_lms_cr_no: formData.custentity_lms_cr_no ?? "",
-      custentity3: formData.custentity3 ?? "",
-      custentity_lms_client_type: formData.custentity_lms_client_type?.value
-        ? { id: formData.custentity_lms_client_type.value }
-        : null,
-      custentity_market_segment: formData.custentity_market_segment?.value
-        ? { id: formData.custentity_market_segment.value }
-        : null,
-      addressBook:
-        formData.addr1 ||
-        formData.addr2 ||
-        formData.city ||
-        formData.state ||
-        formData.zip ||
-        formData.country
-          ? {
-              items: [
-                {
-                  addressBookAddress: {
-                    addr1: formData.addr1 ?? "",
-                    addr2: formData.addr2 ?? "",
-                    city: formData.city ?? "",
-                    state: formData.state ?? "",
-                    zip: formData.zip ?? "",
-                    country: formData.country?.value
-                      ? { id: formData.country.value }
-                      : null,
-                    defaultBilling: true,
-                    defaultShipping: true,
-                    addrtext: formData.addrtext ?? "",
-                  },
+      linefields: {
+        addressbook: [
+          {
+            subrecord: {
+              addressbookaddress: {
+                addr1: formData.addr1,
+                addr2: formData.addr2,
+                city: formData.city,
+                state: formData.state,
+                zip: formData.zip,
+                country: {
+                  value: formData.country?.value,
+                  label: formData.country?.text,
                 },
-              ],
-            }
-          : null,
+              },
+            },
+            defaultBilling: true,
+            defaultShipping: true,
+            label: formData.label,
+          },
+        ],
+        recmachcustrecord_lms_requirement_details:
+          formData.custrecord_lms_requirement.flatMap((req, i) => ({
+            custrecord_lms_division: {
+              value: formData.custrecord_lms_division[i]?.value,
+              label: formData.custrecord_lms_division[i]?.text,
+            },
+            custrecord_lms_requirement: req,
+            custrecord_lms_project_name:
+              formData.custrecord_lms_project_name[i],
+
+           
+            custrecord_lms_duration: Number(
+              formData.custrecord_lms_duration[i]
+            ),
+            custrecord_lms_unit_of_measure: {
+              value: formData.custrecord_lms_unit_of_measure[i].value,
+              label: formData.custrecord_lms_unit_of_measure[i].text,
+            },
+            custrecord_lms_value: Number(formData.custrecord_lms_value[i]),
+            custrecord_lms_expected_delivery_date: [
+              formData.custrecord_lms_expected_delivery_date[i],
+            ],
+          })),
+
+        recmachcustrecord_parent_record: formData.custrecordlms_location.map(
+          (loc, i) => ({
+            custrecordlms_location: loc,
+            custrecord_lms_contactperson_name:
+              formData.custrecord_lms_contactperson_name[i],
+              custrecord_lms_phonenumber: formData.custrecord_lms_phonenumber[i],
+            custrecord_location_email:
+              formData.custrecord_location_email[i] || "",
+            custrecord_lms_designation: formData.custrecord_lms_designation[i],
+          })
+        ),
+
+        recmachcustrecord_lms_lead_assigning: [
+          {
+            custrecord_lms_region: {
+              value: formData.custrecord_lms_region?.value,
+              label: formData.custrecord_lms_region?.text,
+            },
+            custrecord_lms_sales_team_name: {
+              value: formData.custrecord_lms_sales_team_name?.value || "",
+              label: formData.custrecord_lms_sales_team_name?.text || "",
+            },
+          },
+        ],
+
+        recmachcustrecord_lms_leadnurt: [
+          {
+            custrecord_lms_primary_action: {
+              value: formData.custrecord_lms_primary_action?.value,
+              label: formData.custrecord_lms_primary_action?.text,
+            },
+            custrecord_lms_datetime: formatDateForAPI(
+              formData.custrecord_lms_datetime
+            ),
+            custrecord_lms_lead_value: Number(
+              formData.custrecord_lms_lead_value
+            ),
+            custrecord_lms_statusoflead: {
+              value: formData.custrecord_lms_statusoflead?.value,
+              label: formData.custrecord_lms_statusoflead?.text,
+            },
+            custrecord_lms_lead_unqualifie:
+              formData.custrecord_lms_lead_unqualifie,
+            custrecord_lms_prospect_nurtur: {
+              value: formData.custrecord_lms_prospect_nurtur?.value,
+              label: formData.custrecord_lms_prospect_nurtur?.text,
+            },
+          },
+        ],
+
+        calls: {
+          title: formData.title,
+          company: formData.company,
+          phone: formData.phone,
+          status: {
+            value: formData.status?.value,
+            label: formData.status?.text,
+          },
+          organizer: {
+            value: formData.organizer?.value,
+            label: formData.organizer?.text,
+          },
+          startdate: formatDateForAPI(formData.startdate),
+          message: formData.message,
+        },
+
+        tasks: {
+          title: formData.title,
+          company: formData.company,
+          priority: {
+            value: formData.priority?.value,
+            label: formData.priority?.text,
+          },
+          startdate: formatDateForAPI(formData.startdate),
+          duedate: formatDateForAPI(formData.duedate),
+          message: formData.message,
+        },
+
+        events: {
+          title: formData.title,
+          company: formData.company,
+          location: formData.location,
+          starttime: formData.starttime,
+          endtime: formData.endtime,
+          message: formData.message,
+        },
+      },
     };
 
+    console.log("apiData is:", apiData);
     leadPost.mutate(apiData, {
       onSuccess: (data) => {
         TkToastSuccess("Lead Created Successfully");
@@ -1007,7 +1148,7 @@ function DirectCall({ selectedButton }) {
               type="text"
               id="custrecord_lms_duration"
               placeholder="Enter Duration"
-              {...register(`duration[${cellProps.row.index}]`, {
+              {...register(`custrecord_lms_duration[${cellProps.row.index}]`, {
                 required: "Duration is required",
                 validate: (value) => {
                   if (value && !/^[0-9]*([.:][0-9]+)?$/.test(value)) {
@@ -1020,7 +1161,7 @@ function DirectCall({ selectedButton }) {
               })}
               onBlur={(e) => {
                 setValue(
-                  `duration[${cellProps.row.index}]`,
+                  `custrecord_lms_duration[${cellProps.row.index}]`,
                   convertToTimeFotTimeSheet(e.target.value)
                 );
               }}
@@ -1084,7 +1225,7 @@ function DirectCall({ selectedButton }) {
               type="text"
               placeholder="Enter Value"
               id="custrecord_lms_value"
-              {...register(`projectName[${cellProps.row.index}]`)}
+              {...register(`custrecord_lms_value[${cellProps.row.index}]`)}
             />
             {errors?.custrecord_lms_value?.[cellProps.row.index] && (
               <FormErrorText>
@@ -1153,22 +1294,19 @@ function DirectCall({ selectedButton }) {
   const locationDetailsColumns = [
     {
       Header: "Location",
-      accessor: "custrecord_lms_location",
+      accessor: "custrecordlms_location",
       Cell: (cellProps) => {
         return (
           <>
             <TkInput
               type="text"
               placeholder="Enter Location"
-              id="custrecord_lms_location"
-              {...register(`custrecord_lms_location[${cellProps.row.index}]`)}
+              id="custrecordlms_location"
+              {...register(`custrecordlms_location[${cellProps.row.index}]`)}
             />
-            {errors?.custrecord_lms_location?.[cellProps.row.index] && (
+            {errors?.custrecordlms_location?.[cellProps.row.index] && (
               <FormErrorText>
-                {
-                  errors?.custrecord_lms_location?.[cellProps.row.index]
-                    ?.message
-                }
+                {errors?.custrecordlms_location?.[cellProps.row.index]?.message}
               </FormErrorText>
             )}
           </>
@@ -1240,6 +1378,7 @@ function DirectCall({ selectedButton }) {
             <TkInput
               type="text"
               placeholder="Enter Email"
+              id="custrecord_location_email"
               {...register(`custrecord_location_email[${cellProps.row.index}]`)}
             />
             {errors?.custrecord_location_email?.[cellProps.row.index] && (
@@ -1404,25 +1543,243 @@ function DirectCall({ selectedButton }) {
     []
   );
 
+  const addressColumns = [
+    {
+      Header: "Address 1",
+      accessor: "addr1",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="textarea"
+              id="addr1"
+              placeholder="Enter Address 1"
+              onBlur={handleInputBlur}
+              {...register(`addr1[${cellProps.row.index}]`)}
+            />
+            {errors?.addr1?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.addr1?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+    {
+      Header: "Address 2",
+      accessor: "addr2",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="textarea"
+              id="addr2"
+              onBlur={handleInputBlur}
+              placeholder="Enter Address 2"
+              {...register(`addr2[${cellProps.row.index}]`)}
+            />
+            {errors?.addr2?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.addr2?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+    {
+      Header: "City",
+      accessor: "city",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              id="city"
+              onBlur={handleInputBlur}
+              placeholder="Enter City"
+              {...register(`city[${cellProps.row.index}]`)}
+            />
+            {errors?.city?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.city?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+    {
+      Header: "State",
+      accessor: "state",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="textarea"
+              id="state"
+              placeholder="Enter State"
+              onBlur={handleInputBlur}
+              {...register(`state[${cellProps.row.index}]`)}
+            />
+            {errors?.state?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.state?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+    {
+      Header: "Zip",
+      accessor: "zip",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="textarea"
+              id="zip"
+              placeholder="Enter Zip"
+              onBlur={handleInputBlur}
+              {...register(`zip[${cellProps.row.index}]`)}
+            />
+            {errors?.zip?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.zip?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Country *",
+      accessor: "country",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`country[${cellProps.row.index}]`}
+              rules={{ required: "Country is required" }}
+              render={({ field }) => (
+                <TkSelect
+                  {...field}
+                  id={"country"}
+                  options={allCountryData}
+                  requiredStarOnLabel={true}
+                  style={{ width: "200px" }}
+                  loading={divisionLoading}
+                  onBlur={handleInputBlur}
+                />
+              )}
+            />
+            {errors?.country?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.country?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Address",
+      accessor: "label",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="textarea"
+              id="label"
+              placeholder="Enter Address"
+              disabled={true}
+              {...register(`label[${cellProps.row.index}]`)}
+            />
+            {errors?.label?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.label?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+    {
+      Header: "Action",
+      accessor: "action",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkButton
+              type={"button"}
+              onClick={() => {
+                handleRemoveAddressRow(cellProps.row.index);
+              }}
+              disabled={addressRows.length === 1}
+            >
+              Delete
+            </TkButton>
+          </>
+        );
+      },
+    },
+  ];
+
   const concatenateAddress = () => {
-    const addr1 = getValues("addr1") || "";
-    const addr2 = getValues("addr2") || "";
-    const city = getValues("city") || "";
-    const state = getValues("state") || "";
-    const zip = getValues("zip") || "";
+    const addr1 = (getValues("addr1") || "").toString();
+    const addr2 = (getValues("addr2") || "").toString();
+    const city = (getValues("city") || "").toString();
+    const state = (getValues("state") || "").toString();
+    const zip = (getValues("zip") || "").toString();
     const country = getValues("country");
+  
     const countryLabel = Array.isArray(country)
-      ? country.map((c) => c.label).join(", ")
+      ? country.filter((c) => c?.label).map((c) => c.label).join(", ")
       : country?.label || "";
-
+  
     const fullAddress = `${addr1.trim()}, ${addr2.trim()}, ${city.trim()}, ${state.trim()}, ${zip.trim()}, ${countryLabel}`;
-    setFullAddress(fullAddress.replace(/,\s*,/g, ",")); // Remove consecutive commas
+    setFullAddress(fullAddress.replace(/,\s*,/g, ","));
+    setValue("label", fullAddress);
   };
-
+  
   const handleInputBlur = (e) => {
     concatenateAddress();
   };
+  
+  useEffect(() => {
+    setValue("label", fullAddress);
+  }, [fullAddress, setValue]);
 
+  // const concatenateAddress = () => {
+  //   const addr1 = getValues("addr1") || "";
+  //   const addr2 = getValues("addr2") || "";
+  //   const city = getValues("city") || "";
+  //   const state = getValues("state") || "";
+  //   const zip = getValues("zip") || "";
+  //   const country = getValues("country");
+  //   const countryLabel = Array.isArray(country)
+  //     ? country.map((c) => c.label).join(", ")
+  //     : country?.label || "";
+
+  //   const fullAddress = `${addr1.trim()}, ${addr2.trim()}, ${city.trim()}, ${state.trim()}, ${zip.trim()}, ${countryLabel}`;
+  //   setFullAddress(fullAddress.replace(/,\s*,/g, ",")); // Remove consecutive commas
+  // };
+
+  // const handleInputBlur = (e) => {
+  //   concatenateAddress();
+  // };
+
+  // useEffect(() => {
+  //   if (fullAddress) {
+  //     setValue("addrtext", fullAddress);
+  //   }
+  // }, [fullAddress, setValue]);
+  
   return (
     <>
       <TkRow className="justify-content-center">
@@ -1463,7 +1820,6 @@ function DirectCall({ selectedButton }) {
                           type="text"
                           labelName="Created By"
                           placeholder="Enter Created By"
-                          requiredStarOnLabel="true"
                           disabled={true}
                         />
                         {errors.custentity_lms_createdby && (
@@ -1492,7 +1848,6 @@ function DirectCall({ selectedButton }) {
                                 setAllDurations({});
                               }}
                               disabled={true}
-                              requiredStarOnLabel={true}
                             />
                           )}
                         />
@@ -1650,16 +2005,16 @@ function DirectCall({ selectedButton }) {
                     <TkRow className="g-3">
                       <TkCol lg={4}>
                         <TkInput
-                          {...register("companyName")}
-                          id="companyName"
+                          {...register("companyname")}
+                          id="companyname"
                           type="text"
                           labelName="Company Name"
                           placeholder="Enter Company Name"
                           requiredStarOnLabel="true"
                         />
-                        {errors.companyName && (
+                        {errors.companyname && (
                           <FormErrorText>
-                            {errors.companyName.message}
+                            {errors.companyname.message}
                           </FormErrorText>
                         )}
                       </TkCol>
@@ -1671,6 +2026,7 @@ function DirectCall({ selectedButton }) {
                           type="text"
                           labelName="Contact No"
                           placeholder="Enter Contact No"
+                          requiredStarOnLabel="true"
                         />
                         {errors.phone && (
                           <FormErrorText>{errors.phone.message}</FormErrorText>
@@ -1684,6 +2040,7 @@ function DirectCall({ selectedButton }) {
                           type="text"
                           labelName="Email"
                           placeholder="Enter Email"
+                          requiredStarOnLabel="true"
                         />
                         {errors.email && (
                           <FormErrorText>{errors.email.message}</FormErrorText>
@@ -1698,6 +2055,7 @@ function DirectCall({ selectedButton }) {
                           type="text"
                           labelName="CR No"
                           placeholder="Enter CR No"
+                          requiredStarOnLabel="true"
                         />
                         {errors.custentity_lms_cr_no && (
                           <FormErrorText>
@@ -1714,6 +2072,7 @@ function DirectCall({ selectedButton }) {
                           type="text"
                           labelName="VAT No"
                           placeholder="Enter VAT No"
+                          requiredStarOnLabel="true"
                         />
                         {errors.custentity3 && (
                           <FormErrorText>
@@ -1734,6 +2093,7 @@ function DirectCall({ selectedButton }) {
                               placeholder="Select Client Type"
                               options={allClientTypeData}
                               loading={clientTypeLoading}
+                              requiredStarOnLabel="true"
                             />
                           )}
                         />
@@ -1756,6 +2116,7 @@ function DirectCall({ selectedButton }) {
                               placeholder="Select Segment"
                               options={allSegmentData}
                               loading={segmentLoading}
+                              requiredStarOnLabel="true"
                             />
                           )}
                         />
@@ -1765,7 +2126,24 @@ function DirectCall({ selectedButton }) {
                           </FormErrorText>
                         )}
                       </TkCol>
-                      <TkCol lg={5}>
+
+                      <TkCol lg={10}>
+                        <TkInput
+                          {...register("addrtext")}
+                          id="addrtext"
+                          name="addrtext"
+                          type="textarea"
+                          labelName="Address "
+                          placeholder="Enter Address"
+                          disabled={true}
+                        />
+                        {errors.addrtext && (
+                          <FormErrorText>
+                            {errors.addrtext.message}
+                          </FormErrorText>
+                        )}
+                      </TkCol> 
+                      {/* <TkCol lg={5}>
                         <TkInput
                           {...register("addr1")}
                           id="addr1"
@@ -1865,7 +2243,7 @@ function DirectCall({ selectedButton }) {
                         )}
                       </TkCol>
 
-                      <TkCol lg={12}>
+                      <TkCol lg={10}>
                         <TkInput
                           {...register("addrtext")}
                           id="addrtext"
@@ -1880,7 +2258,7 @@ function DirectCall({ selectedButton }) {
                             {errors.addrtext.message}
                           </FormErrorText>
                         )}
-                      </TkCol>
+                      </TkCol> */}
 
                       {/* <TkCol lg={7}>
                         <TkInput
@@ -1982,6 +2360,18 @@ function DirectCall({ selectedButton }) {
                         Activity
                       </NavLink>
                     </NavItem>
+                    <NavItem>
+                      <NavLink
+                        href="#"
+                        className={classnames({
+                          active: activeSubTab === tabs.address,
+                        })}
+                        onClick={() => toggleTab(tabs.address)}
+                        // onClick={leadActivityToggle}
+                      >
+                        Address
+                      </NavLink>
+                    </NavItem>
                   </Nav>
                 </TkCol>
               </TkRow>
@@ -2074,13 +2464,13 @@ function DirectCall({ selectedButton }) {
                         <TkRow className="g-3">
                           <TkCol lg={3}>
                             <Controller
-                              name="custentity_lms_primary_action"
+                              name="custrecord_lms_primary_action"
                               control={control}
                               render={({ field }) => (
                                 <TkSelect
                                   {...field}
-                                  id="custentity_lms_primary_action"
-                                  name="custentity_lms_primary_action"
+                                  id="custrecord_lms_primary_action"
+                                  name="custrecord_lms_primary_action"
                                   labelName="Primary Action"
                                   placeholder="Select Primary Action"
                                   options={allPrimaryActionData}
@@ -2088,18 +2478,18 @@ function DirectCall({ selectedButton }) {
                                 />
                               )}
                             />
-                            {errors.custentity_lms_primary_action && (
+                            {errors.custrecord_lms_primary_action && (
                               <FormErrorText>
-                                {errors.custentity_lms_primary_action.message}
+                                {errors.custrecord_lms_primary_action.message}
                               </FormErrorText>
                             )}
                           </TkCol>
 
                           <TkCol lg={3}>
                             <TkInput
-                              {...register("custentity_lms_lastactivitydate")}
-                              id="custentity_lms_lastactivitydate"
-                              name="custentity_lms_lastactivitydate"
+                              {...register("custrecord_lms_datetime")}
+                              id="custrecord_lms_datetime"
+                              name="custrecord_lms_datetime"
                               labelName="Date Time"
                               type="text"
                               disabled={true}
@@ -2108,28 +2498,28 @@ function DirectCall({ selectedButton }) {
 
                           <TkCol lg={3}>
                             <TkInput
-                              {...register("custentity_lms_lead_value")}
-                              id="custentity_lms_lead_value"
-                              name="custentity_lms_lead_value"
+                              {...register("custrecord_lms_lead_value")}
+                              id="custrecord_lms_lead_value"
+                              name="custrecord_lms_lead_value"
                               labelName="Total Lead Value"
                               type="text"
                               placeholder="Enter Total Lead Value"
                             />
-                            {errors.custentity_lms_lead_value && (
+                            {errors.custrecord_lms_lead_value && (
                               <FormErrorText>
-                                {errors.custentity_lms_lead_value.message}
+                                {errors.custrecord_lms_lead_value.message}
                               </FormErrorText>
                             )}
                           </TkCol>
                           <TkCol lg={3}>
                             <Controller
-                              name="entitystatus"
+                              name="custrecord_lms_statusoflead"
                               control={control}
                               render={({ field }) => (
                                 <TkSelect
                                   {...field}
-                                  id="entitystatus"
-                                  name="entitystatus"
+                                  id="custrecord_lms_statusoflead"
+                                  name="custrecord_lms_statusoflead"
                                   labelName="Lead Status"
                                   placeholder="Select Lead Status"
                                   options={[
@@ -2145,38 +2535,38 @@ function DirectCall({ selectedButton }) {
                                 />
                               )}
                             />
-                            {errors.entitystatus && (
+                            {errors.custrecord_lms_statusoflead && (
                               <FormErrorText>
-                                {errors.entitystatus.message}
+                                {errors.custrecord_lms_statusoflead.message}
                               </FormErrorText>
                             )}
                           </TkCol>
 
                           <TkCol lg={4}>
                             <TkInput
-                              {...register("custentity_lms_lead_unqualified")}
-                              id="custentity_lms_lead_unqualified"
-                              name="custentity_lms_lead_unqualified"
+                              {...register("custrecord_lms_lead_unqualifie")}
+                              id="custrecord_lms_lead_unqualifie"
+                              name="custrecord_lms_lead_unqualifie"
                               labelName="Reason if unqualified lead"
                               type="textarea"
                               placeholder="Enter Reason"
                             />
-                            {errors.custentity_lms_lead_unqualified && (
+                            {errors.custrecord_lms_lead_unqualifie && (
                               <FormErrorText>
-                                {errors.custentity_lms_lead_unqualified.message}
+                                {errors.custrecord_lms_lead_unqualifie.message}
                               </FormErrorText>
                             )}
                           </TkCol>
 
                           <TkCol lg={3}>
                             <Controller
-                              name="custentity_lms_prospect_nurturing"
+                              name="custrecord_lms_prospect_nurtur"
                               control={control}
                               render={({ field }) => (
                                 <TkSelect
                                   {...field}
-                                  id="custentity_lms_prospect_nurturing"
-                                  name="custentity_lms_prospect_nurturing"
+                                  id="custrecord_lms_prospect_nurtur"
+                                  name="custrecord_lms_prospect_nurtur"
                                   labelName="Prospect Nurturing"
                                   placeholder="Select Prospect Nurturing"
                                   options={allProspectNurturingData}
@@ -2184,12 +2574,9 @@ function DirectCall({ selectedButton }) {
                                 />
                               )}
                             />
-                            {errors.custentity_lms_prospect_nurturing && (
+                            {errors.custrecord_lms_prospect_nurtur && (
                               <FormErrorText>
-                                {
-                                  errors.custentity_lms_prospect_nurturing
-                                    .message
-                                }
+                                {errors.custrecord_lms_prospect_nurtur.message}
                               </FormErrorText>
                             )}
                           </TkCol>
@@ -2200,6 +2587,40 @@ function DirectCall({ selectedButton }) {
                     <TabPane tabId={tabs.leadActivity}>
                       <div>
                         <TkRow className="g-3">
+                        {/* <Nav className="nav-tabs dropdown-tabs nav-tabs-custom mb-3 mt-4">
+                            <NavItem>
+                              <NavLink
+                                // href="#"
+                                className={classnames({
+                                  active: activeTab === tabs.phoneCall,
+                                })}
+                              >
+                                Phone Call
+                              </NavLink>
+                            </NavItem>
+
+                            <NavItem>
+                              <NavLink
+                                // href="#"
+                                className={classnames({
+                                  active: activeTab === tabs.phoneCall,
+                                })}
+                              >
+                                Task
+                              </NavLink>
+                            </NavItem>
+
+                            <NavItem>
+                              <NavLink
+                                // href="#"
+                                className={classnames({
+                                  active: activeTab === tabs.phoneCall,
+                                })}
+                              >
+                                Meeting
+                              </NavLink>
+                            </NavItem>
+                          </Nav> */}
                           <TkCol lg={2}>
                             <TkButton
                               type="button"
@@ -2260,6 +2681,21 @@ function DirectCall({ selectedButton }) {
                           </TabContent>
                         </TkRow>
                       </div>
+                    </TabPane>
+
+                    <TabPane tabId={tabs.address}>
+                      <TkContainer>
+                        <TkTableContainer
+                          customPageSize={true}
+                          showAddButton={true}
+                          onClickAdd={handleAddAddressRow}
+                          onclickDelete={handleRemoveAddressRow}
+                          columns={addressColumns}
+                          data={addressRows}
+                          thClass="text-dark"
+                          dynamicTable={true}
+                        />
+                      </TkContainer>
                     </TabPane>
                   </TabContent>
                 </TkCol>

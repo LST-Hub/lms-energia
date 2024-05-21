@@ -58,6 +58,7 @@ import { formatDateForAPI } from "../../utils/date";
 import { TkToastError, TkToastSuccess } from "../TkToastContainer";
 import LeadEventPopup from "./LeadEventPopup";
 import LeadTaskPopup from "./LeadTaskPopup";
+
 const tabs = {
   directCall: "primary",
   email: "email",
@@ -105,10 +106,11 @@ const schema = Yup.object({
       MaxNameLength,
       `Name should have at most ${MaxNameLength} characters.`
     ),
+
   custentity_lms_personal_phonenumber: Yup.string()
     .nullable()
     .required("Phone number is Required")
-    .matches(/^[0-9+() -]*$/, "Mobile number must be number.")
+    .matches(/^[0-9+() -]*$/, "Phone number must be number.")
     .max(
       MaxPhoneNumberLength,
       `Phone number must be at most ${MaxPhoneNumberLength} numbers.`
@@ -125,12 +127,18 @@ const schema = Yup.object({
       MaxEmailLength,
       `Email should have at most ${MaxEmailLength} characters.`
     ),
-  custentity_lms_enquiryby: Yup.object().required("Enquiry by is required"),
-  custentity_lms_noteother: Yup.string().max(
-    bigInpuMaxLength,
-    `Note should have at most ${bigInpuMaxLength} characters.`
-  ),
-  companyName: Yup.string()
+  custentity_lms_enquiryby: Yup.object()
+    .nullable()
+    .required("Enquiry by is required"),
+
+  custentity_lms_noteother: Yup.string()
+    .nullable()
+    .max(
+      bigInpuMaxLength,
+      `Note should have at most ${bigInpuMaxLength} characters.`
+    ),
+
+  companyname: Yup.string()
     .nullable()
     .required("Company Name is required")
     .max(
@@ -139,6 +147,7 @@ const schema = Yup.object({
     ),
   phone: Yup.string()
     .nullable()
+    .required("Contact number is Required")
     .matches(/^[0-9+() -]*$/, "Contact number must be number.")
     .max(
       MaxPhoneNumberLength,
@@ -146,23 +155,36 @@ const schema = Yup.object({
     ),
   email: Yup.string()
     .nullable()
+    .required("Email is required")
     .email("Email must be valid.")
     .max(
       MaxEmailLength,
-      `Email should have at most ${MaxEmailLength} characters.`
+      `Company Email should have at most ${MaxEmailLength} characters.`
     ),
-  addr1: Yup.string()
-    .max(
-      smallInputMaxLength,
-      `Address 1 should have at most ${smallInputMaxLength} characters.`
-    )
-    .nullable(),
-  city: Yup.string()
-    .max(
-      smallInputMaxLength,
-      `City should have at most ${smallInputMaxLength} characters.`
-    )
-    .nullable(),
+  custentity_lms_cr_no: Yup.string()
+    .nullable()
+    .required("CR Number is required"),
+
+  custentity3: Yup.string().nullable().required("VAT Number is required"),
+
+  custentity_lms_client_type: Yup.object()
+    .nullable()
+    .required("Client Type is required"),
+
+  custentity_market_segment: Yup.object()
+    .nullable()
+    .required("Segment is required"),
+
+  addr1: Yup.string().max(
+    smallInputMaxLength,
+    `Address 1 should have at most ${smallInputMaxLength} characters.`
+  ),
+  // .nullable(),
+  city: Yup.string().max(
+    smallInputMaxLength,
+    `City should have at most ${smallInputMaxLength} characters.`
+  ),
+  // .nullable(),
 
   state: Yup.string().nullable(),
 
@@ -625,18 +647,18 @@ function DirectMarketing({ selectedButton }) {
   ]);
   const [rows, setRows] = useState([
     {
-      custrecord_lms_duration: null,
+      custrecord_lms_division: null,
       custrecord_lms_requirement: "",
       custrecord_lms_project_name: "",
       custrecord_lms_duration: "",
       custrecord_lms_unit_of_measure: null,
       custrecord_lms_value: "",
-      delivery: "",
+      custrecord_lms_expected_delivery_date: "",
     },
   ]);
   const [locationRows, setLocationRows] = useState([
     {
-      custrecord_lms_location: "",
+      custrecordlms_location: "",
       custrecord_lms_contactperson_name: "",
       custrecord_lms_phonenumber: "",
       custrecord_location_email: "",
@@ -693,7 +715,7 @@ function DirectMarketing({ selectedButton }) {
     });
 
     setValue("custentity_lms_createddate", now);
-    setValue("custentity_lms_lastactivitydate", formattedDate);
+    setValue("custrecord_lms_datetime", formattedDate);
     setSelectedDate(now);
   }, [setValue]);
 
@@ -710,7 +732,7 @@ function DirectMarketing({ selectedButton }) {
     setRows([
       ...rows,
       {
-        custrecord_lms_duration: null,
+        custrecord_lms_division: null,
         custrecord_lms_requirement: "",
         custrecord_lms_project_name: "",
         custrecord_lms_duration: "",
@@ -725,7 +747,7 @@ function DirectMarketing({ selectedButton }) {
     setLocationRows([
       ...locationRows,
       {
-        custrecord_lms_location: "",
+        custrecordlms_location: "",
         custrecord_lms_contactperson_name: "",
         custrecord_lms_phonenumber: "",
         custrecord_location_email: "",
@@ -764,7 +786,7 @@ function DirectMarketing({ selectedButton }) {
   });
   const { remove: removeLocation } = useFieldArray({
     control,
-    name: "custrecord_lms_location",
+    name: "custrecordlms_location",
   });
   const { remove: removeContactPersonName } = useFieldArray({
     control,
@@ -812,149 +834,303 @@ function DirectMarketing({ selectedButton }) {
     setLocationRows(newLocationRows);
   };
 
-  const leadPost = useMutation({
+  const leadDirectMarketingPost = useMutation({
     mutationFn: tkFetch.post(`${API_BASE_URL}/lead`),
   });
 
-  const leadAssignPost = useMutation({
-    mutationFn: tkFetch.post(`${API_BASE_URL}/lead-assign`),
-  });
-
   const onSubmit = (formData) => {
+    // const apiData = {
+    //   customForm: {
+    //     id: "135",
+    //     refName: "LMS CRM FORM",
+    //   },
+    //   entitystatus: {
+    //     id: "7",
+    //     refName: "LEAD-Qualified",
+    //   },
+    //   custentity_lms_channel_lead: {
+    //     id: selectedButton.id,
+    //   },
+    //   custentity_lms_leadsource: {
+    //     id: formData.custentity_lms_leadsource.value,
+    //   },
+
+    //   custentity_lms_date_of_visit: formatDateForAPI(
+    //     formData.custentity_lms_date_of_visit
+    //   ),
+    //   custentity_lms_time_of_visit: formData.custentity_lms_time_of_visit,
+
+    //   custentity_lms_visit_update: {
+    //     id: formData.custentity_lms_visit_update.value,
+    //   },
+    //   custentity_lms_createdby: formData.custentity_lms_createdby,
+    //   custentity_lms_createddate: formData.custentity_lms_createddate,
+    //   subsidiary: {
+    //     id: formData.subsidiary.value,
+    //   },
+    //   custentity_lms_name: formData.custentity_lms_name,
+    //   custentity_lms_personal_phonenumber:
+    //     formData.custentity_lms_personal_phonenumber,
+    //   custentity_lms_personal_email: formData.custentity_lms_personal_email,
+    //   custentity_lms_enquiryby: {
+    //     id: formData.custentity_lms_enquiryby.value,
+    //   },
+    //   custentity_lms_noteother: formData.custentity_lms_noteother,
+    //   //   companyName: formData.companyName,
+    //   //   phone: formData.phone,
+    //   //   email: formData.email,
+    //   //   custentity_lms_cr_no: formData.custentity_lms_cr_no,
+    //   //   custentity3: formData.custentity3,
+    //   //   custentity_lms_client_type: {
+    //   //     id: formData.custentity_lms_client_type.value,
+    //   //   },
+    //   //   custentity_market_segment: {
+    //   //     id: formData.custentity_market_segment.value,
+    //   //   },
+    //   //   addressBook: {
+    //   //     items: [
+    //   //       {
+    //   //         addressBookAddress: {
+    //   //           addr1: formData.addr1,
+    //   //           addr2: formData.addr2,
+    //   //           city: formData.city,
+    //   //           state: formData.state,
+    //   //           zip: formData.zip,
+    //   //           country: {
+    //   //             id: formData.country.value,
+    //   //           },
+    //   //           defaultBilling: true,
+    //   //           defaultShipping: true,
+    //   //           addrtext: formData.addrtext,
+    //   //         },
+    //   //       },
+    //   //     ],
+    //   //   },
+    //   // };
+    //   companyName: formData.companyName ?? "", // Use empty string if companyName is null or undefined
+    //   phone: formData.phone ?? "", // Use empty string if phone is null or undefined
+    //   email: formData.email ?? "", // Use empty string if email is null or undefined
+    //   custentity_lms_cr_no: formData.custentity_lms_cr_no ?? "", // Use empty string if custentity_lms_cr_no is null or undefined
+    //   custentity3: formData.custentity3 ?? "", // Use empty string if custentity3 is null or undefined
+    //   custentity_lms_client_type: formData.custentity_lms_client_type?.value
+    //     ? { id: formData.custentity_lms_client_type.value }
+    //     : null, // Use null if custentity_lms_client_type is null or undefined
+    //   custentity_market_segment: formData.custentity_market_segment?.value
+    //     ? { id: formData.custentity_market_segment.value }
+    //     : null, // Use null if custentity_market_segment is null or undefined
+    //   addressBook:
+    //     formData.addr1 ||
+    //     formData.addr2 ||
+    //     formData.city ||
+    //     formData.state ||
+    //     formData.zip ||
+    //     formData.country
+    //       ? {
+    //           items: [
+    //             {
+    //               addressBookAddress: {
+    //                 addr1: formData.addr1 ?? "",
+    //                 addr2: formData.addr2 ?? "",
+    //                 city: formData.city ?? "",
+    //                 state: formData.state ?? "",
+    //                 zip: formData.zip ?? "",
+    //                 country: formData.country?.value
+    //                   ? { id: formData.country.value }
+    //                   : null,
+    //                 defaultBilling: true,
+    //                 defaultShipping: true,
+    //                 addrtext: formData.addrtext ?? "",
+    //               },
+    //             },
+    //           ],
+    //         }
+    //       : null, // Use null if all address fields are null or undefined
+    // };
+    // console.log("apiData", apiData);
+
     const apiData = {
-      customForm: {
-        id: "135",
-        refName: "LMS CRM FORM",
+      resttype: "Add",
+      recordtype: "lead",
+      bodyfields: {
+        customform: { value: "135", text: "LMS CRM FORM" },
+        entitystatus: { value: "7", text: "LEAD-Qualified" },
+        custentity_lms_channel_lead: { value: selectedButton.id },
+        custentity_lms_leadsource: {
+          value: formData.custentity_lms_leadsource.value,
+          text: formData.custentity_lms_leadsource.text,
+        },
+        custentity_lms_date_of_visit: formatDateForAPI(
+          formData.custentity_lms_date_of_visit
+        ),
+        custentity_lms_time_of_visit: formData.custentity_lms_time_of_visit,
+        custentity_lms_visit_update: {
+          value: formData.custentity_lms_visit_update.value,
+          text: formData.custentity_lms_visit_update.text,
+        },
+        custentity_lms_createdby: formData.custentity_lms_createdby,
+        custentity_lms_createddate: formData.custentity_lms_createddate,
+        subsidiary: {
+          value: formData.subsidiary.value,
+          text: formData.subsidiary.text,
+        },
+        custentity_lms_name: formData.custentity_lms_name,
+        custentity_lms_personal_phonenumber:
+          formData.custentity_lms_personal_phonenumber,
+        custentity_lms_personal_email: formData.custentity_lms_personal_email,
+        custentity_lms_enquiryby: {
+          value: formData.custentity_lms_enquiryby.value,
+          text: formData.custentity_lms_enquiryby.text,
+        },
+        custentity_lms_noteother: formData.custentity_lms_noteother,
+        companyname: formData.companyname,
+        phone: formData.phone,
+        email: formData.email,
+        custentity_lms_cr_no: formData.custentity_lms_cr_no,
+        custentity3: formData.custentity3,
+        custentity_lms_client_type: {
+          value: formData.custentity_lms_client_type.value,
+          text: formData.custentity_lms_client_type.text,
+        },
+        custentity_market_segment: {
+          value: formData.custentity_market_segment.value,
+          text: formData.custentity_market_segment.text,
+        },
       },
-      entitystatus: {
-        id: "7",
-        refName: "LEAD-Qualified",
-      },
-      custentity_lms_channel_lead: {
-        id: selectedButton.id,
-      },
-      custentity_lms_leadsource: {
-        id: formData.custentity_lms_leadsource.value,
-      },
-
-      custentity_lms_date_of_visit: formatDateForAPI(
-        formData.custentity_lms_date_of_visit
-      ),
-      custentity_lms_time_of_visit: formData.custentity_lms_time_of_visit,
-
-      custentity_lms_visit_update: {
-        id: formData.custentity_lms_visit_update.value,
-      },
-      custentity_lms_createdby: formData.custentity_lms_createdby,
-      custentity_lms_createddate: formData.custentity_lms_createddate,
-      subsidiary: {
-        id: formData.subsidiary.value,
-      },
-      custentity_lms_name: formData.custentity_lms_name,
-      custentity_lms_personal_phonenumber:
-        formData.custentity_lms_personal_phonenumber,
-      custentity_lms_personal_email: formData.custentity_lms_personal_email,
-      custentity_lms_enquiryby: {
-        id: formData.custentity_lms_enquiryby.value,
-      },
-      custentity_lms_noteother: formData.custentity_lms_noteother,
-      //   companyName: formData.companyName,
-      //   phone: formData.phone,
-      //   email: formData.email,
-      //   custentity_lms_cr_no: formData.custentity_lms_cr_no,
-      //   custentity3: formData.custentity3,
-      //   custentity_lms_client_type: {
-      //     id: formData.custentity_lms_client_type.value,
-      //   },
-      //   custentity_market_segment: {
-      //     id: formData.custentity_market_segment.value,
-      //   },
-      //   addressBook: {
-      //     items: [
-      //       {
-      //         addressBookAddress: {
-      //           addr1: formData.addr1,
-      //           addr2: formData.addr2,
-      //           city: formData.city,
-      //           state: formData.state,
-      //           zip: formData.zip,
-      //           country: {
-      //             id: formData.country.value,
-      //           },
-      //           defaultBilling: true,
-      //           defaultShipping: true,
-      //           addrtext: formData.addrtext,
-      //         },
-      //       },
-      //     ],
-      //   },
-      // };
-      companyName: formData.companyName ?? "", // Use empty string if companyName is null or undefined
-      phone: formData.phone ?? "", // Use empty string if phone is null or undefined
-      email: formData.email ?? "", // Use empty string if email is null or undefined
-      custentity_lms_cr_no: formData.custentity_lms_cr_no ?? "", // Use empty string if custentity_lms_cr_no is null or undefined
-      custentity3: formData.custentity3 ?? "", // Use empty string if custentity3 is null or undefined
-      custentity_lms_client_type: formData.custentity_lms_client_type?.value
-        ? { id: formData.custentity_lms_client_type.value }
-        : null, // Use null if custentity_lms_client_type is null or undefined
-      custentity_market_segment: formData.custentity_market_segment?.value
-        ? { id: formData.custentity_market_segment.value }
-        : null, // Use null if custentity_market_segment is null or undefined
-      addressBook:
-        formData.addr1 ||
-        formData.addr2 ||
-        formData.city ||
-        formData.state ||
-        formData.zip ||
-        formData.country
-          ? {
-              items: [
-                {
-                  addressBookAddress: {
-                    addr1: formData.addr1 ?? "",
-                    addr2: formData.addr2 ?? "",
-                    city: formData.city ?? "",
-                    state: formData.state ?? "",
-                    zip: formData.zip ?? "",
-                    country: formData.country?.value
-                      ? { id: formData.country.value }
-                      : null,
-                    defaultBilling: true,
-                    defaultShipping: true,
-                    addrtext: formData.addrtext ?? "",
-                  },
+      linefields: {
+        addressbook: [
+          {
+            subrecord: {
+              addressbookaddress: {
+                addr1: formData.addr1,
+                addr2: formData.addr2,
+                city: formData.city,
+                state: formData.state,
+                zip: formData.zip,
+                country: {
+                  value: formData.country.value,
+                  text: formData.country.text,
                 },
-              ],
-            }
-          : null, // Use null if all address fields are null or undefined
-    };
-    console.log("apiData", apiData);
+              },
+            },
+            defaultBilling: true,
+            defaultShipping: true,
+            addrtext: formData.addrtext,
+          },
+        ],
+        recmachcustrecord_lms_requirement_details:
+          formData.custrecord_lms_requirement.flatMap((req, i) => ({
+            custrecord_lms_requirement: req,
+            custrecord_lms_project_name:
+              formData.custrecord_lms_project_name[i],
 
-    const leadAssignData = {
-      custrecord_lms_lead_assigning: {
-        id: "26723",
-      },
-      custrecord_lms_region: {
-        id: formData.custrecord_lms_region?.value,
-      },
-      custrecord_lms_sales_team_name: {
-        id: formData.custrecord_lms_sales_team_name?.value,
+            custrecord_lms_division: {
+              value: formData.custrecord_lms_division.value,
+              text: formData.custrecord_lms_division.text,
+            },
+            custrecord_lms_duration: Number(
+              formData.custrecord_lms_duration[i]
+            ),
+            custrecord_lms_unit_of_measure: {
+              value: formData.custrecord_lms_unit_of_measure.value,
+              text: formData.custrecord_lms_unit_of_measure.text,
+            },
+            custrecord_lms_value: Number(formData.custrecord_lms_value[i]),
+            custrecord_lms_expected_delivery_date: [
+              formData.custrecord_lms_expected_delivery_date[i],
+            ],
+          })),
+
+        recmachcustrecord_parent_record: formData.custrecordlms_location.map(
+          (loc, i) => ({
+            custrecordlms_location: loc,
+            custrecord_lms_contactperson_name:
+              formData.custrecord_lms_contactperson_name[i],
+            custrecord_lms_phonenumber: formData.custrecord_lms_phonenumber[i],
+            custrecord_location_email:
+              formData.custrecord_location_email[i] || "",
+            custrecord_lms_designation: formData.custrecord_lms_designation[i],
+          })
+        ),
+
+        recmachcustrecord_lms_lead_assigning: [
+          {
+            custrecord_lms_region: {
+              value: formData.custrecord_lms_region?.value,
+              text: formData.custrecord_lms_region?.text,
+            },
+            custrecord_lms_sales_team_name: {
+              value: formData.custrecord_lms_sales_team_name?.value || "",
+              text: formData.custrecord_lms_sales_team_name?.text || "",
+            },
+          },
+        ],
+
+        recmachcustrecord_lms_leadnurt: [
+          {
+            custrecord_lms_primary_action: {
+              value: formData.custrecord_lms_primary_action?.value,
+              text: formData.custrecord_lms_primary_action?.text,
+            },
+            custrecord_lms_datetime: formatDateForAPI(
+              formData.custrecord_lms_datetime
+            ),
+            custrecord_lms_lead_value: Number(
+              formData.custrecord_lms_lead_value
+            ),
+            custrecord_lms_statusoflead: {
+              value: formData.custrecord_lms_statusoflead?.value,
+              text: formData.custrecord_lms_statusoflead?.text,
+            },
+            custrecord_lms_lead_unqualifie:
+              formData.custrecord_lms_lead_unqualifie,
+            custrecord_lms_prospect_nurtur: {
+              value: formData.custrecord_lms_prospect_nurtur?.value,
+              text: formData.custrecord_lms_prospect_nurtur?.text,
+            },
+          },
+        ],
+
+        calls: {
+          title: formData.title,
+          company: formData.company,
+          phone: formData.phone,
+          status: {
+            value: formData.status?.value,
+            text: formData.status?.text,
+          },
+          organizer: {
+            value: formData.organizer?.value,
+            text: formData.organizer?.text,
+          },
+          startdate: formatDateForAPI(formData.startdate),
+          message: formData.message,
+        },
+
+        tasks: {
+          title: formData.title,
+          company: formData.company,
+          priority: {
+            value: formData.priority?.value,
+            text: formData.priority?.text,
+          },
+          startdate: formatDateForAPI(formData.startdate),
+          duedate: formatDateForAPI(formData.duedate),
+          message: formData.message,
+        },
+
+        events: {
+          title: formData.title,
+          company: formData.company,
+          location: formData.location,
+          starttime: formData.starttime,
+          endtime: formData.endtime,
+          message: formData.message,
+        },
       },
     };
 
-    leadPost.mutate(apiData, {
+    leadDirectMarketingPost.mutate(apiData, {
       onSuccess: (data) => {
-        leadAssignPost.mutate(leadAssignData, {
-          onSuccess: (data) => {
-            console.log("success", data);
-            // TkToastSuccess("Lead Assign Created Successfully");
-            router.push(`${urls.lead}`);
-          },
-          onError: (error) => {
-            console.log("onError", error);
-            TkToastError("error while creating Lead", error);
-          },
-        });
         TkToastSuccess("Direct Marketing Lead Created Successfully");
         router.push(`${urls.lead}`);
       },
@@ -1061,7 +1237,7 @@ function DirectMarketing({ selectedButton }) {
               type="text"
               id="custrecord_lms_duration"
               placeholder="Enter Duration"
-              {...register(`duration[${cellProps.row.index}]`, {
+              {...register(`custrecord_lms_duration[${cellProps.row.index}]`, {
                 required: "Duration is required",
                 validate: (value) => {
                   if (value && !/^[0-9]*([.:][0-9]+)?$/.test(value)) {
@@ -1074,7 +1250,7 @@ function DirectMarketing({ selectedButton }) {
               })}
               onBlur={(e) => {
                 setValue(
-                  `duration[${cellProps.row.index}]`,
+                  `custrecord_lms_duration[${cellProps.row.index}]`,
                   convertToTimeFotTimeSheet(e.target.value)
                 );
               }}
@@ -1138,7 +1314,7 @@ function DirectMarketing({ selectedButton }) {
               type="text"
               placeholder="Enter Value"
               id="custrecord_lms_value"
-              {...register(`projectName[${cellProps.row.index}]`)}
+              {...register(`custrecord_lms_value[${cellProps.row.index}]`)}
             />
             {errors?.custrecord_lms_value?.[cellProps.row.index] && (
               <FormErrorText>
@@ -1207,22 +1383,19 @@ function DirectMarketing({ selectedButton }) {
   const locationDetailsColumns = [
     {
       Header: "Location",
-      accessor: "custrecord_lms_location",
+      accessor: "custrecordlms_location",
       Cell: (cellProps) => {
         return (
           <>
             <TkInput
               type="text"
               placeholder="Enter Location"
-              id="custrecord_lms_location"
-              {...register(`custrecord_lms_location[${cellProps.row.index}]`)}
+              id="custrecordlms_location"
+              {...register(`custrecordlms_location[${cellProps.row.index}]`)}
             />
-            {errors?.custrecord_lms_location?.[cellProps.row.index] && (
+            {errors?.custrecordlms_location?.[cellProps.row.index] && (
               <FormErrorText>
-                {
-                  errors?.custrecord_lms_location?.[cellProps.row.index]
-                    ?.message
-                }
+                {errors?.custrecordlms_location?.[cellProps.row.index]?.message}
               </FormErrorText>
             )}
           </>
@@ -1294,6 +1467,7 @@ function DirectMarketing({ selectedButton }) {
             <TkInput
               type="text"
               placeholder="Enter Email"
+              id="custrecord_location_email"
               {...register(`custrecord_location_email[${cellProps.row.index}]`)}
             />
             {errors?.custrecord_location_email?.[cellProps.row.index] && (
@@ -1800,16 +1974,16 @@ function DirectMarketing({ selectedButton }) {
                     <TkRow className="g-3">
                       <TkCol lg={4}>
                         <TkInput
-                          {...register("companyName")}
-                          id="companyName"
+                          {...register("companyname")}
+                          id="companyname"
                           type="text"
                           labelName="Company Name"
                           placeholder="Enter Company Name"
                           requiredStarOnLabel="true"
                         />
-                        {errors.companyName && (
+                        {errors.companyname && (
                           <FormErrorText>
-                            {errors.companyName.message}
+                            {errors.companyname.message}
                           </FormErrorText>
                         )}
                       </TkCol>
@@ -1821,6 +1995,7 @@ function DirectMarketing({ selectedButton }) {
                           type="text"
                           labelName="Contact No"
                           placeholder="Enter Contact No"
+                          requiredStarOnLabel="true"
                         />
                         {errors.phone && (
                           <FormErrorText>{errors.phone.message}</FormErrorText>
@@ -1834,6 +2009,7 @@ function DirectMarketing({ selectedButton }) {
                           type="text"
                           labelName="Email"
                           placeholder="Enter Email"
+                          requiredStarOnLabel="true"
                         />
                         {errors.email && (
                           <FormErrorText>{errors.email.message}</FormErrorText>
@@ -1848,6 +2024,7 @@ function DirectMarketing({ selectedButton }) {
                           type="text"
                           labelName="CR No"
                           placeholder="Enter CR No"
+                          requiredStarOnLabel="true"
                         />
                         {errors.custentity_lms_cr_no && (
                           <FormErrorText>
@@ -1864,6 +2041,7 @@ function DirectMarketing({ selectedButton }) {
                           type="text"
                           labelName="VAT No"
                           placeholder="Enter VAT No"
+                          requiredStarOnLabel="true"
                         />
                         {errors.custentity3 && (
                           <FormErrorText>
@@ -1884,6 +2062,7 @@ function DirectMarketing({ selectedButton }) {
                               placeholder="Select Client Type"
                               options={allClientTypeData}
                               loading={clientTypeLoading}
+                              requiredStarOnLabel="true"
                             />
                           )}
                         />
@@ -1906,6 +2085,7 @@ function DirectMarketing({ selectedButton }) {
                               placeholder="Select Segment"
                               options={allSegmentData}
                               loading={segmentLoading}
+                              requiredStarOnLabel="true"
                             />
                           )}
                         />
@@ -2031,7 +2211,20 @@ function DirectMarketing({ selectedButton }) {
                           </FormErrorText>
                         )}
                       </TkCol>
+
+                      
                     </TkRow>
+                  </div>
+                  <div className="d-flex mt-4 space-childern">
+                    {/* <div className="ms-auto" id="update-form-btns">
+                  <TkButton
+                    type="submit"
+                    color="primary"
+                    loading={leadPost.isLoading}
+                  >
+                    Save
+                  </TkButton>
+                </div> */}
                   </div>
                 </TkCol>
               </TkRow>
@@ -2187,13 +2380,13 @@ function DirectMarketing({ selectedButton }) {
                         <TkRow className="g-3">
                           <TkCol lg={3}>
                             <Controller
-                              name="custentity_lms_primary_action"
+                              name="custrecord_lms_primary_action"
                               control={control}
                               render={({ field }) => (
                                 <TkSelect
                                   {...field}
-                                  id="custentity_lms_primary_action"
-                                  name="custentity_lms_primary_action"
+                                  id="custrecord_lms_primary_action"
+                                  name="custrecord_lms_primary_action"
                                   labelName="Primary Action"
                                   placeholder="Select Primary Action"
                                   options={allPrimaryActionData}
@@ -2201,18 +2394,18 @@ function DirectMarketing({ selectedButton }) {
                                 />
                               )}
                             />
-                            {errors.custentity_lms_primary_action && (
+                            {errors.custrecord_lms_primary_action && (
                               <FormErrorText>
-                                {errors.custentity_lms_primary_action.message}
+                                {errors.custrecord_lms_primary_action.message}
                               </FormErrorText>
                             )}
                           </TkCol>
 
                           <TkCol lg={3}>
                             <TkInput
-                              {...register("custentity_lms_lastactivitydate")}
-                              id="custentity_lms_lastactivitydate"
-                              name="custentity_lms_lastactivitydate"
+                              {...register("custrecord_lms_datetime")}
+                              id="custrecord_lms_datetime"
+                              name="custrecord_lms_datetime"
                               labelName="Date Time"
                               type="text"
                               disabled={true}
@@ -2221,28 +2414,28 @@ function DirectMarketing({ selectedButton }) {
 
                           <TkCol lg={3}>
                             <TkInput
-                              {...register("custentity_lms_lead_value")}
-                              id="custentity_lms_lead_value"
-                              name="custentity_lms_lead_value"
+                              {...register("custrecord_lms_lead_value")}
+                              id="custrecord_lms_lead_value"
+                              name="custrecord_lms_lead_value"
                               labelName="Lead Value"
                               type="text"
                               placeholder="Enter Lead Value"
                             />
-                            {errors.custentity_lms_lead_value && (
+                            {errors.custrecord_lms_lead_value && (
                               <FormErrorText>
-                                {errors.custentity_lms_lead_value.message}
+                                {errors.custrecord_lms_lead_value.message}
                               </FormErrorText>
                             )}
                           </TkCol>
                           <TkCol lg={3}>
                             <Controller
-                              name="entitystatus"
+                              name="custrecord_lms_statusoflead"
                               control={control}
                               render={({ field }) => (
                                 <TkSelect
                                   {...field}
-                                  id="entitystatus"
-                                  name="entitystatus"
+                                  id="custrecord_lms_statusoflead"
+                                  name="custrecord_lms_statusoflead"
                                   labelName="Lead Status"
                                   placeholder="Select Lead Status"
                                   options={[
@@ -2258,38 +2451,38 @@ function DirectMarketing({ selectedButton }) {
                                 />
                               )}
                             />
-                            {errors.entitystatus && (
+                            {errors.custrecord_lms_statusoflead && (
                               <FormErrorText>
-                                {errors.entitystatus.message}
+                                {errors.custrecord_lms_statusoflead.message}
                               </FormErrorText>
                             )}
                           </TkCol>
 
                           <TkCol lg={4}>
                             <TkInput
-                              {...register("custentity_lms_lead_unqualified")}
-                              id="custentity_lms_lead_unqualified"
-                              name="custentity_lms_lead_unqualified"
+                              {...register("custrecord_lms_lead_unqualifie")}
+                              id="custrecord_lms_lead_unqualifie"
+                              name="custrecord_lms_lead_unqualifie"
                               labelName="Reason if unqualified lead"
                               type="textarea"
                               placeholder="Enter Reason"
                             />
-                            {errors.custentity_lms_lead_unqualified && (
+                            {errors.custrecord_lms_lead_unqualifie && (
                               <FormErrorText>
-                                {errors.custentity_lms_lead_unqualified.message}
+                                {errors.custrecord_lms_lead_unqualifie.message}
                               </FormErrorText>
                             )}
                           </TkCol>
 
                           <TkCol lg={3}>
                             <Controller
-                              name="custentity_lms_prospect_nurturing"
+                              name="custrecord_lms_prospect_nurtur"
                               control={control}
                               render={({ field }) => (
                                 <TkSelect
                                   {...field}
-                                  id="custentity_lms_prospect_nurturing"
-                                  name="custentity_lms_prospect_nurturing"
+                                  id="custrecord_lms_prospect_nurtur"
+                                  name="custrecord_lms_prospect_nurtur"
                                   labelName="Prospect Nurturing"
                                   placeholder="Select Prospect Nurturing"
                                   options={allProspectNurturingData}
@@ -2297,10 +2490,10 @@ function DirectMarketing({ selectedButton }) {
                                 />
                               )}
                             />
-                            {errors.custentity_lms_prospect_nurturing && (
+                            {errors.custrecord_lms_prospect_nurtur && (
                               <FormErrorText>
                                 {
-                                  errors.custentity_lms_prospect_nurturing
+                                  errors.custrecord_lms_prospect_nurtur
                                     .message
                                 }
                               </FormErrorText>
@@ -2378,8 +2571,10 @@ function DirectMarketing({ selectedButton }) {
                 </TkCol>
               </TkRow>
 
-              {leadPost.isError ? (
-                <FormErrorBox errMessage={leadPost.error?.message} />
+              {leadDirectMarketingPost.isError ? (
+                <FormErrorBox
+                  errMessage={leadDirectMarketingPost.error?.message}
+                />
               ) : null}
               <div className="d-flex mt-4 space-childern">
                 <div className="ms-auto" id="update-form-btns">
@@ -2389,14 +2584,14 @@ function DirectMarketing({ selectedButton }) {
                       router.push(`${urls.lead}`);
                     }}
                     type="button"
-                    disabled={leadPost.isLoading}
+                    disabled={leadDirectMarketingPost.isLoading}
                   >
                     Cancel
                   </TkButton>{" "}
                   <TkButton
                     type="submit"
                     color="primary"
-                    loading={leadPost.isLoading}
+                    loading={leadDirectMarketingPost.isLoading}
                   >
                     Submit
                   </TkButton>

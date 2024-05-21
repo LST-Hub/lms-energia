@@ -1,35 +1,39 @@
 import response from "../../../../lib/response";
-import 
-  {deleteRestletScriptDeploymentId,
-getRestletScriptDeploymentId, postRestletScriptDeploymentId}
- from "../../../../src/utils/NsAPIcal";
+import { getRestletScriptDeploymentId } from "../../../../src/utils/NsAPIcal";
 
 export default async function handler(req, res) {
   try {
     if (req.method === "GET") {
-      const query = `SELECT * FROM employee`;
-      // const query = `SELECT entityid, firstName, lastname, id, email, hireDate, releasedate, BUILTIN.DF( employeetype ) AS employeetype, BUILTIN.DF( employeestatus ) AS employeestatus, BUILTIN.DF( department ) AS department, BUILTIN.DF( location ) AS location, BUILTIN.DF( supervisor ) AS supervisor FROM employee`;
-      const userData = await getRestletScriptDeploymentId(query);
+      const body = {
+        resttype: "Search",
+        recordtype: "employee",
+        filters: [],
+        columns: [
+          "internalid",
+          "entityid",
+          "altname",
+          "firstname",
+          "middlename",
+          "lastname",
+          "email",
+          "title",
+          "phone",
+          "supervisor",
+          "department",
+          "employeetype",
+          "role",
+        ],
+      };
+
+      const query= `SELECT * FROM employee`
+      const employeeData = await getRestletScriptDeploymentId(query);
       response({
         res,
         success: true,
         status_code: 200,
-        data: userData,
-        message: "Lead Fetched successfully",
+        data: employeeData,
+        message: "Employee Fetched successfully",
       });
-    } else if (req.method === "POST") {
-      // try {
-      //   const LeadData = await postRestletScriptDeploymentId();
-      //   response({
-      //     res,
-      //     success: true,
-      //     status_code: 200,
-      //     data: LeadData,
-      //     message: "Lead Fetched successfully",
-      //   });
-      // } catch (err) {
-      //   console.log("error in post request", err);
-      // }
     }
   } catch (err) {
     console.error("error in project index file", err);

@@ -37,13 +37,14 @@ import { convertTimeToSec, convertToTimeFotTimeSheet } from "../../utils/time";
 const schema = Yup.object({
   title: Yup.string().required("Subject is required").nullable(),
   company: Yup.string().required("Lead name is required").nullable(),
-  assigned: Yup.object().required("Organizer is required").nullable(),
-  status: Yup.object().required("Status is required").nullable(),
-  accesslevel: Yup.object().required("Event access is required").nullable(),
-  startDate: Yup.string().required("Date is required").nullable(),
   starttime: Yup.string().required("Start time is required").nullable(),
   endtime: Yup.string().required("End time is required").nullable(),
-
+  message: Yup.string()
+    .nullable()
+    .max(
+      bigInpuMaxLength,
+      `Message should have at most ${bigInpuMaxLength} characters.`
+    ),
 }).required();
 
 const LeadEventPopup = ({ leadEventActivityToggle }) => {
@@ -122,75 +123,6 @@ const LeadEventPopup = ({ leadEventActivityToggle }) => {
                           {errors.location && (
                             <FormErrorText>
                               {errors.location.message}
-                            </FormErrorText>
-                          )}
-                        </TkCol>
-
-                        <TkCol lg={4}>
-                          <Controller
-                            name="status"
-                            control={control}
-                            render={({ field }) => (
-                              <TkSelect
-                                {...field}
-                                labelName="Status"
-                                labelId={"_status"}
-                                id="status"
-                                options={[]}
-                                placeholder="Select Type"
-                                requiredStarOnLabel={true}
-                              />
-                            )}
-                          />
-                          {errors.status && (
-                            <FormErrorText>
-                              {errors.status.message}
-                            </FormErrorText>
-                          )}
-                        </TkCol>
-
-                        <TkCol lg={4}>
-                          <Controller
-                            name="accesslevel"
-                            control={control}
-                            render={({ field }) => (
-                              <TkSelect
-                                {...field}
-                                labelName="Event Access"
-                                labelId={"accesslevel"}
-                                id="accesslevel"
-                                options={[]}
-                                placeholder="Select Event Access"
-                                requiredStarOnLabel={true}
-                              />
-                            )}
-                          />
-                          {errors.accesslevel && (
-                            <FormErrorText>
-                              {errors.accesslevel.message}
-                            </FormErrorText>
-                          )}
-                        </TkCol>
-
-                        <TkCol lg={4}>
-                          <Controller
-                            name="assigned"
-                            control={control}
-                            render={({ field }) => (
-                              <TkSelect
-                                {...field}
-                                labelName="Organizer"
-                                labelId={"assigned"}
-                                id="assigned"
-                                options={[]}
-                                placeholder="Select Organizer"
-                                requiredStarOnLabel={true}
-                              />
-                            )}
-                          />
-                          {errors.assigned && (
-                            <FormErrorText>
-                              {errors.assigned.message}
                             </FormErrorText>
                           )}
                         </TkCol>
@@ -299,6 +231,21 @@ const LeadEventPopup = ({ leadEventActivityToggle }) => {
                           )}
                         </TkCol>
 
+                        <TkCol lg={12}>
+                          <TkInput
+                            {...register("message")}
+                            id="message"
+                            type="textarea"
+                            labelName="Message"
+                            placeholder="Enter Message"
+                          />
+                          {errors.message && (
+                            <FormErrorText>
+                              {errors.message.message}
+                            </FormErrorText>
+                          )}
+                        </TkCol>
+
                         <div className="modal-footer">
                           <div className="hstack gap-2 justify-content-end">
                             <TkButton
@@ -309,7 +256,7 @@ const LeadEventPopup = ({ leadEventActivityToggle }) => {
                               Cancel
                             </TkButton>{" "}
                             <TkButton type="submit" color="primary">
-                              Add
+                              Submit
                             </TkButton>
                           </div>
                         </div>

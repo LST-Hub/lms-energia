@@ -25,8 +25,8 @@ const Users = () => {
       <div className="page-content">
         <BreadCrumb
           pageTitle={"Users"}
-          buttonText="Invite User"
-          onButtonClick={handleButtonClick}
+          // buttonText="Invite User"
+          // onButtonClick={handleButtonClick}
         />
         <TkContainer>
           <AllUsers />
