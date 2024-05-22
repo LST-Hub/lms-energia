@@ -46,7 +46,7 @@ import TkContainer from "../TkContainer";
 import TkIcon from "../TkIcon";
 import ActivityPopup from "./ActivityPopup";
 import FormErrorText, { FormErrorBox } from "../forms/ErrorText";
-import { convertTimeToSec, convertToTimeFotTimeSheet } from "../../utils/time";
+import { convertTimeToSec, convertToDayTime, convertToTime, convertToTimeFotTimeSheet } from "../../utils/time";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { useMutation, useQueries, useQuery } from "@tanstack/react-query";
 import tkFetch from "../../utils/fetch";
@@ -176,6 +176,8 @@ const schema = Yup.object({
   ),
 }).required();
 
+
+
 function DirectCall({ selectedButton }) {
   const {
     control,
@@ -184,6 +186,7 @@ function DirectCall({ selectedButton }) {
     setValue,
     getValues,
     setError,
+    watch,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
@@ -212,11 +215,11 @@ function DirectCall({ selectedButton }) {
   ]);
   const [allleadSourceData, setAllleadSourceData] = useState([{}]);
   const [newAddress, setNewAddress] = useState(null);
+
   const [allCountryData, setAllCountryData] = useState([{}]);
-  // const [fullAddress, setFullAddress] = useState(false);
-  const [fullAddress, setFullAddress] = useState('');
+  const [fullAddress, setFullAddress] = useState(false);
+ 
   const [selectedEnquiryBy, setSelectedEnquiryBy] = useState(false);
-  const [allNurturStatusData, setAllNurturStatusData] = useState([{}]);
 
   const results = useQueries({
     queries: [
@@ -632,17 +635,17 @@ function DirectCall({ selectedButton }) {
     },
   ]);
 
-  const [addressRows, setAddressRows] = useState([
-    {
-      addr1: "",
-      addr2: "",
-      city: "",
-      state: "",
-      zip: "",
-      country: "",
-      addrtext: "",
-    },
-  ]);
+  // const [addressRows, setAddressRows] = useState([
+  //   {
+  //     addr1: "",
+  //     addr2: "",
+  //     city: "",
+  //     state: "",
+  //     zip: "",
+  //     country: "",
+  //     addrtext: "",
+  //   },
+  // ]);
 
   const leadActivityToggle = useCallback(() => {
     if (activityModal) {
@@ -667,7 +670,11 @@ function DirectCall({ selectedButton }) {
       setLeadEventModal(true);
     }
   }, [leadEventModal]);
-
+  useEffect(() => {
+    if (fullAddress) {
+      setValue("addrtext", fullAddress);
+    }
+  }, [fullAddress, setValue]);
   
 
   // useEffect(() => {
@@ -726,20 +733,20 @@ function DirectCall({ selectedButton }) {
     ]);
   };
 
-  const handleAddAddressRow = () => {
-    setAddressRows([
-      ...addressRows,
-      {
-        addr1: "",
-        addr2: "",
-        city: "",
-        state: "",
-        zip: "",
-        country: "",
-        addrtext: "",
-      },
-    ]);
-  };
+  // const handleAddAddressRow = () => {
+  //   setAddressRows([
+  //     ...addressRows,
+  //     {
+  //       addr1: "",
+  //       addr2: "",
+  //       city: "",
+  //       state: "",
+  //       zip: "",
+  //       country: "",
+  //       addrtext: "",
+  //     },
+  //   ]);
+  // };
 
   const { remove: removeDivision } = useFieldArray({
     control,
@@ -789,30 +796,30 @@ function DirectCall({ selectedButton }) {
     control,
     name: "custrecord_lms_designation",
   });
-  const { remove: removeAddr1 } = useFieldArray({
-    control,
-    name: "addr1",
-  });
-  const { remove: removeAddr2 } = useFieldArray({
-    control,
-    name: "addr2",
-  });
-  const { remove: removeCity } = useFieldArray({
-    control,
-    name: "city",
-  });
-  const { remove: removeZip } = useFieldArray({
-    control,
-    name: "zip",
-  });
-  const { remove: removeCountry } = useFieldArray({
-    control,
-    name: "country",
-  });
-  const { remove: removeAddrtext1 } = useFieldArray({
-    control,
-    name: "addrtext",
-  });
+  // const { remove: removeAddr1 } = useFieldArray({
+  //   control,
+  //   name: "addr1",
+  // });
+  // const { remove: removeAddr2 } = useFieldArray({
+  //   control,
+  //   name: "addr2",
+  // });
+  // const { remove: removeCity } = useFieldArray({
+  //   control,
+  //   name: "city",
+  // });
+  // const { remove: removeZip } = useFieldArray({
+  //   control,
+  //   name: "zip",
+  // });
+  // const { remove: removeCountry } = useFieldArray({
+  //   control,
+  //   name: "country",
+  // });
+  // const { remove: removeAddrtext1 } = useFieldArray({
+  //   control,
+  //   name: "addrtext",
+  // });
 
   const handleRemoveRow = (index) => {
     removeDivision(index);
@@ -1038,7 +1045,6 @@ function DirectCall({ selectedButton }) {
       },
     };
 
-    console.log("apiData is:", apiData);
     leadPost.mutate(apiData, {
       onSuccess: (data) => {
         TkToastSuccess("Lead Created Successfully");
@@ -1154,15 +1160,15 @@ function DirectCall({ selectedButton }) {
                   if (value && !/^[0-9]*([.:][0-9]+)?$/.test(value)) {
                     return "Invalid Duration";
                   }
-                  if (convertTimeToSec(value) > 86400 || value > 24) {
-                    return "Duration should be less than 24 hours";
-                  }
+                  // if (convertTimeToSec(value) > 86400 || value > 24) {
+                  //   return "Duration should be less than 24 hours";
+                  // }
                 },
               })}
               onBlur={(e) => {
                 setValue(
                   `custrecord_lms_duration[${cellProps.row.index}]`,
-                  convertToTimeFotTimeSheet(e.target.value)
+                  convertToTime(e.target.value)
                 );
               }}
             />
@@ -1543,242 +1549,214 @@ function DirectCall({ selectedButton }) {
     []
   );
 
-  const addressColumns = [
-    {
-      Header: "Address 1",
-      accessor: "addr1",
-      Cell: (cellProps) => {
-        return (
-          <>
-            <TkInput
-              type="textarea"
-              id="addr1"
-              placeholder="Enter Address 1"
-              onBlur={handleInputBlur}
-              {...register(`addr1[${cellProps.row.index}]`)}
-            />
-            {errors?.addr1?.[cellProps.row.index] && (
-              <FormErrorText>
-                {errors?.addr1?.[cellProps.row.index]?.message}
-              </FormErrorText>
-            )}
-          </>
-        );
-      },
-    },
-    {
-      Header: "Address 2",
-      accessor: "addr2",
-      Cell: (cellProps) => {
-        return (
-          <>
-            <TkInput
-              type="textarea"
-              id="addr2"
-              onBlur={handleInputBlur}
-              placeholder="Enter Address 2"
-              {...register(`addr2[${cellProps.row.index}]`)}
-            />
-            {errors?.addr2?.[cellProps.row.index] && (
-              <FormErrorText>
-                {errors?.addr2?.[cellProps.row.index]?.message}
-              </FormErrorText>
-            )}
-          </>
-        );
-      },
-    },
-    {
-      Header: "City",
-      accessor: "city",
-      Cell: (cellProps) => {
-        return (
-          <>
-            <TkInput
-              type="text"
-              id="city"
-              onBlur={handleInputBlur}
-              placeholder="Enter City"
-              {...register(`city[${cellProps.row.index}]`)}
-            />
-            {errors?.city?.[cellProps.row.index] && (
-              <FormErrorText>
-                {errors?.city?.[cellProps.row.index]?.message}
-              </FormErrorText>
-            )}
-          </>
-        );
-      },
-    },
-    {
-      Header: "State",
-      accessor: "state",
-      Cell: (cellProps) => {
-        return (
-          <>
-            <TkInput
-              type="textarea"
-              id="state"
-              placeholder="Enter State"
-              onBlur={handleInputBlur}
-              {...register(`state[${cellProps.row.index}]`)}
-            />
-            {errors?.state?.[cellProps.row.index] && (
-              <FormErrorText>
-                {errors?.state?.[cellProps.row.index]?.message}
-              </FormErrorText>
-            )}
-          </>
-        );
-      },
-    },
-    {
-      Header: "Zip",
-      accessor: "zip",
-      Cell: (cellProps) => {
-        return (
-          <>
-            <TkInput
-              type="textarea"
-              id="zip"
-              placeholder="Enter Zip"
-              onBlur={handleInputBlur}
-              {...register(`zip[${cellProps.row.index}]`)}
-            />
-            {errors?.zip?.[cellProps.row.index] && (
-              <FormErrorText>
-                {errors?.zip?.[cellProps.row.index]?.message}
-              </FormErrorText>
-            )}
-          </>
-        );
-      },
-    },
 
-    {
-      Header: "Country *",
-      accessor: "country",
-      Cell: (cellProps) => {
-        return (
-          <>
-            <Controller
-              control={control}
-              name={`country[${cellProps.row.index}]`}
-              rules={{ required: "Country is required" }}
-              render={({ field }) => (
-                <TkSelect
-                  {...field}
-                  id={"country"}
-                  options={allCountryData}
-                  requiredStarOnLabel={true}
-                  style={{ width: "200px" }}
-                  loading={divisionLoading}
-                  onBlur={handleInputBlur}
-                />
-              )}
-            />
-            {errors?.country?.[cellProps.row.index] && (
-              <FormErrorText>
-                {errors?.country?.[cellProps.row.index]?.message}
-              </FormErrorText>
-            )}
-          </>
-        );
-      },
-    },
 
-    {
-      Header: "Address",
-      accessor: "label",
-      Cell: (cellProps) => {
-        return (
-          <>
-            <TkInput
-              type="textarea"
-              id="label"
-              placeholder="Enter Address"
-              disabled={true}
-              {...register(`label[${cellProps.row.index}]`)}
-            />
-            {errors?.label?.[cellProps.row.index] && (
-              <FormErrorText>
-                {errors?.label?.[cellProps.row.index]?.message}
-              </FormErrorText>
-            )}
-          </>
-        );
-      },
-    },
-    {
-      Header: "Action",
-      accessor: "action",
-      Cell: (cellProps) => {
-        return (
-          <>
-            <TkButton
-              type={"button"}
-              onClick={() => {
-                handleRemoveAddressRow(cellProps.row.index);
-              }}
-              disabled={addressRows.length === 1}
-            >
-              Delete
-            </TkButton>
-          </>
-        );
-      },
-    },
-  ];
+  // const addressColumns = [
+  //   {
+  //     Header: "Address 1",
+  //     accessor: "addr1",
+  //     Cell: (cellProps) => {
+  //       return (
+  //         <>
+  //           <TkInput
+  //             type="textarea"
+  //             id="addr1"
+  //             placeholder="Enter Address 1"
+  //             // onBlur={handleInputBlur}
+  //             {...register(`addr1[${cellProps.row.index}]`)}
+  //           />
+  //           {errors?.addr1?.[cellProps.row.index] && (
+  //             <FormErrorText>
+  //               {errors?.addr1?.[cellProps.row.index]?.message}
+  //             </FormErrorText>
+  //           )}
+  //         </>
+  //       );
+  //     },
+  //   },
+  //   {
+  //     Header: "Address 2",
+  //     accessor: "addr2",
+  //     Cell: (cellProps) => {
+  //       return (
+  //         <>
+  //           <TkInput
+  //             type="textarea"
+  //             id="addr2"
+  //             // onBlur={handleInputBlur}
+  //             placeholder="Enter Address 2"
+  //             {...register(`addr2[${cellProps.row.index}]`)}
+  //           />
+  //           {errors?.addr2?.[cellProps.row.index] && (
+  //             <FormErrorText>
+  //               {errors?.addr2?.[cellProps.row.index]?.message}
+  //             </FormErrorText>
+  //           )}
+  //         </>
+  //       );
+  //     },
+  //   },
+  //   {
+  //     Header: "City",
+  //     accessor: "city",
+  //     Cell: (cellProps) => {
+  //       return (
+  //         <>
+  //           <TkInput
+  //             type="text"
+  //             id="city"
+  //             // onBlur={handleInputBlur}
+  //             placeholder="Enter City"
+  //             {...register(`city[${cellProps.row.index}]`)}
+  //           />
+  //           {errors?.city?.[cellProps.row.index] && (
+  //             <FormErrorText>
+  //               {errors?.city?.[cellProps.row.index]?.message}
+  //             </FormErrorText>
+  //           )}
+  //         </>
+  //       );
+  //     },
+  //   },
+  //   {
+  //     Header: "State",
+  //     accessor: "state",
+  //     Cell: (cellProps) => {
+  //       return (
+  //         <>
+  //           <TkInput
+  //             type="textarea"
+  //             id="state"
+  //             placeholder="Enter State"
+  //             // onBlur={handleInputBlur}
+  //             {...register(`state[${cellProps.row.index}]`)}
+  //           />
+  //           {errors?.state?.[cellProps.row.index] && (
+  //             <FormErrorText>
+  //               {errors?.state?.[cellProps.row.index]?.message}
+  //             </FormErrorText>
+  //           )}
+  //         </>
+  //       );
+  //     },
+  //   },
+  //   {
+  //     Header: "Zip",
+  //     accessor: "zip",
+  //     Cell: (cellProps) => {
+  //       return (
+  //         <>
+  //           <TkInput
+  //             type="textarea"
+  //             id="zip"
+  //             placeholder="Enter Zip"
+  //             // onBlur={handleInputBlur}
+  //             {...register(`zip[${cellProps.row.index}]`)}
+  //           />
+  //           {errors?.zip?.[cellProps.row.index] && (
+  //             <FormErrorText>
+  //               {errors?.zip?.[cellProps.row.index]?.message}
+  //             </FormErrorText>
+  //           )}
+  //         </>
+  //       );
+  //     },
+  //   },
+
+  //   {
+  //     Header: "Country *",
+  //     accessor: "country",
+  //     Cell: (cellProps) => {
+  //       return (
+  //         <>
+  //           <Controller
+  //             control={control}
+  //             name={`country[${cellProps.row.index}]`}
+  //             rules={{ required: "Country is required" }}
+  //             render={({ field }) => (
+  //               <TkSelect
+  //                 {...field}
+  //                 id={"country"}
+  //                 options={allCountryData}
+  //                 requiredStarOnLabel={true}
+  //                 style={{ width: "200px" }}
+  //                 loading={divisionLoading}
+  //                 // onBlur={handleInputBlur}
+  //               />
+  //             )}
+  //           />
+  //           {errors?.country?.[cellProps.row.index] && (
+  //             <FormErrorText>
+  //               {errors?.country?.[cellProps.row.index]?.message}
+  //             </FormErrorText>
+  //           )}
+  //         </>
+  //       );
+  //     },
+  //   },
+
+    
+  //   {
+  //     Header: "Address",
+  //     accessor: "label",
+  //     Cell: (cellProps) => {
+  //       return (
+  //         <>
+  //           <TkInput
+  //             type="textarea"
+  //             id="label"
+  //             placeholder="Enter Address"
+  //             disabled={true}
+  //             {...register(`label[${cellProps.row.index}]`)}
+  //           />
+  //           {errors?.label?.[cellProps.row.index] && (
+  //             <FormErrorText>
+  //               {errors?.label?.[cellProps.row.index]?.message}
+  //             </FormErrorText>
+  //           )}
+  //         </>
+  //       );
+  //     },
+  //   },
+  //   {
+  //     Header: "Action",
+  //     accessor: "action",
+  //     Cell: (cellProps) => {
+  //       return (
+  //         <>
+  //           <TkButton
+  //             type={"button"}
+  //             onClick={() => {
+  //               handleRemoveAddressRow(cellProps.row.index);
+  //             }}
+  //             disabled={addressRows.length === 1}
+  //           >
+  //             Delete
+  //           </TkButton>
+  //         </>
+  //       );
+  //     },
+  //   },
+  // ];
 
   const concatenateAddress = () => {
-    const addr1 = (getValues("addr1") || "").toString();
-    const addr2 = (getValues("addr2") || "").toString();
-    const city = (getValues("city") || "").toString();
-    const state = (getValues("state") || "").toString();
-    const zip = (getValues("zip") || "").toString();
+    const addr1 = getValues("addr1") || "";
+    const addr2 = getValues("addr2") || "";
+    const city = getValues("city") || "";
+    const state = getValues("state") || "";
+    const zip = getValues("zip") || "";
     const country = getValues("country");
-  
     const countryLabel = Array.isArray(country)
-      ? country.filter((c) => c?.label).map((c) => c.label).join(", ")
+      ? country.map((c) => c.label).join(", ")
       : country?.label || "";
-  
+
     const fullAddress = `${addr1.trim()}, ${addr2.trim()}, ${city.trim()}, ${state.trim()}, ${zip.trim()}, ${countryLabel}`;
-    setFullAddress(fullAddress.replace(/,\s*,/g, ","));
-    setValue("label", fullAddress);
+    setFullAddress(fullAddress.replace(/,\s*,/g, ",")); // Remove consecutive commas
   };
-  
+
   const handleInputBlur = (e) => {
     concatenateAddress();
   };
-  
-  useEffect(() => {
-    setValue("label", fullAddress);
-  }, [fullAddress, setValue]);
-
-  // const concatenateAddress = () => {
-  //   const addr1 = getValues("addr1") || "";
-  //   const addr2 = getValues("addr2") || "";
-  //   const city = getValues("city") || "";
-  //   const state = getValues("state") || "";
-  //   const zip = getValues("zip") || "";
-  //   const country = getValues("country");
-  //   const countryLabel = Array.isArray(country)
-  //     ? country.map((c) => c.label).join(", ")
-  //     : country?.label || "";
-
-  //   const fullAddress = `${addr1.trim()}, ${addr2.trim()}, ${city.trim()}, ${state.trim()}, ${zip.trim()}, ${countryLabel}`;
-  //   setFullAddress(fullAddress.replace(/,\s*,/g, ",")); // Remove consecutive commas
-  // };
-
-  // const handleInputBlur = (e) => {
-  //   concatenateAddress();
-  // };
-
-  // useEffect(() => {
-  //   if (fullAddress) {
-  //     setValue("addrtext", fullAddress);
-  //   }
-  // }, [fullAddress, setValue]);
   
   return (
     <>
@@ -2127,7 +2105,7 @@ function DirectCall({ selectedButton }) {
                         )}
                       </TkCol>
 
-                      <TkCol lg={10}>
+                      {/* <TkCol lg={10}>
                         <TkInput
                           {...register("addrtext")}
                           id="addrtext"
@@ -2142,8 +2120,8 @@ function DirectCall({ selectedButton }) {
                             {errors.addrtext.message}
                           </FormErrorText>
                         )}
-                      </TkCol> 
-                      {/* <TkCol lg={5}>
+                      </TkCol>  */}
+                      <TkCol lg={5}>
                         <TkInput
                           {...register("addr1")}
                           id="addr1"
@@ -2258,7 +2236,7 @@ function DirectCall({ selectedButton }) {
                             {errors.addrtext.message}
                           </FormErrorText>
                         )}
-                      </TkCol> */}
+                      </TkCol>
 
                       {/* <TkCol lg={7}>
                         <TkInput
@@ -2360,7 +2338,7 @@ function DirectCall({ selectedButton }) {
                         Activity
                       </NavLink>
                     </NavItem>
-                    <NavItem>
+                    {/* <NavItem>
                       <NavLink
                         href="#"
                         className={classnames({
@@ -2371,7 +2349,7 @@ function DirectCall({ selectedButton }) {
                       >
                         Address
                       </NavLink>
-                    </NavItem>
+                    </NavItem> */}
                   </Nav>
                 </TkCol>
               </TkRow>
@@ -2504,6 +2482,7 @@ function DirectCall({ selectedButton }) {
                               labelName="Total Lead Value"
                               type="text"
                               placeholder="Enter Total Lead Value"
+                              requiredStarOnLabel={true}
                             />
                             {errors.custrecord_lms_lead_value && (
                               <FormErrorText>
@@ -2522,6 +2501,8 @@ function DirectCall({ selectedButton }) {
                                   name="custrecord_lms_statusoflead"
                                   labelName="Lead Status"
                                   placeholder="Select Lead Status"
+                              requiredStarOnLabel={true}
+
                                   options={[
                                     {
                                       value: "7",
@@ -2569,6 +2550,7 @@ function DirectCall({ selectedButton }) {
                                   name="custrecord_lms_prospect_nurtur"
                                   labelName="Prospect Nurturing"
                                   placeholder="Select Prospect Nurturing"
+                                  requiredStarOnLabel={true}
                                   options={allProspectNurturingData}
                                   loading={prospectNurturingLoading}
                                 />
@@ -2683,7 +2665,7 @@ function DirectCall({ selectedButton }) {
                       </div>
                     </TabPane>
 
-                    <TabPane tabId={tabs.address}>
+                    {/* <TabPane tabId={tabs.address}>
                       <TkContainer>
                         <TkTableContainer
                           customPageSize={true}
@@ -2696,7 +2678,7 @@ function DirectCall({ selectedButton }) {
                           dynamicTable={true}
                         />
                       </TkContainer>
-                    </TabPane>
+                    </TabPane> */}
                   </TabContent>
                 </TkCol>
               </TkRow>
