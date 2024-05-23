@@ -51,13 +51,36 @@ import TkLoader from "../TkLoader";
 import { formatDateForAPI } from "../../utils/date";
 import DeleteModal from "../../utils/DeleteModal";
 import TkEditCardHeader from "../TkEditCardHeader";
-import { convertToTime } from "../../utils/time";
+import { convertTimeToSec, convertToTime } from "../../utils/time";
 
 const schema = Yup.object({
   custentity_lms_leadsource: Yup.object()
     .nullable()
     .required("Lead source is required"),
 
+  // custentity_lms_name_of_the_portal_dd: Yup.object()
+  //   .nullable()
+  //   .required("Lead portal is required"),
+
+  // custentity_lms_date_of_visit: Yup.string()
+  //   .nullable()
+  //   .required("Date of visit is required"),
+
+  // custentity_lms_time_of_visit: Yup.string()
+  //   .nullable()
+  //   .matches(/^[0-9]*([.:][0-9]+)?$/, "Invalid Time")
+  //   .test(
+  //     "custentity_lms_time_of_visit",
+  //     "Time of visit should be less than 24 hours",
+  //     (value) => {
+  //       return convertTimeToSec(value) <= 86400;
+  //     }
+  //   )
+  //   .required("Time of visit is required"),
+
+  // custentity_lms_visit_update: Yup.object()
+  //   .nullable()
+  //   .required("Visit update is required"),
   subsidiary: Yup.object()
     .nullable()
     .required("Primary subsidairy is required"),
@@ -173,7 +196,7 @@ const tabs = {
   leadNurutring: "leadNurutring",
   leadActivity: "leadActivity",
 };
-function EditLead({ id, userData, mode, selectedButton }) {
+function EditLead({ id, mode }) {
   const {
     control,
     register,
@@ -194,7 +217,6 @@ function EditLead({ id, userData, mode, selectedButton }) {
   const [leadTaskModal, setLeadTaskModal] = useState(false);
   const [leadEventModal, setLeadEventModal] = useState(false);
 
-  const [isLeadEdit, setIsLeadEdit] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [allDurations, setAllDurations] = useState({});
   const [activeSubTab, setActiveSubTab] = useState(tabs.requirementDetails);
@@ -220,11 +242,14 @@ function EditLead({ id, userData, mode, selectedButton }) {
   const [newAddress, setNewAddress] = useState(null);
   const [selectedEnquiryBy, setSelectedEnquiryBy] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
-  const [confirmModal, setConfirmModal] = useState(false);
   const [requirementDetailsId, setRequirementDetailsId] = useState(null);
   const [locationDetailsId, setLocationDetailsId] = useState(null);
   const [leadAssignId, setLeadAssignId] = useState(null);
   const [leadNurturingId, setLeadNurturingId] = useState(null);
+  const [allPlatformData, setAlllPlatformData] = useState([{}]);
+  const [allCampaignData, setAlllCampaignData] = useState([{}]);
+  const [allVisitUpdateData, setAlllVisitUpdateData] = useState([{}]);
+  const [allPortalData, setAllPortalData] = useState([{}]);
 
   const results = useQueries({
     queries: [
@@ -278,9 +303,28 @@ function EditLead({ id, userData, mode, selectedButton }) {
         queryKey: [RQ.allleadSource],
         queryFn: tkFetch.get(`${API_BASE_URL}/lead-source`),
       },
+
       {
         queryKey: [RQ.allCountry],
         queryFn: tkFetch.get(`${API_BASE_URL}/country`),
+      },
+
+      {
+        queryKey: [RQ.allLeadPlatform],
+        queryFn: tkFetch.get(`${API_BASE_URL}/lead-platform`),
+      },
+
+      {
+        queryKey: [RQ.allLeadCampaign],
+        queryFn: tkFetch.get(`${API_BASE_URL}/lead-campaign`),
+      },
+      {
+        queryKey: [RQ.allPortal],
+        queryFn: tkFetch.get(`${API_BASE_URL}/portal`),
+      },
+      {
+        queryKey: [RQ.allVisitUpdate],
+        queryFn: tkFetch.get(`${API_BASE_URL}/visit-update`),
       },
     ],
   });
@@ -298,6 +342,10 @@ function EditLead({ id, userData, mode, selectedButton }) {
     prospectNurturing,
     leadSource,
     country,
+    leadPlatform,
+    leadCampaign,
+    leadPortal,
+    leadVisitUpdate,
   ] = results;
   const {
     data: primarySubisdiaryData,
@@ -383,6 +431,34 @@ function EditLead({ id, userData, mode, selectedButton }) {
     error: countryError,
   } = country;
 
+  const {
+    data: leadPlatformData,
+    isLoading: leadPlatformLoading,
+    isError: leadPlatformIsError,
+    error: leadPlatformError,
+  } = leadPlatform;
+
+  const {
+    data: leadCampaignData,
+    isLoading: leadCampaignLoading,
+    isError: leadCampaignIsError,
+    error: leadCampaignError,
+  } = leadCampaign;
+
+  const {
+    data: leadPortalData,
+    isLoading: leadPortalLoading,
+    isError: leadPortalIsError,
+    error: leadPortalError,
+  } = leadPortal;
+
+  const {
+    data: leadVisitUpdateData,
+    isLoading: leadVisitUpdateLoading,
+    isError: leadVisitUpdateIsError,
+    error: leadVisitUpdateError,
+  } = leadVisitUpdate;
+
   useEffect(() => {
     if (primarySubisdiaryIsError) {
       console.log("primarySubisdiaryIsError", primarySubisdiaryError);
@@ -443,6 +519,26 @@ function EditLead({ id, userData, mode, selectedButton }) {
       console.log("countryIsError", countryError);
       TkToastError(countryError.message);
     }
+
+    if (leadPlatformIsError) {
+      console.log("leadPlatformIsError", leadPlatformError);
+      TkToastError(leadPlatformError.message);
+    }
+
+    if (leadCampaignIsError) {
+      console.log("leadCampaignIsError", leadCampaignError);
+      TkToastError(leadCampaignError.message);
+    }
+
+    if (leadPortalIsError) {
+      console.log("leadPortalIsError", leadPortalError);
+      TkToastError(leadPortalError.message);
+    }
+
+    if (leadVisitUpdateIsError) {
+      console.log("leadVisitUpdateIsError", leadVisitUpdateError);
+      TkToastError(leadVisitUpdateError.message);
+    }
   }, [
     primarySubisdiaryIsError,
     primarySubisdiaryError,
@@ -468,6 +564,14 @@ function EditLead({ id, userData, mode, selectedButton }) {
     leadSourceError,
     countryIsError,
     countryError,
+    leadPlatformIsError,
+    leadPlatformError,
+    leadCampaignIsError,
+    leadCampaignError,
+    leadPortalIsError,
+    leadPortalError,
+    leadVisitUpdateIsError,
+    leadVisitUpdateError,
   ]);
 
   useEffect(() => {
@@ -578,6 +682,43 @@ function EditLead({ id, userData, mode, selectedButton }) {
         }))
       );
     }
+
+    if (leadPlatformData) {
+      setAlllPlatformData(
+        leadPlatformData?.items?.map((leadPlatformType) => ({
+          label: leadPlatformType.name,
+          value: leadPlatformType.id,
+        }))
+      );
+    }
+
+    if (leadCampaignData) {
+      setAlllCampaignData(
+        leadCampaignData?.items?.map((leadCampaignType) => ({
+          label: leadCampaignType.name,
+          value: leadCampaignType.id,
+        }))
+      );
+    }
+
+    if (leadPortalData) {
+      console.log("leadPortalData", leadPortalData);
+      setAllPortalData(
+        leadPortalData?.items?.map((leadPortalType) => ({
+          label: leadPortalType.name,
+          value: leadPortalType.id,
+        }))
+      );
+    }
+
+    if (leadVisitUpdateData) {
+      setAlllVisitUpdateData(
+        leadVisitUpdateData?.items?.map((leadVisitUpdateType) => ({
+          label: leadVisitUpdateType.name,
+          value: leadVisitUpdateType.id,
+        }))
+      );
+    }
   }, [
     primarySubisdiaryData,
     enquiryByData,
@@ -591,6 +732,10 @@ function EditLead({ id, userData, mode, selectedButton }) {
     prospectNurturingData,
     leadSourceData,
     countryData,
+    leadPlatformData,
+    leadCampaignData,
+    leadPortalData,
+    leadVisitUpdateData,
   ]);
 
   const leadActivityToggle = useCallback(() => {
@@ -623,8 +768,6 @@ function EditLead({ id, userData, mode, selectedButton }) {
     enabled: !!lid,
   });
 
-  // console.log("lead data", data);
-
   const queryClient = useQueryClient();
   const concatenateAddress = useCallback(() => {
     const addr1 = getValues("addr1") || "";
@@ -644,23 +787,51 @@ function EditLead({ id, userData, mode, selectedButton }) {
     concatenateAddress();
   };
 
-  useEffect(() => {
-    if (fullAddress) {
-      setValue("custentity_lms_address", fullAddress);
-    }
-  }, [fullAddress, setValue]);
+  // useEffect(() => {
+  //   if (fullAddress) {
+  //     setValue("custentity_lms_address", fullAddress);
+  //   }
+  // }, [fullAddress, setValue]);
 
   useEffect(() => {
     if (isFetched && Array.isArray(data) && data.length > 0) {
       const { bodyValues, lineValues } = data[0];
-      console.log("bodyValues",bodyValues);
-      // console.log("lineValues", lineValues.recmachcustrecord_lms_requirement_details);
 
       // set the body level fields
       setValue("custentity_lms_leadsource", {
         label: bodyValues?.custentity_lms_leadsource[0].text,
         value: bodyValues?.custentity_lms_leadsource[0].value,
       });
+
+      setValue("custentity_lms_name_of_the_platform_dd", {
+        label: bodyValues?.custentity_lms_name_of_the_platform_dd[0]?.text,
+        value: bodyValues?.custentity_lms_name_of_the_platform_dd[0]?.value,
+      });
+
+      setValue("custentity_lms_campaign_name", {
+        label: bodyValues?.custentity_lms_campaign_name[0]?.text,
+        value: bodyValues?.custentity_lms_campaign_name[0]?.value,
+      });
+
+      setValue("custentity_lms_visit_update", {
+        label: bodyValues?.custentity_lms_visit_update[0]?.text,
+        value: bodyValues?.custentity_lms_visit_update[0]?.value,
+      });
+
+      setValue("custentity_lms_name_of_the_portal_dd", {
+        label: bodyValues?.custentity_lms_name_of_the_portal_dd[0]?.text,
+        value: bodyValues?.custentity_lms_name_of_the_portal_dd[0]?.value,
+      });
+
+      setValue(
+        "custentity_lms_date_of_visit",
+        bodyValues?.custentity_lms_date_of_visit
+      );
+      setValue(
+        "custentity_lms_time_of_visit",
+        bodyValues?.custentity_lms_time_of_visit
+      );
+
       setValue("subsidiary", {
         label: bodyValues?.subsidiary[0].text,
         value: bodyValues?.subsidiary[0].value,
@@ -691,27 +862,11 @@ function EditLead({ id, userData, mode, selectedButton }) {
         label: bodyValues?.custentity_market_segment[0].text,
         value: bodyValues?.custentity_market_segment[0].value,
       });
-      setValue("addr1", bodyValues?.addr1);
-      setValue("addr2", bodyValues?.addr2);
-      setValue("city", bodyValues?.city);
-      setValue("state", bodyValues?.state);
-      setValue("zip", bodyValues?.zip);
-      setValue(
-        "country",
-        country
-          ? {
-              label: bodyValues?.country?.text,
-              value: bodyValues?.country?.value,
-            }
-          : null
-      );
-      // setValue("custentity_lms_address", bodyValues?.custentity_lms_address);
 
       // set the line level fields
 
       lineValues?.recmachcustrecord_lms_requirement_details.forEach(
         (detail, index) => {
-          console.log("detail", detail)
           setValue(`custrecord_lms_division[${index}]`, {
             label: detail.custrecord_lms_division?.text,
             value: detail.custrecord_lms_division?.value,
@@ -850,7 +1005,7 @@ function EditLead({ id, userData, mode, selectedButton }) {
             ?.custrecord_lms_prospect_nurtur[0]?.value,
       });
     }
-  }, [data, isFetched, setValue, concatenateAddress, id,country]);
+  }, [data, isFetched, setValue, id]);
 
   useEffect(() => {
     const now = new Date();
@@ -1499,13 +1654,6 @@ function EditLead({ id, userData, mode, selectedButton }) {
     mutationFn: tkFetch.patch(`${API_BASE_URL}/lead/${lid}`),
   });
 
-  // if (Array.isArray(data) && data.length > 0) {
-  //   const res =
-  //     data[0]?.lineValues?.recmachcustrecord_lms_requirement_details.map(
-  //       (data, i) => ["id", "anyof", data.id]
-  //     );
-  //     console.log("res",res)
-  // }
   useEffect(() => {
     if (Array.isArray(data) && data.length > 0) {
       setRequirementDetailsId(
@@ -1513,11 +1661,6 @@ function EditLead({ id, userData, mode, selectedButton }) {
           (data, i) => ["id", "anyof", data.id]
         )
       );
-    }
-  }, [data]);
-
-  useEffect(() => {
-    if (Array.isArray(data) && data.length > 0) {
       setLocationDetailsId(
         data[0]?.lineValues?.recmachcustrecord_parent_record.map((data, i) => [
           "id",
@@ -1525,21 +1668,11 @@ function EditLead({ id, userData, mode, selectedButton }) {
           data.id,
         ])
       );
-    }
-  }, [data]);
-
-  useEffect(() => {
-    if (Array.isArray(data) && data.length > 0) {
       setLeadAssignId(
         data[0]?.lineValues?.recmachcustrecord_lms_lead_assigning.map(
           (data, i) => ["id", "anyof", data.id]
         )
       );
-    }
-  }, [data]);
-
-  useEffect(() => {
-    if (Array.isArray(data) && data.length > 0) {
       setLeadNurturingId(
         data[0]?.lineValues?.recmachcustrecord_lms_leadnurt.map((data, i) => [
           "id",
@@ -1550,6 +1683,40 @@ function EditLead({ id, userData, mode, selectedButton }) {
     }
   }, [data]);
 
+  // useEffect(() => {
+  //   if (Array.isArray(data) && data.length > 0) {
+  //     setLocationDetailsId(
+  //       data[0]?.lineValues?.recmachcustrecord_parent_record.map((data, i) => [
+  //         "id",
+  //         "anyof",
+  //         data.id,
+  //       ])
+  //     );
+  //   }
+  // }, [data]);
+
+  // useEffect(() => {
+  //   if (Array.isArray(data) && data.length > 0) {
+  //     setLeadAssignId(
+  //       data[0]?.lineValues?.recmachcustrecord_lms_lead_assigning.map(
+  //         (data, i) => ["id", "anyof", data.id]
+  //       )
+  //     );
+  //   }
+  // }, [data]);
+
+  // useEffect(() => {
+  //   if (Array.isArray(data) && data.length > 0) {
+  //     setLeadNurturingId(
+  //       data[0]?.lineValues?.recmachcustrecord_lms_leadnurt.map((data, i) => [
+  //         "id",
+  //         "anyof",
+  //         data.id,
+  //       ])
+  //     );
+  //   }
+  // }, [data]);
+
   const onSubmit = (formData) => {
     if (!editMode) return;
 
@@ -1558,11 +1725,38 @@ function EditLead({ id, userData, mode, selectedButton }) {
       recordtype: "lead",
       bodyfields: {
         custentity_lms_leadsource: {
-          value: formData.custentity_lms_leadsource.value,
-          label: formData.custentity_lms_leadsource.text,
+          value: formData.custentity_lms_leadsource?.value,
+          label: formData.custentity_lms_leadsource?.text,
         },
         custentity_lms_createdby: formData.custentity_lms_createdby,
         custentity_lms_createddate: formData.custentity_lms_createddate,
+        custentity_lms_name_of_the_platform_dd: {
+          value: formData.custentity_lms_name_of_the_platform_dd?.value,
+          text: formData.custentity_lms_name_of_the_platform_dd?.text,
+        },
+        custentity_lms_campaign_name: {
+          value: formData.custentity_lms_campaign_name?.value,
+          text: formData.custentity_lms_campaign_name?.text,
+        },
+        custentity_lms_visit_update: {
+          value: formData.custentity_lms_visit_update?.value,
+          text: formData.custentity_lms_visit_update?.text,
+        },
+
+        custentity_lms_name_of_the_portal_dd: {
+          value: formData.custentity_lms_name_of_the_portal_dd?.value,
+          text: formData.custentity_lms_name_of_the_portal_dd?.text,
+        },
+
+        custentity_lms_date_of_visit: formatDateForAPI(
+          formData.custentity_lms_date_of_visit
+        ),
+        custentity_lms_time_of_visit: formData.custentity_lms_time_of_visit,
+        // custentity_lms_visit_update: {
+        //   value: formData.custentity_lms_visit_update.value,
+        //   text: formData.custentity_lms_visit_update.text,
+        // },
+
         subsidiary: {
           value: formData.subsidiary.value,
           label: formData.subsidiary.text,
@@ -1614,41 +1808,6 @@ function EditLead({ id, userData, mode, selectedButton }) {
             custrecord_lms_expected_delivery_date:
               formData.custrecord_lms_expected_delivery_date[i],
           })),
-
-        // recmachcustrecord_lms_requirement_details: [
-        //   formData.custrecord_lms_division.map((data, i) => ({
-        //     custrecord_lms_requirement: formData.custrecord_lms_requirement[i],
-        //     custrecord_lms_project_name:
-        //       formData.custrecord_lms_project_name[i],
-        //     custrecord_lms_division: {
-        //       value: formData.custrecord_lms_division[i]?.value,
-        //       text: formData.custrecord_lms_division[i]?.text,
-        //     },
-        //     custrecord_lms_duration: Number(
-        //       formData.custrecord_lms_duration?.[i]
-        //     ),
-        //     custrecord_lms_unit_of_measure: {
-        //       value: formData.custrecord_lms_unit_of_measure[i]?.value,
-        //       text: formData.custrecord_lms_unit_of_measure[i]?.text,
-        //     },
-        //     custrecord_lms_value: Number(formData.custrecord_lms_value[i]),
-        //     custrecord_lms_expected_delivery_date:
-        //       formData.custrecord_lms_expected_delivery_date,
-        //   })),
-
-        //   rows.map((row) => ({
-        //     custrecord_lms_requirement: row.custrecord_lms_requirement,
-        //     custrecord_lms_project_name: row.custrecord_lms_project_name,
-        //     custrecord_lms_division: row.custrecord_lms_division,
-        //     custrecord_lms_duration: row.custrecord_lms_duration,
-        //     custrecord_lms_unit_of_measure: row.custrecord_lms_unit_of_measure,
-        //     custrecord_lms_value: row.custrecord_lms_value,
-        //     custrecord_lms_expected_delivery_date:
-        //       row.custrecord_lms_expected_delivery_date,
-        //   })),
-        // ],
-
-       
 
         recmachcustrecord_parent_record: formData.custrecordlms_location.map(
           (loc, i) => ({
@@ -1759,6 +1918,7 @@ function EditLead({ id, userData, mode, selectedButton }) {
       },
     });
   };
+
   const deleteLead = useMutation({
     mutationFn: tkFetch.deleteWithIdInUrl(`${API_BASE_URL}/lead`),
   });
@@ -1900,6 +2060,253 @@ function EditLead({ id, userData, mode, selectedButton }) {
                                       </FormErrorText>
                                     )}
                                   </TkCol>
+
+                                  {data[0].bodyValues
+                                    .custentity_lms_channel_lead[0].value ===
+                                    "3" && (
+                                    <>
+                                      <TkCol lg={3}>
+                                        <Controller
+                                          name="custentity_lms_name_of_the_platform_dd"
+                                          control={control}
+                                          render={({ field }) => (
+                                            <TkSelect
+                                              {...field}
+                                              id="custentity_lms_name_of_the_platform_dd"
+                                              name="custentity_lms_name_of_the_platform_dd"
+                                              labelName="Name Of Platform"
+                                              placeholder="Select Platform"
+                                              requiredStarOnLabel="true"
+                                              // options={allPlatformData}
+                                              // loading={leadPlatformLoading}
+                                            />
+                                          )}
+                                        />
+                                        {errors.custentity_lms_name_of_the_platform_dd && (
+                                          <FormErrorText>
+                                            {
+                                              errors
+                                                .custentity_lms_name_of_the_platform_dd
+                                                .message
+                                            }
+                                          </FormErrorText>
+                                        )}
+                                      </TkCol>
+
+                                      <TkCol lg={3}>
+                                        <Controller
+                                          name="custentity_lms_campaign_name"
+                                          control={control}
+                                          render={({ field }) => (
+                                            <TkSelect
+                                              {...field}
+                                              id="custentity_lms_campaign_name"
+                                              name="custentity_lms_campaign_name"
+                                              labelName="Campaign Name"
+                                              placeholder="Enter Campaign Name"
+                                              requiredStarOnLabel="true"
+                                              // options={allCampaignData}
+                                              // loading={leadCampaignLoading}
+                                            />
+                                          )}
+                                        />
+                                        {errors.custentity_lms_campaign_name && (
+                                          <FormErrorText>
+                                            {
+                                              errors
+                                                .custentity_lms_campaign_name
+                                                .message
+                                            }
+                                          </FormErrorText>
+                                        )}
+                                      </TkCol>
+
+                                      <TkCol lg={3}>
+                                        <Controller
+                                          name="custentity_lms_visit_update"
+                                          control={control}
+                                          render={({ field }) => (
+                                            <TkSelect
+                                              {...field}
+                                              id="custentity_lms_visit_update"
+                                              name="custentity_lms_visit_update"
+                                              labelName="Visit Update"
+                                              options={allVisitUpdateData}
+                                              placeholder="Select Visit Update"
+                                              requiredStarOnLabel="true"
+                                              loading={leadVisitUpdateLoading}
+                                            />
+                                          )}
+                                        />
+                                        {errors.custentity_lms_visit_update && (
+                                          <FormErrorText>
+                                            {
+                                              errors.custentity_lms_visit_update
+                                                .message
+                                            }
+                                          </FormErrorText>
+                                        )}
+                                      </TkCol>
+                                    </>
+                                  )}
+
+                                  {data[0].bodyValues
+                                    .custentity_lms_channel_lead[0].value ===
+                                    "4" && (
+                                    <>
+                                      <TkCol lg={3}>
+                                        <Controller
+                                          name="custentity_lms_name_of_the_portal_dd"
+                                          control={control}
+                                          render={({ field }) => (
+                                            <TkSelect
+                                              {...field}
+                                              id="custentity_lms_name_of_the_portal_dd"
+                                              name="custentity_lms_name_of_the_portal_dd"
+                                              labelName="Name Of Portal"
+                                              placeholder="Select Portal"
+                                              requiredStarOnLabel="true"
+                                              options={allPortalData}
+                                              loading={leadPortalLoading}
+                                            />
+                                          )}
+                                        />
+                                        {errors.custentity_lms_name_of_the_portal_dd && (
+                                          <FormErrorText>
+                                            {
+                                              errors
+                                                .custentity_lms_name_of_the_portal_dd
+                                                .message
+                                            }
+                                          </FormErrorText>
+                                        )}
+                                      </TkCol>
+                                    </>
+                                  )}
+
+                                  {data[0].bodyValues
+                                    .custentity_lms_channel_lead[0].value ===
+                                    "5" && (
+                                    <>
+                                      <TkCol lg={3}>
+                                        <Controller
+                                          name="custentity_lms_date_of_visit"
+                                          control={control}
+                                          rules={{
+                                            required:
+                                              "Date Of Visit is required",
+                                          }}
+                                          render={({ field }) => (
+                                            <TkDate
+                                              {...field}
+                                              labelName="Date Of Visit"
+                                              id={
+                                                "custentity_lms_date_of_visit"
+                                              }
+                                              placeholder="Enter Date Of Visit"
+                                              options={{
+                                                altInput: true,
+                                                dateFormat: "d M, Y",
+                                              }}
+                                              onChange={(e) => {
+                                                field.onChange(e);
+                                                setSelectedDate(e);
+                                                setAllDurations({});
+                                              }}
+                                              requiredStarOnLabel={true}
+                                            />
+                                          )}
+                                        />
+                                        {errors.custentity_lms_date_of_visit && (
+                                          <FormErrorText>
+                                            {
+                                              errors
+                                                .custentity_lms_date_of_visit
+                                                .message
+                                            }
+                                          </FormErrorText>
+                                        )}
+                                      </TkCol>
+
+                                      <TkCol lg={3}>
+                                        <TkInput
+                                          {...register(
+                                            `custentity_lms_time_of_visit`,
+                                            {
+                                              required: "Time is required",
+                                              validate: (value) => {
+                                                if (
+                                                  value &&
+                                                  !/^[0-9]*([.:][0-9]+)?$/.test(
+                                                    value
+                                                  )
+                                                ) {
+                                                  return "Invalid Time";
+                                                }
+                                                if (
+                                                  convertTimeToSec(value) >
+                                                    86400 ||
+                                                  value > 24
+                                                ) {
+                                                  return "Time should be less than 24 hours";
+                                                }
+                                              },
+                                            }
+                                          )}
+                                          onBlur={(e) => {
+                                            setValue(
+                                              `custentity_lms_time_of_visit`,
+                                              convertToTimeFotTimeSheet(
+                                                e.target.value
+                                              )
+                                            );
+                                          }}
+                                          labelName="Time Of Visit"
+                                          id={"custentity_lms_time_of_visit"}
+                                          name="custentity_lms_time_of_visit"
+                                          type="text"
+                                          placeholder="Select Visit Time"
+                                          requiredStarOnLabel={true}
+                                        />
+                                        {errors.custentity_lms_time_of_visit && (
+                                          <FormErrorText>
+                                            {
+                                              errors
+                                                .custentity_lms_time_of_visit
+                                                .message
+                                            }
+                                          </FormErrorText>
+                                        )}
+                                      </TkCol>
+
+                                      <TkCol lg={3}>
+                                        <Controller
+                                          name="custentity_lms_visit_update"
+                                          control={control}
+                                          render={({ field }) => (
+                                            <TkSelect
+                                              {...field}
+                                              id="custentity_lms_visit_update"
+                                              name="custentity_lms_visit_update"
+                                              labelName="Visit Update"
+                                              options={allVisitUpdateData}
+                                              placeholder="Select Visit Update"
+                                              requiredStarOnLabel="true"
+                                              loading={leadVisitUpdateLoading}
+                                            />
+                                          )}
+                                        />
+                                        {errors.custentity_lms_visit_update && (
+                                          <FormErrorText>
+                                            {
+                                              errors.custentity_lms_visit_update
+                                                .message
+                                            }
+                                          </FormErrorText>
+                                        )}
+                                      </TkCol>
+                                    </>
+                                  )}
 
                                   <TkCol lg={3}>
                                     <Controller

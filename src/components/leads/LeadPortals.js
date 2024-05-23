@@ -674,7 +674,7 @@ function LeadPortals({ selectedButton }) {
 
   useEffect(() => {
     if (fullAddress) {
-      setValue("addrtext", fullAddress);
+      setValue("custentity_lms_address", fullAddress);
     }
   }, [fullAddress, setValue]);
   // useEffect(() => {
@@ -969,28 +969,38 @@ function LeadPortals({ selectedButton }) {
           value: formData.custentity_market_segment.value,
           text: formData.custentity_market_segment.text,
         },
+        addr1: formData.addr1,
+        addr2: formData.addr2,
+        city: formData.city,
+        state: formData.state,
+        zip: formData.zip,
+        country: {
+          value: formData.country?.value,
+          label: formData.country?.text,
+        },
+        custentity_lms_address: formData.custentity_lms_address,
       },
       linefields: {
-        addressbook: [
-          {
-            subrecord: {
-              addressbookaddress: {
-                addr1: formData.addr1,
-                addr2: formData.addr2,
-                city: formData.city,
-                state: formData.state,
-                zip: formData.zip,
-                country: {
-                  value: formData.country.value,
-                  text: formData.country.text,
-                },
-              },
-            },
-            defaultBilling: true,
-            defaultShipping: true,
-            addrtext: formData.addrtext,
-          },
-        ],
+        // addressbook: [
+        //   {
+        //     subrecord: {
+        //       addressbookaddress: {
+        //         addr1: formData.addr1,
+        //         addr2: formData.addr2,
+        //         city: formData.city,
+        //         state: formData.state,
+        //         zip: formData.zip,
+        //         country: {
+        //           value: formData.country.value,
+        //           text: formData.country.text,
+        //         },
+        //       },
+        //     },
+        //     defaultBilling: true,
+        //     defaultShipping: true,
+        //     addrtext: formData.addrtext,
+        //   },
+        // ],
         recmachcustrecord_lms_requirement_details:
           formData.custrecord_lms_requirement.flatMap((req, i) => ({
             custrecord_lms_requirement: req,
@@ -2105,17 +2115,17 @@ function LeadPortals({ selectedButton }) {
 
                       <TkCol lg={12}>
                         <TkInput
-                          {...register("addrtext")}
-                          id="addrtext"
-                          name="addrtext"
+                          {...register("custentity_lms_address")}
+                          id="custentity_lms_address"
+                          name="custentity_lms_address"
                           type="textarea"
                           labelName="Address "
                           placeholder="Enter Address"
                           disabled={true}
                         />
-                        {errors.addrtext && (
+                        {errors.custentity_lms_address && (
                           <FormErrorText>
-                            {errors.addrtext.message}
+                            {errors.custentity_lms_address.message}
                           </FormErrorText>
                         )}
                       </TkCol>

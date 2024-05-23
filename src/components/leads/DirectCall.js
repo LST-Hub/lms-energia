@@ -128,7 +128,7 @@ const schema = Yup.object({
       smallInputMaxLength,
       `Company name should have at most ${smallInputMaxLength} characters.`
     ),
-  phone: Yup.string()
+    phone: Yup.string()
     .nullable()
     .required("Contact number is Required")
     .matches(/^[0-9+() -]*$/, "Contact number must be number.")
@@ -279,6 +279,12 @@ function DirectCall({ selectedButton }) {
         queryKey: [RQ.allleadSource],
         queryFn: tkFetch.get(`${API_BASE_URL}/lead-source`),
       },
+
+      {
+        queryKey: [RQ.allCountry],
+        queryFn: tkFetch.get(`${API_BASE_URL}/country`),
+      },
+      
       {
         queryKey: [RQ.allNurturingStatus],
         queryFn: tkFetch.get(`${API_BASE_URL}/nurtur-status`),
