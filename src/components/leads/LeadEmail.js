@@ -941,8 +941,8 @@ function LeadEmail({ selectedButton }) {
                 state: formData.state,
                 zip: formData.zip,
                 country: {
-                  value: formData.country.value,
-                  text: formData.country.text,
+                  value: formData.country?.value,
+                  text: formData.country?.text,
                 },
               },
             },

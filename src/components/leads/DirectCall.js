@@ -46,7 +46,12 @@ import TkContainer from "../TkContainer";
 import TkIcon from "../TkIcon";
 import ActivityPopup from "./ActivityPopup";
 import FormErrorText, { FormErrorBox } from "../forms/ErrorText";
-import { convertTimeToSec, convertToDayTime, convertToTime, convertToTimeFotTimeSheet } from "../../utils/time";
+import {
+  convertTimeToSec,
+  convertToDayTime,
+  convertToTime,
+  convertToTimeFotTimeSheet,
+} from "../../utils/time";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { useMutation, useQueries, useQuery } from "@tanstack/react-query";
 import tkFetch from "../../utils/fetch";
@@ -66,6 +71,9 @@ const tabs = {
   locationDetails: "locationDetails",
   leadActivity: "leadActivity",
   address: "address",
+  phoneCallActivity: "phoneCallActivity",
+  taskActivity: "taskActivity",
+  eventActivity: "eventActivity",
 };
 
 const schema = Yup.object({
@@ -176,8 +184,6 @@ const schema = Yup.object({
   ),
 }).required();
 
-
-
 function DirectCall({ selectedButton }) {
   const {
     control,
@@ -218,7 +224,7 @@ function DirectCall({ selectedButton }) {
 
   const [allCountryData, setAllCountryData] = useState([{}]);
   const [fullAddress, setFullAddress] = useState(false);
- 
+
   const [selectedEnquiryBy, setSelectedEnquiryBy] = useState(false);
 
   const results = useQueries({
@@ -635,6 +641,46 @@ function DirectCall({ selectedButton }) {
     },
   ]);
 
+  const [phoneCallRows, setPhoneCallRows] = useState([
+    {
+      title: "",
+      company: null,
+      phone: "",
+      status: null,
+      organizer: null,
+      startDate: "",
+      completeddate: "",
+      message: "",
+    },
+  ]);
+
+  const [taskCallRows, setTaskCallRows] = useState([
+    {
+      title: "",
+      company: null,
+      assigned: null,
+      priority: null,
+      status: null,
+      startDate: "",
+      dueDate: "",
+      message: "",
+    },
+  ]);
+
+  const [eventCallRows, setEventCallRows] = useState([
+    {
+      title: "",
+      company: null,
+      location: "",
+      status: null,
+      accesslevel: null,
+      organizer: null,
+      startDate: "",
+      starttime: "",
+      endtime: "",
+      message: "",
+    },
+  ]);
   // const [addressRows, setAddressRows] = useState([
   //   {
   //     addr1: "",
@@ -643,7 +689,7 @@ function DirectCall({ selectedButton }) {
   //     state: "",
   //     zip: "",
   //     country: "",
-  //     addrtext: "",
+  //     custentity_lms_address: "",
   //   },
   // ]);
 
@@ -672,10 +718,9 @@ function DirectCall({ selectedButton }) {
   }, [leadEventModal]);
   useEffect(() => {
     if (fullAddress) {
-      setValue("addrtext", fullAddress);
+      setValue("custentity_lms_address", fullAddress);
     }
   }, [fullAddress, setValue]);
-  
 
   // useEffect(() => {
   //   setIsLead(true);
@@ -729,6 +774,56 @@ function DirectCall({ selectedButton }) {
         custrecord_lms_phonenumber: "",
         custrecord_location_email: "",
         custrecord_lms_designation: "",
+      },
+    ]);
+  };
+
+  const handleAddPhoneCallRow = () => {
+    setPhoneCallRows([
+      ...phoneCallRows,
+      {
+        title: "",
+        company: null,
+        phone: "",
+        status: null,
+        organizer: null,
+        startDate: "",
+        completeddate: "",
+        message: "",
+      },
+    ]);
+  };
+
+  const handleAddTaskRow = () => {
+    setTaskCallRows([
+      ...taskCallRows,
+      {
+        title: "",
+        company: null,
+        assigned: null,
+        priority: null,
+        status: null,
+        startDate: "",
+        dueDate: "",
+        message: "",
+      },
+    ]);
+  };
+
+  const handleAddEventRow = () => {
+    setEventCallRows([
+      ...eventCallRows,
+      {
+        title: "",
+        company: null,
+        location: "",
+        status: null,
+        accesslevel: null,
+        organizer: null,
+        startDate: "",
+        starttime: "",
+        endtime: "",
+        message: "",
       },
     ]);
   };
@@ -796,6 +891,115 @@ function DirectCall({ selectedButton }) {
     control,
     name: "custrecord_lms_designation",
   });
+  const { remove: removeSubject } = useFieldArray({
+    control,
+    name: "title",
+  });
+  const { remove: removeLeadName } = useFieldArray({
+    control,
+    name: "company",
+  });
+  const { remove: removePhoneNumber } = useFieldArray({
+    control,
+    name: "phone",
+  });
+  const { remove: removeStatus } = useFieldArray({
+    control,
+    name: "status",
+  });
+  const { remove: removeOrganizer } = useFieldArray({
+    control,
+    name: "organizer",
+  });
+  const { remove: removeStartDate } = useFieldArray({
+    control,
+    name: "startDate",
+  });
+  const { remove: removeDateCompleted } = useFieldArray({
+    control,
+    name: "completeddate",
+  });
+  const { remove: removeMessage } = useFieldArray({
+    control,
+    name: "message",
+  });
+  const { remove: removeTaskTitle } = useFieldArray({
+    control,
+    name: "title",
+  });
+  const { remove: removeTaskLeadName } = useFieldArray({
+    control,
+    name: "company",
+  });
+  const { remove: removeTaskAssignedTo } = useFieldArray({
+    control,
+    name: "assigned",
+  });
+  const { remove: removeTaskPriority } = useFieldArray({
+    control,
+    name: "priority",
+  });
+  const { remove: removeTaskStartDate } = useFieldArray({
+    control,
+    name: "startDate",
+  });
+  const { remove: removeTaskDueDate } = useFieldArray({
+    control,
+    name: "dueDate",
+  });
+  const { remove: removeTaskMessage } = useFieldArray({
+    control,
+    name: "message",
+  });
+  const { remove: removeEventTitle } = useFieldArray({
+    control,
+    name: "title",
+  });
+  const { remove: removeEventLeadName } = useFieldArray({
+    control,
+    name: "company",
+  });
+
+  const { remove: removeEventLocation } = useFieldArray({
+    control,
+    name: "location",
+  });
+
+  const { remove: removeEventStatus } = useFieldArray({
+    control,
+    name: "status",
+  });
+
+  const { remove: removeEventAccess } = useFieldArray({
+    control,
+    name: "accesslevel",
+  });
+
+  const { remove: removeEventOrganizer } = useFieldArray({
+    control,
+    name: "organizer",
+  });
+
+  const { remove: removeEventStartDate } = useFieldArray({
+    control,
+    name: "startDate",
+  });
+
+  const { remove: removeEventStartTime } = useFieldArray({
+    control,
+    name: "starttime",
+  });
+
+  const { remove: removeEventEndTime } = useFieldArray({
+    control,
+    name: "endtime",
+  });
+
+  const { remove: removeEventMessage } = useFieldArray({
+    control,
+    name: "message",
+  });
+
   // const { remove: removeAddr1 } = useFieldArray({
   //   control,
   //   name: "addr1",
@@ -851,24 +1055,66 @@ function DirectCall({ selectedButton }) {
     setLocationRows(newLocationRows);
   };
 
-  const handleRemoveAddressRow = (index) => {
-    removeAddr1(index);
-    removeAddr2(index);
-    removeCity(index);
-    removeZip(index);
-    removeCountry(index);
-    removeAddrtext1(index);
-
-    const newAddressRows = [...addressRows];
-    newAddressRows.splice(index, 1);
-    setAddressRows(newAddressRows);
+  const handleRemovePhoneCallRow = (i) => {
+    removeSubject(i);
+    removeLeadName(i);
+    removePhoneNumber(i);
+    removeStatus(i);
+    removeOrganizer(i);
+    removeStartDate(i);
+    removeDateCompleted(i);
+    removeMessage(i);
+    const newPhoneCallRows = [...phoneCallRows];
+    newPhoneCallRows.splice(i, 1);
+    setPhoneCallRows(newPhoneCallRows);
   };
+
+  const handleRemoveTaskRow = (i) => {
+    removeTaskTitle(i);
+    removeTaskLeadName(i);
+    removeTaskAssignedTo(i);
+    removeTaskPriority(i);
+    removeTaskStartDate(i);
+    removeTaskDueDate(i);
+    removeTaskMessage(i);
+    const newTaskRows = [...taskCallRows];
+    newTaskRows.splice(i, 1);
+    setPhoneCallRows(newTaskRows);
+  };
+
+  const handleRemoveEventRow = (i) => {
+    removeEventTitle(i);
+    removeEventLeadName(i);
+    removeEventLocation(i);
+    removeEventStatus(i);
+    removeEventAccess(i);
+    removeEventOrganizer(i);
+    removeEventStartDate(i);
+    removeEventStartTime(i);
+    removeEventEndTime(i);
+    removeEventMessage(i);
+
+    const newEventRows = [...eventCallRows];
+    newEventRows.splice(i, 1);
+    setPhoneCallRows(newEventRows);
+  };
+
+  // const handleRemoveAddressRow = (index) => {
+  //   removeAddr1(index);
+  //   removeAddr2(index);
+  //   removeCity(index);
+  //   removeZip(index);
+  //   removeCountry(index);
+  //   removeAddrtext1(index);
+
+  //   const newAddressRows = [...addressRows];
+  //   newAddressRows.splice(index, 1);
+  //   setAddressRows(newAddressRows);
+  // };
 
   const leadPost = useMutation({
     mutationFn: tkFetch.post(`${API_BASE_URL}/lead`),
   });
-
-  
 
   const onSubmit = (formData) => {
     const apiData = {
@@ -910,45 +1156,34 @@ function DirectCall({ selectedButton }) {
           value: formData.custentity_market_segment.value,
           label: formData.custentity_market_segment.text,
         },
+        addr1: formData.addr1,
+        addr2: formData.addr2,
+        city: formData.city,
+        state: formData.state,
+        zip: formData.zip,
+        country: {
+          value: formData.country?.value,
+          label: formData.country?.text,
+        },
+        custentity_lms_address: formData.custentity_lms_address,
       },
       linefields: {
-        addressbook: [
-          {
-            subrecord: {
-              addressbookaddress: {
-                addr1: formData.addr1,
-                addr2: formData.addr2,
-                city: formData.city,
-                state: formData.state,
-                zip: formData.zip,
-                country: {
-                  value: formData.country?.value,
-                  label: formData.country?.text,
-                },
-              },
-            },
-            defaultBilling: true,
-            defaultShipping: true,
-            label: formData.label,
-          },
-        ],
         recmachcustrecord_lms_requirement_details:
-          formData.custrecord_lms_requirement.flatMap((req, i) => ({
+          formData.custrecord_lms_requirement.map((req, i) => ({
             custrecord_lms_division: {
-              value: formData.custrecord_lms_division[i]?.value,
-              label: formData.custrecord_lms_division[i]?.text,
+              value: formData.custrecord_lms_division[i]?.value || "",
+              label: formData.custrecord_lms_division[i]?.text || "",
             },
             custrecord_lms_requirement: req,
             custrecord_lms_project_name:
               formData.custrecord_lms_project_name[i],
 
-           
             custrecord_lms_duration: Number(
               formData.custrecord_lms_duration[i]
             ),
             custrecord_lms_unit_of_measure: {
-              value: formData.custrecord_lms_unit_of_measure[i].value,
-              label: formData.custrecord_lms_unit_of_measure[i].text,
+              value: formData.custrecord_lms_unit_of_measure[i]?.value,
+              label: formData.custrecord_lms_unit_of_measure[i]?.text,
             },
             custrecord_lms_value: Number(formData.custrecord_lms_value[i]),
             custrecord_lms_expected_delivery_date: [
@@ -961,7 +1196,7 @@ function DirectCall({ selectedButton }) {
             custrecordlms_location: loc,
             custrecord_lms_contactperson_name:
               formData.custrecord_lms_contactperson_name[i],
-              custrecord_lms_phonenumber: formData.custrecord_lms_phonenumber[i],
+            custrecord_lms_phonenumber: formData.custrecord_lms_phonenumber[i],
             custrecord_location_email:
               formData.custrecord_location_email[i] || "",
             custrecord_lms_designation: formData.custrecord_lms_designation[i],
@@ -1006,45 +1241,91 @@ function DirectCall({ selectedButton }) {
           },
         ],
 
-        calls: {
-          title: formData.title,
-          company: formData.company,
-          phone: formData.phone,
+        calls: formData.phonecalls?.map((call, i) => ({
+          title: call.title,
+          // company: {
+          //   value: call.company?.value,
+          //   label: call.company?.text,
+          // },
+          // phone: call.phone,
           status: {
-            value: formData.status?.value,
-            label: formData.status?.text,
+            value: call.status?.value,
+            label: call.status?.text,
           },
           organizer: {
-            value: formData.organizer?.value,
-            label: formData.organizer?.text,
+            value: call.organizer?.value,
+            label: call.organizer?.text,
           },
-          startdate: formatDateForAPI(formData.startdate),
-          message: formData.message,
-        },
+          startdate: formatDateForAPI(call.startdate),
+          message: call.message,
+        })),
 
-        tasks: {
-          title: formData.title,
-          company: formData.company,
-          priority: {
-            value: formData.priority?.value,
-            label: formData.priority?.text,
-          },
-          startdate: formatDateForAPI(formData.startdate),
-          duedate: formatDateForAPI(formData.duedate),
-          message: formData.message,
-        },
+        // tasks: formData.tasks?.map((task, i) => ({
+        //   title: task.title,
+        //   // company: {
+        //   //   value: task.company?.value,
+        //   //   label: task.company?.text,
+        //   // },
+        //   priority: {
+        //     value: task.priority?.value,
+        //     label: task.priority?.text,
+        //   },
+        //   startdate: formatDateForAPI(task.startdate),
+        //   duedate: formatDateForAPI(task.duedate),
+        //   message: task.message,
+        // })),
 
-        events: {
-          title: formData.title,
-          company: formData.company,
-          location: formData.location,
-          starttime: formData.starttime,
-          endtime: formData.endtime,
-          message: formData.message,
-        },
+        // events: formData.events?.map((event, i) => ({
+        //   title: event.title,
+        //   // company: {
+        //   //   value: event.company?.value,
+        //   //   label: event.company?.text,
+        //   // },
+        //   location: event.location,
+        //   starttime: event.starttime,
+        //   endtime: event.endtime,
+        //   message: event.message,
+        // })),
+
+        // calls: {
+        //   title: formData.title,
+        //   company: formData.company,
+        //   phone: formData.phone,
+        //   status: {
+        //     value: formData.status?.value,
+        //     label: formData.status?.text,
+        //   },
+        //   organizer: {
+        //     value: formData.organizer?.value,
+        //     label: formData.organizer?.text,
+        //   },
+        //   startdate: formatDateForAPI(formData.startdate),
+        //   message: formData.message,
+        // },
+
+        // tasks: {
+        //   title: formData.title,
+        //   company: formData.company,
+        //   priority: {
+        //     value: formData.priority?.value,
+        //     label: formData.priority?.text,
+        //   },
+        //   startdate: formatDateForAPI(formData.startdate),
+        //   duedate: formatDateForAPI(formData.duedate),
+        //   message: formData.message,
+        // },
+
+        // events: {
+        //   title: formData.title,
+        //   company: formData.company,
+        //   location: formData.location,
+        //   starttime: formData.starttime,
+        //   endtime: formData.endtime,
+        //   message: formData.message,
+        // },
       },
     };
-
+    console.log("lead created data is: ", apiData);
     leadPost.mutate(apiData, {
       onSuccess: (data) => {
         TkToastSuccess("Lead Created Successfully");
@@ -1054,6 +1335,7 @@ function DirectCall({ selectedButton }) {
         TkToastError("error while creating Lead", error);
       },
     });
+    console.log("formData IS:", formData);
   };
 
   const requirementDetailsColumns = [
@@ -1146,7 +1428,7 @@ function DirectCall({ selectedButton }) {
     },
     {
       Header: "Duration",
-      accessor: "duration",
+      accessor: "custrecord_lms_duration",
       Cell: (cellProps) => {
         return (
           <>
@@ -1549,8 +1831,743 @@ function DirectCall({ selectedButton }) {
     []
   );
 
+  const phoneCallActivityColumns = [
+    {
+      Header: "Subject",
+      accessor: "title",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              id="title"
+              placeholder="Enter Subject"
+              {...register(`title[${cellProps.row.index}]`)}
+              rules={{ required: "Subject is required" }}
+            />
+            {errors?.title?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.title?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+    // {
+    //   Header: "Lead Name *",
+    //   accessor: "company",
+    //   Cell: (cellProps) => {
+    //     return (
+    //       <>
+    //         <Controller
+    //           control={control}
+    //           name={`company[${cellProps.row.index}]`}
+    //           rules={{ required: "Lead Name is required" }}
+    //           render={({ field }) => (
+    //             <TkSelect
+    //               {...field}
+    //               id={"company"}
+    //               requiredStarOnLabel={true}
+    //               style={{ width: "200px" }}
+    //             />
+    //           )}
+    //         />
+    //         {errors?.company?.[cellProps.row.index] && (
+    //           <FormErrorText>
+    //             {errors?.company?.[cellProps.row.index]?.message}
+    //           </FormErrorText>
+    //         )}
+    //       </>
+    //     );
+    //   },
+    // },
 
+    // {
+    //   Header: "Phone Number",
+    //   accessor: "phone",
+    //   Cell: (cellProps) => {
+    //     return (
+    //       <>
+    //         <TkInput
+    //           type="text"
+    //           placeholder="Enter Phone Number"
+    //           id="phone"
+    //           {...register(`phone[${cellProps.row.index}]`)}
+    //         />
+    //         {errors?.phone?.[cellProps.row.index] && (
+    //           <FormErrorText>
+    //             {errors?.phone?.[cellProps.row.index]?.message}
+    //           </FormErrorText>
+    //         )}
+    //       </>
+    //     );
+    //   },
+    // },
 
+    {
+      Header: "Status",
+      accessor: "status",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`status[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <>
+                  <TkSelect
+                    {...field}
+                    id="status"
+                    options={[
+                      { label: "Email", value: "Email" },
+                      { label: "Direct Call", value: "Direct Call" },
+                      { label: "Social Media", value: "Social Media" },
+                      { label: "Portals", value: "Portals" },
+                    ]}
+                  />
+                  {errors?.status?.[cellProps.row.index] && (
+                    <FormErrorText>
+                      {errors?.status?.[cellProps.row.index]?.message}
+                    </FormErrorText>
+                  )}
+                </>
+              )}
+            />
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Organizer",
+      accessor: "organizer",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`organizer[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <>
+                  <TkSelect
+                    {...field}
+                    id="organizer"
+                    options={allSalesTeamData}
+                  />
+                  {errors?.organizer?.[cellProps.row.index] && (
+                    <FormErrorText>
+                      {errors?.organizer?.[cellProps.row.index]?.message}
+                    </FormErrorText>
+                  )}
+                </>
+              )}
+            />
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Date",
+      accessor: "startDate",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`startDate[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <>
+                  <TkDate {...field} id="startDate" placeholder="Select Date" />
+                  {errors?.startDate?.[cellProps.row.index] && (
+                    <FormErrorText>
+                      {errors?.startDate?.[cellProps.row.index]?.message}
+                    </FormErrorText>
+                  )}
+                </>
+              )}
+            />
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Date Completed",
+      accessor: "completeddate",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`completeddate[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <>
+                  <TkDate
+                    {...field}
+                    id="completeddate"
+                    placeholder="Select Date Completed"
+                  />
+                  {errors?.completeddate?.[cellProps.row.index] && (
+                    <FormErrorText>
+                      {errors?.completeddate?.[cellProps.row.index]?.message}
+                    </FormErrorText>
+                  )}
+                </>
+              )}
+            />
+          </>
+        );
+      },
+    },
+    {
+      Header: "Message",
+      accessor: "message",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="textarea"
+              placeholder="Enter Message"
+              id="message"
+              {...register(`message[${cellProps.row.index}]`)}
+            />
+            {errors?.message?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.message?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+    {
+      Header: "Action",
+      accessor: "action",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkButton
+              type={"button"}
+              onClick={() => {
+                handleRemovePhoneCallRow(cellProps.row.index);
+              }}
+              disabled={phoneCallRows.length === 1}
+            >
+              Delete
+            </TkButton>
+          </>
+        );
+      },
+    },
+  ];
+
+  const taskActivityColumns = [
+    {
+      Header: "Title",
+      accessor: "title",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              id="title"
+              placeholder="Enter Title"
+              {...register(`title[${cellProps.row.index}]`)}
+              rules={{ required: "Title is required" }}
+            />
+            {errors?.title?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.title?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+    {
+      Header: "Lead Name *",
+      accessor: "company",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`company[${cellProps.row.index}]`}
+              rules={{ required: "Lead Name is required" }}
+              render={({ field }) => (
+                <TkSelect
+                  {...field}
+                  id={"company"}
+                  requiredStarOnLabel={true}
+                  style={{ width: "200px" }}
+                />
+              )}
+            />
+            {errors?.company?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.company?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Assigned To",
+      accessor: "assigned",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`assigned[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <>
+                  <TkSelect {...field} id="assigned" />
+                  {errors?.assigned?.[cellProps.row.index] && (
+                    <FormErrorText>
+                      {errors?.assigned?.[cellProps.row.index]?.message}
+                    </FormErrorText>
+                  )}
+                </>
+              )}
+            />
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Proirity",
+      accessor: "priority",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`priority[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <>
+                  <TkSelect {...field} id="priority" />
+                  {errors?.priority?.[cellProps.row.index] && (
+                    <FormErrorText>
+                      {errors?.priority?.[cellProps.row.index]?.message}
+                    </FormErrorText>
+                  )}
+                </>
+              )}
+            />
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Status",
+      accessor: "status",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`status[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <>
+                  <TkSelect {...field} id="status" />
+                  {errors?.status?.[cellProps.row.index] && (
+                    <FormErrorText>
+                      {errors?.status?.[cellProps.row.index]?.message}
+                    </FormErrorText>
+                  )}
+                </>
+              )}
+            />
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Date",
+      accessor: "startDate",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`startDate[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <>
+                  <TkDate {...field} id="startDate" placeholder="Select Date" />
+                  {errors?.startDate?.[cellProps.row.index] && (
+                    <FormErrorText>
+                      {errors?.startDate?.[cellProps.row.index]?.message}
+                    </FormErrorText>
+                  )}
+                </>
+              )}
+            />
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Date Date",
+      accessor: "dueDate",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`dueDate[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <>
+                  <TkDate
+                    {...field}
+                    id="dueDate"
+                    placeholder="Select Date Completed"
+                  />
+                  {errors?.dueDate?.[cellProps.row.index] && (
+                    <FormErrorText>
+                      {errors?.dueDate?.[cellProps.row.index]?.message}
+                    </FormErrorText>
+                  )}
+                </>
+              )}
+            />
+          </>
+        );
+      },
+    },
+    {
+      Header: "Message",
+      accessor: "message",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="textarea"
+              placeholder="Enter Message"
+              id="message"
+              {...register(`message[${cellProps.row.index}]`)}
+            />
+            {errors?.message?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.message?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+    {
+      Header: "Action",
+      accessor: "action",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkButton
+              type={"button"}
+              onClick={() => {
+                handleRemoveTaskRow(cellProps.row.index);
+              }}
+              disabled={taskCallRows.length === 1}
+            >
+              Delete
+            </TkButton>
+          </>
+        );
+      },
+    },
+  ];
+
+  const eventActivityColumns = [
+    {
+      Header: "Title",
+      accessor: "title",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              id="title"
+              placeholder="Enter Title"
+              {...register(`title[${cellProps.row.index}]`)}
+              rules={{ required: "Title is required" }}
+            />
+            {errors?.title?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.title?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+    {
+      Header: "Lead Name *",
+      accessor: "company",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`company[${cellProps.row.index}]`}
+              rules={{ required: "Lead Name is required" }}
+              render={({ field }) => (
+                <TkSelect
+                  {...field}
+                  id={"company"}
+                  requiredStarOnLabel={true}
+                  style={{ width: "200px" }}
+                />
+              )}
+            />
+            {errors?.company?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.company?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+    {
+      Header: "Location",
+      accessor: "location",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              id="location"
+              placeholder="Enter Location"
+              {...register(`location[${cellProps.row.index}]`)}
+              rules={{ required: "Location is required" }}
+            />
+            {errors?.location?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.location?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Status",
+      accessor: "status",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`status[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <>
+                  <TkSelect {...field} id="status" />
+                  {errors?.status?.[cellProps.row.index] && (
+                    <FormErrorText>
+                      {errors?.status?.[cellProps.row.index]?.message}
+                    </FormErrorText>
+                  )}
+                </>
+              )}
+            />
+          </>
+        );
+      },
+    },
+    {
+      Header: "Event Access",
+      accessor: "accesslevel",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`accesslevel[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <>
+                  <TkSelect {...field} id="accesslevel" />
+                  {errors?.accesslevel?.[cellProps.row.index] && (
+                    <FormErrorText>
+                      {errors?.accesslevel?.[cellProps.row.index]?.message}
+                    </FormErrorText>
+                  )}
+                </>
+              )}
+            />
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Organizer",
+      accessor: "organizer",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`organizer[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <>
+                  <TkSelect {...field} id="organizer" />
+                  {errors?.organizer?.[cellProps.row.index] && (
+                    <FormErrorText>
+                      {errors?.organizer?.[cellProps.row.index]?.message}
+                    </FormErrorText>
+                  )}
+                </>
+              )}
+            />
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Date",
+      accessor: "startDate",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`startDate[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <>
+                  <TkDate {...field} id="startDate" placeholder="Select Date" />
+                  {errors?.startDate?.[cellProps.row.index] && (
+                    <FormErrorText>
+                      {errors?.startDate?.[cellProps.row.index]?.message}
+                    </FormErrorText>
+                  )}
+                </>
+              )}
+            />
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Start Time",
+      accessor: "starttime",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              id="starttime"
+              placeholder="Enter Start Time"
+              {...register(`starttime[${cellProps.row.index}]`, {
+                required: "Start Time is required",
+                validate: (value) => {
+                  if (value && !/^[0-9]*([.:][0-9]+)?$/.test(value)) {
+                    return "Invalid Start Time";
+                  }
+                },
+              })}
+              onBlur={(e) => {
+                setValue(
+                  `starttime[${cellProps.row.index}]`,
+                  convertToTime(e.target.value)
+                );
+              }}
+            />
+            {errors?.starttime?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.starttime?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "End Time",
+      accessor: "endtime",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              id="endtime"
+              placeholder="Enter End Time"
+              {...register(`endtime[${cellProps.row.index}]`, {
+                required: "End Time is required",
+                validate: (value) => {
+                  if (value && !/^[0-9]*([.:][0-9]+)?$/.test(value)) {
+                    return "Invalid End Time";
+                  }
+                },
+              })}
+              onBlur={(e) => {
+                setValue(
+                  `endtime[${cellProps.row.index}]`,
+                  convertToTime(e.target.value)
+                );
+              }}
+            />
+            {errors?.endtime?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.endtime?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+    {
+      Header: "Message",
+      accessor: "message",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="textarea"
+              placeholder="Enter Message"
+              id="message"
+              {...register(`message[${cellProps.row.index}]`)}
+            />
+            {errors?.message?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.message?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+    {
+      Header: "Action",
+      accessor: "action",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkButton
+              type={"button"}
+              onClick={() => {
+                handleRemoveEventRow(cellProps.row.index);
+              }}
+              disabled={eventCallRows.length === 1}
+            >
+              Delete
+            </TkButton>
+          </>
+        );
+      },
+    },
+  ];
   // const addressColumns = [
   //   {
   //     Header: "Address 1",
@@ -1695,7 +2712,6 @@ function DirectCall({ selectedButton }) {
   //     },
   //   },
 
-    
   //   {
   //     Header: "Address",
   //     accessor: "label",
@@ -1757,7 +2773,7 @@ function DirectCall({ selectedButton }) {
   const handleInputBlur = (e) => {
     concatenateAddress();
   };
-  
+
   return (
     <>
       <TkRow className="justify-content-center">
@@ -2223,17 +3239,17 @@ function DirectCall({ selectedButton }) {
 
                       <TkCol lg={10}>
                         <TkInput
-                          {...register("addrtext")}
-                          id="addrtext"
-                          name="addrtext"
+                          {...register("custentity_lms_address")}
+                          id="custentity_lms_address"
+                          name="custentity_lms_address"
                           type="textarea"
                           labelName="Address "
                           placeholder="Enter Address"
                           disabled={true}
                         />
-                        {errors.addrtext && (
+                        {errors.custentity_lms_address && (
                           <FormErrorText>
-                            {errors.addrtext.message}
+                            {errors.custentity_lms_address.message}
                           </FormErrorText>
                         )}
                       </TkCol>
@@ -2326,16 +3342,49 @@ function DirectCall({ selectedButton }) {
                         Lead Nurturing
                       </NavLink>
                     </NavItem>
-                    <NavItem>
+                    {/* <NavItem>
                       <NavLink
                         href="#"
                         className={classnames({
                           active: activeSubTab === tabs.leadActivity,
                         })}
                         onClick={() => toggleTab(tabs.leadActivity)}
-                        // onClick={leadActivityToggle}
                       >
                         Activity
+                      </NavLink>
+                    </NavItem> */}
+                    <NavItem>
+                      <NavLink
+                        href="#"
+                        className={classnames({
+                          active: activeSubTab === tabs.phoneCallActivity,
+                        })}
+                        onClick={() => toggleTab(tabs.phoneCallActivity)}
+                      >
+                        Phone Call
+                      </NavLink>
+                    </NavItem>
+                    <NavItem>
+                      <NavLink
+                        href="#"
+                        className={classnames({
+                          active: activeSubTab === tabs.taskActivity,
+                        })}
+                        onClick={() => toggleTab(tabs.taskActivity)}
+                      >
+                        Task
+                      </NavLink>
+                    </NavItem>
+                    <NavItem>
+                      <NavLink
+                        href="#"
+                        className={classnames({
+                          active: activeSubTab === tabs.eventActivity,
+                        })}
+                        onClick={() => toggleTab(tabs.eventActivity)}
+                        // onClick={leadActivityToggle}
+                      >
+                        Event
                       </NavLink>
                     </NavItem>
                     {/* <NavItem>
@@ -2501,8 +3550,7 @@ function DirectCall({ selectedButton }) {
                                   name="custrecord_lms_statusoflead"
                                   labelName="Lead Status"
                                   placeholder="Select Lead Status"
-                              requiredStarOnLabel={true}
-
+                                  requiredStarOnLabel={true}
                                   options={[
                                     {
                                       value: "7",
@@ -2566,43 +3614,55 @@ function DirectCall({ selectedButton }) {
                       </div>
                     </TabPane>
 
-                    <TabPane tabId={tabs.leadActivity}>
+                    <TabPane tabId={tabs.phoneCallActivity}>
+                      <TkContainer>
+                        <TkTableContainer
+                          customPageSize={true}
+                          showAddButton={true}
+                          onClickAdd={handleAddPhoneCallRow}
+                          onclickDelete={handleRemovePhoneCallRow}
+                          columns={phoneCallActivityColumns}
+                          data={phoneCallRows}
+                          thClass="text-dark"
+                          dynamicTable={true}
+                        />
+                      </TkContainer>
+                    </TabPane>
+
+                    <TabPane tabId={tabs.taskActivity}>
+                      <TkContainer>
+                        <TkTableContainer
+                          customPageSize={true}
+                          showAddButton={true}
+                          onClickAdd={handleAddTaskRow}
+                          onclickDelete={handleRemoveTaskRow}
+                          columns={taskActivityColumns}
+                          data={taskCallRows}
+                          thClass="text-dark"
+                          dynamicTable={true}
+                        />
+                      </TkContainer>
+                    </TabPane>
+
+                    <TabPane tabId={tabs.eventActivity}>
+                      <TkContainer>
+                        <TkTableContainer
+                          customPageSize={true}
+                          showAddButton={true}
+                          onClickAdd={handleAddEventRow}
+                          onclickDelete={handleRemoveEventRow}
+                          columns={eventActivityColumns}
+                          data={eventCallRows}
+                          thClass="text-dark"
+                          dynamicTable={true}
+                        />
+                      </TkContainer>
+                    </TabPane>
+
+                    {/* <TabPane tabId={tabs.phoneCallActivity}>
                       <div>
                         <TkRow className="g-3">
-                        {/* <Nav className="nav-tabs dropdown-tabs nav-tabs-custom mb-3 mt-4">
-                            <NavItem>
-                              <NavLink
-                                // href="#"
-                                className={classnames({
-                                  active: activeTab === tabs.phoneCall,
-                                })}
-                              >
-                                Phone Call
-                              </NavLink>
-                            </NavItem>
-
-                            <NavItem>
-                              <NavLink
-                                // href="#"
-                                className={classnames({
-                                  active: activeTab === tabs.phoneCall,
-                                })}
-                              >
-                                Task
-                              </NavLink>
-                            </NavItem>
-
-                            <NavItem>
-                              <NavLink
-                                // href="#"
-                                className={classnames({
-                                  active: activeTab === tabs.phoneCall,
-                                })}
-                              >
-                                Meeting
-                              </NavLink>
-                            </NavItem>
-                          </Nav> */}
+                          
                           <TkCol lg={2}>
                             <TkButton
                               type="button"
@@ -2663,7 +3723,21 @@ function DirectCall({ selectedButton }) {
                           </TabContent>
                         </TkRow>
                       </div>
-                    </TabPane>
+                    </TabPane> */}
+                    {/* <TabPane tabId={tabs.address}>
+                      <TkContainer>
+                        <TkTableContainer
+                          customPageSize={true}
+                          showAddButton={true}
+                          onClickAdd={handleAddAddressRow}
+                          onclickDelete={handleRemoveAddressRow}
+                          columns={addressColumns}
+                          data={addressRows}
+                          thClass="text-dark"
+                          dynamicTable={true}
+                        />
+                      </TkContainer>
+                    </TabPane> */}
 
                     {/* <TabPane tabId={tabs.address}>
                       <TkContainer>

@@ -37,7 +37,12 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import TkModal, { TkModalHeader } from "../TkModal";
 import ActivityPopup from "./ActivityPopup";
 import FormErrorText from "../forms/ErrorText";
-import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQueries,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import tkFetch from "../../utils/fetch";
 import { TkToastError, TkToastSuccess } from "../TkToastContainer";
 import LeadTaskPopup from "./LeadTaskPopup";
@@ -46,6 +51,7 @@ import TkLoader from "../TkLoader";
 import { formatDateForAPI } from "../../utils/date";
 import DeleteModal from "../../utils/DeleteModal";
 import TkEditCardHeader from "../TkEditCardHeader";
+import { convertToTime } from "../../utils/time";
 
 const schema = Yup.object({
   custentity_lms_leadsource: Yup.object()
@@ -215,7 +221,10 @@ function EditLead({ id, userData, mode, selectedButton }) {
   const [selectedEnquiryBy, setSelectedEnquiryBy] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
   const [confirmModal, setConfirmModal] = useState(false);
-
+  const [requirementDetailsId, setRequirementDetailsId] = useState(null);
+  const [locationDetailsId, setLocationDetailsId] = useState(null);
+  const [leadAssignId, setLeadAssignId] = useState(null);
+  const [leadNurturingId, setLeadNurturingId] = useState(null);
 
   const results = useQueries({
     queries: [
@@ -583,9 +592,6 @@ function EditLead({ id, userData, mode, selectedButton }) {
     leadSourceData,
     countryData,
   ]);
-  const [requirementDetailsSections, setRequirementDetailsSections] = useState([
-    { id: 1, isVisible: true },
-  ]);
 
   const leadActivityToggle = useCallback(() => {
     if (activityModal) {
@@ -611,44 +617,15 @@ function EditLead({ id, userData, mode, selectedButton }) {
     }
   }, [leadEventModal]);
 
-  useEffect(() => {
-    setIsLeadEdit(true);
-  }, []);
-  const handleAddSection = () => {
-    const newId = requirementDetailsSections.length + 1;
-    setRequirementDetailsSections([
-      ...requirementDetailsSections,
-      { id: newId, isVisible: true },
-    ]);
-  };
-
-  const handleToggleVisibility = (id) => {
-    setRequirementDetailsSections((prevSections) =>
-      prevSections.map((section) =>
-        section.id === id
-          ? { ...section, isVisible: !section.isVisible }
-          : section
-      )
-    );
-  };
-  // const toggleTab = (tab) => {
-  //   if (activeTab !== tab) {
-  //     setActiveTab(tab);
-  //     router.push(`${urls.lead}/add?tab=${tab}`, undefined, {
-  //       scroll: false,
-  //     });
-  //   }
-  // };
-
   const { data, isLoading, isFetched, isError, error } = useQuery({
     queryKey: [RQ.lead, lid],
     queryFn: tkFetch.get(`${API_BASE_URL}/lead/${lid}`),
     enabled: !!lid,
   });
 
-  console.log("Created Lead is:",data)
-  const queryClient = useQueryClient();
+  // console.log("lead data", data);
 
+  const queryClient = useQueryClient();
   const concatenateAddress = useCallback(() => {
     const addr1 = getValues("addr1") || "";
     const addr2 = getValues("addr2") || "";
@@ -666,15 +643,18 @@ function EditLead({ id, userData, mode, selectedButton }) {
   const handleInputBlur = (e) => {
     concatenateAddress();
   };
+
   useEffect(() => {
     if (fullAddress) {
-      setValue("addrtext", fullAddress);
+      setValue("custentity_lms_address", fullAddress);
     }
   }, [fullAddress, setValue]);
 
   useEffect(() => {
     if (isFetched && Array.isArray(data) && data.length > 0) {
       const { bodyValues, lineValues } = data[0];
+      console.log("bodyValues",bodyValues);
+      // console.log("lineValues", lineValues.recmachcustrecord_lms_requirement_details);
 
       // set the body level fields
       setValue("custentity_lms_leadsource", {
@@ -711,17 +691,31 @@ function EditLead({ id, userData, mode, selectedButton }) {
         label: bodyValues?.custentity_market_segment[0].text,
         value: bodyValues?.custentity_market_segment[0].value,
       });
+      setValue("addr1", bodyValues?.addr1);
+      setValue("addr2", bodyValues?.addr2);
+      setValue("city", bodyValues?.city);
+      setValue("state", bodyValues?.state);
+      setValue("zip", bodyValues?.zip);
+      setValue(
+        "country",
+        country
+          ? {
+              label: bodyValues?.country?.text,
+              value: bodyValues?.country?.value,
+            }
+          : null
+      );
+      // setValue("custentity_lms_address", bodyValues?.custentity_lms_address);
 
       // set the line level fields
 
       lineValues?.recmachcustrecord_lms_requirement_details.forEach(
         (detail, index) => {
+          console.log("detail", detail)
           setValue(`custrecord_lms_division[${index}]`, {
             label: detail.custrecord_lms_division?.text,
             value: detail.custrecord_lms_division?.value,
           });
-
-
 
           setValue(
             `custrecord_lms_requirement[${index}]`,
@@ -734,8 +728,8 @@ function EditLead({ id, userData, mode, selectedButton }) {
           );
 
           setValue(
-            `duration[${index}]`,
-            detail.duration
+            `custrecord_lms_duration[${index}]`,
+            detail.custrecord_lms_duration
           );
 
           setValue(`custrecord_lms_unit_of_measure[${index}]`, {
@@ -753,7 +747,7 @@ function EditLead({ id, userData, mode, selectedButton }) {
             detail.custrecord_lms_expected_delivery_date
           );
 
-          setLocationRows((prevRows) => {
+          setRows((prevRows) => {
             const newRows = [...prevRows];
             newRows[index] = {
               ...newRows[index],
@@ -790,15 +784,7 @@ function EditLead({ id, userData, mode, selectedButton }) {
           detail.custrecord_location_email
         );
 
-        // setRows((prevRows) => {
-        //   const newRows = [...prevRows];
-        //   newRows[index] = {
-        //     ...newRows[index],
-        //     custrecordlms_location: detail.custrecordlms_location,
-        //   };
-        //   return newRows;
-        // });
-        setRows((prevRows) => {
+        setLocationRows((prevRows) => {
           const newRows = [...prevRows];
           newRows[index] = {
             ...newRows[index],
@@ -808,44 +794,63 @@ function EditLead({ id, userData, mode, selectedButton }) {
         });
       });
 
-      lineValues?.recmachcustrecord_lms_lead_assigning.forEach((detail, index) => {
-        setValue(`custrecord_lms_region[${index}]`, {
-          label: detail.custrecord_lms_region?.text,
-          value: detail.custrecord_lms_region?.value,
-        });
-
-        setValue(`custrecord_lms_sales_team_name[${index}]`, {
-          label: detail.custrecord_lms_sales_team_name?.text,
-          value: detail.custrecord_lms_sales_team_name?.value,
-        });
-
-        
-
-       
+      setValue(`custrecord_lms_region`, {
+        label:
+          lineValues?.recmachcustrecord_lms_lead_assigning[0]
+            ?.custrecord_lms_region[0]?.text,
+        value:
+          lineValues?.recmachcustrecord_lms_lead_assigning[0]
+            ?.custrecord_lms_region[0]?.value,
       });
 
-      lineValues?.recmachcustrecord_lms_leadnurt.forEach((detail, index) => {
-       
-        
-        setValue(`custrecord_lms_primary_action[${index}]`, {
-          label: detail.custrecord_lms_primary_action?.text,
-          value: detail.custrecord_lms_primary_action?.value,
-        });
+      setValue(`custrecord_lms_sales_team_name`, {
+        label:
+          lineValues?.recmachcustrecord_lms_lead_assigning[0]
+            ?.custrecord_lms_sales_team_name[0]?.text,
+        value:
+          lineValues?.recmachcustrecord_lms_lead_assigning[0]
+            ?.custrecord_lms_sales_team_name[0]?.value,
+      });
 
-        setValue(`custrecord_lms_sales_team_name[${index}]`, {
-          label: detail.custrecord_lms_sales_team_name?.text,
-          value: detail.custrecord_lms_sales_team_name?.value,
-        });
-        setValue(
-          `custrecord_lms_lead_value[${index}]`,
-          detail.custrecord_lms_lead_value
-        );
-        
+      setValue(`custrecord_lms_primary_action`, {
+        label:
+          lineValues?.recmachcustrecord_lms_leadnurt[0]
+            ?.custrecord_lms_primary_action[0]?.text,
+        value:
+          lineValues?.recmachcustrecord_lms_leadnurt[0]
+            ?.custrecord_lms_primary_action[0]?.value,
+      });
 
-       
+      setValue(
+        "custrecord_lms_lead_value",
+        lineValues?.recmachcustrecord_lms_leadnurt[0]?.custrecord_lms_lead_value
+      );
+
+      setValue(`custrecord_lms_statusoflead`, {
+        label:
+          lineValues?.recmachcustrecord_lms_leadnurt[0]
+            ?.custrecord_lms_statusoflead[0]?.text,
+        value:
+          lineValues?.recmachcustrecord_lms_leadnurt[0]
+            ?.custrecord_lms_statusoflead[0]?.value,
+      });
+
+      setValue(
+        "custrecord_lms_lead_unqualifie",
+        lineValues?.recmachcustrecord_lms_leadnurt[0]
+          ?.custrecord_lms_lead_unqualifie
+      );
+
+      setValue(`custrecord_lms_prospect_nurtur`, {
+        label:
+          lineValues?.recmachcustrecord_lms_leadnurt[0]
+            ?.custrecord_lms_prospect_nurtur[0]?.text,
+        value:
+          lineValues?.recmachcustrecord_lms_leadnurt[0]
+            ?.custrecord_lms_prospect_nurtur[0]?.value,
       });
     }
-  }, [data, isFetched, setValue, concatenateAddress, id]);
+  }, [data, isFetched, setValue, concatenateAddress, id,country]);
 
   useEffect(() => {
     const now = new Date();
@@ -997,206 +1002,6 @@ function EditLead({ id, userData, mode, selectedButton }) {
     setLocationRows(newLocationRows);
   };
 
-  const leadPost = useMutation({
-    mutationFn: tkFetch.post(`${API_BASE_URL}/lead`),
-  });
-
-  const onSubmit = (formData) => {
-    if (!editMode) return;
-    const apiData = {
-      resttype: "Update",
-      recordtype: "lead",
-      bodyfields: {
-        custentity_lms_leadsource: {
-          value: formData.custentity_lms_leadsource.value,
-          label: formData.custentity_lms_leadsource.text,
-        },
-        custentity_lms_createdby: formData.custentity_lms_createdby,
-        custentity_lms_createddate: formData.custentity_lms_createddate,
-        subsidiary: {
-          value: formData.subsidiary.value,
-          label: formData.subsidiary.text,
-        },
-        custentity_lms_name: formData.custentity_lms_name,
-        custentity_lms_personal_phonenumber:
-          formData.custentity_lms_personal_phonenumber,
-        custentity_lms_personal_email: formData.custentity_lms_personal_email,
-        custentity_lms_enquiryby: {
-          value: formData.custentity_lms_enquiryby.value,
-          label: formData.custentity_lms_enquiryby.text,
-        },
-        custentity_lms_noteother: formData.custentity_lms_noteother,
-        companyname: formData.companyname,
-        phone: formData.phone,
-        email: formData.email,
-        custentity_lms_cr_no: formData.custentity_lms_cr_no,
-        custentity3: formData.custentity3,
-        custentity_lms_client_type: {
-          value: formData.custentity_lms_client_type.value,
-          label: formData.custentity_lms_client_type.text,
-        },
-        custentity_market_segment: {
-          value: formData.custentity_market_segment.value,
-          label: formData.custentity_market_segment.text,
-        },
-      },
-      linefields: {
-        addressbook: [
-          {
-            subrecord: {
-              addressbookaddress: {
-                addr1: formData.addr1,
-                addr2: formData.addr2,
-                city: formData.city,
-                state: formData.state,
-                zip: formData.zip,
-                country: {
-                  value: formData.country?.value,
-                  text: formData.country?.text,
-                },
-              },
-            },
-            defaultBilling: true,
-            defaultShipping: true,
-            addrtext: formData.addrtext,
-          },
-        ],
-        recmachcustrecord_lms_requirement_details:
-          formData.custrecord_lms_requirement.flatMap((req, i) => ({
-            custrecord_lms_requirement: req,
-            custrecord_lms_project_name:
-              formData.custrecord_lms_project_name[i],
-
-            custrecord_lms_division: {
-              value: formData.custrecord_lms_division.value,
-              text: formData.custrecord_lms_division.text,
-            },
-            custrecord_lms_duration: Number(
-              formData.custrecord_lms_duration?.[i]
-            ),
-            custrecord_lms_unit_of_measure: {
-              value: formData.custrecord_lms_unit_of_measure.value,
-              text: formData.custrecord_lms_unit_of_measure.text,
-            },
-            custrecord_lms_value: Number(formData.custrecord_lms_value[i]),
-            custrecord_lms_expected_delivery_date: [
-              formData.custrecord_lms_expected_delivery_date[i],
-            ],
-          })),
-
-        recmachcustrecord_parent_record: formData.custrecordlms_location.map(
-          (loc, i) => ({
-            custrecordlms_location: loc,
-            custrecord_lms_contactperson_name:
-              formData.custrecord_lms_contactperson_name[i],
-            custrecord_lms_phonenumber: formData.custrecord_lms_phonenumber[i],
-            custrecord_location_email:
-              formData.custrecord_location_email[i] || "",
-            custrecord_lms_designation: formData.custrecord_lms_designation[i],
-          })
-        ),
-
-        recmachcustrecord_lms_lead_assigning: [
-          {
-            custrecord_lms_region: {
-              value: formData.custrecord_lms_region?.value,
-              text: formData.custrecord_lms_region?.text,
-            },
-            custrecord_lms_sales_team_name: {
-              value: formData.custrecord_lms_sales_team_name?.value || "",
-              text: formData.custrecord_lms_sales_team_name?.text || "",
-            },
-          },
-        ],
-
-        recmachcustrecord_lms_leadnurt: [
-          {
-            custrecord_lms_primary_action: {
-              value: formData.custrecord_lms_primary_action?.value,
-              text: formData.custrecord_lms_primary_action?.text,
-            },
-            custrecord_lms_datetime: formatDateForAPI(
-              formData.custrecord_lms_datetime
-            ),
-            custrecord_lms_lead_value: Number(
-              formData.custrecord_lms_lead_value
-            ),
-            custrecord_lms_statusoflead: {
-              value: formData.custrecord_lms_statusoflead?.value,
-              text: formData.custrecord_lms_statusoflead?.text,
-            },
-            custrecord_lms_lead_unqualifie:
-              formData.custrecord_lms_lead_unqualifie,
-            custrecord_lms_prospect_nurtur: {
-              value: formData.custrecord_lms_prospect_nurtur?.value,
-              text: formData.custrecord_lms_prospect_nurtur?.text,
-            },
-          },
-        ],
-
-        calls: {
-          title: formData.title,
-          company: formData.company,
-          phone: formData.phone,
-          status: {
-            value: formData.status?.value,
-            text: formData.status?.text,
-          },
-          organizer: {
-            value: formData.organizer?.value,
-            text: formData.organizer?.text,
-          },
-          startdate: formatDateForAPI(formData.startdate),
-          message: formData.message,
-        },
-
-        tasks: {
-          title: formData.title,
-          company: formData.company,
-          priority: {
-            value: formData.priority?.value,
-            text: formData.priority?.text,
-          },
-          startdate: formatDateForAPI(formData.startdate),
-          duedate: formatDateForAPI(formData.duedate),
-          message: formData.message,
-        },
-
-        events: {
-          title: formData.title,
-          company: formData.company,
-          location: formData.location,
-          starttime: formData.starttime,
-          endtime: formData.endtime,
-          message: formData.message,
-        },
-      },
-      filters: {
-        bodyfilters: [["internalid", "anyof", lid]],
-        linefilters: {
-          addressbook: [["id", "anyof", id[0]]],
-          recmachcustrecord_lms_requirement_details: [["id", "anyof", ...id]],
-
-          recmachcustrecord_parent_record: [["id", "anyof", ...id]],
-          recmachcustrecord_lms_lead_assigning: [["id", "anyof", ...id]],
-          recmachcustrecord_lms_leadnurt: [["id", "anyof", ...id]],
-        },
-      },
-    };
-    // console.log("updated data is:", apiData);
-
-    leadPost.mutate(apiData, {
-      onSuccess: (data) => {
-        console.log("working");
-        TkToastSuccess("Lead updated Successfully");
-        router.push(`${urls.lead}`);
-      },
-      onError: (error) => {
-        TkToastError("Lead not updated", error);
-      },
-    });
-  };
-
   const requirementDetailsColumns = [
     {
       Header: "Division *",
@@ -1287,7 +1092,7 @@ function EditLead({ id, userData, mode, selectedButton }) {
     },
     {
       Header: "Duration",
-      accessor: "duration",
+      accessor: "custrecord_lms_duration",
       Cell: (cellProps) => {
         return (
           <>
@@ -1301,15 +1106,15 @@ function EditLead({ id, userData, mode, selectedButton }) {
                   if (value && !/^[0-9]*([.:][0-9]+)?$/.test(value)) {
                     return "Invalid Duration";
                   }
-                  if (convertTimeToSec(value) > 86400 || value > 24) {
-                    return "Duration should be less than 24 hours";
-                  }
+                  // if (convertTimeToSec(value) > 86400 || value > 24) {
+                  //   return "Duration should be less than 24 hours";
+                  // }
                 },
               })}
               onBlur={(e) => {
                 setValue(
                   `custrecord_lms_duration[${cellProps.row.index}]`,
-                  convertToTimeFotTimeSheet(e.target.value)
+                  convertToTime(e.target.value)
                 );
               }}
             />
@@ -1690,6 +1495,270 @@ function EditLead({ id, userData, mode, selectedButton }) {
     []
   );
 
+  const leadPost = useMutation({
+    mutationFn: tkFetch.patch(`${API_BASE_URL}/lead/${lid}`),
+  });
+
+  // if (Array.isArray(data) && data.length > 0) {
+  //   const res =
+  //     data[0]?.lineValues?.recmachcustrecord_lms_requirement_details.map(
+  //       (data, i) => ["id", "anyof", data.id]
+  //     );
+  //     console.log("res",res)
+  // }
+  useEffect(() => {
+    if (Array.isArray(data) && data.length > 0) {
+      setRequirementDetailsId(
+        data[0]?.lineValues?.recmachcustrecord_lms_requirement_details.map(
+          (data, i) => ["id", "anyof", data.id]
+        )
+      );
+    }
+  }, [data]);
+
+  useEffect(() => {
+    if (Array.isArray(data) && data.length > 0) {
+      setLocationDetailsId(
+        data[0]?.lineValues?.recmachcustrecord_parent_record.map((data, i) => [
+          "id",
+          "anyof",
+          data.id,
+        ])
+      );
+    }
+  }, [data]);
+
+  useEffect(() => {
+    if (Array.isArray(data) && data.length > 0) {
+      setLeadAssignId(
+        data[0]?.lineValues?.recmachcustrecord_lms_lead_assigning.map(
+          (data, i) => ["id", "anyof", data.id]
+        )
+      );
+    }
+  }, [data]);
+
+  useEffect(() => {
+    if (Array.isArray(data) && data.length > 0) {
+      setLeadNurturingId(
+        data[0]?.lineValues?.recmachcustrecord_lms_leadnurt.map((data, i) => [
+          "id",
+          "anyof",
+          data.id,
+        ])
+      );
+    }
+  }, [data]);
+
+  const onSubmit = (formData) => {
+    if (!editMode) return;
+
+    const apiData = {
+      resttype: "Update",
+      recordtype: "lead",
+      bodyfields: {
+        custentity_lms_leadsource: {
+          value: formData.custentity_lms_leadsource.value,
+          label: formData.custentity_lms_leadsource.text,
+        },
+        custentity_lms_createdby: formData.custentity_lms_createdby,
+        custentity_lms_createddate: formData.custentity_lms_createddate,
+        subsidiary: {
+          value: formData.subsidiary.value,
+          label: formData.subsidiary.text,
+        },
+        custentity_lms_name: formData.custentity_lms_name,
+        custentity_lms_personal_phonenumber:
+          formData.custentity_lms_personal_phonenumber,
+        custentity_lms_personal_email: formData.custentity_lms_personal_email,
+        custentity_lms_enquiryby: {
+          value: formData.custentity_lms_enquiryby.value,
+          label: formData.custentity_lms_enquiryby.text,
+        },
+        custentity_lms_noteother: formData.custentity_lms_noteother,
+        companyname: formData.companyname,
+        phone: formData.phone,
+        email: formData.email,
+        custentity_lms_cr_no: formData.custentity_lms_cr_no,
+        custentity3: formData.custentity3,
+        custentity_lms_client_type: {
+          value: formData.custentity_lms_client_type.value,
+          label: formData.custentity_lms_client_type.text,
+        },
+        custentity_market_segment: {
+          value: formData.custentity_market_segment.value,
+          label: formData.custentity_market_segment.text,
+        },
+        custentity_lms_address: formData.custentity_lms_address,
+      },
+
+      linefields: {
+        recmachcustrecord_lms_requirement_details:
+          formData.custrecord_lms_division.map((data, i) => ({
+            custrecord_lms_requirement: formData.custrecord_lms_requirement[i],
+            custrecord_lms_project_name:
+              formData.custrecord_lms_project_name[i],
+
+            custrecord_lms_division: {
+              value: formData.custrecord_lms_division[i]?.value,
+              text: formData.custrecord_lms_division[i]?.text,
+            },
+            custrecord_lms_duration: Number(
+              formData.custrecord_lms_duration?.[i]
+            ),
+            custrecord_lms_unit_of_measure: {
+              value: formData.custrecord_lms_unit_of_measure[i]?.value,
+              text: formData.custrecord_lms_unit_of_measure[i]?.text,
+            },
+            custrecord_lms_value: Number(formData.custrecord_lms_value[i]),
+            custrecord_lms_expected_delivery_date:
+              formData.custrecord_lms_expected_delivery_date[i],
+          })),
+
+        // recmachcustrecord_lms_requirement_details: [
+        //   formData.custrecord_lms_division.map((data, i) => ({
+        //     custrecord_lms_requirement: formData.custrecord_lms_requirement[i],
+        //     custrecord_lms_project_name:
+        //       formData.custrecord_lms_project_name[i],
+        //     custrecord_lms_division: {
+        //       value: formData.custrecord_lms_division[i]?.value,
+        //       text: formData.custrecord_lms_division[i]?.text,
+        //     },
+        //     custrecord_lms_duration: Number(
+        //       formData.custrecord_lms_duration?.[i]
+        //     ),
+        //     custrecord_lms_unit_of_measure: {
+        //       value: formData.custrecord_lms_unit_of_measure[i]?.value,
+        //       text: formData.custrecord_lms_unit_of_measure[i]?.text,
+        //     },
+        //     custrecord_lms_value: Number(formData.custrecord_lms_value[i]),
+        //     custrecord_lms_expected_delivery_date:
+        //       formData.custrecord_lms_expected_delivery_date,
+        //   })),
+
+        //   rows.map((row) => ({
+        //     custrecord_lms_requirement: row.custrecord_lms_requirement,
+        //     custrecord_lms_project_name: row.custrecord_lms_project_name,
+        //     custrecord_lms_division: row.custrecord_lms_division,
+        //     custrecord_lms_duration: row.custrecord_lms_duration,
+        //     custrecord_lms_unit_of_measure: row.custrecord_lms_unit_of_measure,
+        //     custrecord_lms_value: row.custrecord_lms_value,
+        //     custrecord_lms_expected_delivery_date:
+        //       row.custrecord_lms_expected_delivery_date,
+        //   })),
+        // ],
+
+       
+
+        recmachcustrecord_parent_record: formData.custrecordlms_location.map(
+          (loc, i) => ({
+            custrecordlms_location: loc,
+            custrecord_lms_contactperson_name:
+              formData.custrecord_lms_contactperson_name[i],
+            custrecord_lms_phonenumber: formData.custrecord_lms_phonenumber[i],
+            custrecord_location_email:
+              formData.custrecord_location_email[i] || "",
+            custrecord_lms_designation: formData.custrecord_lms_designation[i],
+          })
+        ),
+
+        recmachcustrecord_lms_lead_assigning: [
+          {
+            custrecord_lms_region: {
+              value: formData.custrecord_lms_region?.value,
+              text: formData.custrecord_lms_region?.text,
+            },
+            custrecord_lms_sales_team_name: {
+              value: formData.custrecord_lms_sales_team_name?.value || "",
+              text: formData.custrecord_lms_sales_team_name?.text || "",
+            },
+          },
+        ],
+
+        recmachcustrecord_lms_leadnurt: [
+          {
+            custrecord_lms_primary_action: {
+              value: formData.custrecord_lms_primary_action?.value,
+              text: formData.custrecord_lms_primary_action?.text,
+            },
+            custrecord_lms_datetime: formatDateForAPI(
+              formData.custrecord_lms_datetime
+            ),
+            custrecord_lms_lead_value: Number(
+              formData.custrecord_lms_lead_value
+            ),
+            custrecord_lms_statusoflead: {
+              value: formData.custrecord_lms_statusoflead?.value,
+              text: formData.custrecord_lms_statusoflead?.text,
+            },
+            custrecord_lms_lead_unqualifie:
+              formData.custrecord_lms_lead_unqualifie,
+            custrecord_lms_prospect_nurtur: {
+              value: formData.custrecord_lms_prospect_nurtur?.value,
+              text: formData.custrecord_lms_prospect_nurtur?.text,
+            },
+          },
+        ],
+
+        calls: {
+          title: formData.title,
+          company: formData.company,
+          phone: formData.phone,
+          status: {
+            value: formData.status?.value,
+            text: formData.status?.text,
+          },
+          organizer: {
+            value: formData.organizer?.value,
+            text: formData.organizer?.text,
+          },
+          startdate: formatDateForAPI(formData.startdate),
+          message: formData.message,
+        },
+
+        tasks: {
+          title: formData.title,
+          company: formData.company,
+          priority: {
+            value: formData.priority?.value,
+            text: formData.priority?.text,
+          },
+          startdate: formatDateForAPI(formData.startdate),
+          duedate: formatDateForAPI(formData.duedate),
+          message: formData.message,
+        },
+
+        events: {
+          title: formData.title,
+          company: formData.company,
+          location: formData.location,
+          starttime: formData.starttime,
+          endtime: formData.endtime,
+          message: formData.message,
+        },
+      },
+      filters: {
+        bodyfilters: [["internalid", "anyof", lid]],
+        linefilters: {
+          addressbook: [["id", "anyof", id[0]]],
+          recmachcustrecord_lms_requirement_details: requirementDetailsId || [],
+          recmachcustrecord_parent_record: locationDetailsId || [],
+          recmachcustrecord_lms_lead_assigning: leadAssignId || [],
+          recmachcustrecord_lms_leadnurt: leadNurturingId || [],
+        },
+      },
+    };
+
+    leadPost.mutate(apiData, {
+      onSuccess: (data) => {
+        TkToastSuccess("Lead updated Successfully");
+        router.push(`${urls.lead}`);
+      },
+      onError: (error) => {
+        TkToastError("Lead not updated", error);
+      },
+    });
+  };
   const deleteLead = useMutation({
     mutationFn: tkFetch.deleteWithIdInUrl(`${API_BASE_URL}/lead`),
   });
@@ -1712,7 +1781,7 @@ function EditLead({ id, userData, mode, selectedButton }) {
       },
     });
   };
-  
+
   const toggleDeleteModelPopup = () => {
     setDeleteModal(true);
   };
@@ -1735,20 +1804,18 @@ function EditLead({ id, userData, mode, selectedButton }) {
             onCloseClick={() => setDeleteModal(false)}
           />
 
-        
-
           <div>
             <TkRow>
               <TkCol>
                 <TkRow className="justify-content-center">
                   <TkCol lg={12}>
-                  <TkEditCardHeader
-                    title={viewMode ? "Lead Details" : "Edit Lead"}
-                    viewMode={viewMode}
-                    editLink={`${urls.leadEdit}/${lid}`}
-                    onDeleteClick={handleDeleteLead}
-                    toggleDeleteModel={toggleDeleteModelPopup}
-                  />
+                    <TkEditCardHeader
+                      title={viewMode ? "Lead Details" : "Edit Lead"}
+                      viewMode={viewMode}
+                      editLink={`${urls.leadEdit}/${lid}`}
+                      onDeleteClick={handleDeleteLead}
+                      toggleDeleteModel={toggleDeleteModelPopup}
+                    />
                     <TkCardBody className="mt-4">
                       <TkForm onSubmit={handleSubmit(onSubmit)}>
                         <div>
@@ -2149,7 +2216,7 @@ function EditLead({ id, userData, mode, selectedButton }) {
                                       labelName="Address 1"
                                       placeholder="Enter Address 1"
                                       onBlur={handleInputBlur}
-                                      disabled={true}
+                                      disabled={viewMode}
                                     />
                                     {errors.addr1 && (
                                       <FormErrorText>
@@ -2167,7 +2234,7 @@ function EditLead({ id, userData, mode, selectedButton }) {
                                       labelName="Address 2"
                                       placeholder="Enter Address 2"
                                       onBlur={handleInputBlur}
-                                      disabled={true}
+                                      disabled={viewMode}
                                     />
                                     {errors.addr2 && (
                                       <FormErrorText>
@@ -2185,7 +2252,7 @@ function EditLead({ id, userData, mode, selectedButton }) {
                                       labelName="City"
                                       placeholder="Enter City"
                                       onBlur={handleInputBlur}
-                                      disabled={true}
+                                      disabled={viewMode}
                                     />
                                     {errors.city && (
                                       <FormErrorText>
@@ -2203,7 +2270,7 @@ function EditLead({ id, userData, mode, selectedButton }) {
                                       labelName="State"
                                       placeholder="Enter State"
                                       onBlur={handleInputBlur}
-                                      disabled={true}
+                                      disabled={viewMode}
                                     />
                                     {errors.state && (
                                       <FormErrorText>
@@ -2221,7 +2288,7 @@ function EditLead({ id, userData, mode, selectedButton }) {
                                       labelName="Zip"
                                       placeholder="Enter Zip"
                                       onBlur={handleInputBlur}
-                                      disabled={true}
+                                      disabled={viewMode}
                                     />
                                     {errors.zip && (
                                       <FormErrorText>
@@ -2244,7 +2311,7 @@ function EditLead({ id, userData, mode, selectedButton }) {
                                           options={allCountryData}
                                           placeholder="Select Country"
                                           onBlur={handleInputBlur}
-                                          disabled={true}
+                                          disabled={viewMode}
                                         />
                                       )}
                                     />
@@ -2258,17 +2325,17 @@ function EditLead({ id, userData, mode, selectedButton }) {
 
                                   <TkCol lg={12}>
                                     <TkInput
-                                      {...register("addrtext")}
-                                      id="addrtext"
-                                      name="addrtext"
+                                      {...register("custentity_lms_address")}
+                                      id="custentity_lms_address"
+                                      name="custentity_lms_address"
                                       type="textarea"
                                       labelName="Address "
                                       placeholder="Enter Address"
                                       disabled={true}
                                     />
-                                    {errors.addrtext && (
+                                    {errors.custentity_lms_address && (
                                       <FormErrorText>
-                                        {errors.addrtext.message}
+                                        {errors.custentity_lms_address.message}
                                       </FormErrorText>
                                     )}
                                   </TkCol>
@@ -2520,7 +2587,7 @@ function EditLead({ id, userData, mode, selectedButton }) {
                                               {...field}
                                               id="custrecord_lms_statusoflead"
                                               name="custrecord_lms_statusoflead"
-                                              labelName="Lead Update"
+                                              labelName="Lead Status"
                                               placeholder="Select Lead Update"
                                               disabled={viewMode}
                                               options={[
