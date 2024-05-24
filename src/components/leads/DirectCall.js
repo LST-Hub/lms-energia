@@ -128,7 +128,7 @@ const schema = Yup.object({
       smallInputMaxLength,
       `Company name should have at most ${smallInputMaxLength} characters.`
     ),
-    phone: Yup.string()
+    phoneNo: Yup.string()
     .nullable()
     .required("Contact number is Required")
     .matches(/^[0-9+() -]*$/, "Contact number must be number.")
@@ -161,8 +161,14 @@ const schema = Yup.object({
   addr1: Yup.string().max(
     smallInputMaxLength,
     `Address 1 should have at most ${smallInputMaxLength} characters.`
-  ),
-  // .nullable(),
+  )
+  .nullable(),
+
+  addr2: Yup.string().max(
+    smallInputMaxLength,
+    `Address 2 should have at most ${smallInputMaxLength} characters.`
+  )
+  .nullable(),
   city: Yup.string().max(
     smallInputMaxLength,
     `City should have at most ${smallInputMaxLength} characters.`
@@ -192,6 +198,7 @@ function DirectCall({ selectedButton }) {
     setValue,
     getValues,
     setError,
+
     watch,
     formState: { errors },
   } = useForm({
@@ -1150,7 +1157,7 @@ function DirectCall({ selectedButton }) {
         },
         custentity_lms_noteother: formData.custentity_lms_noteother,
         companyname: formData.companyname,
-        phone: formData.phone,
+        phone: formData.phoneNo,
         email: formData.email,
         custentity_lms_cr_no: formData.custentity_lms_cr_no,
         custentity3: formData.custentity3,
@@ -3020,16 +3027,16 @@ function DirectCall({ selectedButton }) {
                       </TkCol>
                       <TkCol lg={4}>
                         <TkInput
-                          {...register("phone")}
-                          id="phone"
-                          name="phone"
+                          {...register("phoneNo")}
+                          id="phoneNo"
+                          name="phoneNo"
                           type="text"
                           labelName="Contact No"
                           placeholder="Enter Contact No"
                           requiredStarOnLabel="true"
                         />
-                        {errors.phone && (
-                          <FormErrorText>{errors.phone.message}</FormErrorText>
+                        {errors.phoneNo && (
+                          <FormErrorText>{errors.phoneNo.message}</FormErrorText>
                         )}
                       </TkCol>
                       <TkCol lg={4}>
@@ -3243,7 +3250,7 @@ function DirectCall({ selectedButton }) {
                         )}
                       </TkCol>
 
-                      <TkCol lg={10}>
+                      <TkCol lg={12}>
                         <TkInput
                           {...register("custentity_lms_address")}
                           id="custentity_lms_address"
