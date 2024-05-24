@@ -54,6 +54,7 @@ import { TkToastError, TkToastSuccess } from "../TkToastContainer";
 import TkIcon from "../TkIcon";
 import LeadEventPopup from "./LeadEventPopup";
 import LeadTaskPopup from "./LeadTaskPopup";
+import { MaxCrNoLength } from "../../../lib/constants";
 const tabs = {
   directCall: "primary",
   email: "email",
