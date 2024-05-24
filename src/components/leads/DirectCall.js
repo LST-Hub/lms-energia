@@ -59,6 +59,7 @@ import { TkToastError, TkToastSuccess } from "../TkToastContainer";
 import { formatDateForAPI } from "../../utils/date";
 import LeadTaskPopup from "./LeadTaskPopup";
 import LeadEventPopup from "./LeadEventPopup";
+import { MaxCrNoLength } from "../../../lib/constants";
 const tabs = {
   directCall: "primary",
   email: "email",
@@ -146,9 +147,20 @@ const schema = Yup.object({
     ),
   custentity_lms_cr_no: Yup.string()
     .nullable()
-    .required("CR Number is required"),
+    .required("CR Number is required")
+    .matches(/^[a-zA-Z0-9]*$/, 'CR Number must be alphanumeric')
+      .max(
+        MaxCrNoLength,
+        `CR Number should have at most ${MaxCrNoLength} characters.`
+      ),
 
-  custentity3: Yup.string().nullable().required("VAT Number is required"),
+  custentity3: Yup.string().nullable()
+  .required("VAT Number is required")
+  .matches(/^[a-zA-Z0-9]*$/, 'VAT Number must be alphanumeric')
+  .max(
+    MaxCrNoLength,
+    `VAT Number should have at most ${MaxCrNoLength} characters.`
+  ),
 
   custentity_lms_client_type: Yup.object()
     .nullable()
