@@ -52,6 +52,7 @@ import { formatDateForAPI } from "../../utils/date";
 import DeleteModal from "../../utils/DeleteModal";
 import TkEditCardHeader from "../TkEditCardHeader";
 import { convertTimeToSec, convertToTime } from "../../utils/time";
+import { MaxCrNoLength } from "../../../lib/constants";
 
 const schema = Yup.object({
   custentity_lms_leadsource: Yup.object()
