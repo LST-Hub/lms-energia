@@ -2,13 +2,19 @@ import React, { useState, useEffect } from "react";
 import Image from "next/future/image";
 import Link from "next/link";
 
-import { TkDropdown, TkDropdownItem, TkDropdownMenu, TkDropdownToggle } from "../../TkDropdown";
+import {
+  TkDropdown,
+  TkDropdownItem,
+  TkDropdownMenu,
+  TkDropdownToggle,
+} from "../../TkDropdown";
 import { signOut } from "next-auth/react";
 import useGlobalStore from "../../../utils/globalStore";
 import { useQuery } from "@tanstack/react-query";
 import { API_BASE_URL, RQ, urls } from "../../../utils/Constants";
 import tkFetch from "../../../utils/fetch";
 import { DropdownItem } from "reactstrap";
+import { useRouter } from "next/router";
 
 const themeModeTypes = {
   LIGHTMODE: "light",
@@ -23,20 +29,24 @@ const ProfileDropdown = () => {
   //Dropdown Toggle
   const [isProfileDropdown, setIsProfileDropdown] = useState(false);
   const [user, setUser] = useState({});
+  const [email, setEmail] = useState("");
   const toggleProfileDropdown = () => {
     setIsProfileDropdown(!isProfileDropdown);
   };
 
+  const router = useRouter();
+
   const { data, isLoading, isError, error } = useQuery({
     queryKey: [RQ.profileData],
-    queryFn: tkFetch.get(`${API_BASE_URL}/profile`),
+    queryFn: tkFetch.get(`${API_BASE_URL}/profile?email=${email}`),
   });
 
-  useEffect(() => {
-    if (Array.isArray(data) && data.length > 0) {
-      setUser(data[0]);
-    }
-  }, [data]);
+
+  // useEffect(() => {
+  //   if (Array.isArray(data) && data.length > 0) {
+  //     setUser(data[0]);
+  //   }
+  // }, [data]);
 
   //change theme mode
   // const [mode, setMode] = React.useState(themeModeTypes["LIGHTMODE"]);
@@ -57,6 +67,12 @@ const ProfileDropdown = () => {
   //   }
   // };
 
+  const logout = async () => {
+    localStorage.removeItem("email");
+    localStorage.removeItem("password");
+    router.push(`${urls.login} `);
+  };
+
   const signOutHandler = async () => {
     setUserAuthenticated(false);
     setUserSessionData(null);
@@ -70,13 +86,13 @@ const ProfileDropdown = () => {
   return (
     <>
       {/* {!isLoading && !isError && ( */}
-        <TkDropdown
-          isOpen={isProfileDropdown}
-          toggle={toggleProfileDropdown}
-          className="ms-sm-3 header-item topbar-user"
-        >
-          {/* show the first name & last name and user role name */}
-          {/* <div className="d-flex align-items-center">
+      <TkDropdown
+        isOpen={isProfileDropdown}
+        toggle={toggleProfileDropdown}
+        className="ms-sm-3 header-item topbar-user"
+      >
+        {/* show the first name & last name and user role name */}
+        {/* <div className="d-flex align-items-center">
             <span className="text-start ms-xl-2">
               <span className="d-none d-xl-inline-block ms-1 fw-medium user-name-text">
                 {user?.firstName} {user?.lastName}
@@ -85,42 +101,44 @@ const ProfileDropdown = () => {
             </span>
           </div> */}
 
-          <TkDropdownToggle tag="button" type="button" className="btn">
-            <span className="d-flex align-items-center">
-              {/* {user?.image ? ( */}
-                <Image
-                  src="/images/users/avatar-3.jpg"
-                  alt="user avatar"
-                  height={22}
-                  width={22}
-                  className="rounded-circle header-profile-user"
-                  // placeholder="blur"
-                  layout="responsive"
-                />
-              {/* ) : ( */}
-                {/* <div className="header-avatar text-uppercase border rounded-circle bg-light text-primary">
+        <TkDropdownToggle tag="button" type="button" className="btn">
+          <span className="d-flex align-items-center">
+            {/* {user?.image ? ( */}
+            <Image
+              src="/images/users/avatar-3.jpg"
+              alt="user avatar"
+              height={22}
+              width={22}
+              className="rounded-circle header-profile-user"
+              // placeholder="blur"
+              layout="responsive"
+            />
+            {/* ) : ( */}
+            {/* <div className="header-avatar text-uppercase border rounded-circle bg-light text-primary">
                   {String(user?.firstName ?? "").charAt(0) + String(user?.lastName ?? "").charAt(0)}
                 </div> */}
-              {/* )} */}
-              <span className="text-start ms-xl-2">
-                <span className="d-none d-xl-inline-block ms-1 fw-medium user-name-text">
-                 John Doe
-                </span>
-                <span className="d-none d-xl-block ms-1 fs-12 text-muted user-name-sub-text">Sales Head</span>
+            {/* )} */}
+            <span className="text-start ms-xl-2">
+              <span className="d-none d-xl-inline-block ms-1 fw-medium user-name-text">
+                John Doe
+              </span>
+              <span className="d-none d-xl-block ms-1 fs-12 text-muted user-name-sub-text">
+                Sales Head
               </span>
             </span>
-          </TkDropdownToggle>
-          <TkDropdownMenu className="dropdown-menu-end">
-            {/* <h6 className="dropdown-header">Welcome Nancy !</h6> */}
-            <Link href={`${urls.profileView}`}>
-              <a>
-                <TkDropdownItem>
-                  <i className="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i>
-                  <span className="align-middle">Profile</span>
-                </TkDropdownItem>
-              </a>
-            </Link>
-            {/* <TkDropdownItem onClick={changeThemeMode}>
+          </span>
+        </TkDropdownToggle>
+        <TkDropdownMenu className="dropdown-menu-end">
+          {/* <h6 className="dropdown-header">Welcome Nancy !</h6> */}
+          <Link href={`${urls.profileView}`}>
+            <a>
+              <TkDropdownItem>
+                <i className="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i>
+                <span className="align-middle">Profile</span>
+              </TkDropdownItem>
+            </a>
+          </Link>
+          {/* <TkDropdownItem onClick={changeThemeMode}>
             <div>
               {mode === themeModeTypes["DARKMODE"] ? (
                 <>
@@ -135,50 +153,50 @@ const ProfileDropdown = () => {
               )}
             </div>
           </TkDropdownItem> */}
-            {/* <DropdownItem href="/apps-chat">
+          {/* <DropdownItem href="/apps-chat">
             <i className="mdi mdi-message-text-outline text-muted fs-16 align-middle me-1"></i>{" "}
             <span className="align-middle">Messages</span>
           </DropdownItem> */}
-            {/* <DropdownItem href="#">
+          {/* <DropdownItem href="#">
             <i className="mdi mdi-calendar-check-outline text-muted fs-16 align-middle me-1"></i>{" "}
             <span className="align-middle">Taskboard</span>
           </DropdownItem> */}
-            <Link href={`${urls.help}`}>
-              <a>
-                <TkDropdownItem>
-                  <i className="mdi mdi-lifebuoy text-muted fs-16 align-middle me-1"></i>{" "}
-                  <span className="align-middle">Help</span>
-                </TkDropdownItem>
-              </a>
-            </Link>
-            {/* <div className="dropdown-divider"></div> */}
-            {/* <DropdownItem href="/pages-profile">
+          <Link href={`${urls.help}`}>
+            <a>
+              <TkDropdownItem>
+                <i className="mdi mdi-lifebuoy text-muted fs-16 align-middle me-1"></i>{" "}
+                <span className="align-middle">Help</span>
+              </TkDropdownItem>
+            </a>
+          </Link>
+          {/* <div className="dropdown-divider"></div> */}
+          {/* <DropdownItem href="/pages-profile">
             <i className="mdi mdi-wallet text-muted fs-16 align-middle me-1"></i>{" "}
             <span className="align-middle">
               Balance : <b>$5971.67</b>
             </span>
           </DropdownItem> */}
-            {/* <DropdownItem href="/pages-profile-settings">
+          {/* <DropdownItem href="/pages-profile-settings">
             <span className="badge bg-soft-success text-success mt-1 float-end">New</span>
             <i className="mdi mdi-cog-outline text-muted fs-16 align-middle me-1"></i>{" "}
             <span className="align-middle">Settings</span>
           </DropdownItem> */}
-            {/* <DropdownItem href="/auth-lockscreen-basic">
+          {/* <DropdownItem href="/auth-lockscreen-basic">
             <i className="mdi mdi-lock text-muted fs-16 align-middle me-1"></i>{" "}
             <span className="align-middle">Lock screen</span>
           </DropdownItem> */}
-            {/* <Link href="/login">
+          {/* <Link href="/login">
             <a> */}
-            <TkDropdownItem onClick={signOutHandler}>
-              <i className="mdi mdi-logout text-muted fs-16 align-middle me-1"></i>{" "}
-              <span className="align-middle" data-key="t-logout">
-                Logout
-              </span>
-            </TkDropdownItem>
-            {/* </a>
+          <TkDropdownItem onClick={logout}>
+            <i className="mdi mdi-logout text-muted fs-16 align-middle me-1"></i>{" "}
+            <span className="align-middle" data-key="t-logout">
+              Logout
+            </span>
+          </TkDropdownItem>
+          {/* </a>
           </Link> */}
-          </TkDropdownMenu>
-        </TkDropdown>
+        </TkDropdownMenu>
+      </TkDropdown>
       {/* )} */}
     </>
   );

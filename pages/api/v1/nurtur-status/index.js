@@ -4,13 +4,18 @@ import { getLeadNurturStatusRestletScriptDeploymentId } from "../../../../src/ut
 export default async function handler(req, res) {
   try {
     if (req.method === "GET") {
-      const query = `SELECT id, name FROM CUSTOMLIST_LMS_PROSPECT_NURTURING WHERE isinactive='F'`;
+      const body = {
+        resttype: "Search",
+        recordtype: "customlist_lms_prospect_nurturing",
+        filters: [["isinactive", "is", "F"]],
+        columns: ["internalid", "name"],
+      };
+      const query = `SELECT key AS id, name FROM EntityStatus WHERE inactive='F' AND entitytype in('LEAD', 'PROSPECT', 'CUSTOMER')`;
       // const query = `SELECT key AS id, name FROM EntityStatus WHERE inactive='F' AND entitytype in('LEAD', 'PROSPECT', 'CUSTOMER'`;
       // const query = `SELECT entityid, firstName, lastname, id, email, hireDate, releasedate, BUILTIN.DF( employeetype ) AS employeetype, BUILTIN.DF( employeestatus ) AS employeestatus, BUILTIN.DF( department ) AS department, BUILTIN.DF( location ) AS location, BUILTIN.DF( supervisor ) AS supervisor FROM employee`;
       const leadNuturingStatusData =
         await getLeadNurturStatusRestletScriptDeploymentId(query);
 
-        
       response({
         res,
         success: true,

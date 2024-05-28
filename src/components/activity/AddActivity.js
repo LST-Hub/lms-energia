@@ -89,46 +89,6 @@ const AddActivity = ({
     }
   };
 
-  // const phoneCallActivityPost = useMutation({
-  //   mutationFn: tkFetch.post(`${API_BASE_URL}/phoneCallActivity`),
-  // });
-
-  // const onSubmit = (data) => {
-  //   const apiData = {
-  //     resttype: "Add",
-  //     recordtype: "phonecall",
-  //     bodyfields: {
-  //       title: formData.title,
-  //       phone: formData.phone,
-  //       status: {
-  //         value: formData.status.value,
-  //         label: formData.status.text,
-  //       },
-  //       organizer: {
-  //         value: formData.organizer.value,
-  //         label: formData.organizer.text,
-  //       },
-  //       startdate: formatDateForAPI(formData.startdate),
-  //       completeddate: formatDateForAPI(formData.completeddate),
-  //       message: formData.message,
-  //       company: {
-  //         value: formData.company.value,
-  //         label: formData.company.text,
-  //       },
-  //     },
-  //   };
-  //   phoneCallActivityPost.mutate(apiData),
-  //     {
-  //       onSuccess: (data) => {
-  //         TkToastSuccess("Phone Call Created Successfully");
-  //         router.push(`${urls.activity}`);
-  //       },
-  //       onError: (error) => {
-  //         TkToastError("error while creating Lead", error);
-  //       },
-  //     };
-  // };
-
   return (
     <>
       <TkRow className="justify-content-center">

@@ -38,7 +38,7 @@ import { convertTimeToSec, convertToTimeFotTimeSheet } from "../../utils/time";
 const schema = Yup.object({
   title: Yup.string().required("Subject is required").nullable(),
   company: Yup.object().required("Lead name is required").nullable(),
-  assigned: Yup.object().required("Organizer is required").nullable(),
+  // assigned: Yup.object().required("Organizer is required").nullable(),
   priority: Yup.object().required("Proirity is required").nullable(),
   status: Yup.object().required("Status is required").nullable(),
   startDate: Yup.string().required("Date is required").nullable(),
@@ -102,7 +102,7 @@ const AddTaskActivity = ({ value }) => {
     mutationFn: tkFetch.post(`${API_BASE_URL}/taskActivity`),
   });
 
-  const onSubmit = (data) => {
+  const onSubmit = (formData) => {
     const apiData = {
       resttype: "Add",
       recordtype: "task",
@@ -112,10 +112,10 @@ const AddTaskActivity = ({ value }) => {
           value: formData.company.value,
           label: formData.company.text,
         },
-        assigned: {
-          value: formData.assigned.value,
-          label: formData.assigned.text,
-        },
+        // assigned: {
+        //   value: formData.assigned.value,
+        //   label: formData.assigned.text,
+        // },
         priority: {
           value: formData.priority.value,
           label: formData.priority.text,
@@ -215,7 +215,7 @@ const AddTaskActivity = ({ value }) => {
                               )}
                             </TkCol> */}
 
-                            <TkCol lg={4}>
+                            {/* <TkCol lg={4}>
                               <Controller
                                 name="assigned"
                                 control={control}
@@ -236,7 +236,7 @@ const AddTaskActivity = ({ value }) => {
                                   {errors.assigned.message}
                                 </FormErrorText>
                               )}
-                            </TkCol>
+                            </TkCol> */}
 
                             <TkCol lg={4}>
                               <Controller

@@ -1,5 +1,4 @@
 import response from "../../../../lib/response";
-import { getAllLeadRestletScriptDeploymentId } from "../../../../src/utils/NsAPIcal";
 import { postCreateEventActivityRestletScriptDeploymentId, postCreatePhoneCallActivityRestletScriptDeploymentId } from "../../../../src/utils/createActivityNsAPI";
 
 export default async function handler(req, res) {

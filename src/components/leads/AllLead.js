@@ -38,7 +38,19 @@ function TableToolBar() {
 
 const AllLead = ({ mounted }) => {
   const searchOnUI = isSearchonUI([]);
+  const [role, setRole] = useState(null);
 
+ 
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const storedRole = window.localStorage.getItem('role');
+      setRole(storedRole);
+      console.log('storedRole', storedRole);
+    }
+  }, []);
+ 
+
+  
   const {
     data: leadData,
     isLoading: isBackLoading,
@@ -46,7 +58,10 @@ const AllLead = ({ mounted }) => {
     error,
   } = useQuery({
     queryKey: [RQ.allLeads],
-    queryFn: tkFetch.get(`${API_BASE_URL}/lead`),
+    // queryFn: tkFetch.get(`${API_BASE_URL}/lead`),
+    // queryFn: tkFetch.get(`${API_BASE_URL}/lead?role=${role}`),
+    queryFn: tkFetch.get(`${API_BASE_URL}/lead${role ? `?role=${role}` : ''}`),
+
     enabled: true,
   });
 
@@ -100,7 +115,23 @@ const AllLead = ({ mounted }) => {
           );
         },
       },
-
+      {
+        Header: "Lead Channel",
+        accessor: "custentity_lms_channel_lead_name",
+        Cell: (cellProps) => {
+          // console.log("cellProps", cellProps);
+          return (
+            <>
+              <div className="table-text">
+                <span>
+                  {cellProps.value || <span> — </span>}
+                </span>
+                {/* {cellProps.value || <span> — </span>} */}
+              </div>
+            </>
+          );
+        },
+      },
       {
         Header: "Name",
         accessor: "companyname",
@@ -108,7 +139,7 @@ const AllLead = ({ mounted }) => {
           return (
             <>
               <div className="table-text">
-                {cellProps.value || <span> — </span>}
+                {cellProps.value}
               </div>
             </>
           );
@@ -148,7 +179,7 @@ const AllLead = ({ mounted }) => {
           return (
             <>
               <div className="table-text">
-                {cellProps.value || <span> — </span>}
+                {cellProps.value }
               </div>
             </>
           );
@@ -161,7 +192,7 @@ const AllLead = ({ mounted }) => {
           return (
             <>
               <div className="table-text">
-                {cellProps.value || <span> — </span>}
+                {cellProps.value}
               </div>
             </>
           );

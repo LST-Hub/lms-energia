@@ -50,7 +50,7 @@ const schema = Yup.object({
   status: Yup.object().required("Status is required").nullable(),
   organizer: Yup.object().required("Organizer is required").nullable(),
   startDate: Yup.date().required("Date is required").nullable(),
-  completeddate: Yup.date().required("Due date is required").nullable(),
+  // completeddate: Yup.date().required("Due date is required").nullable(),
 }).required();
 
 const AddPhoneCall = ({ value }) => {
@@ -65,16 +65,22 @@ const AddPhoneCall = ({ value }) => {
     resolver: yupResolver(schema),
   });
   const [allSalesTeamData, setAllSalesTeamData] = useState([{}]);
+  const [allLeadNameListData, setAllLeadNameListData] = useState([{}]);
   const results = useQueries({
     queries: [
       {
         queryKey: [RQ.allSalesTeam],
         queryFn: tkFetch.get(`${API_BASE_URL}/sales-team`),
       },
+
+      {
+        queryKey: [RQ.allSalesTeam],
+        queryFn: tkFetch.get(`${API_BASE_URL}/lead-name`),
+      },
     ],
   });
 
-  const [salesTeam] = results;
+  const [salesTeam, leadList] = results;
   const {
     data: salesTeamData,
     isLoading: salesTeamLoading,
@@ -82,12 +88,24 @@ const AddPhoneCall = ({ value }) => {
     error: salesTeamError,
   } = salesTeam;
 
+  const {
+    data: leadListData,
+    isLoading: leadListLoading,
+    isError: leadListIsError,
+    error: leadListError,
+  } = leadList;
+
   useEffect(() => {
     if (salesTeamIsError) {
       console.log("salesTeamIsError", salesTeamError);
       TkToastError(salesTeamError.message);
     }
-  }, [salesTeamIsError, salesTeamError]);
+
+    if (leadListIsError) {
+      console.log("leadListIsError", leadListError);
+      TkToastError(leadListError.message);
+    }
+  }, [salesTeamIsError, salesTeamError,leadListIsError,leadListError]);
 
   useEffect(() => {
     if (salesTeamData) {
@@ -98,7 +116,19 @@ const AddPhoneCall = ({ value }) => {
         }))
       );
     }
-  }, [salesTeamData]);
+
+    if (leadListData) {
+      setAllLeadNameListData(
+        leadListData?.items?.map((leadListType) => ({
+          label: leadListType.companyname,
+          // value: leadListType.id,
+        }))
+      );
+    }
+  }, [salesTeamData,leadListData]);
+  // console.log("allLeadNameListData", allLeadNameListData?.items[0].companyname);
+  console.log("allLeadNameListData", allLeadNameListData);
+
 
   const phoneCallActivityPost = useMutation({
     mutationFn: tkFetch.post(`${API_BASE_URL}/phoneCallActivity`),
@@ -121,7 +151,7 @@ const AddPhoneCall = ({ value }) => {
           label: formData.organizer.text,
         },
         startdate: formatDateForAPI(formData.startdate),
-        completeddate: formatDateForAPI(formData.completeddate),
+        // completeddate: formatDateForAPI(formData.completeddate),
         message: formData.message,
         company: {
           value: formData.company.value,
@@ -180,12 +210,13 @@ const AddPhoneCall = ({ value }) => {
                                     labelName="Lead Name"
                                     labelId={"company"}
                                     id="company"
-                                    options={[
-                                        { label: "Email", value: "Email" },
-                                        { label: "Direct Call", value: "Direct Call" },
-                                        { label: "Social Media", value: "Social Media" },
-                                        { label: "Portals", value: "Portals" },
-                                      ]}
+                                    // options={[
+                                    //     { label: "Email", value: "Email" },
+                                    //     { label: "Direct Call", value: "Direct Call" },
+                                    //     { label: "Social Media", value: "Social Media" },
+                                    //     { label: "Portals", value: "Portals" },
+                                    //   ]}
+                                    options={allLeadNameListData}
                                     placeholder="Select Lead Name"
                                     requiredStarOnLabel={true}
                                   />
@@ -298,7 +329,7 @@ const AddPhoneCall = ({ value }) => {
                               )}
                             </TkCol>
 
-                            <TkCol lg={4}>
+                            {/* <TkCol lg={4}>
                               <Controller
                                 name="completeddate"
                                 control={control}
@@ -323,7 +354,7 @@ const AddPhoneCall = ({ value }) => {
                                   {errors.completeddate.message}
                                 </FormErrorText>
                               )}
-                            </TkCol>
+                            </TkCol> */}
 
                             <TkCol lg={8}>
                               <TkInput

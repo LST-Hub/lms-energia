@@ -53,38 +53,71 @@ import DeleteModal from "../../utils/DeleteModal";
 import TkEditCardHeader from "../TkEditCardHeader";
 import { convertTimeToSec, convertToTime } from "../../utils/time";
 import { MaxCrNoLength } from "../../../lib/constants";
+import ActivityTabs from "./ActivityTabs"
+
+const tabs = {
+  directCall: "directCall",
+ 
+  email: "email",
+  socialMedia: "socialMedia",
+  portals: "portals",
+  directMarketing: "directMarketing",
+  requirementDetails: "requirementDetails",
+  locationDetails: "locationDetails",
+  leadAssigning: "leadAssigning",
+  leadNurutring: "leadNurutring",
+  leadActivity: "leadActivity",
+  phoneCallActivity: "phoneCallActivity",
+  taskActivity: "taskActivity",
+  eventActivity: "eventActivity",
+ 
+};
+
+// const activityTabs= {
+//   phoneCall: "phoneCall",
+//   task: "task",
+//   event: "event"
+// }
 
 const schema = Yup.object({
   custentity_lms_leadsource: Yup.object()
     .nullable()
-    .required("Lead source is required"),
-
-  // custentity_lms_name_of_the_portal_dd: Yup.object()
+    .required("Lead Source is required"),
+  //   custentity_lms_name_of_the_platform_dd: Yup.object().required(
+  //     "Name Of Platform is required"
+  //   ),
+  
+  //   custentity_lms_campaign_name: Yup.object().required(
+  //     "Campaign Name is required"
+  //   ),
+  
+  //   custentity_lms_visit_update: Yup.object().required(
+  //     "Visit Update is required"
+  //   ),
+  
+  //   custentity_lms_name_of_the_portal_dd: Yup.object()
   //   .nullable()
-  //   .required("Lead portal is required"),
+  //   .required("Lead Portal is required"),
 
-  // custentity_lms_date_of_visit: Yup.string()
+  //   custentity_lms_date_of_visit: Yup.string()
   //   .nullable()
-  //   .required("Date of visit is required"),
+  //   .required("Date Of Visit is required"),
 
   // custentity_lms_time_of_visit: Yup.string()
   //   .nullable()
   //   .matches(/^[0-9]*([.:][0-9]+)?$/, "Invalid Time")
   //   .test(
   //     "custentity_lms_time_of_visit",
-  //     "Time of visit should be less than 24 hours",
+  //     "Time Of Visit should be less than 24 hours",
   //     (value) => {
   //       return convertTimeToSec(value) <= 86400;
   //     }
   //   )
-  //   .required("Time of visit is required"),
-
-  // custentity_lms_visit_update: Yup.object()
-  //   .nullable()
-  //   .required("Visit update is required"),
+  //   .required("Time Of Visit is required"),
+    
   subsidiary: Yup.object()
     .nullable()
-    .required("Primary subsidairy is required"),
+    .required("Primary Subsidairy is required"),
   custentity_lms_name: Yup.string()
     .nullable()
     .required("Name is required")
@@ -95,11 +128,11 @@ const schema = Yup.object({
     ),
   custentity_lms_personal_phonenumber: Yup.string()
     .nullable()
-    .required("Phone number is Required")
-    .matches(/^[0-9+() -]*$/, "Phone number must be number.")
+    .required("Phone Number is Required")
+    .matches(/^[0-9+() -]*$/, "Phone Number must be number.")
     .max(
       MaxPhoneNumberLength,
-      `Phone number must be at most ${MaxPhoneNumberLength} numbers.`
+      `Phone Number must be at most ${MaxPhoneNumberLength} numbers.`
     ),
   custentity_lms_personal_email: Yup.string()
     .nullable()
@@ -115,7 +148,7 @@ const schema = Yup.object({
     ),
   custentity_lms_enquiryby: Yup.object()
     .nullable()
-    .required("Enquiry by is required"),
+    .required("Enquiry By is required"),
   custentity_lms_noteother: Yup.string()
     .nullable()
     .max(
@@ -127,15 +160,15 @@ const schema = Yup.object({
     .required("Company Name is required")
     .max(
       smallInputMaxLength,
-      `Company name should have at most ${smallInputMaxLength} characters.`
+      `Company Name should have at most ${smallInputMaxLength} characters.`
     ),
-  phone: Yup.string()
+    contactPhone: Yup.string()
     .nullable()
-    .required("Contact number is Required")
-    .matches(/^[0-9+() -]*$/, "Contact number must be number.")
+    .required("Contact Number is Required")
+    .matches(/^[0-9+() -]*$/, "Contact Number must be number.")
     .max(
       MaxPhoneNumberLength,
-      `Contact number must be at most ${MaxPhoneNumberLength} numbers.`
+      `Contact Number must be at most ${MaxPhoneNumberLength} numbers.`
     ),
   email: Yup.string()
     .nullable()
@@ -146,28 +179,24 @@ const schema = Yup.object({
       `Company Email should have at most ${MaxEmailLength} characters.`
     ),
 
-    custentity_lms_cr_no: Yup.string()
+  custentity_lms_cr_no: Yup.string()
     .nullable()
     .required("CR Number is required")
-    .matches(/^[a-zA-Z0-9]*$/, 'CR Number must be alphanumeric')
-      .max(
-        MaxCrNoLength,
-        `CR Number should have at most ${MaxCrNoLength} characters.`
-      ),
+    .matches(/^[a-zA-Z0-9]*$/, "CR Number must be alphanumeric")
+    .max(
+      MaxCrNoLength,
+      `CR Number should have at most ${MaxCrNoLength} characters.`
+    ),
 
-  custentity3: Yup.string().nullable()
-  .required("VAT Number is required")
-  .matches(/^[a-zA-Z0-9]*$/, 'VAT Number must be alphanumeric')
-  .max(
-    MaxCrNoLength,
-    `VAT Number should have at most ${MaxCrNoLength} characters.`
-  ),
-  // custentity_lms_cr_no: Yup.string()
-  //   .nullable()
-  //   .required("CR Number is required"),
-
-  // custentity3: Yup.string().nullable().required("VAT Number is required"),
-
+  custentity3: Yup.string()
+    .nullable()
+    .required("VAT Number is required")
+    .matches(/^[a-zA-Z0-9]*$/, "VAT Number must be alphanumeric")
+    .max(
+      MaxCrNoLength,
+      `VAT Number should have at most ${MaxCrNoLength} characters.`
+    ),
+  
   custentity_lms_client_type: Yup.object()
     .nullable()
     .required("Client Type is required"),
@@ -179,6 +208,12 @@ const schema = Yup.object({
     .max(
       smallInputMaxLength,
       `Address 1 should have at most ${smallInputMaxLength} characters.`
+    )
+    .nullable(),
+    addr2: Yup.string()
+    .max(
+      smallInputMaxLength,
+      `Address 2 should have at most ${smallInputMaxLength} characters.`
     )
     .nullable(),
   city: Yup.string()
@@ -201,19 +236,6 @@ const schema = Yup.object({
   ),
 }).required();
 
-const tabs = {
-  directCall: "directCall",
-  phoneCall: "phoneCall",
-  email: "email",
-  socialMedia: "socialMedia",
-  portals: "portals",
-  directMarketing: "directMarketing",
-  requirementDetails: "requirementDetails",
-  locationDetails: "locationDetails",
-  leadAssigning: "leadAssigning",
-  leadNurutring: "leadNurutring",
-  leadActivity: "leadActivity",
-};
 function EditLead({ id, mode }) {
   const {
     control,
@@ -234,6 +256,7 @@ function EditLead({ id, mode }) {
   const [activityModal, setActivityModal] = useState(false);
   const [leadTaskModal, setLeadTaskModal] = useState(false);
   const [leadEventModal, setLeadEventModal] = useState(false);
+  // const [activeActivityTab, setActiveActivityTab] = useState(activityTabs.phoneCall);
 
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [allDurations, setAllDurations] = useState({});
@@ -268,6 +291,7 @@ function EditLead({ id, mode }) {
   const [allCampaignData, setAlllCampaignData] = useState([{}]);
   const [allVisitUpdateData, setAlllVisitUpdateData] = useState([{}]);
   const [allPortalData, setAllPortalData] = useState([{}]);
+  const [allNurturStatusData, setAllNurturStatusData] = useState([{}]);
 
   const results = useQueries({
     queries: [
@@ -344,6 +368,29 @@ function EditLead({ id, mode }) {
         queryKey: [RQ.allVisitUpdate],
         queryFn: tkFetch.get(`${API_BASE_URL}/visit-update`),
       },
+
+      {
+        queryKey: [RQ.allNurturingStatus],
+        queryFn: tkFetch.get(`${API_BASE_URL}/nurtur-status`),
+      },
+
+      // {
+      //   queryKey: [RQ.leadPhoneCallHighlights],
+      //   queryFn: tkFetch.get(`${API_BASE_URL}/lead/lead-highlights/lead-phonecall?leadId=${lid}`),
+      //   enabled: !!lid && activeActivityTab === activityTabs.phoneCall,
+      // },
+
+      // {
+      //   queryKey: [RQ.leadTaskHighlights],
+      //   queryFn: tkFetch.get(`${API_BASE_URL}/lead/lead-highlights/lead-task?leadId=${lid}`),
+      //   enabled: !!lid && activeActivityTab === activityTabs.task,
+      // },
+
+      // {
+      //   queryKey: [RQ.leadEventHighlights],
+      //   queryFn: tkFetch.get(`${API_BASE_URL}/lead/lead-highlights/lead-events?leadId=${lid}`),
+      //   enabled: !!lid && activeActivityTab === activityTabs.event,
+      // },
     ],
   });
 
@@ -364,6 +411,7 @@ function EditLead({ id, mode }) {
     leadCampaign,
     leadPortal,
     leadVisitUpdate,
+    status,
   ] = results;
   const {
     data: primarySubisdiaryData,
@@ -477,6 +525,16 @@ function EditLead({ id, mode }) {
     error: leadVisitUpdateError,
   } = leadVisitUpdate;
 
+  const {
+    data: statusNurturData,
+    isLoading: statusNurturLoading,
+    isError: statusNurturIsError,
+    error: statusNurturError,
+  } = status;
+
+  
+
+
   useEffect(() => {
     if (primarySubisdiaryIsError) {
       console.log("primarySubisdiaryIsError", primarySubisdiaryError);
@@ -557,6 +615,11 @@ function EditLead({ id, mode }) {
       console.log("leadVisitUpdateIsError", leadVisitUpdateError);
       TkToastError(leadVisitUpdateError.message);
     }
+
+    if (statusNurturIsError) {
+      console.log("statusNurturIsError", statusNurturError);
+      TkToastError(statusNurturError.message);
+    }
   }, [
     primarySubisdiaryIsError,
     primarySubisdiaryError,
@@ -590,6 +653,8 @@ function EditLead({ id, mode }) {
     leadPortalError,
     leadVisitUpdateIsError,
     leadVisitUpdateError,
+    statusNurturIsError,
+    statusNurturError,
   ]);
 
   useEffect(() => {
@@ -737,6 +802,15 @@ function EditLead({ id, mode }) {
         }))
       );
     }
+
+    if (statusNurturData) {
+      setAllNurturStatusData(
+        statusNurturData?.items?.map((nurturStatusType) => ({
+          label: nurturStatusType.name,
+          value: nurturStatusType.id,
+        }))
+      );
+    }
   }, [
     primarySubisdiaryData,
     enquiryByData,
@@ -754,6 +828,7 @@ function EditLead({ id, mode }) {
     leadCampaignData,
     leadPortalData,
     leadVisitUpdateData,
+    statusNurturData,
   ]);
 
   const leadActivityToggle = useCallback(() => {
@@ -786,6 +861,7 @@ function EditLead({ id, mode }) {
     enabled: !!lid,
   });
 
+
   const queryClient = useQueryClient();
   const concatenateAddress = useCallback(() => {
     const addr1 = getValues("addr1") || "";
@@ -805,11 +881,11 @@ function EditLead({ id, mode }) {
     concatenateAddress();
   };
 
-  // useEffect(() => {
-  //   if (fullAddress) {
-  //     setValue("custentity_lms_address", fullAddress);
-  //   }
-  // }, [fullAddress, setValue]);
+  useEffect(() => {
+    if (fullAddress) {
+      setValue("custentity_lms_address", fullAddress);
+    }
+  }, [fullAddress, setValue]);
 
   useEffect(() => {
     if (isFetched && Array.isArray(data) && data.length > 0) {
@@ -868,7 +944,7 @@ function EditLead({ id, mode }) {
         value: bodyValues?.custentity_lms_enquiryby[0].value,
       });
       setValue("companyname", bodyValues?.companyname);
-      setValue("phone", bodyValues?.phone);
+      setValue("contactPhone", bodyValues?.phone);
       setValue("email", bodyValues?.email);
       setValue("custentity_lms_cr_no", bodyValues?.custentity_lms_cr_no);
       setValue("custentity3", bodyValues?.custentity3);
@@ -880,6 +956,17 @@ function EditLead({ id, mode }) {
         label: bodyValues?.custentity_market_segment[0].text,
         value: bodyValues?.custentity_market_segment[0].value,
       });
+
+      setValue("addr1",bodyValues?.addr1),
+      setValue("addr2",bodyValues?.addr2),
+      setValue("city",bodyValues?.city),
+      setValue("state",bodyValues?.state),
+      setValue("zip",bodyValues?.zip),
+      setValue("country", {
+        label: bodyValues?.country?.text,
+        value: bodyValues?.country?.value,
+      });
+      setValue("custentity_lms_address",bodyValues?.custentity_lms_address),
 
       // set the line level fields
 
@@ -903,7 +990,12 @@ function EditLead({ id, mode }) {
           setValue(
             `custrecord_lms_duration[${index}]`,
             detail.custrecord_lms_duration
-          );
+          )
+
+          // setValue(
+          //   `custrecord_lms_duration[${index}]`,
+          //   detail.custrecord_lms_duration
+          // );
 
           setValue(`custrecord_lms_unit_of_measure[${index}]`, {
             label: detail.custrecord_lms_unit_of_measure?.text,
@@ -930,6 +1022,23 @@ function EditLead({ id, mode }) {
           });
         }
       );
+
+      lineValues?.calls?.forEach((detail, index) => {
+        setValue(`subject[${index}]`, detail.title);
+        setValue(`phone[${index}]`, detail.phone);
+
+        setValue(`status[${index}]`, {
+          label: detail.status?.text,
+          value: detail.status?.value,
+        });
+
+        setValue(`organizer[${index}]`, {
+          label: detail.organizer?.text,
+          value: detail.organizer?.value,
+        });
+
+        setValue(`startdate[${index}]`, detail.startdate);
+      });
 
       lineValues?.recmachcustrecord_parent_record.forEach((detail, index) => {
         setValue(
@@ -1060,6 +1169,35 @@ function EditLead({ id, mode }) {
       custrecord_lms_designation: "",
     },
   ]);
+
+  const [phoneCallRows, setPhoneCallRows] = useState([
+    {
+      subject: "",
+      phone: "",
+      status: null,
+      organizer: null,
+      startDate: "",
+    },
+  ]);
+
+  const [taskCallRows, setTaskCallRows] = useState([
+    {
+      taskTitle: "",
+      priority: null,
+      startTasktDate: "",
+      dueTaskDate: "",
+    },
+  ]);
+
+  const [eventCallRows, setEventCallRows] = useState([
+    {
+      eventTitle: "",
+      location: "",
+      startEventtDate: "",
+      starttime: "",
+      endtime: "",
+    },
+  ]);
   const toggleTab = (tab) => {
     if (activeTab !== tab) {
       // setActiveTab(tab);
@@ -1069,6 +1207,9 @@ function EditLead({ id, mode }) {
       // });
     }
   };
+
+
+
   const handleAddRow = () => {
     setRows([
       ...rows,
@@ -1093,6 +1234,44 @@ function EditLead({ id, mode }) {
         custrecord_lms_phonenumber: "",
         custrecord_location_email: "",
         custrecord_lms_designation: "",
+      },
+    ]);
+  };
+
+  const handleAddPhoneCallRow = () => {
+    setPhoneCallRows([
+      ...phoneCallRows,
+      {
+        subject: "",
+        phone: "",
+        status: null,
+        organizer: null,
+        startDate: "",
+      },
+    ]);
+  };
+
+  const handleAddTaskRow = () => {
+    setTaskCallRows([
+      ...taskCallRows,
+      {
+        taskTitle: "",
+        priority: null,
+        startTasktDate: "",
+        dueTaskDate: "",
+      },
+    ]);
+  };
+
+  const handleAddEventRow = () => {
+    setEventCallRows([
+      ...eventCallRows,
+      {
+        eventTitle: "",
+        location: "",
+        startEventtDate: "",
+        starttime: "",
+        endtime: "",
       },
     ]);
   };
@@ -1146,6 +1325,69 @@ function EditLead({ id, mode }) {
     name: "custrecord_lms_designation",
   });
 
+  const { remove: removeSubject } = useFieldArray({
+    control,
+    name: "subject",
+  });
+  const { remove: removePhoneNumber } = useFieldArray({
+    control,
+    name: "phone",
+  });
+  const { remove: removeStatus } = useFieldArray({
+    control,
+    name: "status",
+  });
+  const { remove: removeOrganizer } = useFieldArray({
+    control,
+    name: "organizer",
+  });
+  const { remove: removeStartDate } = useFieldArray({
+    control,
+    name: "startDate",
+  });
+
+  const { remove: removeTaskTitle } = useFieldArray({
+    control,
+    name: "taskTitle",
+  });
+  const { remove: removeTaskPriority } = useFieldArray({
+    control,
+    name: "priority",
+  });
+  const { remove: removeTaskStartDate } = useFieldArray({
+    control,
+    name: "startTasktDate",
+  });
+  const { remove: removeTaskDueDate } = useFieldArray({
+    control,
+    name: "dueTaskDate",
+  });
+
+  const { remove: removeEventTitle } = useFieldArray({
+    control,
+    name: "eventTitle",
+  });
+
+  const { remove: removeEventLocation } = useFieldArray({
+    control,
+    name: "location",
+  });
+
+  const { remove: removeEventStartDate } = useFieldArray({
+    control,
+    name: "startEventtDate",
+  });
+
+  const { remove: removeEventStartTime } = useFieldArray({
+    control,
+    name: "starttime",
+  });
+
+  const { remove: removeEventEndTime } = useFieldArray({
+    control,
+    name: "endtime",
+  });
+
   const handleRemoveRow = (index) => {
     removeDivision(index);
     removeRequirement(index);
@@ -1154,25 +1396,59 @@ function EditLead({ id, mode }) {
     removeUnitOfMeasure(index);
     removeValue(index);
     removeDelivery(index);
-    removeLocation(index);
-    removeContactPersonName(index);
-    removephoneNumber(index);
-    removeEmail(index);
-    removeDesignation(index);
+    // removeLocation(index);
+    // removeContactPersonName(index);
+    // removephoneNumber(index);
+    // removeEmail(index);
+    // removeDesignation(index);
     const newRows = [...rows];
     newRows.splice(index, 1);
     setRows(newRows);
   };
 
-  const handleRemoveLocationRow = (i) => {
-    removeLocation(i);
-    removeContactPersonName(i);
-    removephoneNumber(i);
-    removeEmail(i);
-    removeDesignation(i);
+  const handleRemoveLocationRow = (loc) => {
+    removeLocation(loc);
+    removeContactPersonName(loc);
+    removephoneNumber(loc);
+    removeEmail(loc);
+    removeDesignation(loc);
     const newLocationRows = [...locationRows];
-    newLocationRows.splice(i, 1);
+    newLocationRows.splice(loc, 1);
     setLocationRows(newLocationRows);
+  };
+
+  const handleRemovePhoneCallRow = (p) => {
+    removeSubject(p);
+    removePhoneNumber(p);
+    removeStatus(p);
+    removeOrganizer(p);
+    removeStartDate(p);
+    const newPhoneCallRows = [...phoneCallRows];
+    newPhoneCallRows.splice(p, 1);
+    setPhoneCallRows(newPhoneCallRows);
+  };
+
+  const handleRemoveTaskRow = (i) => {
+    removeTaskTitle(i);
+    removeTaskPriority(i);
+    removeTaskStartDate(i);
+    removeTaskDueDate(i);
+    const newTaskRows = [...taskCallRows];
+    newTaskRows.splice(i, 1);
+    setPhoneCallRows(newTaskRows);
+  };
+
+  const handleRemoveEventRow = (ev) => {
+    removeEventTitle(ev);
+    removeEventLocation(ev);
+    // removeEventAccess(i);
+    removeEventStartDate(ev);
+    removeEventStartTime(ev);
+    removeEventEndTime(ev);
+
+    const newEventRows = [...eventCallRows];
+    newEventRows.splice(ev, 1);
+    setPhoneCallRows(newEventRows);
   };
 
   const requirementDetailsColumns = [
@@ -1194,6 +1470,7 @@ function EditLead({ id, mode }) {
                   requiredStarOnLabel={true}
                   style={{ width: "200px" }}
                   loading={divisionLoading}
+                  disabled={viewMode}
                 />
               )}
             />
@@ -1220,6 +1497,7 @@ function EditLead({ id, mode }) {
               type="text"
               id="custrecord_lms_requirement"
               placeholder="Enter Requirement"
+              disabled={viewMode}
               {...register(
                 `custrecord_lms_requirement[${cellProps.row.index}]`
               )}
@@ -1247,6 +1525,7 @@ function EditLead({ id, mode }) {
               type="text"
               id="custrecord_lms_project_name"
               placeholder="Enter Project Name"
+              disabled={viewMode}
               {...register(
                 `custrecord_lms_project_name[${cellProps.row.index}]`
               )}
@@ -1273,6 +1552,7 @@ function EditLead({ id, mode }) {
               type="text"
               id="custrecord_lms_duration"
               placeholder="Enter Duration"
+              disabled={viewMode}
               {...register(`custrecord_lms_duration[${cellProps.row.index}]`, {
                 required: "Duration is required",
                 validate: (value) => {
@@ -1320,6 +1600,7 @@ function EditLead({ id, mode }) {
                     id="custrecord_lms_unit_of_measure"
                     options={allUnitOfMeasureData}
                     loading={unitOfMeasureLoading}
+                    disabled={viewMode}
                   />
                   {errors?.custrecord_lms_unit_of_measure?.[
                     cellProps.row.index
@@ -1350,6 +1631,7 @@ function EditLead({ id, mode }) {
               type="text"
               placeholder="Enter Value"
               id="custrecord_lms_value"
+              disabled={viewMode}
               {...register(`custrecord_lms_value[${cellProps.row.index}]`)}
             />
             {errors?.custrecord_lms_value?.[cellProps.row.index] && (
@@ -1377,6 +1659,7 @@ function EditLead({ id, mode }) {
                     {...field}
                     id="custrecord_lms_expected_delivery_date"
                     placeholder="Select Delivery Date"
+                    disabled={viewMode}
                   />
                   {errors?.custrecord_lms_expected_delivery_date?.[
                     cellProps.row.index
@@ -1416,6 +1699,7 @@ function EditLead({ id, mode }) {
       },
     },
   ];
+  
   const locationDetailsColumns = [
     {
       Header: "Location",
@@ -1427,6 +1711,7 @@ function EditLead({ id, mode }) {
               type="text"
               placeholder="Enter Location"
               id="custrecordlms_location"
+              disabled={viewMode}
               {...register(`custrecordlms_location[${cellProps.row.index}]`)}
             />
             {errors?.custrecordlms_location?.[cellProps.row.index] && (
@@ -1448,6 +1733,7 @@ function EditLead({ id, mode }) {
               type="text"
               placeholder="Enter Person Name"
               id="custrecord_lms_contactperson_name"
+              disabled={viewMode}
               {...register(
                 `custrecord_lms_contactperson_name[${cellProps.row.index}]`
               )}
@@ -1477,6 +1763,7 @@ function EditLead({ id, mode }) {
               type="text"
               placeholder="Enter Phone Number"
               id="custrecord_lms_phonenumber"
+              disabled={viewMode}
               {...register(
                 `custrecord_lms_phonenumber[${cellProps.row.index}]`
               )}
@@ -1504,6 +1791,7 @@ function EditLead({ id, mode }) {
               type="text"
               placeholder="Enter Email"
               id="custrecord_location_email"
+              disabled={viewMode}
               {...register(`custrecord_location_email[${cellProps.row.index}]`)}
             />
             {errors?.custrecord_location_email?.[cellProps.row.index] && (
@@ -1528,6 +1816,7 @@ function EditLead({ id, mode }) {
             <TkInput
               type="text"
               placeholder="Enter Designation"
+              disabled={viewMode}
               {...register(
                 `custrecord_lms_designation[${cellProps.row.index}]`
               )}
@@ -1566,107 +1855,475 @@ function EditLead({ id, mode }) {
     },
   ];
 
-  const columns = useMemo(
-    () => [
-      {
-        Header: "Edit | Delete ",
-        accessor: "id",
-        filterable: false,
-        Cell: (cellProps) => {
-          return (
-            <>
-              <div style={{ display: "flex" }}>
-                <div
-                  onClick={() =>
-                    toggle([
-                      {
-                        // id: cellProps.row.original.id,
-                        // repeatId: cellProps.row.original.repeatId,
-                        // project: { ...cellProps.row.original.project },
-                        // task: { ...cellProps.row.original.task },
-                        // allocatedUser: { ...cellProps.row.original.allocatedUser },
-                        // date: cellProps.row.original.date,
-                        // duration: cellProps.row.original.duration,
-                        // repetationType: cellProps.row.original.repetationType,
-                      },
-                    ])
-                  }
-                >
-                  {/* <Link href={`${urls.resourceAllocationView}/${cellProps.value}`}> */}
-                  <span className="table-text flex-grow-1 fw-medium link-primary cursor-pointer">
-                    {accessLevel >= perAccessIds.edit ? (
-                      <i className="ri-edit-line fs-4"></i>
-                    ) : (
-                      <TkButton color="none">
-                        <TkIcon className="ri-eye-fill align-bottom me-2 text-muted"></TkIcon>
-                      </TkButton>
-                    )}
-                  </span>
-                </div>
-                <span style={{ marginLeft: "20px" }}></span>
 
-                <div
-                  onClick={() => {
-                    setEditLeadId(cellProps.row.original.id);
-                    toggleDeleteModelPopup();
-                  }}
-                >
-                  <span className="table-text flex-grow-1 fw-medium link-danger cursor-pointer">
-                    {accessLevel >= perAccessIds.edit ? (
-                      <i className="ri-delete-bin-line fs-4"></i>
-                    ) : (
-                      <TkIcon className="table-text flex-grow-1 fw-medium link-danger cursor-pointer"></TkIcon>
-                    )}
-                  </span>
-                </div>
-              </div>
-            </>
-          );
-        },
+  const phoneCallActivityColumns = [
+    {
+      Header: "Subject",
+      accessor: "subject",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              id="subject"
+              placeholder="Enter Subject"
+              disabled={viewMode}
+              {...register(`subject[${cellProps.row.index}]`)}
+              rules={{ required: "Subject is required" }}
+            />
+            {errors?.subject?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.subject?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
       },
-      {
-        Header: "Activity Type",
-        accessor: "_activityType",
-        filterable: false,
-        Cell: (cellProps) => {
-          return <div className="table-text">{cellProps.value}</div>;
-        },
+    },
+
+    {
+      Header: "Phone Number",
+      accessor: "phone",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              placeholder="Enter Phone Number"
+              id="phone"
+              disabled={viewMode}
+              {...register(`phone[${cellProps.row.index}]`)}
+            />
+            {errors?.phone?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.phone?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
       },
-      {
-        Header: "Lead Name",
-        accessor: "lead",
-        filterable: false,
-        Cell: (cellProps) => {
-          return <div className="table-text">{cellProps.value}</div>;
-        },
+    },
+
+    {
+      Header: "Status",
+      accessor: "status",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`status[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <>
+                  <TkSelect
+                    {...field}
+                    id="status"
+                    disabled={viewMode}
+                    options={[
+                      {
+                        label: "Completed",
+                        value: "Completed",
+                      },
+                      {
+                        label: "Scheduled",
+                        value: "Scheduled",
+                      },
+                    ]}
+                  />
+                  {errors?.status?.[cellProps.row.index] && (
+                    <FormErrorText>
+                      {errors?.status?.[cellProps.row.index]?.message}
+                    </FormErrorText>
+                  )}
+                </>
+              )}
+            />
+          </>
+        );
       },
-      {
-        Header: "Phone Number",
-        accessor: "phoneNumber",
-        filterable: false,
-        Cell: (cellProps) => {
-          return <div className="table-text">{cellProps.value}</div>;
-        },
+    },
+
+    {
+      Header: "Organizer",
+      accessor: "organizer",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`organizer[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <>
+                  <TkSelect
+                    {...field}
+                    id="organizer"
+                    disabled={viewMode}
+                    options={allSalesTeamData}
+                  />
+                  {errors?.organizer?.[cellProps.row.index] && (
+                    <FormErrorText>
+                      {errors?.organizer?.[cellProps.row.index]?.message}
+                    </FormErrorText>
+                  )}
+                </>
+              )}
+            />
+          </>
+        );
       },
-      {
-        Header: "Date",
-        accessor: "date",
-        filterable: false,
-        Cell: (cellProps) => {
-          return <div className="table-text">{cellProps.value}</div>;
-        },
+    },
+
+    {
+      Header: "Date",
+      accessor: "startDate",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`startDate[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <>
+                  <TkDate {...field} id="startDate"  disabled={viewMode} placeholder="Select Date" />
+                  {errors?.startDate?.[cellProps.row.index] && (
+                    <FormErrorText>
+                      {errors?.startDate?.[cellProps.row.index]?.message}
+                    </FormErrorText>
+                  )}
+                </>
+              )}
+            />
+          </>
+        );
       },
-      {
-        Header: "Comments",
-        accessor: "comments",
-        filterable: false,
-        Cell: (cellProps) => {
-          return <div className="table-text">{cellProps.value}</div>;
-        },
+    },
+
+    {
+      Header: "Action",
+      accessor: "action",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkButton
+              type={"button"}
+              onClick={() => {
+                handleRemovePhoneCallRow(cellProps.row.index);
+              }}
+              disabled={phoneCallRows.length === 1}
+            >
+              Delete
+            </TkButton>
+          </>
+        );
       },
-    ],
-    []
-  );
+    },
+  ];
+
+  const taskActivityColumns = [
+    {
+      Header: "Title",
+      accessor: "taskTitle",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              id="taskTitle"
+              placeholder="Enter Title"
+              disabled={viewMode}
+              {...register(`taskTitle[${cellProps.row.index}]`)}
+              rules={{ required: "Title is required" }}
+            />
+            {errors?.taskTitle?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.taskTitle?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Proirity",
+      accessor: "priority",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`priority[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <>
+                  <TkSelect
+                    {...field}
+                    id="priority"
+                    disabled={viewMode}
+                    options={[
+                      { label: "High", value: "1" },
+                      { label: "Medium", value: "2" },
+                      { label: "Low", value: "3" },
+                    ]}
+                  />
+                  {errors?.priority?.[cellProps.row.index] && (
+                    <FormErrorText>
+                      {errors?.priority?.[cellProps.row.index]?.message}
+                    </FormErrorText>
+                  )}
+                </>
+              )}
+            />
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Date",
+      accessor: "startTasktDate",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`startTasktDate[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <>
+                  <TkDate
+                    {...field}
+                    id="startTasktDate"
+                    placeholder="Select Date"
+                    disabled={viewMode}
+                  />
+                  {errors?.startTasktDate?.[cellProps.row.index] && (
+                    <FormErrorText>
+                      {errors?.startTasktDate?.[cellProps.row.index]?.message}
+                    </FormErrorText>
+                  )}
+                </>
+              )}
+            />
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Date Date",
+      accessor: "dueTaskDate",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`dueTaskDate[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <>
+                  <TkDate
+                    {...field}
+                    id="dueTaskDate"
+                    placeholder="Select Date Completed"
+                    disabled={viewMode}
+                  />
+                  {errors?.dueTaskDate?.[cellProps.row.index] && (
+                    <FormErrorText>
+                      {errors?.dueTaskDate?.[cellProps.row.index]?.message}
+                    </FormErrorText>
+                  )}
+                </>
+              )}
+            />
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Action",
+      accessor: "action",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkButton
+              type={"button"}
+              onClick={() => {
+                handleRemoveTaskRow(cellProps.row.index);
+              }}
+              disabled={taskCallRows.length === 1}
+            >
+              Delete
+            </TkButton>
+          </>
+        );
+      },
+    },
+  ];
+
+  const eventActivityColumns = [
+    {
+      Header: "Title",
+      accessor: "eventTitle",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              id="eventTitle"
+              placeholder="Enter Title"
+              disabled={viewMode}
+              {...register(`eventTitle[${cellProps.row.index}]`)}
+              rules={{ required: "Title is required" }}
+            />
+            {errors?.eventTitle?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.eventTitle?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Location",
+      accessor: "location",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              id="location"
+              placeholder="Enter Location"
+              disabled={viewMode}
+              {...register(`location[${cellProps.row.index}]`)}
+              rules={{ required: "Location is required" }}
+            />
+            {errors?.location?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.location?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Date",
+      accessor: "startDate",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`startDate[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <>
+                  <TkDate {...field} id="startDate" placeholder="Select Date"  disabled={viewMode} />
+                  {errors?.startDate?.[cellProps.row.index] && (
+                    <FormErrorText>
+                      {errors?.startDate?.[cellProps.row.index]?.message}
+                    </FormErrorText>
+                  )}
+                </>
+              )}
+            />
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Start Time",
+      accessor: "starttime",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              id="starttime"
+              placeholder="Enter Start Time"
+              disabled={viewMode}
+              {...register(`starttime[${cellProps.row.index}]`, {
+                required: "Start Time is required",
+                validate: (value) => {
+                  if (value && !/^[0-9]*([.:][0-9]+)?$/.test(value)) {
+                    return "Invalid Start Time";
+                  }
+                },
+              })}
+              onBlur={(e) => {
+                setValue(
+                  `starttime[${cellProps.row.index}]`,
+                  convertToTime(e.target.value)
+                );
+              }}
+            />
+            {errors?.starttime?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.starttime?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "End Time",
+      accessor: "endtime",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              id="endtime"
+              placeholder="Enter End Time"
+              disabled={viewMode}
+              {...register(`endtime[${cellProps.row.index}]`, {
+                required: "End Time is required",
+                validate: (value) => {
+                  if (value && !/^[0-9]*([.:][0-9]+)?$/.test(value)) {
+                    return "Invalid End Time";
+                  }
+                },
+              })}
+              onBlur={(e) => {
+                setValue(
+                  `endtime[${cellProps.row.index}]`,
+                  convertToTime(e.target.value)
+                );
+              }}
+            />
+            {errors?.endtime?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.endtime?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+    {
+      Header: "Action",
+      accessor: "action",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkButton
+              type={"button"}
+              onClick={() => {
+                handleRemoveEventRow(cellProps.row.index);
+              }}
+              disabled={eventCallRows.length === 1}
+            >
+              Delete
+            </TkButton>
+          </>
+        );
+      },
+    },
+  ];
 
   const leadPost = useMutation({
     mutationFn: tkFetch.patch(`${API_BASE_URL}/lead/${lid}`),
@@ -1789,7 +2446,7 @@ function EditLead({ id, mode }) {
         },
         custentity_lms_noteother: formData.custentity_lms_noteother,
         companyname: formData.companyname,
-        phone: formData.phone,
+        phone: formData.contactPhone,
         email: formData.email,
         custentity_lms_cr_no: formData.custentity_lms_cr_no,
         custentity3: formData.custentity3,
@@ -1800,6 +2457,15 @@ function EditLead({ id, mode }) {
         custentity_market_segment: {
           value: formData.custentity_market_segment.value,
           label: formData.custentity_market_segment.text,
+        },
+        addr1: formData.addr1,
+        addr2: formData.addr2,
+        city: formData.city,
+        state: formData.state,
+        zip: formData.zip,
+        country: {
+          value: formData.country?.value,
+          label: formData.country?.text,
         },
         custentity_lms_address: formData.custentity_lms_address,
       },
@@ -1815,16 +2481,20 @@ function EditLead({ id, mode }) {
               value: formData.custrecord_lms_division[i]?.value,
               text: formData.custrecord_lms_division[i]?.text,
             },
-            custrecord_lms_duration: Number(
-              formData.custrecord_lms_duration?.[i]
+            custrecord_lms_duration: convertToTime(
+              formData.custrecord_lms_duration[i]
             ),
+
+            // custrecord_lms_duration: Number(
+            //   formData.custrecord_lms_duration?.[i]
+            // ),
             custrecord_lms_unit_of_measure: {
               value: formData.custrecord_lms_unit_of_measure[i]?.value,
               text: formData.custrecord_lms_unit_of_measure[i]?.text,
             },
             custrecord_lms_value: Number(formData.custrecord_lms_value[i]),
             custrecord_lms_expected_delivery_date:
-              formData.custrecord_lms_expected_delivery_date[i],
+            formatDateForAPI(formData.custrecord_lms_expected_delivery_date[i]),
           })),
 
         recmachcustrecord_parent_record: formData.custrecordlms_location.map(
@@ -1876,43 +2546,73 @@ function EditLead({ id, mode }) {
             },
           },
         ],
+        // calls: (Array.isArray(formData.phone)
+        //   ? formData.phone
+        //   : formData.phone
+        //   ? [formData.phone]
+        //   : []
+        // ).map((call, i) => ({
+        //   // your code here
+        //   // calls: formData.phone?.map((call, i) => ({
+        //   title: formData.subject[i],
+        //   phone: call,
+        //   status: {
+        //     value: formData.status[i]?.value,
+        //     text: formData.status[i]?.label,
+        //   },
+        //   organizer: {
+        //     value: formData.organizer[i]?.value,
+        //     text: formData.organizer[i]?.label,
+        //   },
+        //   startdate: [formData.startdate],
+        // })),
 
-        calls: {
-          title: formData.title,
-          company: formData.company,
-          phone: formData.phone,
-          status: {
-            value: formData.status?.value,
-            text: formData.status?.text,
-          },
-          organizer: {
-            value: formData.organizer?.value,
-            text: formData.organizer?.text,
-          },
-          startdate: formatDateForAPI(formData.startdate),
-          message: formData.message,
-        },
+        // tasks: formData.priority?.map((task, i) => ({
+        //   title: formData.taskTitle[i],
+        //   priority: {
+        //     value: formData.status[i]?.value,
+        //     text: formData.status[i]?.label,
+        //   },
+        //   // startdate: [
+        //   //   formData.startTasktDate[i],
+        //   // ],
+        //   dueDate: [formData.dueTaskDate[i]],
 
-        tasks: {
-          title: formData.title,
-          company: formData.company,
-          priority: {
-            value: formData.priority?.value,
-            text: formData.priority?.text,
-          },
-          startdate: formatDateForAPI(formData.startdate),
-          duedate: formatDateForAPI(formData.duedate),
-          message: formData.message,
-        },
+        //   // startdate: [
+        //   //   formatDateForAPI(
+        //   //     formData.startTasktDate[i]
+        //   //   )
+        //   // ],
 
-        events: {
-          title: formData.title,
-          company: formData.company,
-          location: formData.location,
-          starttime: formData.starttime,
-          endtime: formData.endtime,
-          message: formData.message,
-        },
+        //   // dueDate: [
+        //   //   formatDateForAPI(
+        //   //     formData.dueTaskDate[i]
+        //   //   )
+        //   // ]
+        //   // startdate: [
+        //   //   formData.startTasktDate[i],
+        //   // ],
+        //   // dueDate: [
+        //   //   formData.dueTaskDate[i],
+        //   // ],
+        //   // startdate: formData.startTasktDate,
+        //   // dueDate: formData.dueTaskDate
+        // })),
+
+        // events: formData.title?.map((call, i) => ({
+        //   title: formData.eventTitle[i],
+        //   location: formData.location[i],
+
+        //   // startdate: [
+        //   //   formData.startEventtDate[i],
+        //   // ],
+        //   starttime: [formData.starttime[i]],
+        //   endtime: [formData.endtime[i]],
+
+        //   // starttime: formData.starttime[i],
+        //   // startdate: formData.startEventtDate,
+        //   //   endtime: formData.endtime[i]
+        // })),
       },
       filters: {
         bodyfilters: [["internalid", "anyof", lid]],
@@ -1925,6 +2625,7 @@ function EditLead({ id, mode }) {
         },
       },
     };
+
 
     leadPost.mutate(apiData, {
       onSuccess: (data) => {
@@ -1940,12 +2641,30 @@ function EditLead({ id, mode }) {
   const deleteLead = useMutation({
     mutationFn: tkFetch.deleteWithIdInUrl(`${API_BASE_URL}/lead`),
   });
+  // const handleDeleteLead = () => {
+  //   if (!editMode) return;
+  //   const apiData = {
+  //     id: lid,
+  //   };
+  //      deleteLead.mutate(apiData, {
+  //     onSuccess: (data) => {
+  //       TkToastSuccess("Lead Deleted Successfully");
+  //       queryClient.invalidateQueries({
+  //         queryKey: [RQ.allLeads, lid],
+  //       });
+  //       router.push(`${urls.lead}`);
+  //     },
+  //     onError: (error) => {
+  //       console.log("error while deleting lead", error);
+  //     },
+  //   });
+  // };
+
   const handleDeleteLead = () => {
     if (!editMode) return;
     const apiData = {
       id: lid,
     };
-
     deleteLead.mutate(apiData, {
       onSuccess: (data) => {
         TkToastSuccess("Lead Deleted Successfully");
@@ -1955,10 +2674,15 @@ function EditLead({ id, mode }) {
         router.push(`${urls.lead}`);
       },
       onError: (error) => {
-        console.log("error while deleting lead", error);
+        if (error.message === 'THIS_RECORD_CANNOT_BE_DELETED_BECAUSE_IT_HAS_DEPENDENT_RECORDS') {
+          TkToastError("This record cannot be deleted because it has dependent records.");
+        } else {
+          console.log("error while deleting lead", error);
+        }
       },
     });
   };
+    
 
   const toggleDeleteModelPopup = () => {
     setDeleteModal(true);
@@ -2079,8 +2803,8 @@ function EditLead({ id, mode }) {
                                     )}
                                   </TkCol>
 
-                                  {data[0].bodyValues
-                                    .custentity_lms_channel_lead[0].value ===
+                                  {data[0]?.bodyValues
+                                    ?.custentity_lms_channel_lead[0].value ===
                                     "3" && (
                                     <>
                                       <TkCol lg={3}>
@@ -2169,7 +2893,7 @@ function EditLead({ id, mode }) {
                                   )}
 
                                   {data[0].bodyValues
-                                    .custentity_lms_channel_lead[0].value ===
+                                    ?.custentity_lms_channel_lead[0].value ===
                                     "4" && (
                                     <>
                                       <TkCol lg={3}>
@@ -2203,7 +2927,7 @@ function EditLead({ id, mode }) {
                                   )}
 
                                   {data[0].bodyValues
-                                    .custentity_lms_channel_lead[0].value ===
+                                    ?.custentity_lms_channel_lead[0].value ===
                                     "5" && (
                                     <>
                                       <TkCol lg={3}>
@@ -2511,18 +3235,18 @@ function EditLead({ id, mode }) {
                                   </TkCol>
                                   <TkCol lg={4}>
                                     <TkInput
-                                      {...register("phone")}
-                                      id="phone"
-                                      name="phone"
+                                      {...register("contactPhone")}
+                                      id="contactPhone"
+                                      name="contactPhone"
                                       type="text"
                                       labelName="Contact No"
                                       placeholder="Enter Contact No"
                                       requiredStarOnLabel={editMode}
                                       disabled={viewMode}
                                     />
-                                    {errors.phone && (
+                                    {errors.contactPhone && (
                                       <FormErrorText>
-                                        {errors.phone.message}
+                                        {errors.contactPhone.message}
                                       </FormErrorText>
                                     )}
                                   </TkCol>
@@ -2829,16 +3553,45 @@ function EditLead({ id, mode }) {
                                     Lead Nurturing
                                   </NavLink>
                                 </NavItem>
+
                                 <NavItem>
                                   <NavLink
                                     href="#"
                                     className={classnames({
                                       active:
-                                        activeSubTab === tabs.leadActivity,
+                                        activeSubTab === tabs.phoneCallActivity,
                                     })}
-                                    onClick={() => toggleTab(tabs.leadActivity)}
+                                    onClick={() =>
+                                      toggleTab(tabs.phoneCallActivity)
+                                    }
                                   >
-                                    Activity
+                                    Phone Call
+                                  </NavLink>
+                                </NavItem>
+                                <NavItem>
+                                  <NavLink
+                                    href="#"
+                                    className={classnames({
+                                      active:
+                                        activeSubTab === tabs.taskActivity,
+                                    })}
+                                    onClick={() => toggleTab(tabs.taskActivity)}
+                                  >
+                                    Task
+                                  </NavLink>
+                                </NavItem>
+                                <NavItem>
+                                  <NavLink
+                                    href="#"
+                                    className={classnames({
+                                      active:
+                                        activeSubTab === tabs.eventActivity,
+                                    })}
+                                    onClick={() =>
+                                      toggleTab(tabs.eventActivity)
+                                    }
+                                  >
+                                    Event
                                   </NavLink>
                                 </NavItem>
                               </Nav>
@@ -2853,6 +3606,7 @@ function EditLead({ id, mode }) {
                                     <TkTableContainer
                                       customPageSize={true}
                                       showAddButton={true}
+                                      // showAddButton={!viewMode}
                                       onClickAdd={handleAddRow}
                                       onclickDelete={handleRemoveRow}
                                       columns={requirementDetailsColumns}
@@ -2867,6 +3621,7 @@ function EditLead({ id, mode }) {
                                     <TkTableContainer
                                       customPageSize={true}
                                       showAddButton={true}
+                                      // showAddButton={!viewMode}
                                       onClickAdd={handleAddLocationRow}
                                       onclickDelete={handleRemoveLocationRow}
                                       columns={locationDetailsColumns}
@@ -3015,16 +3770,17 @@ function EditLead({ id, mode }) {
                                               labelName="Lead Status"
                                               placeholder="Select Lead Update"
                                               disabled={viewMode}
-                                              options={[
-                                                {
-                                                  value: "1",
-                                                  label: "Qualified",
-                                                },
-                                                {
-                                                  value: "2",
-                                                  label: "Unqualified",
-                                                },
-                                              ]}
+                                              options={allNurturStatusData}
+                                              // options={[
+                                              //   {
+                                              //     value: "1",
+                                              //     label: "Qualified",
+                                              //   },
+                                              //   {
+                                              //     value: "2",
+                                              //     label: "Unqualified",
+                                              //   },
+                                              // ]}
                                             />
                                           )}
                                         />
@@ -3091,69 +3847,52 @@ function EditLead({ id, mode }) {
                                   </div>
                                 </TabPane>
 
-                                <TabPane tabId={tabs.leadActivity}>
-                                  <div>
-                                    <TkRow className="g-3">
-                                      <TkCol lg={2}>
-                                        <TkButton
-                                          type="button"
-                                          color="primary"
-                                          onClick={leadActivityToggle}
-                                          style={{ width: "80%" }}
-                                        >
-                                          Phone Call
-                                        </TkButton>
-                                      </TkCol>
-                                      <TkCol lg={2}>
-                                        <TkButton
-                                          type="button"
-                                          color="primary"
-                                          onClick={leadTaskActivityToggle}
-                                          style={{ width: "80%" }}
-                                        >
-                                          Task
-                                        </TkButton>
-                                      </TkCol>
-                                      <TkCol lg={2}>
-                                        <TkButton
-                                          type="button"
-                                          color="primary"
-                                          onClick={leadEventActivityToggle}
-                                          style={{ width: "80%" }}
-                                        >
-                                          Event
-                                        </TkButton>
-                                      </TkCol>
-                                    </TkRow>
-                                    <Nav className="nav-tabs dropdown-tabs nav-tabs-custom mb-3 mt-3">
-                                      <NavItem>
-                                        <NavLink
-                                          // href="#"
-                                          className={classnames({
-                                            active:
-                                              activeTab === tabs.phoneCall,
-                                          })}
-                                        >
-                                          Lead Activity
-                                        </NavLink>
-                                      </NavItem>
-                                    </Nav>
+                                <TabPane tabId={tabs.phoneCallActivity}>
+                                  <TkContainer>
+                                    <TkTableContainer
+                                      customPageSize={true}
+                                      showAddButton={true}
+                                      // showAddButton={!viewMode}
+                                      onClickAdd={handleAddPhoneCallRow}
+                                      onclickDelete={handleRemovePhoneCallRow}
+                                      columns={phoneCallActivityColumns}
+                                      data={phoneCallRows}
+                                      thClass="text-dark"
+                                      dynamicTable={true}
+                                    />
+                                  </TkContainer>
+                                </TabPane>
 
-                                    <TabContent activeTab={activeTab}>
-                                      <TabPane tabId={tabs.directCall}>
-                                        <TkCardBody className="table-padding pt-0">
-                                          <TkTableContainer
-                                            columns={columns}
-                                            data={[]}
-                                            isSearch={false}
-                                            defaultPageSize={10}
-                                            isFilters={true}
-                                            showPagination={true}
-                                          />
-                                        </TkCardBody>
-                                      </TabPane>
-                                    </TabContent>
-                                  </div>
+                                <TabPane tabId={tabs.taskActivity}>
+                                  <TkContainer>
+                                    <TkTableContainer
+                                      customPageSize={true}
+                                      showAddButton={true}
+                                      // showAddButton={!viewMode}
+                                      onClickAdd={handleAddTaskRow}
+                                      onclickDelete={handleRemoveTaskRow}
+                                      columns={taskActivityColumns}
+                                      data={taskCallRows}
+                                      thClass="text-dark"
+                                      dynamicTable={true}
+                                    />
+                                  </TkContainer>
+                                </TabPane>
+
+                                <TabPane tabId={tabs.eventActivity}>
+                                  <TkContainer>
+                                    <TkTableContainer
+                                      customPageSize={true}
+                                      showAddButton={true}
+                                      // showAddButton={!viewMode}
+                                      onClickAdd={handleAddEventRow}
+                                      onclickDelete={handleRemoveEventRow}
+                                      columns={eventActivityColumns}
+                                      data={eventCallRows}
+                                      thClass="text-dark"
+                                      dynamicTable={true}
+                                    />
+                                  </TkContainer>
                                 </TabPane>
                               </TabContent>
                             </TkCol>
@@ -3187,89 +3926,10 @@ function EditLead({ id, mode }) {
                 </TkRow>
               </TkCol>
 
-              <TkModal
-                isOpen={activityModal}
-                toggle={leadActivityToggle}
-                leadActivityToggle={leadActivityToggle}
-                centered
-                size="lg"
-                className="border-0"
-                modalClassName="modal fade zoomIn"
-              >
-                <TkModalHeader
-                  className="p-3 bg-soft-info"
-                  partnerToggle={leadActivityToggle}
-                  toggle={leadActivityToggle}
-                >
-                  {"Phone Call"}
-                </TkModalHeader>
-                <TkContainer>
-                  <TkCardBody>
-                    <ActivityPopup
-                      leadActivityToggle={leadActivityToggle}
-                      isPopup={true}
-                      directCallId={directCallId}
-                      setNewAddress={setNewAddress}
-                    />
-                  </TkCardBody>
-                </TkContainer>
-              </TkModal>
-
-              <TkModal
-                isOpen={leadTaskModal}
-                toggle={leadTaskActivityToggle}
-                leadTaskActivityToggle={leadTaskActivityToggle}
-                centered
-                size="lg"
-                className="border-0"
-                modalClassName="modal fade zoomIn"
-              >
-                <TkModalHeader
-                  className="p-3 bg-soft-info"
-                  partnerToggle={leadTaskActivityToggle}
-                  toggle={leadTaskActivityToggle}
-                >
-                  {"Task"}
-                </TkModalHeader>
-                <TkContainer>
-                  <TkCardBody>
-                    <LeadTaskPopup
-                      leadTaskActivityToggle={leadTaskActivityToggle}
-                      isPopup={true}
-                      directCallId={directCallId}
-                      setNewAddress={setNewAddress}
-                    />
-                  </TkCardBody>
-                </TkContainer>
-              </TkModal>
-
-              <TkModal
-                isOpen={leadEventModal}
-                toggle={leadEventActivityToggle}
-                leadEventActivityToggle={leadEventActivityToggle}
-                centered
-                size="lg"
-                className="border-0"
-                modalClassName="modal fade zoomIn"
-              >
-                <TkModalHeader
-                  className="p-3 bg-soft-info"
-                  partnerToggle={leadEventActivityToggle}
-                  toggle={leadEventActivityToggle}
-                >
-                  {"Event"}
-                </TkModalHeader>
-                <TkContainer>
-                  <TkCardBody>
-                    <LeadEventPopup
-                      leadEventActivityToggle={leadEventActivityToggle}
-                      isPopup={true}
-                      directCallId={directCallId}
-                      setNewAddress={setNewAddress}
-                    />
-                  </TkCardBody>
-                </TkContainer>
-              </TkModal>
+             
+              <ActivityTabs mode={mode} id={id}/>
+               
+              {/* </TabPane> */}
             </TkRow>
           </div>
         </>

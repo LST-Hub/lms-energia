@@ -142,7 +142,7 @@ const UserDetails = ({ mode, id }) => {
         supervisor,
         department,
         employeetype,
-        role,
+        custentity_lms_roles,
       } = data[0];
 
       setValue("firstName", firstName);
@@ -179,11 +179,11 @@ const UserDetails = ({ mode, id }) => {
           : null
       );
       setValue(
-        "role",
-        role
+        "custentity_lms_roles",
+        custentity_lms_roles
           ? {
-              label: role?.refName,
-              value: role?.id,
+              label: custentity_lms_roles?.refName,
+              value: custentity_lms_roles?.id,
             }
           : null
       );
@@ -413,7 +413,7 @@ const UserDetails = ({ mode, id }) => {
 
                     <TkCol lg={4}>
                       <Controller
-                        name="role"
+                        name="custentity_lms_roles"
                         control={control}
                         render={({ field }) => (
                           <TkSelect
@@ -421,7 +421,7 @@ const UserDetails = ({ mode, id }) => {
                             labelName="Role"
                             // tooltip="Role"
                             // labelId={"_role"}
-                            id="role"
+                            id="custentity_lms_roles"
                             options={[]}
                             onChange={(value) => {
                               field.onChange(value);
@@ -433,8 +433,8 @@ const UserDetails = ({ mode, id }) => {
                           />
                         )}
                       />
-                      {errors.role && (
-                        <FormErrorText>{errors.role.message}</FormErrorText>
+                      {errors.custentity_lms_roles && (
+                        <FormErrorText>{errors.custentity_lms_roles.message}</FormErrorText>
                       )}
                     </TkCol>
                   </TkRow>

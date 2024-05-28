@@ -38,8 +38,6 @@ import { convertTimeToSec, convertToTimeFotTimeSheet } from "../../utils/time";
 const schema = Yup.object({
   title: Yup.string().required("Subject is required").nullable(),
   company: Yup.object().required("Lead name is required").nullable(),
-  accesslevel: Yup.object().required("Event access is required").nullable(),
-  organizer: Yup.object().required("Organizer is required").nullable(),
   status: Yup.object().required("Status is required").nullable(),
   startDate: Yup.string().required("Date is required").nullable(),
   starttime: Yup.string().required("Start Time is required").nullable(),
@@ -103,7 +101,7 @@ const EventActivity = ({ value }) => {
     mutationFn: tkFetch.post(`${API_BASE_URL}/taskActivity`),
   });
 
-  const onSubmit = (data) => {
+  const onSubmit = (formData) => {
     const apiData = {
       resttype: "Add",
       recordtype: "calendarevent",
@@ -118,14 +116,14 @@ const EventActivity = ({ value }) => {
           value: formData.status.value,
           label: formData.status.text,
         },
-        accesslevel: {
-          value: formData.accesslevel.value,
-          label: formData.accesslevel.text,
-        },
-        organizer: {
-          value: formData.organizer.value,
-          label: formData.organizer.text,
-        },
+        // accesslevel: {
+        //   value: formData.accesslevel.value,
+        //   label: formData.accesslevel.text,
+        // },
+        // organizer: {
+        //   value: formData.organizer.value,
+        //   label: formData.organizer.text,
+        // },
 
         startdate: formatDateForAPI(formData.startdate),
         starttime: formData.starttime,
@@ -268,7 +266,7 @@ const EventActivity = ({ value }) => {
                               )}
                             </TkCol>
 
-                            <TkCol lg={4}>
+                            {/* <TkCol lg={4}>
                               <Controller
                                 name="accesslevel"
                                 control={control}
@@ -296,9 +294,9 @@ const EventActivity = ({ value }) => {
                                   {errors.accesslevel.message}
                                 </FormErrorText>
                               )}
-                            </TkCol>
+                            </TkCol> */}
 
-                            <TkCol lg={4}>
+                            {/* <TkCol lg={4}>
                               <Controller
                                 name="organizer"
                                 control={control}
@@ -319,7 +317,7 @@ const EventActivity = ({ value }) => {
                                   {errors.organizer.message}
                                 </FormErrorText>
                               )}
-                            </TkCol>
+                            </TkCol> */}
 
                             <TkCol lg={4}>
                               <Controller
