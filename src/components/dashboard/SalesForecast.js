@@ -61,7 +61,7 @@ const SalesForecast = () => {
 
   return (
     <React.Fragment>
-      <Col xxl={3} md={6}>
+      <Col xxl={6} md={6}>
         <Card>
           <CardHeader className="align-items-center d-flex">
             <h4 className="card-title mb-0 flex-grow-1">Sales Forecast</h4>

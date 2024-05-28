@@ -17,16 +17,15 @@ const ReactApexChart = dynamic(() => import("react-apexcharts"), {
 const SalesForecastCharts = ({ dataColors, series }) => {
   const [linechartcustomerColors, setLinechartcustomerColors] = useState([]);
 
-//   useEffect(() => {
-//     const charColorsArray = async () => {
-//       const getChartColorsArray = (
-//         await import("../../utils/ChartsDynamicColor")
-//       ).default;
-//       setLinechartcustomerColors(getChartColorsArray(dataColors));
-//     };
-//     charColorsArray();
-//   }, [dataColors]);
-
+  //   useEffect(() => {
+  //     const charColorsArray = async () => {
+  //       const getChartColorsArray = (
+  //         await import("../../utils/ChartsDynamicColor")
+  //       ).default;
+  //       setLinechartcustomerColors(getChartColorsArray(dataColors));
+  //     };
+  //     charColorsArray();
+  //   }, [dataColors]);
 
   var options = {
     chart: {
@@ -100,14 +99,81 @@ const SalesForecastCharts = ({ dataColors, series }) => {
   };
   return (
     <React.Fragment>
-      <ReactApexChart
-        options={options}
-        series={series}
-        type="bar"
-        height="341"
-        className="apex-charts"
-      />
+      <ReactApexChart options={options} series={series} type="bar" height="341" className="apex-charts" />
     </React.Fragment>
+  );
+};
+
+const LeadValueCharts = ({ series }) => {
+  // const series = [
+  //   {
+  //     name: "sales",
+  //     data: [
+  //       {
+  //         x: "Direct Call",
+  //         y: 400,
+  //       },
+  //       {
+  //         x: "Email",
+  //         y: 430,
+  //       },
+  //       {
+  //         x: "Social Media",
+  //         y: 448,
+  //       },
+  //       {
+  //         x: "Portal",
+  //         y: 470,
+  //       },
+  //       {
+  //         x: "Direct Marketing",
+  //         y: 540,
+  //       },
+  //     ],
+  //   },
+  // ];
+
+  var options = {
+    chart: {
+      type: "bar",
+      height: 380,
+    },
+    xaxis: {
+      type: "category",
+      labels: {
+        formatter: function (val) {
+          return val;
+        },
+      },
+    },
+    // title: {
+    //   text: "Grouped Labels on the X-axis",
+    // },
+    yaxis: {
+      logarithmic: true, // this line enables the logarithmic scale
+    },
+    tooltip: {
+      x: {
+        formatter: function (val) {
+          return val;
+        },
+      },
+    },
+    dataLabels: {
+      enabled: false,
+      formatter: function (val, opts) {
+        return val;
+      },
+    },
+  };
+
+  return (
+    <div>
+      <div id="chart">
+        <ReactApexChart options={options} series={series} type="bar" height={380} />
+      </div>
+      <div id="html-dist"></div>
+    </div>
   );
 };
 
@@ -159,13 +225,7 @@ const DealTypeCharts = ({ dataColors, series }) => {
   };
   return (
     <React.Fragment>
-      <ReactApexChart
-        options={options}
-        series={series}
-        type="radar"
-        height="341"
-        className="apex-charts"
-      />
+      <ReactApexChart options={options} series={series} type="radar" height="341" className="apex-charts" />
     </React.Fragment>
   );
 };
@@ -187,20 +247,7 @@ const BalanceOverviewCharts = ({ dataColors, series }) => {
       width: 2,
     },
     xaxis: {
-      categories: [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-      ],
+      categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
     },
     yaxis: {
       labels: {
@@ -221,15 +268,9 @@ const BalanceOverviewCharts = ({ dataColors, series }) => {
   };
   return (
     <React.Fragment>
-      <ReactApexChart
-        options={options}
-        series={series}
-        type="area"
-        height="290"
-        className="apex-charts"
-      />
+      <ReactApexChart options={options} series={series} type="area" height="290" className="apex-charts" />
     </React.Fragment>
   );
 };
 
-export { SalesForecastCharts, DealTypeCharts, BalanceOverviewCharts };
+export { SalesForecastCharts, LeadValueCharts, DealTypeCharts, BalanceOverviewCharts };
