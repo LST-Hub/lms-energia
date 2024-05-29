@@ -180,32 +180,20 @@ const TeamMembersCharts = ({ seriesData, chartsColor }) => {
   );
 };
 
-const PrjectsStatusCharts = ({ dataColors, series }) => {
-  //   var donutchartProjectsStatusColors = getChartColorsArray(dataColors);
-
-  // const [donutchartProjectsStatusColors, setDonutchartProjectsStatusColors] = useState([]);
-
-  // useEffect(() => {
-  //   const charColorsArray = async () => {
-  //     const getChartColorsArray = (await import("../../utils/ChartsDynamicColor")).default;
-  //     // setDonutchartProjectsStatusColors(getChartColorsArray(dataColors));
-  //   };
-  //   charColorsArray();
-  // }, [dataColors]);
-
+const PrjectsStatusCharts = ({ series }) => {
   var options = {
-    labels: ["Completed", "In Progress", "Not Started", "Cancelled", "Open", "Halted", "Closed"],
+    labels: ["Direct Call", "Email", "Social Media", "Portals", "Direct Marketing"],
     chart: {
       type: "donut",
       height: 170,
     },
     plotOptions: {
       pie: {
-        size: 100,
+        size: 150,
         offsetX: 0,
         offsetY: 0,
         donut: {
-          size: "0%",
+          size: "60%",
           labels: {
             show: false,
           },
@@ -213,7 +201,7 @@ const PrjectsStatusCharts = ({ dataColors, series }) => {
       },
     },
     dataLabels: {
-      enabled: false,
+      enabled: true,
     },
     legend: {
       show: true,
@@ -233,10 +221,8 @@ const PrjectsStatusCharts = ({ dataColors, series }) => {
           <h3>No Data Found</h3>
         </div>
       ) : (
-        <ReactApexChart options={options} series={series} type="donut" height="140" className="apex-charts" />
+        <ReactApexChart options={options} series={series} type="donut" height="380" className="apex-charts" />
       )}
-      {/* <Suspense fallback={<div>Loading...</div>}> */}
-      {/* </Suspense> */}
     </>
   );
 };

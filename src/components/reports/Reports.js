@@ -9,15 +9,12 @@ import TopBar from "./TopBar";
 import { filterFields } from "../../utils/Constants";
 import ReportsResourceAllocation from "./ResourceAllocation";
 import ReportTimesheet from "./Timesheet";
+import LeadReport from "./LeadReport";
 
 function Reports({ accessLevel }) {
   const [filters, updateFilters] = useReducer((state, newState) => ({ ...state, ...newState }), {
     [filterFields.reports.table]: null, // keep the initial values to null for filters
   });
-
-  if (!accessLevel) {
-    return <TkAccessDenied />;
-  }
 
   return (
     <>
@@ -29,13 +26,13 @@ function Reports({ accessLevel }) {
         }}
       />
       <TkContainer>
-        {filters.table === null && <ReportsProjects />}
-        {filters.table === "project" && <ReportsProjects />}
-        {filters.table === "task" && <ReportTasks />}
+        {filters.table === null && <LeadReport />}
+        {filters.table === "leads" && <LeadReport />}
+        {/* {filters.table === "task" && <ReportTasks />}
         {filters.table === "client" && <ReportsClients />}
         {filters.table === "user" && <ReportsUsers />}
         {filters.table === "resourceAllocattion" && <ReportsResourceAllocation />}
-        {filters.table === "timesheet" && <ReportTimesheet />}
+        {filters.table === "timesheet" && <ReportTimesheet />} */}
       </TkContainer>
     </>
   );

@@ -54,6 +54,11 @@ a {
   }
 }
 
+.overflow-auto {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
 .space-childern-sm>* {
   margin: auto 0.3rem;
 }

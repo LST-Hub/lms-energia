@@ -14,9 +14,7 @@ function NavData(user, sessionData) {
       activeIconItems.forEach((item) => {
         item.classList.remove("active");
         var id = item.getAttribute("subitems");
-        console.log("id", id);
-        if (document.getElementById(id))
-          document.getElementById(id).classList.remove("show");
+        if (document.getElementById(id)) document.getElementById(id).classList.remove("show");
       });
     }
   }
@@ -106,6 +104,12 @@ function NavData(user, sessionData) {
       label: "Roles",
       icon: "ri-user-settings-fill",
       link: `${urls.roles}`,
+    },
+    {
+      id: "report",
+      label: "Reports",
+      icon: "ri-file-list-3-fill",
+      link: `${urls.report}`,
     },
     {
       id: "settings",

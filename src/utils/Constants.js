@@ -851,6 +851,10 @@ const RQ = {
   allProjectListForReportTimesheeet: "allProjectListForReportTimesheeet",
   workCalendar: "workCalendar",
   regionSettings: "regionSettings",
+  leadChannel: "leadChannel",
+  leadCount: "leadCount",
+  leadReport: "leadReport",
+  leadCountperDay: "leadCountperDay",
 };
 
 const ws = "/ws";
@@ -949,6 +953,7 @@ const urls = {
   inviteSignup: "/invite-signup",
   inviteUserDetails: "/invite-user-details",
   idleHours: "/idle-hours",
+  report: `${ws}/report`,
   // lead: `${ws}/lead`,
   // leadAdd: `${ws}/leads/add`,
   // leadEdit: `${ws}/leads/edit`,
