@@ -253,7 +253,7 @@ const EditPhoneCall = ({ id, mode }) => {
         onSuccess: (data) => {
           TkToastSuccess("Phone Call Deleted Successfully");
           queryClient.invalidateQueries({
-            queryKey: [RQ.allLeads, lid],
+            queryKey: [RQ.allLeads, cid],
           });
           router.push(`${urls.phoneCall}`);
         },
