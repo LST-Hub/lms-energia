@@ -43,6 +43,7 @@ import TkDate from "../forms/TkDate";
 import DeleteModal from "../../utils/DeleteModal";
 import TkLoader from "../TkLoader";
 import TkEditCardHeader from "../TkEditCardHeader";
+import { formatDateForAPI } from "../../utils/date";
 
 const schema = Yup.object({
   title: Yup.string().required("Subject is required").nullable(),

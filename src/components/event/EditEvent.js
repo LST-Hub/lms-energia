@@ -47,6 +47,7 @@ import { convertTimeToSec, convertToTimeFotTimeSheet } from "../../utils/time";
 import DeleteModal from "../../utils/DeleteModal";
 import TkLoader from "../TkLoader";
 import TkEditCardHeader from "../TkEditCardHeader";
+import { formatDateForAPI } from "../../utils/date";
 
 const schema = Yup.object({
   title: Yup.string().required("Subject is required").nullable(),
@@ -553,7 +554,7 @@ const EditEvent = ({ id, userData, mode }) => {
                                   color="primary"
                                   loading={eventActivityPost.isLoading}
                                 >
-                                  Save
+                                  Update
                                 </TkButton>
                               </div>
                             </div>
