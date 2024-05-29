@@ -4,7 +4,7 @@ import { getAllLeadRestletScriptDeploymentId } from "../../../../src/utils/NsAPI
 export default async function handler(req, res) {
   try {
     if (req.method === "GET") {
-      const query = `SELECT COUNT(*) FROM customer WHERE searchstage='Lead'`;
+      const query = `SELECT COUNT(*) FROM customer WHERE searchstage='Lead' AND id > 29824 `;
       const allLeadData = await getAllLeadRestletScriptDeploymentId(query);
       response({
         res,
