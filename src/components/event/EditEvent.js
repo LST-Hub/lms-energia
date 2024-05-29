@@ -50,7 +50,12 @@ import TkEditCardHeader from "../TkEditCardHeader";
 import { formatDateForAPI } from "../../utils/date";
 
 const schema = Yup.object({
-  title: Yup.string().required("Subject is required").nullable(),
+  title: Yup.string().required("Subject is required")
+  .max(
+    MaxNameLength,
+    `Subject must be at most ${MaxNameLength} characters.`
+  )
+  .nullable(),
   company: Yup.object().required("Lead name is required").nullable(),
   status: Yup.object().required("Status is required").nullable(),
   startDate: Yup.string().required("Date is required").nullable(),
@@ -263,6 +268,7 @@ const EditEvent = ({ id, userData, mode }) => {
                                 labelName="Title"
                                 placeholder="Enter Title"
                                 requiredStarOnLabel={true}
+                                disabled={viewMode}
                               />
                               {errors.title && (
                                 <FormErrorText>
@@ -289,6 +295,7 @@ const EditEvent = ({ id, userData, mode }) => {
                                       ]}
                                     placeholder="Select Lead Name"
                                     requiredStarOnLabel={true}
+                                    disabled={viewMode}
                                   />
                                 )}
                               />
@@ -324,6 +331,7 @@ const EditEvent = ({ id, userData, mode }) => {
                                 type="text"
                                 labelName="Location"
                                 placeholder="Enter Location"
+                                disabled={viewMode}
                               />
                               {errors.location && (
                                 <FormErrorText>
@@ -354,6 +362,7 @@ const EditEvent = ({ id, userData, mode }) => {
                                     ]}
                                     placeholder="Select Type"
                                     requiredStarOnLabel={true}
+                                    disabled={viewMode}
                                   />
                                 )}
                               />
@@ -435,6 +444,7 @@ const EditEvent = ({ id, userData, mode }) => {
                                       dateFormat: "d M, Y",
                                     }}
                                     requiredStarOnLabel={true}
+                                    disabled={viewMode}
                                   />
                                 )}
                               />
@@ -476,6 +486,7 @@ const EditEvent = ({ id, userData, mode }) => {
                                 type="text"
                                 placeholder="Enter Start Time"
                                 requiredStarOnLabel={true}
+                                disabled={viewMode}
                               />
                               {errors.starttime && (
                                 <FormErrorText>
@@ -515,6 +526,7 @@ const EditEvent = ({ id, userData, mode }) => {
                                 type="text"
                                 placeholder="Enter End Time"
                                 requiredStarOnLabel={true}
+                                disabled={viewMode}
                               />
                               {errors.endtime && (
                                 <FormErrorText>
@@ -530,6 +542,7 @@ const EditEvent = ({ id, userData, mode }) => {
                                 type="textarea"
                                 labelName="Message"
                                 placeholder="Enter Message"
+                                disabled={viewMode}
                               />
                               {errors.message && (
                                 <FormErrorText>
@@ -538,6 +551,7 @@ const EditEvent = ({ id, userData, mode }) => {
                               )}
                             </TkCol>
                             <div className="d-flex mt-4 space-childern">
+                            {editMode ? (
                               <div className="ms-auto" id="update-form-btns">
                                 <TkButton
                                   color="secondary"
@@ -557,6 +571,7 @@ const EditEvent = ({ id, userData, mode }) => {
                                   Update
                                 </TkButton>
                               </div>
+                                 ) : null}
                             </div>
                           </TkRow>
                         </div>

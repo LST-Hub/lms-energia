@@ -25,6 +25,7 @@ import {
   MinEmailLength,
   MaxEmailLength,
   bigInpuMaxLength,
+  MaxNameLength,
 } from "../../utils/Constants";
 import tkFetch from "../../utils/fetch";
 import { useMutation, useQueries, useQuery } from "@tanstack/react-query";
@@ -38,8 +39,8 @@ import { convertTimeToSec, convertToTimeFotTimeSheet } from "../../utils/time";
 const schema = Yup.object({
   title: Yup.string().required("Subject is required")
   .max(
-    MaxPhoneNumberLength,
-    `Subject must be at most ${MaxPhoneNumberLength} characters.`
+    MaxNameLength,
+    `Subject must be at most ${MaxNameLength} characters.`
   )
   .nullable(),
   phone: Yup.string()

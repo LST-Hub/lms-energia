@@ -32,7 +32,12 @@ import {
   stausTypes,
 } from "../../utils/Constants";
 import tkFetch from "../../utils/fetch";
-import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQueries,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import useUserAccessLevel from "../../utils/hooks/useUserAccessLevel";
 import { permissionTypeIds } from "../../../DBConstants";
@@ -46,7 +51,10 @@ import TkEditCardHeader from "../TkEditCardHeader";
 import { formatDateForAPI } from "../../utils/date";
 
 const schema = Yup.object({
-  title: Yup.string().required("Subject is required").nullable(),
+  title: Yup.string()
+    .required("Subject is required")
+    .max(MaxNameLength, `Subject must be at most ${MaxNameLength} characters.`)
+    .nullable(),
   company: Yup.object().required("Lead name is required").nullable(),
   // assigned: Yup.object().required("Organizer is required").nullable(),
   priority: Yup.object().required("Proirity is required").nullable(),
@@ -182,16 +190,15 @@ const EditTask = ({ id, userData, mode }) => {
         message: formData.message,
       },
     };
-    taskActivityPost.mutate(apiData,
-      {
-        onSuccess: (data) => {
-          TkToastSuccess("Task Created Successfully");
-          router.push(`${urls.taskk}`);
-        },
-        onError: (error) => {
-          TkToastError("error while creating Lead", error);
-        },
-      });
+    taskActivityPost.mutate(apiData, {
+      onSuccess: (data) => {
+        TkToastSuccess("Task Created Successfully");
+        router.push(`${urls.taskk}`);
+      },
+      onError: (error) => {
+        TkToastError("error while creating Lead", error);
+      },
+    });
   };
 
   const deleteTask = useMutation({
@@ -203,19 +210,18 @@ const EditTask = ({ id, userData, mode }) => {
     const apiData = {
       id: tid,
     };
-    deleteTask.mutate(apiData,
-      {
-        onSuccess: (data) => {
-          TkToastSuccess("Task Deleted Successfully");
-          queryClient.invalidateQueries({
-            queryKey: [RQ.allTask, tid],
-          });
-          router.push(`${urls.taskk}`);
-        },
-        onError: (error) => {
-          TkToastError("error while deleting Phone Call", error);
-        },
-      });
+    deleteTask.mutate(apiData, {
+      onSuccess: (data) => {
+        TkToastSuccess("Task Deleted Successfully");
+        queryClient.invalidateQueries({
+          queryKey: [RQ.allTask, tid],
+        });
+        router.push(`${urls.taskk}`);
+      },
+      onError: (error) => {
+        TkToastError("error while deleting Phone Call", error);
+      },
+    });
   };
 
   const toggleDeleteModelPopup = () => {
@@ -262,6 +268,7 @@ const EditTask = ({ id, userData, mode }) => {
                                   labelName="Title"
                                   placeholder="Enter Title"
                                   requiredStarOnLabel={true}
+                                  disabled={viewMode}
                                 />
                                 {errors.title && (
                                   <FormErrorText>
@@ -294,6 +301,7 @@ const EditTask = ({ id, userData, mode }) => {
                                       ]}
                                       placeholder="Select Lead Name"
                                       requiredStarOnLabel={true}
+                                      disabled={viewMode}
                                     />
                                   )}
                                 />
@@ -360,6 +368,7 @@ const EditTask = ({ id, userData, mode }) => {
                                       ]}
                                       placeholder="Select Proirity"
                                       requiredStarOnLabel={true}
+                                      disabled={viewMode}
                                     />
                                   )}
                                 />
@@ -392,6 +401,7 @@ const EditTask = ({ id, userData, mode }) => {
                                       ]}
                                       placeholder="Select Type"
                                       requiredStarOnLabel={true}
+                                      disabled={viewMode}
                                     />
                                   )}
                                 />
@@ -420,6 +430,7 @@ const EditTask = ({ id, userData, mode }) => {
                                         dateFormat: "d M, Y",
                                       }}
                                       requiredStarOnLabel={true}
+                                      disabled={viewMode}
                                     />
                                   )}
                                 />
@@ -448,6 +459,7 @@ const EditTask = ({ id, userData, mode }) => {
                                         dateFormat: "d M, Y",
                                       }}
                                       requiredStarOnLabel={true}
+                                      disabled={viewMode}
                                     />
                                   )}
                                 />
@@ -465,6 +477,7 @@ const EditTask = ({ id, userData, mode }) => {
                                   type="textarea"
                                   labelName="Message"
                                   placeholder="Enter Message"
+                                  disabled={viewMode}
                                 />
                                 {errors.message && (
                                   <FormErrorText>
@@ -473,25 +486,30 @@ const EditTask = ({ id, userData, mode }) => {
                                 )}
                               </TkCol>
                               <div className="d-flex mt-4 space-childern">
-                                <div className="ms-auto" id="update-form-btns">
-                                  <TkButton
-                                    color="secondary"
-                                    onClick={() => {
-                                      router.push(`${urls.taskk}`);
-                                    }}
-                                    type="button"
-                                    disabled={taskActivityPost.isLoading}
+                                {editMode ? (
+                                  <div
+                                    className="ms-auto"
+                                    id="update-form-btns"
                                   >
-                                    Cancel
-                                  </TkButton>{" "}
-                                  <TkButton
-                                    type="submit"
-                                    color="primary"
-                                    loading={taskActivityPost.isLoading}
-                                  >
-                                    Update
-                                  </TkButton>
-                                </div>
+                                    <TkButton
+                                      color="secondary"
+                                      onClick={() => {
+                                        router.push(`${urls.taskk}`);
+                                      }}
+                                      type="button"
+                                      disabled={taskActivityPost.isLoading}
+                                    >
+                                      Cancel
+                                    </TkButton>{" "}
+                                    <TkButton
+                                      type="submit"
+                                      color="primary"
+                                      loading={taskActivityPost.isLoading}
+                                    >
+                                      Update
+                                    </TkButton>
+                                  </div>
+                                ) : null}
                               </div>
                             </TkRow>
                           </div>

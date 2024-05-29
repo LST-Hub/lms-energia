@@ -61,7 +61,12 @@ import DeleteModal from "../../utils/DeleteModal";
 import TkEditCardHeader from "../TkEditCardHeader";
 
 const schema = Yup.object({
-  title: Yup.string().required("Subject is required").nullable(),
+  title: Yup.string().required("Subject is required")
+  .max(
+    MaxNameLength,
+    `Subject must be at most ${MaxNameLength} characters.`
+  )
+  .nullable(),
   phone: Yup.string()
     .nullable()
     .required("Phone number is required")
@@ -185,8 +190,8 @@ const EditPhoneCall = ({ id, mode }) => {
         label: bodyValues?.company?.value,
       });
       setValue("status", {
-        value: bodyValues?.status?.text,
-        label: bodyValues?.status?.value,
+        value: bodyValues?.status[0].text,
+        label: bodyValues?.status[0].value,
       });
       setValue("organizer", {
         value: bodyValues?.organizer?.text,
@@ -307,6 +312,7 @@ const EditPhoneCall = ({ id, mode }) => {
                                   labelName="Subject"
                                   placeholder="Enter Subject"
                                   requiredStarOnLabel={true}
+                                  disabled={viewMode}
                                 />
                                 {errors.title && (
                                   <FormErrorText>
@@ -333,6 +339,7 @@ const EditPhoneCall = ({ id, mode }) => {
                                       options={allLeadNameListData}
                                       placeholder="Select Lead Name"
                                       requiredStarOnLabel={true}
+                                      disabled={viewMode}
                                     />
                                   )}
                                 />
@@ -352,6 +359,7 @@ const EditPhoneCall = ({ id, mode }) => {
                                   labelName="Phone Number"
                                   placeholder="Enter Phone Number"
                                   requiredStarOnLabel="true"
+                                  disabled={viewMode}
                                 />
                                 {errors.phone && (
                                   <FormErrorText>
@@ -382,6 +390,7 @@ const EditPhoneCall = ({ id, mode }) => {
                                       ]}
                                       placeholder="Select Type"
                                       requiredStarOnLabel={true}
+                                      disabled={viewMode}
                                     />
                                   )}
                                 />
@@ -405,6 +414,7 @@ const EditPhoneCall = ({ id, mode }) => {
                                       options={allSalesTeamData}
                                       placeholder="Select Organizer"
                                       requiredStarOnLabel={true}
+                                      disabled={viewMode}
                                     />
                                   )}
                                 />
@@ -433,6 +443,7 @@ const EditPhoneCall = ({ id, mode }) => {
                                         dateFormat: "d M, Y",
                                       }}
                                       requiredStarOnLabel={true}
+                                      disabled={viewMode}
                                     />
                                   )}
                                 />
@@ -477,6 +488,7 @@ const EditPhoneCall = ({ id, mode }) => {
                                   type="textarea"
                                   labelName="Message"
                                   placeholder="Enter Message"
+                                  disabled={viewMode}
                                 />
                                 {errors.message && (
                                   <FormErrorText>
@@ -485,6 +497,7 @@ const EditPhoneCall = ({ id, mode }) => {
                                 )}
                               </TkCol>
                               <div className="d-flex mt-4 space-childern">
+                              {editMode ? (
                                 <div className="ms-auto" id="update-form-btns">
                                   <TkButton
                                     color="secondary"
@@ -504,6 +517,7 @@ const EditPhoneCall = ({ id, mode }) => {
                                     Update
                                   </TkButton>
                                 </div>
+                                  ) : null}
                               </div>
                             </TkRow>
                           </div>
