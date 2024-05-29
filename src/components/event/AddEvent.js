@@ -425,7 +425,7 @@ const AddEvent = ({ value }) => {
                               )}
                             </TkCol>
 
-                            <TkCol lg={12}>
+                            <TkCol lg={8}>
                               <TkInput
                                 {...register("message")}
                                 id="message"
