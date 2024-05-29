@@ -2061,17 +2061,18 @@ function DirectCall({ selectedButton }) {
       },
       linefields: {
         recmachcustrecord_lms_requirement_details:
-          formData.custrecord_lms_division.map((req, i) => ({
+          formData.custrecord_lms_requirement.map((req, i) => ({
             // custrecord_lms_division: {
             //   value: formData.custrecord_lms_division[i]?.value || "",
             //   label: formData.custrecord_lms_division[i]?.text || "",
             // },
+            custrecord_lms_requirement: req,
+
             custrecord_lms_division: {
-              value: formData.custrecord_lms_division[i]?.value,
-              text: formData.custrecord_lms_division[i]?.text,
+              value: formData.custrecord_lms_division[i].value,
+              text: formData.custrecord_lms_division[i].text,
             },
-            // custrecord_lms_requirement: req,
-            custrecord_lms_requirement: formData.custrecord_lms_requirement[i],
+            // custrecord_lms_requirement: formData.custrecord_lms_requirement[i],
 
             custrecord_lms_project_name:
               formData.custrecord_lms_project_name[i],
@@ -2083,8 +2084,8 @@ function DirectCall({ selectedButton }) {
             //   formData.custrecord_lms_duration[i]
             // ),
             custrecord_lms_unit_of_measure: {
-              value: formData.custrecord_lms_unit_of_measure[i]?.value,
-              text: formData.custrecord_lms_unit_of_measure[i]?.text,
+              value: formData.custrecord_lms_unit_of_measure[i].value,
+              text: formData.custrecord_lms_unit_of_measure[i].text,
             },
             custrecord_lms_value: Number(formData.custrecord_lms_value[i]),
             custrecord_lms_expected_delivery_date: [

@@ -763,7 +763,6 @@ function EditLead({ id, mode }) {
     }
 
     if (leadPortalData) {
-      console.log("leadPortalData", leadPortalData);
       setAllPortalData(
         leadPortalData?.items?.map((leadPortalType) => ({
           label: leadPortalType.name,
@@ -920,6 +919,10 @@ function EditLead({ id, mode }) {
         label: bodyValues?.custentity_lms_enquiryby[0].text,
         value: bodyValues?.custentity_lms_enquiryby[0].value,
       });
+      setValue(
+        "custentity_lms_noteother",
+        bodyValues?.custentity_lms_noteother
+      );
       setValue("companyname", bodyValues?.companyname);
       setValue("contactPhone", bodyValues?.phone);
       setValue("email", bodyValues?.email);
@@ -929,93 +932,140 @@ function EditLead({ id, mode }) {
         label: bodyValues?.custentity_lms_client_type[0].text,
         value: bodyValues?.custentity_lms_client_type[0].value,
       });
-      setValue("custentity_market_segment", {
-        label: bodyValues?.custentity_market_segment[0].text,
-        value: bodyValues?.custentity_market_segment[0].value,
-      });
+      setValue(
+        "custentity_market_segment",
+        custentity_market_segment
+          ? {
+              label: bodyValues?.custentity_market_segment[0].text,
+              value: bodyValues?.custentity_market_segment[0].value,
+            }
+          : null
+      );
 
-      setValue("addr1", bodyValues?.addr1),
-        setValue("addr2", bodyValues?.addr2),
-        setValue("city", bodyValues?.city),
-        setValue("state", bodyValues?.state),
-        setValue("zip", bodyValues?.zip),
-        setValue("country", {
-          label: bodyValues?.country?.text,
-          value: bodyValues?.country?.value,
-        });
+      // setValue("addr1", bodyValues?.addr1),
+      //   setValue("addr2", bodyValues?.addr2),
+      //   setValue("city", bodyValues?.city),
+      //   setValue("state", bodyValues?.state),
+      //   setValue("zip", bodyValues?.zip),
+      //   setValue(
+      //     "country",
+      //     country
+      //       ? {
+      //           label: bodyValues?.country?.text,
+      //           value: bodyValues?.country?.value,
+      //         }
+      //       : null
+      //   );
       setValue("custentity_lms_address", bodyValues?.custentity_lms_address),
         // set the line level fields
 
-        lineValues?.recmachcustrecord_lms_requirement_details.forEach(
-          (detail, index) => {
-            setValue(`custrecord_lms_division[${index}]`, {
-              label: detail.custrecord_lms_division?.text,
-              value: detail.custrecord_lms_division?.value,
-            });
+       
 
-            setValue(
-              `custrecord_lms_requirement[${index}]`,
-              detail.custrecord_lms_requirement
-            );
+        // lineValues?.calls?.forEach((detail, index) => {
+        //   setValue(`subject[${index}]`, detail.title);
+        //   setValue(`phone[${index}]`, detail.phone);
 
-            setValue(
-              `custrecord_lms_project_name[${index}]`,
-              detail.custrecord_lms_project_name
-            );
+        //   setValue(`status[${index}]`, {
+        //     label: detail.status?.text,
+        //     value: detail.status?.value,
+        //   });
 
-            setValue(
-              `custrecord_lms_duration[${index}]`,
-              detail.custrecord_lms_duration
-            );
+        //   setValue(`organizer[${index}]`, {
+        //     label: detail.organizer?.text,
+        //     value: detail.organizer?.value,
+        //   });
 
-            // setValue(
-            //   `custrecord_lms_duration[${index}]`,
-            //   detail.custrecord_lms_duration
-            // );
+        //   setValue(`startdate[${index}]`, detail.startdate);
+        // });
 
-            setValue(`custrecord_lms_unit_of_measure[${index}]`, {
-              label: detail.custrecord_lms_unit_of_measure?.text,
-              value: detail.custrecord_lms_unit_of_measure?.value,
-            });
+       
 
-            setValue(
-              `custrecord_lms_value[${index}]`,
-              detail.custrecord_lms_value
-            );
-
-            setValue(
-              `custrecord_lms_expected_delivery_date[${index}]`,
-              detail.custrecord_lms_expected_delivery_date
-            );
-
-            setRows((prevRows) => {
-              const newRows = [...prevRows];
-              newRows[index] = {
-                ...newRows[index],
-                custrecord_lms_requirement: detail.custrecord_lms_requirement,
-              };
-              return newRows;
-            });
-          }
+        setValue(
+          `custrecord_lms_region`,
+          lineValues?.recmachcustrecord_lms_lead_assigning[0]
+          ?.custrecord_lms_region[0]
+          ?
+         {
+                label:
+                  lineValues?.recmachcustrecord_lms_lead_assigning[0]
+                    ?.custrecord_lms_region[0]?.text,
+                value:
+                  lineValues?.recmachcustrecord_lms_lead_assigning[0]
+                    ?.custrecord_lms_region[0]?.value,
+              } : null
         );
 
-      lineValues?.calls?.forEach((detail, index) => {
-        setValue(`subject[${index}]`, detail.title);
-        setValue(`phone[${index}]`, detail.phone);
+      setValue(
+        `custrecord_lms_sales_team_name`,
+        lineValues?.recmachcustrecord_lms_lead_assigning[0]?.custrecord_lms_sales_team_name[0] 
+        ?
+        {
+              label:
+                lineValues?.recmachcustrecord_lms_lead_assigning[0]?.custrecord_lms_sales_team_name[0]?.text,
+              value:
+                lineValues?.recmachcustrecord_lms_lead_assigning[0]?.custrecord_lms_sales_team_name[0]?.value,
+            }
+         : null
+      );
 
-        setValue(`status[${index}]`, {
-          label: detail.status?.text,
-          value: detail.status?.value,
-        });
+      setValue(
+        `custrecord_lms_primary_action`,
+        custrecord_lms_primary_action
+          ? {
+              label:
+                lineValues?.recmachcustrecord_lms_leadnurt[0]
+                  ?.custrecord_lms_primary_action[0]?.text,
+              value:
+                lineValues?.recmachcustrecord_lms_leadnurt[0]
+                  ?.custrecord_lms_primary_action[0]?.value,
+            }
+          : null
+      );
 
-        setValue(`organizer[${index}]`, {
-          label: detail.organizer?.text,
-          value: detail.organizer?.value,
-        });
+      setValue(
+        "custrecord_lms_lead_value",
+        lineValues?.recmachcustrecord_lms_leadnurt[0]?.custrecord_lms_lead_value
+      );
 
-        setValue(`startdate[${index}]`, detail.startdate);
-      });
+      setValue(
+        `custrecord_lms_statusoflead`,
+        custrecord_lms_statusoflead
+          ? {
+              label:
+                lineValues?.recmachcustrecord_lms_leadnurt[0]
+                  ?.custrecord_lms_statusoflead[0]?.text,
+              value:
+                lineValues?.recmachcustrecord_lms_leadnurt[0]
+                  ?.custrecord_lms_statusoflead[0]?.value,
+            }
+          : null
+      );
 
+      setValue(
+        "custrecord_lms_lead_unqualifie",
+        lineValues?.recmachcustrecord_lms_leadnurt[0]
+          ?.custrecord_lms_lead_unqualifie
+      );
+
+      setValue(
+        `custrecord_lms_prospect_nurtur`,
+        custrecord_lms_prospect_nurtur
+          ? {
+              label:
+                lineValues?.recmachcustrecord_lms_leadnurt[0]
+                  ?.custrecord_lms_prospect_nurtur[0]?.text,
+              value:
+                lineValues?.recmachcustrecord_lms_leadnurt[0]
+                  ?.custrecord_lms_prospect_nurtur[0]?.value,
+            }
+          : null
+      );
+    }
+  }, [data, isFetched, setValue, id, country]);
+
+  useEffect(() => {
+    if (isFetched && Array.isArray(data) && data.length > 0) {
+      const { lineValues } = data[0];
       lineValues?.recmachcustrecord_parent_record.forEach((detail, index) => {
         setValue(
           `custrecordlms_location[${index}]`,
@@ -1052,63 +1102,70 @@ function EditLead({ id, mode }) {
         });
       });
 
-      setValue(`custrecord_lms_region`, {
-        label:
-          lineValues?.recmachcustrecord_lms_lead_assigning[0]
-            ?.custrecord_lms_region[0]?.text,
-        value:
-          lineValues?.recmachcustrecord_lms_lead_assigning[0]
-            ?.custrecord_lms_region[0]?.value,
-      });
+      lineValues?.recmachcustrecord_lms_requirement_details.forEach(
+        (detail, index) => {
+          setValue(
+            `custrecord_lms_division[${index}]`,
+            detail.custrecord_lms_division
+              ? {
+                  label: detail.custrecord_lms_division[0]?.text,
+                  value: detail.custrecord_lms_division[0]?.value,
+                }
+              : null
+          );
 
-      setValue(`custrecord_lms_sales_team_name`, {
-        label:
-          lineValues?.recmachcustrecord_lms_lead_assigning[0]
-            ?.custrecord_lms_sales_team_name[0]?.text,
-        value:
-          lineValues?.recmachcustrecord_lms_lead_assigning[0]
-            ?.custrecord_lms_sales_team_name[0]?.value,
-      });
+          setValue(
+            `custrecord_lms_requirement[${index}]`,
+            detail.custrecord_lms_requirement
+          );
 
-      setValue(`custrecord_lms_primary_action`, {
-        label:
-          lineValues?.recmachcustrecord_lms_leadnurt[0]
-            ?.custrecord_lms_primary_action[0]?.text,
-        value:
-          lineValues?.recmachcustrecord_lms_leadnurt[0]
-            ?.custrecord_lms_primary_action[0]?.value,
-      });
+          setValue(
+            `custrecord_lms_project_name[${index}]`,
+            detail.custrecord_lms_project_name
+          );
 
-      setValue(
-        "custrecord_lms_lead_value",
-        lineValues?.recmachcustrecord_lms_leadnurt[0]?.custrecord_lms_lead_value
+          setValue(
+            `custrecord_lms_duration[${index}]`,
+            detail.custrecord_lms_duration
+          );
+
+          // setValue(
+          //   `custrecord_lms_duration[${index}]`,
+          //   detail.custrecord_lms_duration
+          // );
+
+          setValue(
+            `custrecord_lms_unit_of_measure[${index}]`,
+            detail.custrecord_lms_unit_of_measure
+              ? {
+                  label: detail.custrecord_lms_unit_of_measure[0]?.text,
+                  value: detail.custrecord_lms_unit_of_measure[0]?.value,
+                }
+              : null
+          );
+
+          setValue(
+            `custrecord_lms_value[${index}]`,
+            detail.custrecord_lms_value
+          );
+
+          setValue(
+            `custrecord_lms_expected_delivery_date[${index}]`,
+            detail.custrecord_lms_expected_delivery_date
+          );
+
+          setRows((prevRows) => {
+            const newRows = [...prevRows];
+            newRows[index] = {
+              ...newRows[index],
+              custrecord_lms_requirement: detail.custrecord_lms_requirement,
+            };
+            return newRows;
+          });
+        }
       );
-
-      setValue(`custrecord_lms_statusoflead`, {
-        label:
-          lineValues?.recmachcustrecord_lms_leadnurt[0]
-            ?.custrecord_lms_statusoflead[0]?.text,
-        value:
-          lineValues?.recmachcustrecord_lms_leadnurt[0]
-            ?.custrecord_lms_statusoflead[0]?.value,
-      });
-
-      setValue(
-        "custrecord_lms_lead_unqualifie",
-        lineValues?.recmachcustrecord_lms_leadnurt[0]
-          ?.custrecord_lms_lead_unqualifie
-      );
-
-      setValue(`custrecord_lms_prospect_nurtur`, {
-        label:
-          lineValues?.recmachcustrecord_lms_leadnurt[0]
-            ?.custrecord_lms_prospect_nurtur[0]?.text,
-        value:
-          lineValues?.recmachcustrecord_lms_leadnurt[0]
-            ?.custrecord_lms_prospect_nurtur[0]?.value,
-      });
     }
-  }, [data, isFetched, setValue, id]);
+  }, [ data, isFetched, setValue]);
 
   useEffect(() => {
     const now = new Date();
@@ -1367,11 +1424,11 @@ function EditLead({ id, mode }) {
     removeUnitOfMeasure(index);
     removeValue(index);
     removeDelivery(index);
-    removeLocation(index);
-    removeContactPersonName(index);
-    removephoneNumber(index);
-    removeEmail(index);
-    removeDesignation(index);
+    // removeLocation(index);
+    // removeContactPersonName(index);
+    // removephoneNumber(index);
+    // removeEmail(index);
+    // removeDesignation(index);
 
     const newRows = [...rows];
     newRows.splice(index, 1);
@@ -1384,6 +1441,7 @@ function EditLead({ id, mode }) {
     removephoneNumber(i);
     removeEmail(i);
     removeDesignation(i);
+
     const newLocationRows = [...locationRows];
     newLocationRows.splice(i, 1);
     setLocationRows(newLocationRows);
@@ -1429,11 +1487,11 @@ function EditLead({ id, mode }) {
 
   useEffect(() => {
     if (Array.isArray(data) && data.length > 0) {
-      setRows(data[0]?.lineValues?.recmachcustrecord_lms_requirement_details || []);
+      setRows(
+        data[0]?.lineValues?.recmachcustrecord_lms_requirement_details || []
+      );
     }
   }, [data]);
-
-  
 
   useEffect(() => {
     if (Array.isArray(data) && data.length > 0) {
@@ -1464,9 +1522,9 @@ function EditLead({ id, mode }) {
     }
   }, [data]);
 
-  
-
   const onSubmit = (formData) => {
+
+    
     if (!editMode) return;
 
     const apiData = {
@@ -1552,8 +1610,8 @@ function EditLead({ id, mode }) {
               formData.custrecord_lms_project_name[i],
 
             custrecord_lms_division: {
-              value: formData.custrecord_lms_division[i]?.value,
-              text: formData.custrecord_lms_division[i]?.text,
+              value: formData.custrecord_lms_division[i].value,
+              text: formData.custrecord_lms_division[i].text,
             },
             custrecord_lms_duration: convertToTime(
               formData.custrecord_lms_duration[i]
@@ -1563,8 +1621,8 @@ function EditLead({ id, mode }) {
             //   formData.custrecord_lms_duration?.[i]
             // ),
             custrecord_lms_unit_of_measure: {
-              value: formData.custrecord_lms_unit_of_measure[i]?.value,
-              text: formData.custrecord_lms_unit_of_measure[i]?.text,
+              value: formData.custrecord_lms_unit_of_measure[i].value,
+              text: formData.custrecord_lms_unit_of_measure[i].text,
             },
             custrecord_lms_value: Number(formData.custrecord_lms_value[i]),
             custrecord_lms_expected_delivery_date: formatDateForAPI(
@@ -1591,8 +1649,8 @@ function EditLead({ id, mode }) {
               text: formData.custrecord_lms_region?.text,
             },
             custrecord_lms_sales_team_name: {
-              value: formData.custrecord_lms_sales_team_name?.value || "",
-              text: formData.custrecord_lms_sales_team_name?.text || "",
+              value: formData.custrecord_lms_sales_team_name?.value,
+              text: formData.custrecord_lms_sales_team_name?.text,
             },
           },
         ],
@@ -1700,12 +1758,13 @@ function EditLead({ id, mode }) {
         },
       },
     };
-
+    console.log('apiData', apiData)
+    console.log('requirementDetailsId', requirementDetailsId)
     leadPost.mutate(apiData, {
       onSuccess: (data) => {
         // setRows(data.updatedRequirementDetails);
-  //        const updatedRequirementDetails = data.lineValues?.recmachcustrecord_lms_requirement_details || [];
-  // setRows(updatedRequirementDetails);
+        //        const updatedRequirementDetails = data.lineValues?.recmachcustrecord_lms_requirement_details || [];
+        // setRows(updatedRequirementDetails);
         TkToastSuccess("Lead updated Successfully");
         router.push(`${urls.lead}`);
       },
@@ -1715,254 +1774,7 @@ function EditLead({ id, mode }) {
     });
   };
 
-  // const requirementDetailsColumns = [
-  //   {
-  //     Header: "Division *",
-  //     accessor: "custrecord_lms_division",
-  //     Cell: (cellProps) => {
-  //       return (
-  //         <>
-  //           <Controller
-  //             control={control}
-  //             name={`custrecord_lms_division[${cellProps.row.index}]`}
-  //             rules={{ required: "Division is required" }}
-  //             render={({ field }) => (
-  //               <TkSelect
-  //                 {...field}
-  //                 id={"custrecord_lms_division"}
-  //                 options={allDivisionData}
-  //                 requiredStarOnLabel={true}
-  //                 style={{ width: "200px" }}
-  //                 loading={divisionLoading}
-  //                 disabled={viewMode}
-  //               />
-  //             )}
-  //           />
-  //           {errors?.custrecord_lms_division?.[cellProps.row.index] && (
-  //             <FormErrorText>
-  //               {
-  //                 errors?.custrecord_lms_division?.[cellProps.row.index]
-  //                   ?.message
-  //               }
-  //             </FormErrorText>
-  //           )}
-  //         </>
-  //       );
-  //     },
-  //   },
-
-  //   {
-  //     Header: "Requirement",
-  //     accessor: "custrecord_lms_requirement",
-  //     Cell: (cellProps) => {
-  //       return (
-  //         <>
-  //           <TkInput
-  //             type="text"
-  //             id="custrecord_lms_requirement"
-  //             placeholder="Enter Requirement"
-  //             disabled={viewMode}
-  //             {...register(
-  //               `custrecord_lms_requirement[${cellProps.row.index}]`
-  //             )}
-  //             rules={{ required: "Requirement is required" }}
-  //           />
-  //           {errors?.custrecord_lms_requirement?.[cellProps.row.index] && (
-  //             <FormErrorText>
-  //               {
-  //                 errors?.custrecord_lms_requirement?.[cellProps.row.index]
-  //                   ?.message
-  //               }
-  //             </FormErrorText>
-  //           )}
-  //         </>
-  //       );
-  //     },
-  //   },
-  //   {
-  //     Header: "Project Name",
-  //     accessor: "custrecord_lms_project_name",
-  //     Cell: (cellProps) => {
-  //       return (
-  //         <>
-  //           <TkInput
-  //             type="text"
-  //             id="custrecord_lms_project_name"
-  //             placeholder="Enter Project Name"
-  //             disabled={viewMode}
-  //             {...register(
-  //               `custrecord_lms_project_name[${cellProps.row.index}]`
-  //             )}
-  //           />
-  //           {errors?.custrecord_lms_project_name?.[cellProps.row.index] && (
-  //             <FormErrorText>
-  //               {
-  //                 errors?.custrecord_lms_project_name?.[cellProps.row.index]
-  //                   ?.message
-  //               }
-  //             </FormErrorText>
-  //           )}
-  //         </>
-  //       );
-  //     },
-  //   },
-  //   {
-  //     Header: "Duration",
-  //     accessor: "custrecord_lms_duration",
-  //     Cell: (cellProps) => {
-  //       return (
-  //         <>
-  //           <TkInput
-  //             type="text"
-  //             id="custrecord_lms_duration"
-  //             placeholder="Enter Duration"
-  //             disabled={viewMode}
-  //             {...register(`custrecord_lms_duration[${cellProps.row.index}]`, {
-  //               required: "Duration is required",
-  //               validate: (value) => {
-  //                 if (value && !/^[0-9]*([.:][0-9]+)?$/.test(value)) {
-  //                   return "Invalid Duration";
-  //                 }
-  //                 // if (convertTimeToSec(value) > 86400 || value > 24) {
-  //                 //   return "Duration should be less than 24 hours";
-  //                 // }
-  //               },
-  //             })}
-  //             onBlur={(e) => {
-  //               setValue(
-  //                 `custrecord_lms_duration[${cellProps.row.index}]`,
-  //                 convertToTime(e.target.value)
-  //               );
-  //             }}
-  //           />
-  //           {errors?.custrecord_lms_duration?.[cellProps.row.index] && (
-  //             <FormErrorText>
-  //               {
-  //                 errors?.custrecord_lms_duration?.[cellProps.row.index]
-  //                   ?.message
-  //               }
-  //             </FormErrorText>
-  //           )}
-  //         </>
-  //       );
-  //     },
-  //   },
-
-  //   {
-  //     Header: "UOM",
-  //     accessor: "custrecord_lms_unit_of_measure",
-  //     Cell: (cellProps) => {
-  //       return (
-  //         <>
-  //           <Controller
-  //             control={control}
-  //             name={`custrecord_lms_unit_of_measure[${cellProps.row.index}]`}
-  //             render={({ field }) => (
-  //               <>
-  //                 <TkSelect
-  //                   {...field}
-  //                   id="custrecord_lms_unit_of_measure"
-  //                   options={allUnitOfMeasureData}
-  //                   loading={unitOfMeasureLoading}
-  //                   disabled={viewMode}
-  //                 />
-  //                 {errors?.custrecord_lms_unit_of_measure?.[
-  //                   cellProps.row.index
-  //                 ] && (
-  //                   <FormErrorText>
-  //                     {
-  //                       errors?.custrecord_lms_unit_of_measure?.[
-  //                         cellProps.row.index
-  //                       ]?.message
-  //                     }
-  //                   </FormErrorText>
-  //                 )}
-  //               </>
-  //             )}
-  //           />
-  //         </>
-  //       );
-  //     },
-  //   },
-
-  //   {
-  //     Header: "Value",
-  //     accessor: "custrecord_lms_value",
-  //     Cell: (cellProps) => {
-  //       return (
-  //         <>
-  //           <TkInput
-  //             type="text"
-  //             placeholder="Enter Value"
-  //             id="custrecord_lms_value"
-  //             disabled={viewMode}
-  //             {...register(`custrecord_lms_value[${cellProps.row.index}]`)}
-  //           />
-  //           {errors?.custrecord_lms_value?.[cellProps.row.index] && (
-  //             <FormErrorText>
-  //               {errors?.custrecord_lms_value?.[cellProps.row.index]?.message}
-  //             </FormErrorText>
-  //           )}
-  //         </>
-  //       );
-  //     },
-  //   },
-
-  //   {
-  //     Header: "Expected Delivery Date",
-  //     accessor: "custrecord_lms_expected_delivery_date",
-  //     Cell: (cellProps) => {
-  //       return (
-  //         <>
-  //           <Controller
-  //             control={control}
-  //             name={`custrecord_lms_expected_delivery_date[${cellProps.row.index}]`}
-  //             render={({ field }) => (
-  //               <>
-  //                 <TkDate
-  //                   {...field}
-  //                   id="custrecord_lms_expected_delivery_date"
-  //                   placeholder="Select Delivery Date"
-  //                   disabled={viewMode}
-  //                 />
-  //                 {errors?.custrecord_lms_expected_delivery_date?.[
-  //                   cellProps.row.index
-  //                 ] && (
-  //                   <FormErrorText>
-  //                     {
-  //                       errors?.custrecord_lms_expected_delivery_date?.[
-  //                         cellProps.row.index
-  //                       ]?.message
-  //                     }
-  //                   </FormErrorText>
-  //                 )}
-  //               </>
-  //             )}
-  //           />
-  //         </>
-  //       );
-  //     },
-  //   },
-  //   {
-  //     Header: "Action",
-  //     accessor: "action",
-  //     Cell: (cellProps) => {
-  //       return (
-  //         <>
-  //           <TkButton
-  //             type={"button"}
-  //             onClick={() => {
-  //               handleRemoveRow(cellProps.row.index);
-  //             }}
-  //             disabled={rows.length === 1}
-  //           >
-  //             Delete
-  //           </TkButton>
-  //         </>
-  //       );
-  //     },
-  //   },
-  // ];
+ 
 
   const requirementDetailsColumns = [
     {
@@ -1983,6 +1795,7 @@ function EditLead({ id, mode }) {
                   requiredStarOnLabel={true}
                   style={{ width: "200px" }}
                   loading={divisionLoading}
+                  disabled={viewMode}
                 />
               )}
             />
@@ -2009,6 +1822,7 @@ function EditLead({ id, mode }) {
               type="text"
               id="custrecord_lms_requirement"
               placeholder="Enter Requirement"
+              disabled={viewMode}
               {...register(
                 `custrecord_lms_requirement[${cellProps.row.index}]`
               )}
@@ -2036,6 +1850,7 @@ function EditLead({ id, mode }) {
               type="text"
               id="custrecord_lms_project_name"
               placeholder="Enter Project Name"
+              disabled={viewMode}
               {...register(
                 `custrecord_lms_project_name[${cellProps.row.index}]`
               )}
@@ -2062,6 +1877,7 @@ function EditLead({ id, mode }) {
               type="text"
               id="custrecord_lms_duration"
               placeholder="Enter Duration"
+              disabled={viewMode}
               {...register(`custrecord_lms_duration[${cellProps.row.index}]`, {
                 required: "Duration is required",
                 validate: (value) => {
@@ -2109,6 +1925,7 @@ function EditLead({ id, mode }) {
                     id="custrecord_lms_unit_of_measure"
                     options={allUnitOfMeasureData}
                     loading={unitOfMeasureLoading}
+                    disabled={viewMode}
                   />
                   {errors?.custrecord_lms_unit_of_measure?.[
                     cellProps.row.index
@@ -2139,6 +1956,7 @@ function EditLead({ id, mode }) {
               type="text"
               placeholder="Enter Value"
               id="custrecord_lms_value"
+              disabled={viewMode}
               {...register(`custrecord_lms_value[${cellProps.row.index}]`)}
             />
             {errors?.custrecord_lms_value?.[cellProps.row.index] && (
@@ -2166,6 +1984,7 @@ function EditLead({ id, mode }) {
                     {...field}
                     id="custrecord_lms_expected_delivery_date"
                     placeholder="Select Delivery Date"
+                    disabled={viewMode}
                   />
                   {errors?.custrecord_lms_expected_delivery_date?.[
                     cellProps.row.index
@@ -2185,6 +2004,7 @@ function EditLead({ id, mode }) {
         );
       },
     },
+
     {
       Header: "Action",
       accessor: "action",
@@ -2370,6 +2190,7 @@ function EditLead({ id, mode }) {
               type="text"
               placeholder="Enter Location"
               id="custrecordlms_location"
+              disabled={viewMode}
               {...register(`custrecordlms_location[${cellProps.row.index}]`)}
             />
             {errors?.custrecordlms_location?.[cellProps.row.index] && (
@@ -2391,6 +2212,7 @@ function EditLead({ id, mode }) {
               type="text"
               placeholder="Enter Person Name"
               id="custrecord_lms_contactperson_name"
+              disabled={viewMode}
               {...register(
                 `custrecord_lms_contactperson_name[${cellProps.row.index}]`
               )}
@@ -2420,6 +2242,7 @@ function EditLead({ id, mode }) {
               type="text"
               placeholder="Enter Phone Number"
               id="custrecord_lms_phonenumber"
+              disabled={viewMode}
               {...register(
                 `custrecord_lms_phonenumber[${cellProps.row.index}]`
               )}
@@ -2447,6 +2270,7 @@ function EditLead({ id, mode }) {
               type="text"
               placeholder="Enter Email"
               id="custrecord_location_email"
+              disabled={viewMode}
               {...register(`custrecord_location_email[${cellProps.row.index}]`)}
             />
             {errors?.custrecord_location_email?.[cellProps.row.index] && (
@@ -2471,6 +2295,7 @@ function EditLead({ id, mode }) {
             <TkInput
               type="text"
               placeholder="Enter Designation"
+              disabled={viewMode}
               {...register(
                 `custrecord_lms_designation[${cellProps.row.index}]`
               )}
@@ -2499,7 +2324,7 @@ function EditLead({ id, mode }) {
               onClick={() => {
                 handleRemoveLocationRow(cellProps.row.index);
               }}
-              disabled={locationRows.length === 1 || {viewMode}}
+              disabled={locationRows.length === 1}
             >
               Delete
             </TkButton>
@@ -2683,6 +2508,7 @@ function EditLead({ id, mode }) {
               type="text"
               id="subject"
               placeholder="Enter Subject"
+              disabled={viewMode}
               {...register(`subject[${cellProps.row.index}]`)}
               rules={{ required: "Subject is required" }}
             />
@@ -2706,6 +2532,7 @@ function EditLead({ id, mode }) {
               type="text"
               placeholder="Enter Phone Number"
               id="phone"
+              disabled={viewMode}
               {...register(`phone[${cellProps.row.index}]`)}
             />
             {errors?.phone?.[cellProps.row.index] && (
@@ -2732,6 +2559,7 @@ function EditLead({ id, mode }) {
                   <TkSelect
                     {...field}
                     id="status"
+                    disabled={viewMode}
                     options={[
                       {
                         label: "Completed",
@@ -2771,6 +2599,7 @@ function EditLead({ id, mode }) {
                     {...field}
                     id="organizer"
                     options={allSalesTeamData}
+                    disabled={viewMode}
                   />
                   {errors?.organizer?.[cellProps.row.index] && (
                     <FormErrorText>
@@ -2796,7 +2625,12 @@ function EditLead({ id, mode }) {
               name={`startDate[${cellProps.row.index}]`}
               render={({ field }) => (
                 <>
-                  <TkDate {...field} id="startDate" placeholder="Select Date" />
+                  <TkDate
+                    {...field}
+                    id="startDate"
+                    placeholder="Select Date"
+                    disabled={viewMode}
+                  />
                   {errors?.startDate?.[cellProps.row.index] && (
                     <FormErrorText>
                       {errors?.startDate?.[cellProps.row.index]?.message}
@@ -3433,7 +3267,6 @@ function EditLead({ id, mode }) {
       },
     },
   ];
-  
 
   const deleteLead = useMutation({
     mutationFn: tkFetch.deleteWithIdInUrl(`${API_BASE_URL}/lead`),
@@ -3617,6 +3450,7 @@ function EditLead({ id, mode }) {
                                         <Controller
                                           name="custentity_lms_name_of_the_platform_dd"
                                           control={control}
+                                          rules={{ required: "Name Of Platform is required" }}
                                           render={({ field }) => (
                                             <TkSelect
                                               {...field}
@@ -3645,6 +3479,7 @@ function EditLead({ id, mode }) {
                                         <Controller
                                           name="custentity_lms_campaign_name"
                                           control={control}
+                                          rules={{ required: "Campaign Name is required" }}
                                           render={({ field }) => (
                                             <TkSelect
                                               {...field}
@@ -3673,6 +3508,7 @@ function EditLead({ id, mode }) {
                                         <Controller
                                           name="custentity_lms_visit_update"
                                           control={control}
+                                          rules={{ required: "Visit Update is required" }}
                                           render={({ field }) => (
                                             <TkSelect
                                               {...field}
@@ -3706,6 +3542,7 @@ function EditLead({ id, mode }) {
                                         <Controller
                                           name="custentity_lms_name_of_the_portal_dd"
                                           control={control}
+                                          rules={{ required: "Name Of Portal is required" }}
                                           render={({ field }) => (
                                             <TkSelect
                                               {...field}
@@ -3801,6 +3638,8 @@ function EditLead({ id, mode }) {
                                               },
                                             }
                                           )}
+                                          rules={{ required: "Time Of Visit is required" }}
+
                                           onBlur={(e) => {
                                             setValue(
                                               `custentity_lms_time_of_visit`,
@@ -3831,6 +3670,7 @@ function EditLead({ id, mode }) {
                                         <Controller
                                           name="custentity_lms_visit_update"
                                           control={control}
+                                          rules={{ required: "Visit Update is required" }}
                                           render={({ field }) => (
                                             <TkSelect
                                               {...field}
@@ -4411,7 +4251,7 @@ function EditLead({ id, mode }) {
                                   <TkContainer>
                                     <TkTableContainer
                                       customPageSize={true}
-                                      showAddButton={true}
+                                      showAddButton={viewMode ? false : true}
                                       // showAddButton={!viewMode}
                                       onClickAdd={handleAddRow}
                                       onclickDelete={handleRemoveRow}
@@ -4426,8 +4266,7 @@ function EditLead({ id, mode }) {
                                   <TkContainer>
                                     <TkTableContainer
                                       customPageSize={true}
-                                      showAddButton={true}
-                                      // showAddButton={!viewMode}
+                                      showAddButton={viewMode ? false : true}
                                       onClickAdd={handleAddLocationRow}
                                       onclickDelete={handleRemoveLocationRow}
                                       columns={locationDetailsColumns}
