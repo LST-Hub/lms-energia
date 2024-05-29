@@ -53,11 +53,11 @@ import DeleteModal from "../../utils/DeleteModal";
 import TkEditCardHeader from "../TkEditCardHeader";
 import { convertTimeToSec, convertToTime } from "../../utils/time";
 import { MaxCrNoLength } from "../../../lib/constants";
-import ActivityTabs from "./ActivityTabs"
+import ActivityTabs from "./ActivityTabs";
 
 const tabs = {
   directCall: "directCall",
- 
+
   email: "email",
   socialMedia: "socialMedia",
   portals: "portals",
@@ -70,7 +70,6 @@ const tabs = {
   phoneCallActivity: "phoneCallActivity",
   taskActivity: "taskActivity",
   eventActivity: "eventActivity",
- 
 };
 
 // const activityTabs= {
@@ -86,15 +85,15 @@ const schema = Yup.object({
   //   custentity_lms_name_of_the_platform_dd: Yup.object().required(
   //     "Name Of Platform is required"
   //   ),
-  
+
   //   custentity_lms_campaign_name: Yup.object().required(
   //     "Campaign Name is required"
   //   ),
-  
+
   //   custentity_lms_visit_update: Yup.object().required(
   //     "Visit Update is required"
   //   ),
-  
+
   //   custentity_lms_name_of_the_portal_dd: Yup.object()
   //   .nullable()
   //   .required("Lead Portal is required"),
@@ -114,7 +113,7 @@ const schema = Yup.object({
   //     }
   //   )
   //   .required("Time Of Visit is required"),
-    
+
   subsidiary: Yup.object()
     .nullable()
     .required("Primary Subsidairy is required"),
@@ -128,7 +127,7 @@ const schema = Yup.object({
     ),
   custentity_lms_personal_phonenumber: Yup.string()
     .nullable()
-    .required("Phone Number is Required")
+    .required("Phone Number is required")
     .matches(/^[0-9+() -]*$/, "Phone Number must be number.")
     .max(
       MaxPhoneNumberLength,
@@ -162,9 +161,9 @@ const schema = Yup.object({
       smallInputMaxLength,
       `Company Name should have at most ${smallInputMaxLength} characters.`
     ),
-    contactPhone: Yup.string()
+  contactPhone: Yup.string()
     .nullable()
-    .required("Contact Number is Required")
+    .required("Contact Number is required")
     .matches(/^[0-9+() -]*$/, "Contact Number must be number.")
     .max(
       MaxPhoneNumberLength,
@@ -196,7 +195,7 @@ const schema = Yup.object({
       MaxCrNoLength,
       `VAT Number should have at most ${MaxCrNoLength} characters.`
     ),
-  
+
   custentity_lms_client_type: Yup.object()
     .nullable()
     .required("Client Type is required"),
@@ -210,7 +209,7 @@ const schema = Yup.object({
       `Address 1 should have at most ${smallInputMaxLength} characters.`
     )
     .nullable(),
-    addr2: Yup.string()
+  addr2: Yup.string()
     .max(
       smallInputMaxLength,
       `Address 2 should have at most ${smallInputMaxLength} characters.`
@@ -373,24 +372,6 @@ function EditLead({ id, mode }) {
         queryKey: [RQ.allNurturingStatus],
         queryFn: tkFetch.get(`${API_BASE_URL}/nurtur-status`),
       },
-
-      // {
-      //   queryKey: [RQ.leadPhoneCallHighlights],
-      //   queryFn: tkFetch.get(`${API_BASE_URL}/lead/lead-highlights/lead-phonecall?leadId=${lid}`),
-      //   enabled: !!lid && activeActivityTab === activityTabs.phoneCall,
-      // },
-
-      // {
-      //   queryKey: [RQ.leadTaskHighlights],
-      //   queryFn: tkFetch.get(`${API_BASE_URL}/lead/lead-highlights/lead-task?leadId=${lid}`),
-      //   enabled: !!lid && activeActivityTab === activityTabs.task,
-      // },
-
-      // {
-      //   queryKey: [RQ.leadEventHighlights],
-      //   queryFn: tkFetch.get(`${API_BASE_URL}/lead/lead-highlights/lead-events?leadId=${lid}`),
-      //   enabled: !!lid && activeActivityTab === activityTabs.event,
-      // },
     ],
   });
 
@@ -531,9 +512,6 @@ function EditLead({ id, mode }) {
     isError: statusNurturIsError,
     error: statusNurturError,
   } = status;
-
-  
-
 
   useEffect(() => {
     if (primarySubisdiaryIsError) {
@@ -831,36 +809,35 @@ function EditLead({ id, mode }) {
     statusNurturData,
   ]);
 
-  const leadActivityToggle = useCallback(() => {
-    if (activityModal) {
-      setActivityModal(false);
-    } else {
-      setActivityModal(true);
-    }
-  }, [activityModal]);
+  // const leadActivityToggle = useCallback(() => {
+  //   if (activityModal) {
+  //     setActivityModal(false);
+  //   } else {
+  //     setActivityModal(true);
+  //   }
+  // }, [activityModal]);
 
-  const leadTaskActivityToggle = useCallback(() => {
-    if (leadTaskModal) {
-      setLeadTaskModal(false);
-    } else {
-      setLeadTaskModal(true);
-    }
-  }, [leadTaskModal]);
+  // const leadTaskActivityToggle = useCallback(() => {
+  //   if (leadTaskModal) {
+  //     setLeadTaskModal(false);
+  //   } else {
+  //     setLeadTaskModal(true);
+  //   }
+  // }, [leadTaskModal]);
 
-  const leadEventActivityToggle = useCallback(() => {
-    if (leadEventModal) {
-      setLeadEventModal(false);
-    } else {
-      setLeadEventModal(true);
-    }
-  }, [leadEventModal]);
+  // const leadEventActivityToggle = useCallback(() => {
+  //   if (leadEventModal) {
+  //     setLeadEventModal(false);
+  //   } else {
+  //     setLeadEventModal(true);
+  //   }
+  // }, [leadEventModal]);
 
   const { data, isLoading, isFetched, isError, error } = useQuery({
     queryKey: [RQ.lead, lid],
     queryFn: tkFetch.get(`${API_BASE_URL}/lead/${lid}`),
     enabled: !!lid,
   });
-
 
   const queryClient = useQueryClient();
   const concatenateAddress = useCallback(() => {
@@ -957,71 +934,70 @@ function EditLead({ id, mode }) {
         value: bodyValues?.custentity_market_segment[0].value,
       });
 
-      setValue("addr1",bodyValues?.addr1),
-      setValue("addr2",bodyValues?.addr2),
-      setValue("city",bodyValues?.city),
-      setValue("state",bodyValues?.state),
-      setValue("zip",bodyValues?.zip),
-      setValue("country", {
-        label: bodyValues?.country?.text,
-        value: bodyValues?.country?.value,
-      });
-      setValue("custentity_lms_address",bodyValues?.custentity_lms_address),
+      setValue("addr1", bodyValues?.addr1),
+        setValue("addr2", bodyValues?.addr2),
+        setValue("city", bodyValues?.city),
+        setValue("state", bodyValues?.state),
+        setValue("zip", bodyValues?.zip),
+        setValue("country", {
+          label: bodyValues?.country?.text,
+          value: bodyValues?.country?.value,
+        });
+      setValue("custentity_lms_address", bodyValues?.custentity_lms_address),
+        // set the line level fields
 
-      // set the line level fields
+        lineValues?.recmachcustrecord_lms_requirement_details.forEach(
+          (detail, index) => {
+            setValue(`custrecord_lms_division[${index}]`, {
+              label: detail.custrecord_lms_division?.text,
+              value: detail.custrecord_lms_division?.value,
+            });
 
-      lineValues?.recmachcustrecord_lms_requirement_details.forEach(
-        (detail, index) => {
-          setValue(`custrecord_lms_division[${index}]`, {
-            label: detail.custrecord_lms_division?.text,
-            value: detail.custrecord_lms_division?.value,
-          });
+            setValue(
+              `custrecord_lms_requirement[${index}]`,
+              detail.custrecord_lms_requirement
+            );
 
-          setValue(
-            `custrecord_lms_requirement[${index}]`,
-            detail.custrecord_lms_requirement
-          );
+            setValue(
+              `custrecord_lms_project_name[${index}]`,
+              detail.custrecord_lms_project_name
+            );
 
-          setValue(
-            `custrecord_lms_project_name[${index}]`,
-            detail.custrecord_lms_project_name
-          );
+            setValue(
+              `custrecord_lms_duration[${index}]`,
+              detail.custrecord_lms_duration
+            );
 
-          setValue(
-            `custrecord_lms_duration[${index}]`,
-            detail.custrecord_lms_duration
-          )
+            // setValue(
+            //   `custrecord_lms_duration[${index}]`,
+            //   detail.custrecord_lms_duration
+            // );
 
-          // setValue(
-          //   `custrecord_lms_duration[${index}]`,
-          //   detail.custrecord_lms_duration
-          // );
+            setValue(`custrecord_lms_unit_of_measure[${index}]`, {
+              label: detail.custrecord_lms_unit_of_measure?.text,
+              value: detail.custrecord_lms_unit_of_measure?.value,
+            });
 
-          setValue(`custrecord_lms_unit_of_measure[${index}]`, {
-            label: detail.custrecord_lms_unit_of_measure?.text,
-            value: detail.custrecord_lms_unit_of_measure?.value,
-          });
+            setValue(
+              `custrecord_lms_value[${index}]`,
+              detail.custrecord_lms_value
+            );
 
-          setValue(
-            `custrecord_lms_value[${index}]`,
-            detail.custrecord_lms_value
-          );
+            setValue(
+              `custrecord_lms_expected_delivery_date[${index}]`,
+              detail.custrecord_lms_expected_delivery_date
+            );
 
-          setValue(
-            `custrecord_lms_expected_delivery_date[${index}]`,
-            detail.custrecord_lms_expected_delivery_date
-          );
-
-          setRows((prevRows) => {
-            const newRows = [...prevRows];
-            newRows[index] = {
-              ...newRows[index],
-              custrecord_lms_requirement: detail.custrecord_lms_requirement,
-            };
-            return newRows;
-          });
-        }
-      );
+            setRows((prevRows) => {
+              const newRows = [...prevRows];
+              newRows[index] = {
+                ...newRows[index],
+                custrecord_lms_requirement: detail.custrecord_lms_requirement,
+              };
+              return newRows;
+            });
+          }
+        );
 
       lineValues?.calls?.forEach((detail, index) => {
         setValue(`subject[${index}]`, detail.title);
@@ -1208,8 +1184,6 @@ function EditLead({ id, mode }) {
     }
   };
 
-
-
   const handleAddRow = () => {
     setRows([
       ...rows,
@@ -1324,7 +1298,6 @@ function EditLead({ id, mode }) {
     control,
     name: "custrecord_lms_designation",
   });
-
   const { remove: removeSubject } = useFieldArray({
     control,
     name: "subject",
@@ -1345,7 +1318,6 @@ function EditLead({ id, mode }) {
     control,
     name: "startDate",
   });
-
   const { remove: removeTaskTitle } = useFieldArray({
     control,
     name: "taskTitle",
@@ -1362,7 +1334,6 @@ function EditLead({ id, mode }) {
     control,
     name: "dueTaskDate",
   });
-
   const { remove: removeEventTitle } = useFieldArray({
     control,
     name: "eventTitle",
@@ -1396,35 +1367,36 @@ function EditLead({ id, mode }) {
     removeUnitOfMeasure(index);
     removeValue(index);
     removeDelivery(index);
-    // removeLocation(index);
-    // removeContactPersonName(index);
-    // removephoneNumber(index);
-    // removeEmail(index);
-    // removeDesignation(index);
+    removeLocation(index);
+    removeContactPersonName(index);
+    removephoneNumber(index);
+    removeEmail(index);
+    removeDesignation(index);
+
     const newRows = [...rows];
     newRows.splice(index, 1);
     setRows(newRows);
   };
 
-  const handleRemoveLocationRow = (loc) => {
-    removeLocation(loc);
-    removeContactPersonName(loc);
-    removephoneNumber(loc);
-    removeEmail(loc);
-    removeDesignation(loc);
+  const handleRemoveLocationRow = (i) => {
+    removeLocation(i);
+    removeContactPersonName(i);
+    removephoneNumber(i);
+    removeEmail(i);
+    removeDesignation(i);
     const newLocationRows = [...locationRows];
-    newLocationRows.splice(loc, 1);
+    newLocationRows.splice(i, 1);
     setLocationRows(newLocationRows);
   };
 
-  const handleRemovePhoneCallRow = (p) => {
-    removeSubject(p);
-    removePhoneNumber(p);
-    removeStatus(p);
-    removeOrganizer(p);
-    removeStartDate(p);
+  const handleRemovePhoneCallRow = (i) => {
+    removeSubject(i);
+    removePhoneNumber(i);
+    removeStatus(i);
+    removeOrganizer(i);
+    removeStartDate(i);
     const newPhoneCallRows = [...phoneCallRows];
-    newPhoneCallRows.splice(p, 1);
+    newPhoneCallRows.splice(i, 1);
     setPhoneCallRows(newPhoneCallRows);
   };
 
@@ -1438,896 +1410,30 @@ function EditLead({ id, mode }) {
     setPhoneCallRows(newTaskRows);
   };
 
-  const handleRemoveEventRow = (ev) => {
-    removeEventTitle(ev);
-    removeEventLocation(ev);
+  const handleRemoveEventRow = (i) => {
+    removeEventTitle(i);
+    removeEventLocation(i);
     // removeEventAccess(i);
-    removeEventStartDate(ev);
-    removeEventStartTime(ev);
-    removeEventEndTime(ev);
+    removeEventStartDate(i);
+    removeEventStartTime(i);
+    removeEventEndTime(i);
 
     const newEventRows = [...eventCallRows];
-    newEventRows.splice(ev, 1);
+    newEventRows.splice(i, 1);
     setPhoneCallRows(newEventRows);
   };
-
-  const requirementDetailsColumns = [
-    {
-      Header: "Division *",
-      accessor: "custrecord_lms_division",
-      Cell: (cellProps) => {
-        return (
-          <>
-            <Controller
-              control={control}
-              name={`custrecord_lms_division[${cellProps.row.index}]`}
-              rules={{ required: "Division is required" }}
-              render={({ field }) => (
-                <TkSelect
-                  {...field}
-                  id={"custrecord_lms_division"}
-                  options={allDivisionData}
-                  requiredStarOnLabel={true}
-                  style={{ width: "200px" }}
-                  loading={divisionLoading}
-                  disabled={viewMode}
-                />
-              )}
-            />
-            {errors?.custrecord_lms_division?.[cellProps.row.index] && (
-              <FormErrorText>
-                {
-                  errors?.custrecord_lms_division?.[cellProps.row.index]
-                    ?.message
-                }
-              </FormErrorText>
-            )}
-          </>
-        );
-      },
-    },
-
-    {
-      Header: "Requirement",
-      accessor: "custrecord_lms_requirement",
-      Cell: (cellProps) => {
-        return (
-          <>
-            <TkInput
-              type="text"
-              id="custrecord_lms_requirement"
-              placeholder="Enter Requirement"
-              disabled={viewMode}
-              {...register(
-                `custrecord_lms_requirement[${cellProps.row.index}]`
-              )}
-              rules={{ required: "Requirement is required" }}
-            />
-            {errors?.custrecord_lms_requirement?.[cellProps.row.index] && (
-              <FormErrorText>
-                {
-                  errors?.custrecord_lms_requirement?.[cellProps.row.index]
-                    ?.message
-                }
-              </FormErrorText>
-            )}
-          </>
-        );
-      },
-    },
-    {
-      Header: "Project Name",
-      accessor: "custrecord_lms_project_name",
-      Cell: (cellProps) => {
-        return (
-          <>
-            <TkInput
-              type="text"
-              id="custrecord_lms_project_name"
-              placeholder="Enter Project Name"
-              disabled={viewMode}
-              {...register(
-                `custrecord_lms_project_name[${cellProps.row.index}]`
-              )}
-            />
-            {errors?.custrecord_lms_project_name?.[cellProps.row.index] && (
-              <FormErrorText>
-                {
-                  errors?.custrecord_lms_project_name?.[cellProps.row.index]
-                    ?.message
-                }
-              </FormErrorText>
-            )}
-          </>
-        );
-      },
-    },
-    {
-      Header: "Duration",
-      accessor: "custrecord_lms_duration",
-      Cell: (cellProps) => {
-        return (
-          <>
-            <TkInput
-              type="text"
-              id="custrecord_lms_duration"
-              placeholder="Enter Duration"
-              disabled={viewMode}
-              {...register(`custrecord_lms_duration[${cellProps.row.index}]`, {
-                required: "Duration is required",
-                validate: (value) => {
-                  if (value && !/^[0-9]*([.:][0-9]+)?$/.test(value)) {
-                    return "Invalid Duration";
-                  }
-                  // if (convertTimeToSec(value) > 86400 || value > 24) {
-                  //   return "Duration should be less than 24 hours";
-                  // }
-                },
-              })}
-              onBlur={(e) => {
-                setValue(
-                  `custrecord_lms_duration[${cellProps.row.index}]`,
-                  convertToTime(e.target.value)
-                );
-              }}
-            />
-            {errors?.custrecord_lms_duration?.[cellProps.row.index] && (
-              <FormErrorText>
-                {
-                  errors?.custrecord_lms_duration?.[cellProps.row.index]
-                    ?.message
-                }
-              </FormErrorText>
-            )}
-          </>
-        );
-      },
-    },
-
-    {
-      Header: "UOM",
-      accessor: "custrecord_lms_unit_of_measure",
-      Cell: (cellProps) => {
-        return (
-          <>
-            <Controller
-              control={control}
-              name={`custrecord_lms_unit_of_measure[${cellProps.row.index}]`}
-              render={({ field }) => (
-                <>
-                  <TkSelect
-                    {...field}
-                    id="custrecord_lms_unit_of_measure"
-                    options={allUnitOfMeasureData}
-                    loading={unitOfMeasureLoading}
-                    disabled={viewMode}
-                  />
-                  {errors?.custrecord_lms_unit_of_measure?.[
-                    cellProps.row.index
-                  ] && (
-                    <FormErrorText>
-                      {
-                        errors?.custrecord_lms_unit_of_measure?.[
-                          cellProps.row.index
-                        ]?.message
-                      }
-                    </FormErrorText>
-                  )}
-                </>
-              )}
-            />
-          </>
-        );
-      },
-    },
-
-    {
-      Header: "Value",
-      accessor: "custrecord_lms_value",
-      Cell: (cellProps) => {
-        return (
-          <>
-            <TkInput
-              type="text"
-              placeholder="Enter Value"
-              id="custrecord_lms_value"
-              disabled={viewMode}
-              {...register(`custrecord_lms_value[${cellProps.row.index}]`)}
-            />
-            {errors?.custrecord_lms_value?.[cellProps.row.index] && (
-              <FormErrorText>
-                {errors?.custrecord_lms_value?.[cellProps.row.index]?.message}
-              </FormErrorText>
-            )}
-          </>
-        );
-      },
-    },
-
-    {
-      Header: "Expected Delivery Date",
-      accessor: "custrecord_lms_expected_delivery_date",
-      Cell: (cellProps) => {
-        return (
-          <>
-            <Controller
-              control={control}
-              name={`custrecord_lms_expected_delivery_date[${cellProps.row.index}]`}
-              render={({ field }) => (
-                <>
-                  <TkDate
-                    {...field}
-                    id="custrecord_lms_expected_delivery_date"
-                    placeholder="Select Delivery Date"
-                    disabled={viewMode}
-                  />
-                  {errors?.custrecord_lms_expected_delivery_date?.[
-                    cellProps.row.index
-                  ] && (
-                    <FormErrorText>
-                      {
-                        errors?.custrecord_lms_expected_delivery_date?.[
-                          cellProps.row.index
-                        ]?.message
-                      }
-                    </FormErrorText>
-                  )}
-                </>
-              )}
-            />
-          </>
-        );
-      },
-    },
-    {
-      Header: "Action",
-      accessor: "action",
-      Cell: (cellProps) => {
-        return (
-          <>
-            <TkButton
-              type={"button"}
-              onClick={() => {
-                handleRemoveRow(cellProps.row.index);
-              }}
-              disabled={rows.length === 1}
-            >
-              Delete
-            </TkButton>
-          </>
-        );
-      },
-    },
-  ];
-  
-  const locationDetailsColumns = [
-    {
-      Header: "Location",
-      accessor: "custrecordlms_location",
-      Cell: (cellProps) => {
-        return (
-          <>
-            <TkInput
-              type="text"
-              placeholder="Enter Location"
-              id="custrecordlms_location"
-              disabled={viewMode}
-              {...register(`custrecordlms_location[${cellProps.row.index}]`)}
-            />
-            {errors?.custrecordlms_location?.[cellProps.row.index] && (
-              <FormErrorText>
-                {errors?.custrecordlms_location?.[cellProps.row.index]?.message}
-              </FormErrorText>
-            )}
-          </>
-        );
-      },
-    },
-    {
-      Header: "Contact Person Name",
-      accessor: "custrecord_lms_contactperson_name",
-      Cell: (cellProps) => {
-        return (
-          <>
-            <TkInput
-              type="text"
-              placeholder="Enter Person Name"
-              id="custrecord_lms_contactperson_name"
-              disabled={viewMode}
-              {...register(
-                `custrecord_lms_contactperson_name[${cellProps.row.index}]`
-              )}
-            />
-            {errors?.custrecord_lms_contactperson_name?.[
-              cellProps.row.index
-            ] && (
-              <FormErrorText>
-                {
-                  errors?.custrecord_lms_contactperson_name?.[
-                    cellProps.row.index
-                  ]?.message
-                }
-              </FormErrorText>
-            )}
-          </>
-        );
-      },
-    },
-    {
-      Header: "Phone Number",
-      accessor: "custrecord_lms_phonenumber",
-      Cell: (cellProps) => {
-        return (
-          <>
-            <TkInput
-              type="text"
-              placeholder="Enter Phone Number"
-              id="custrecord_lms_phonenumber"
-              disabled={viewMode}
-              {...register(
-                `custrecord_lms_phonenumber[${cellProps.row.index}]`
-              )}
-            />
-            {errors?.custrecord_lms_phonenumber?.[cellProps.row.index] && (
-              <FormErrorText>
-                {
-                  errors?.custrecord_lms_phonenumber?.[cellProps.row.index]
-                    ?.message
-                }
-              </FormErrorText>
-            )}
-          </>
-        );
-      },
-    },
-
-    {
-      Header: "Email",
-      accessor: "custrecord_location_email",
-      Cell: (cellProps) => {
-        return (
-          <>
-            <TkInput
-              type="text"
-              placeholder="Enter Email"
-              id="custrecord_location_email"
-              disabled={viewMode}
-              {...register(`custrecord_location_email[${cellProps.row.index}]`)}
-            />
-            {errors?.custrecord_location_email?.[cellProps.row.index] && (
-              <FormErrorText>
-                {
-                  errors?.custrecord_location_email?.[cellProps.row.index]
-                    ?.message
-                }
-              </FormErrorText>
-            )}
-          </>
-        );
-      },
-    },
-
-    {
-      Header: "Designation",
-      accessor: "custrecord_lms_designation",
-      Cell: (cellProps) => {
-        return (
-          <>
-            <TkInput
-              type="text"
-              placeholder="Enter Designation"
-              disabled={viewMode}
-              {...register(
-                `custrecord_lms_designation[${cellProps.row.index}]`
-              )}
-            />
-            {errors?.custrecord_lms_designation?.[cellProps.row.index] && (
-              <FormErrorText>
-                {
-                  errors?.custrecord_lms_designation?.[cellProps.row.index]
-                    ?.message
-                }
-              </FormErrorText>
-            )}
-          </>
-        );
-      },
-    },
-
-    {
-      Header: "Action",
-      accessor: "action",
-      Cell: (cellProps) => {
-        return (
-          <>
-            <TkButton
-              type={"button"}
-              onClick={() => {
-                handleRemoveLocationRow(cellProps.row.index);
-              }}
-              disabled={locationRows.length === 1}
-            >
-              Delete
-            </TkButton>
-          </>
-        );
-      },
-    },
-  ];
-
-
-  const phoneCallActivityColumns = [
-    {
-      Header: "Subject",
-      accessor: "subject",
-      Cell: (cellProps) => {
-        return (
-          <>
-            <TkInput
-              type="text"
-              id="subject"
-              placeholder="Enter Subject"
-              disabled={viewMode}
-              {...register(`subject[${cellProps.row.index}]`)}
-              rules={{ required: "Subject is required" }}
-            />
-            {errors?.subject?.[cellProps.row.index] && (
-              <FormErrorText>
-                {errors?.subject?.[cellProps.row.index]?.message}
-              </FormErrorText>
-            )}
-          </>
-        );
-      },
-    },
-
-    {
-      Header: "Phone Number",
-      accessor: "phone",
-      Cell: (cellProps) => {
-        return (
-          <>
-            <TkInput
-              type="text"
-              placeholder="Enter Phone Number"
-              id="phone"
-              disabled={viewMode}
-              {...register(`phone[${cellProps.row.index}]`)}
-            />
-            {errors?.phone?.[cellProps.row.index] && (
-              <FormErrorText>
-                {errors?.phone?.[cellProps.row.index]?.message}
-              </FormErrorText>
-            )}
-          </>
-        );
-      },
-    },
-
-    {
-      Header: "Status",
-      accessor: "status",
-      Cell: (cellProps) => {
-        return (
-          <>
-            <Controller
-              control={control}
-              name={`status[${cellProps.row.index}]`}
-              render={({ field }) => (
-                <>
-                  <TkSelect
-                    {...field}
-                    id="status"
-                    disabled={viewMode}
-                    options={[
-                      {
-                        label: "Completed",
-                        value: "Completed",
-                      },
-                      {
-                        label: "Scheduled",
-                        value: "Scheduled",
-                      },
-                    ]}
-                  />
-                  {errors?.status?.[cellProps.row.index] && (
-                    <FormErrorText>
-                      {errors?.status?.[cellProps.row.index]?.message}
-                    </FormErrorText>
-                  )}
-                </>
-              )}
-            />
-          </>
-        );
-      },
-    },
-
-    {
-      Header: "Organizer",
-      accessor: "organizer",
-      Cell: (cellProps) => {
-        return (
-          <>
-            <Controller
-              control={control}
-              name={`organizer[${cellProps.row.index}]`}
-              render={({ field }) => (
-                <>
-                  <TkSelect
-                    {...field}
-                    id="organizer"
-                    disabled={viewMode}
-                    options={allSalesTeamData}
-                  />
-                  {errors?.organizer?.[cellProps.row.index] && (
-                    <FormErrorText>
-                      {errors?.organizer?.[cellProps.row.index]?.message}
-                    </FormErrorText>
-                  )}
-                </>
-              )}
-            />
-          </>
-        );
-      },
-    },
-
-    {
-      Header: "Date",
-      accessor: "startDate",
-      Cell: (cellProps) => {
-        return (
-          <>
-            <Controller
-              control={control}
-              name={`startDate[${cellProps.row.index}]`}
-              render={({ field }) => (
-                <>
-                  <TkDate {...field} id="startDate"  disabled={viewMode} placeholder="Select Date" />
-                  {errors?.startDate?.[cellProps.row.index] && (
-                    <FormErrorText>
-                      {errors?.startDate?.[cellProps.row.index]?.message}
-                    </FormErrorText>
-                  )}
-                </>
-              )}
-            />
-          </>
-        );
-      },
-    },
-
-    {
-      Header: "Action",
-      accessor: "action",
-      Cell: (cellProps) => {
-        return (
-          <>
-            <TkButton
-              type={"button"}
-              onClick={() => {
-                handleRemovePhoneCallRow(cellProps.row.index);
-              }}
-              disabled={phoneCallRows.length === 1}
-            >
-              Delete
-            </TkButton>
-          </>
-        );
-      },
-    },
-  ];
-
-  const taskActivityColumns = [
-    {
-      Header: "Title",
-      accessor: "taskTitle",
-      Cell: (cellProps) => {
-        return (
-          <>
-            <TkInput
-              type="text"
-              id="taskTitle"
-              placeholder="Enter Title"
-              disabled={viewMode}
-              {...register(`taskTitle[${cellProps.row.index}]`)}
-              rules={{ required: "Title is required" }}
-            />
-            {errors?.taskTitle?.[cellProps.row.index] && (
-              <FormErrorText>
-                {errors?.taskTitle?.[cellProps.row.index]?.message}
-              </FormErrorText>
-            )}
-          </>
-        );
-      },
-    },
-
-    {
-      Header: "Proirity",
-      accessor: "priority",
-      Cell: (cellProps) => {
-        return (
-          <>
-            <Controller
-              control={control}
-              name={`priority[${cellProps.row.index}]`}
-              render={({ field }) => (
-                <>
-                  <TkSelect
-                    {...field}
-                    id="priority"
-                    disabled={viewMode}
-                    options={[
-                      { label: "High", value: "1" },
-                      { label: "Medium", value: "2" },
-                      { label: "Low", value: "3" },
-                    ]}
-                  />
-                  {errors?.priority?.[cellProps.row.index] && (
-                    <FormErrorText>
-                      {errors?.priority?.[cellProps.row.index]?.message}
-                    </FormErrorText>
-                  )}
-                </>
-              )}
-            />
-          </>
-        );
-      },
-    },
-
-    {
-      Header: "Date",
-      accessor: "startTasktDate",
-      Cell: (cellProps) => {
-        return (
-          <>
-            <Controller
-              control={control}
-              name={`startTasktDate[${cellProps.row.index}]`}
-              render={({ field }) => (
-                <>
-                  <TkDate
-                    {...field}
-                    id="startTasktDate"
-                    placeholder="Select Date"
-                    disabled={viewMode}
-                  />
-                  {errors?.startTasktDate?.[cellProps.row.index] && (
-                    <FormErrorText>
-                      {errors?.startTasktDate?.[cellProps.row.index]?.message}
-                    </FormErrorText>
-                  )}
-                </>
-              )}
-            />
-          </>
-        );
-      },
-    },
-
-    {
-      Header: "Date Date",
-      accessor: "dueTaskDate",
-      Cell: (cellProps) => {
-        return (
-          <>
-            <Controller
-              control={control}
-              name={`dueTaskDate[${cellProps.row.index}]`}
-              render={({ field }) => (
-                <>
-                  <TkDate
-                    {...field}
-                    id="dueTaskDate"
-                    placeholder="Select Date Completed"
-                    disabled={viewMode}
-                  />
-                  {errors?.dueTaskDate?.[cellProps.row.index] && (
-                    <FormErrorText>
-                      {errors?.dueTaskDate?.[cellProps.row.index]?.message}
-                    </FormErrorText>
-                  )}
-                </>
-              )}
-            />
-          </>
-        );
-      },
-    },
-
-    {
-      Header: "Action",
-      accessor: "action",
-      Cell: (cellProps) => {
-        return (
-          <>
-            <TkButton
-              type={"button"}
-              onClick={() => {
-                handleRemoveTaskRow(cellProps.row.index);
-              }}
-              disabled={taskCallRows.length === 1}
-            >
-              Delete
-            </TkButton>
-          </>
-        );
-      },
-    },
-  ];
-
-  const eventActivityColumns = [
-    {
-      Header: "Title",
-      accessor: "eventTitle",
-      Cell: (cellProps) => {
-        return (
-          <>
-            <TkInput
-              type="text"
-              id="eventTitle"
-              placeholder="Enter Title"
-              disabled={viewMode}
-              {...register(`eventTitle[${cellProps.row.index}]`)}
-              rules={{ required: "Title is required" }}
-            />
-            {errors?.eventTitle?.[cellProps.row.index] && (
-              <FormErrorText>
-                {errors?.eventTitle?.[cellProps.row.index]?.message}
-              </FormErrorText>
-            )}
-          </>
-        );
-      },
-    },
-
-    {
-      Header: "Location",
-      accessor: "location",
-      Cell: (cellProps) => {
-        return (
-          <>
-            <TkInput
-              type="text"
-              id="location"
-              placeholder="Enter Location"
-              disabled={viewMode}
-              {...register(`location[${cellProps.row.index}]`)}
-              rules={{ required: "Location is required" }}
-            />
-            {errors?.location?.[cellProps.row.index] && (
-              <FormErrorText>
-                {errors?.location?.[cellProps.row.index]?.message}
-              </FormErrorText>
-            )}
-          </>
-        );
-      },
-    },
-
-    {
-      Header: "Date",
-      accessor: "startDate",
-      Cell: (cellProps) => {
-        return (
-          <>
-            <Controller
-              control={control}
-              name={`startDate[${cellProps.row.index}]`}
-              render={({ field }) => (
-                <>
-                  <TkDate {...field} id="startDate" placeholder="Select Date"  disabled={viewMode} />
-                  {errors?.startDate?.[cellProps.row.index] && (
-                    <FormErrorText>
-                      {errors?.startDate?.[cellProps.row.index]?.message}
-                    </FormErrorText>
-                  )}
-                </>
-              )}
-            />
-          </>
-        );
-      },
-    },
-
-    {
-      Header: "Start Time",
-      accessor: "starttime",
-      Cell: (cellProps) => {
-        return (
-          <>
-            <TkInput
-              type="text"
-              id="starttime"
-              placeholder="Enter Start Time"
-              disabled={viewMode}
-              {...register(`starttime[${cellProps.row.index}]`, {
-                required: "Start Time is required",
-                validate: (value) => {
-                  if (value && !/^[0-9]*([.:][0-9]+)?$/.test(value)) {
-                    return "Invalid Start Time";
-                  }
-                },
-              })}
-              onBlur={(e) => {
-                setValue(
-                  `starttime[${cellProps.row.index}]`,
-                  convertToTime(e.target.value)
-                );
-              }}
-            />
-            {errors?.starttime?.[cellProps.row.index] && (
-              <FormErrorText>
-                {errors?.starttime?.[cellProps.row.index]?.message}
-              </FormErrorText>
-            )}
-          </>
-        );
-      },
-    },
-
-    {
-      Header: "End Time",
-      accessor: "endtime",
-      Cell: (cellProps) => {
-        return (
-          <>
-            <TkInput
-              type="text"
-              id="endtime"
-              placeholder="Enter End Time"
-              disabled={viewMode}
-              {...register(`endtime[${cellProps.row.index}]`, {
-                required: "End Time is required",
-                validate: (value) => {
-                  if (value && !/^[0-9]*([.:][0-9]+)?$/.test(value)) {
-                    return "Invalid End Time";
-                  }
-                },
-              })}
-              onBlur={(e) => {
-                setValue(
-                  `endtime[${cellProps.row.index}]`,
-                  convertToTime(e.target.value)
-                );
-              }}
-            />
-            {errors?.endtime?.[cellProps.row.index] && (
-              <FormErrorText>
-                {errors?.endtime?.[cellProps.row.index]?.message}
-              </FormErrorText>
-            )}
-          </>
-        );
-      },
-    },
-    {
-      Header: "Action",
-      accessor: "action",
-      Cell: (cellProps) => {
-        return (
-          <>
-            <TkButton
-              type={"button"}
-              onClick={() => {
-                handleRemoveEventRow(cellProps.row.index);
-              }}
-              disabled={eventCallRows.length === 1}
-            >
-              Delete
-            </TkButton>
-          </>
-        );
-      },
-    },
-  ];
 
   const leadPost = useMutation({
     mutationFn: tkFetch.patch(`${API_BASE_URL}/lead/${lid}`),
   });
+
+  useEffect(() => {
+    if (Array.isArray(data) && data.length > 0) {
+      setRows(data[0]?.lineValues?.recmachcustrecord_lms_requirement_details || []);
+    }
+  }, [data]);
+
+  
 
   useEffect(() => {
     if (Array.isArray(data) && data.length > 0) {
@@ -2358,39 +1464,7 @@ function EditLead({ id, mode }) {
     }
   }, [data]);
 
-  // useEffect(() => {
-  //   if (Array.isArray(data) && data.length > 0) {
-  //     setLocationDetailsId(
-  //       data[0]?.lineValues?.recmachcustrecord_parent_record.map((data, i) => [
-  //         "id",
-  //         "anyof",
-  //         data.id,
-  //       ])
-  //     );
-  //   }
-  // }, [data]);
-
-  // useEffect(() => {
-  //   if (Array.isArray(data) && data.length > 0) {
-  //     setLeadAssignId(
-  //       data[0]?.lineValues?.recmachcustrecord_lms_lead_assigning.map(
-  //         (data, i) => ["id", "anyof", data.id]
-  //       )
-  //     );
-  //   }
-  // }, [data]);
-
-  // useEffect(() => {
-  //   if (Array.isArray(data) && data.length > 0) {
-  //     setLeadNurturingId(
-  //       data[0]?.lineValues?.recmachcustrecord_lms_leadnurt.map((data, i) => [
-  //         "id",
-  //         "anyof",
-  //         data.id,
-  //       ])
-  //     );
-  //   }
-  // }, [data]);
+  
 
   const onSubmit = (formData) => {
     if (!editMode) return;
@@ -2493,8 +1567,9 @@ function EditLead({ id, mode }) {
               text: formData.custrecord_lms_unit_of_measure[i]?.text,
             },
             custrecord_lms_value: Number(formData.custrecord_lms_value[i]),
-            custrecord_lms_expected_delivery_date:
-            formatDateForAPI(formData.custrecord_lms_expected_delivery_date[i]),
+            custrecord_lms_expected_delivery_date: formatDateForAPI(
+              formData.custrecord_lms_expected_delivery_date[i]
+            ),
           })),
 
         recmachcustrecord_parent_record: formData.custrecordlms_location.map(
@@ -2626,9 +1701,11 @@ function EditLead({ id, mode }) {
       },
     };
 
-
     leadPost.mutate(apiData, {
       onSuccess: (data) => {
+        // setRows(data.updatedRequirementDetails);
+  //        const updatedRequirementDetails = data.lineValues?.recmachcustrecord_lms_requirement_details || [];
+  // setRows(updatedRequirementDetails);
         TkToastSuccess("Lead updated Successfully");
         router.push(`${urls.lead}`);
       },
@@ -2637,6 +1714,1726 @@ function EditLead({ id, mode }) {
       },
     });
   };
+
+  // const requirementDetailsColumns = [
+  //   {
+  //     Header: "Division *",
+  //     accessor: "custrecord_lms_division",
+  //     Cell: (cellProps) => {
+  //       return (
+  //         <>
+  //           <Controller
+  //             control={control}
+  //             name={`custrecord_lms_division[${cellProps.row.index}]`}
+  //             rules={{ required: "Division is required" }}
+  //             render={({ field }) => (
+  //               <TkSelect
+  //                 {...field}
+  //                 id={"custrecord_lms_division"}
+  //                 options={allDivisionData}
+  //                 requiredStarOnLabel={true}
+  //                 style={{ width: "200px" }}
+  //                 loading={divisionLoading}
+  //                 disabled={viewMode}
+  //               />
+  //             )}
+  //           />
+  //           {errors?.custrecord_lms_division?.[cellProps.row.index] && (
+  //             <FormErrorText>
+  //               {
+  //                 errors?.custrecord_lms_division?.[cellProps.row.index]
+  //                   ?.message
+  //               }
+  //             </FormErrorText>
+  //           )}
+  //         </>
+  //       );
+  //     },
+  //   },
+
+  //   {
+  //     Header: "Requirement",
+  //     accessor: "custrecord_lms_requirement",
+  //     Cell: (cellProps) => {
+  //       return (
+  //         <>
+  //           <TkInput
+  //             type="text"
+  //             id="custrecord_lms_requirement"
+  //             placeholder="Enter Requirement"
+  //             disabled={viewMode}
+  //             {...register(
+  //               `custrecord_lms_requirement[${cellProps.row.index}]`
+  //             )}
+  //             rules={{ required: "Requirement is required" }}
+  //           />
+  //           {errors?.custrecord_lms_requirement?.[cellProps.row.index] && (
+  //             <FormErrorText>
+  //               {
+  //                 errors?.custrecord_lms_requirement?.[cellProps.row.index]
+  //                   ?.message
+  //               }
+  //             </FormErrorText>
+  //           )}
+  //         </>
+  //       );
+  //     },
+  //   },
+  //   {
+  //     Header: "Project Name",
+  //     accessor: "custrecord_lms_project_name",
+  //     Cell: (cellProps) => {
+  //       return (
+  //         <>
+  //           <TkInput
+  //             type="text"
+  //             id="custrecord_lms_project_name"
+  //             placeholder="Enter Project Name"
+  //             disabled={viewMode}
+  //             {...register(
+  //               `custrecord_lms_project_name[${cellProps.row.index}]`
+  //             )}
+  //           />
+  //           {errors?.custrecord_lms_project_name?.[cellProps.row.index] && (
+  //             <FormErrorText>
+  //               {
+  //                 errors?.custrecord_lms_project_name?.[cellProps.row.index]
+  //                   ?.message
+  //               }
+  //             </FormErrorText>
+  //           )}
+  //         </>
+  //       );
+  //     },
+  //   },
+  //   {
+  //     Header: "Duration",
+  //     accessor: "custrecord_lms_duration",
+  //     Cell: (cellProps) => {
+  //       return (
+  //         <>
+  //           <TkInput
+  //             type="text"
+  //             id="custrecord_lms_duration"
+  //             placeholder="Enter Duration"
+  //             disabled={viewMode}
+  //             {...register(`custrecord_lms_duration[${cellProps.row.index}]`, {
+  //               required: "Duration is required",
+  //               validate: (value) => {
+  //                 if (value && !/^[0-9]*([.:][0-9]+)?$/.test(value)) {
+  //                   return "Invalid Duration";
+  //                 }
+  //                 // if (convertTimeToSec(value) > 86400 || value > 24) {
+  //                 //   return "Duration should be less than 24 hours";
+  //                 // }
+  //               },
+  //             })}
+  //             onBlur={(e) => {
+  //               setValue(
+  //                 `custrecord_lms_duration[${cellProps.row.index}]`,
+  //                 convertToTime(e.target.value)
+  //               );
+  //             }}
+  //           />
+  //           {errors?.custrecord_lms_duration?.[cellProps.row.index] && (
+  //             <FormErrorText>
+  //               {
+  //                 errors?.custrecord_lms_duration?.[cellProps.row.index]
+  //                   ?.message
+  //               }
+  //             </FormErrorText>
+  //           )}
+  //         </>
+  //       );
+  //     },
+  //   },
+
+  //   {
+  //     Header: "UOM",
+  //     accessor: "custrecord_lms_unit_of_measure",
+  //     Cell: (cellProps) => {
+  //       return (
+  //         <>
+  //           <Controller
+  //             control={control}
+  //             name={`custrecord_lms_unit_of_measure[${cellProps.row.index}]`}
+  //             render={({ field }) => (
+  //               <>
+  //                 <TkSelect
+  //                   {...field}
+  //                   id="custrecord_lms_unit_of_measure"
+  //                   options={allUnitOfMeasureData}
+  //                   loading={unitOfMeasureLoading}
+  //                   disabled={viewMode}
+  //                 />
+  //                 {errors?.custrecord_lms_unit_of_measure?.[
+  //                   cellProps.row.index
+  //                 ] && (
+  //                   <FormErrorText>
+  //                     {
+  //                       errors?.custrecord_lms_unit_of_measure?.[
+  //                         cellProps.row.index
+  //                       ]?.message
+  //                     }
+  //                   </FormErrorText>
+  //                 )}
+  //               </>
+  //             )}
+  //           />
+  //         </>
+  //       );
+  //     },
+  //   },
+
+  //   {
+  //     Header: "Value",
+  //     accessor: "custrecord_lms_value",
+  //     Cell: (cellProps) => {
+  //       return (
+  //         <>
+  //           <TkInput
+  //             type="text"
+  //             placeholder="Enter Value"
+  //             id="custrecord_lms_value"
+  //             disabled={viewMode}
+  //             {...register(`custrecord_lms_value[${cellProps.row.index}]`)}
+  //           />
+  //           {errors?.custrecord_lms_value?.[cellProps.row.index] && (
+  //             <FormErrorText>
+  //               {errors?.custrecord_lms_value?.[cellProps.row.index]?.message}
+  //             </FormErrorText>
+  //           )}
+  //         </>
+  //       );
+  //     },
+  //   },
+
+  //   {
+  //     Header: "Expected Delivery Date",
+  //     accessor: "custrecord_lms_expected_delivery_date",
+  //     Cell: (cellProps) => {
+  //       return (
+  //         <>
+  //           <Controller
+  //             control={control}
+  //             name={`custrecord_lms_expected_delivery_date[${cellProps.row.index}]`}
+  //             render={({ field }) => (
+  //               <>
+  //                 <TkDate
+  //                   {...field}
+  //                   id="custrecord_lms_expected_delivery_date"
+  //                   placeholder="Select Delivery Date"
+  //                   disabled={viewMode}
+  //                 />
+  //                 {errors?.custrecord_lms_expected_delivery_date?.[
+  //                   cellProps.row.index
+  //                 ] && (
+  //                   <FormErrorText>
+  //                     {
+  //                       errors?.custrecord_lms_expected_delivery_date?.[
+  //                         cellProps.row.index
+  //                       ]?.message
+  //                     }
+  //                   </FormErrorText>
+  //                 )}
+  //               </>
+  //             )}
+  //           />
+  //         </>
+  //       );
+  //     },
+  //   },
+  //   {
+  //     Header: "Action",
+  //     accessor: "action",
+  //     Cell: (cellProps) => {
+  //       return (
+  //         <>
+  //           <TkButton
+  //             type={"button"}
+  //             onClick={() => {
+  //               handleRemoveRow(cellProps.row.index);
+  //             }}
+  //             disabled={rows.length === 1}
+  //           >
+  //             Delete
+  //           </TkButton>
+  //         </>
+  //       );
+  //     },
+  //   },
+  // ];
+
+  const requirementDetailsColumns = [
+    {
+      Header: "Division *",
+      accessor: "custrecord_lms_division",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`custrecord_lms_division[${cellProps.row.index}]`}
+              rules={{ required: "Division is required" }}
+              render={({ field }) => (
+                <TkSelect
+                  {...field}
+                  id={"custrecord_lms_division"}
+                  options={allDivisionData}
+                  requiredStarOnLabel={true}
+                  style={{ width: "200px" }}
+                  loading={divisionLoading}
+                />
+              )}
+            />
+            {errors?.custrecord_lms_division?.[cellProps.row.index] && (
+              <FormErrorText>
+                {
+                  errors?.custrecord_lms_division?.[cellProps.row.index]
+                    ?.message
+                }
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Requirement",
+      accessor: "custrecord_lms_requirement",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              id="custrecord_lms_requirement"
+              placeholder="Enter Requirement"
+              {...register(
+                `custrecord_lms_requirement[${cellProps.row.index}]`
+              )}
+              rules={{ required: "Requirement is required" }}
+            />
+            {errors?.custrecord_lms_requirement?.[cellProps.row.index] && (
+              <FormErrorText>
+                {
+                  errors?.custrecord_lms_requirement?.[cellProps.row.index]
+                    ?.message
+                }
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+    {
+      Header: "Project Name",
+      accessor: "custrecord_lms_project_name",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              id="custrecord_lms_project_name"
+              placeholder="Enter Project Name"
+              {...register(
+                `custrecord_lms_project_name[${cellProps.row.index}]`
+              )}
+            />
+            {errors?.custrecord_lms_project_name?.[cellProps.row.index] && (
+              <FormErrorText>
+                {
+                  errors?.custrecord_lms_project_name?.[cellProps.row.index]
+                    ?.message
+                }
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+    {
+      Header: "Duration",
+      accessor: "custrecord_lms_duration",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              id="custrecord_lms_duration"
+              placeholder="Enter Duration"
+              {...register(`custrecord_lms_duration[${cellProps.row.index}]`, {
+                required: "Duration is required",
+                validate: (value) => {
+                  if (value && !/^[0-9]*([.:][0-9]+)?$/.test(value)) {
+                    return "Invalid Duration";
+                  }
+                  // if (convertTimeToSec(value) > 86400 || value > 24) {
+                  //   return "Duration should be less than 24 hours";
+                  // }
+                },
+              })}
+              onBlur={(e) => {
+                setValue(
+                  `custrecord_lms_duration[${cellProps.row.index}]`,
+                  convertToTime(e.target.value)
+                );
+              }}
+            />
+            {errors?.custrecord_lms_duration?.[cellProps.row.index] && (
+              <FormErrorText>
+                {
+                  errors?.custrecord_lms_duration?.[cellProps.row.index]
+                    ?.message
+                }
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "UOM",
+      accessor: "custrecord_lms_unit_of_measure",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`custrecord_lms_unit_of_measure[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <>
+                  <TkSelect
+                    {...field}
+                    id="custrecord_lms_unit_of_measure"
+                    options={allUnitOfMeasureData}
+                    loading={unitOfMeasureLoading}
+                  />
+                  {errors?.custrecord_lms_unit_of_measure?.[
+                    cellProps.row.index
+                  ] && (
+                    <FormErrorText>
+                      {
+                        errors?.custrecord_lms_unit_of_measure?.[
+                          cellProps.row.index
+                        ]?.message
+                      }
+                    </FormErrorText>
+                  )}
+                </>
+              )}
+            />
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Value",
+      accessor: "custrecord_lms_value",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              placeholder="Enter Value"
+              id="custrecord_lms_value"
+              {...register(`custrecord_lms_value[${cellProps.row.index}]`)}
+            />
+            {errors?.custrecord_lms_value?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.custrecord_lms_value?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Expected Delivery Date",
+      accessor: "custrecord_lms_expected_delivery_date",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`custrecord_lms_expected_delivery_date[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <>
+                  <TkDate
+                    {...field}
+                    id="custrecord_lms_expected_delivery_date"
+                    placeholder="Select Delivery Date"
+                  />
+                  {errors?.custrecord_lms_expected_delivery_date?.[
+                    cellProps.row.index
+                  ] && (
+                    <FormErrorText>
+                      {
+                        errors?.custrecord_lms_expected_delivery_date?.[
+                          cellProps.row.index
+                        ]?.message
+                      }
+                    </FormErrorText>
+                  )}
+                </>
+              )}
+            />
+          </>
+        );
+      },
+    },
+    {
+      Header: "Action",
+      accessor: "action",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkButton
+              type={"button"}
+              onClick={() => {
+                handleRemoveRow(cellProps.row.index);
+              }}
+              disabled={rows.length === 1}
+            >
+              Delete
+            </TkButton>
+          </>
+        );
+      },
+    },
+  ];
+  // const locationDetailsColumns = [
+  //   {
+  //     Header: "Location",
+  //     accessor: "custrecordlms_location",
+  //     Cell: (cellProps) => {
+  //       return (
+  //         <>
+  //           <TkInput
+  //             type="text"
+  //             placeholder="Enter Location"
+  //             id="custrecordlms_location"
+  //             disabled={viewMode}
+  //             {...register(`custrecordlms_location[${cellProps.row.index}]`)}
+  //           />
+  //           {errors?.custrecordlms_location?.[cellProps.row.index] && (
+  //             <FormErrorText>
+  //               {errors?.custrecordlms_location?.[cellProps.row.index]?.message}
+  //             </FormErrorText>
+  //           )}
+  //         </>
+  //       );
+  //     },
+  //   },
+  //   {
+  //     Header: "Contact Person Name",
+  //     accessor: "custrecord_lms_contactperson_name",
+  //     Cell: (cellProps) => {
+  //       return (
+  //         <>
+  //           <TkInput
+  //             type="text"
+  //             placeholder="Enter Person Name"
+  //             id="custrecord_lms_contactperson_name"
+  //             disabled={viewMode}
+  //             {...register(
+  //               `custrecord_lms_contactperson_name[${cellProps.row.index}]`
+  //             )}
+  //           />
+  //           {errors?.custrecord_lms_contactperson_name?.[
+  //             cellProps.row.index
+  //           ] && (
+  //             <FormErrorText>
+  //               {
+  //                 errors?.custrecord_lms_contactperson_name?.[
+  //                   cellProps.row.index
+  //                 ]?.message
+  //               }
+  //             </FormErrorText>
+  //           )}
+  //         </>
+  //       );
+  //     },
+  //   },
+  //   {
+  //     Header: "Phone Number",
+  //     accessor: "custrecord_lms_phonenumber",
+  //     Cell: (cellProps) => {
+  //       return (
+  //         <>
+  //           <TkInput
+  //             type="text"
+  //             placeholder="Enter Phone Number"
+  //             id="custrecord_lms_phonenumber"
+  //             disabled={viewMode}
+  //             {...register(
+  //               `custrecord_lms_phonenumber[${cellProps.row.index}]`
+  //             )}
+  //           />
+  //           {errors?.custrecord_lms_phonenumber?.[cellProps.row.index] && (
+  //             <FormErrorText>
+  //               {
+  //                 errors?.custrecord_lms_phonenumber?.[cellProps.row.index]
+  //                   ?.message
+  //               }
+  //             </FormErrorText>
+  //           )}
+  //         </>
+  //       );
+  //     },
+  //   },
+
+  //   {
+  //     Header: "Email",
+  //     accessor: "custrecord_location_email",
+  //     Cell: (cellProps) => {
+  //       return (
+  //         <>
+  //           <TkInput
+  //             type="text"
+  //             placeholder="Enter Email"
+  //             id="custrecord_location_email"
+  //             disabled={viewMode}
+  //             {...register(`custrecord_location_email[${cellProps.row.index}]`)}
+  //           />
+  //           {errors?.custrecord_location_email?.[cellProps.row.index] && (
+  //             <FormErrorText>
+  //               {
+  //                 errors?.custrecord_location_email?.[cellProps.row.index]
+  //                   ?.message
+  //               }
+  //             </FormErrorText>
+  //           )}
+  //         </>
+  //       );
+  //     },
+  //   },
+
+  //   {
+  //     Header: "Designation",
+  //     accessor: "custrecord_lms_designation",
+  //     Cell: (cellProps) => {
+  //       return (
+  //         <>
+  //           <TkInput
+  //             type="text"
+  //             placeholder="Enter Designation"
+  //             disabled={viewMode}
+  //             {...register(
+  //               `custrecord_lms_designation[${cellProps.row.index}]`
+  //             )}
+  //           />
+  //           {errors?.custrecord_lms_designation?.[cellProps.row.index] && (
+  //             <FormErrorText>
+  //               {
+  //                 errors?.custrecord_lms_designation?.[cellProps.row.index]
+  //                   ?.message
+  //               }
+  //             </FormErrorText>
+  //           )}
+  //         </>
+  //       );
+  //     },
+  //   },
+
+  //   {
+  //     Header: "Action",
+  //     accessor: "action",
+  //     Cell: (cellProps) => {
+  //       return (
+  //         <>
+  //           <TkButton
+  //             type={"button"}
+  //             onClick={() => {
+  //               handleRemoveLocationRow(cellProps.row.index);
+  //             }}
+  //             disabled={locationRows.length === 1}
+  //           >
+  //             Delete
+  //           </TkButton>
+  //         </>
+  //       );
+  //     },
+  //   },
+  // ];
+  const locationDetailsColumns = [
+    {
+      Header: "Location",
+      accessor: "custrecordlms_location",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              placeholder="Enter Location"
+              id="custrecordlms_location"
+              {...register(`custrecordlms_location[${cellProps.row.index}]`)}
+            />
+            {errors?.custrecordlms_location?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.custrecordlms_location?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+    {
+      Header: "Contact Person Name",
+      accessor: "custrecord_lms_contactperson_name",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              placeholder="Enter Person Name"
+              id="custrecord_lms_contactperson_name"
+              {...register(
+                `custrecord_lms_contactperson_name[${cellProps.row.index}]`
+              )}
+            />
+            {errors?.custrecord_lms_contactperson_name?.[
+              cellProps.row.index
+            ] && (
+              <FormErrorText>
+                {
+                  errors?.custrecord_lms_contactperson_name?.[
+                    cellProps.row.index
+                  ]?.message
+                }
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+    {
+      Header: "Phone Number",
+      accessor: "custrecord_lms_phonenumber",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              placeholder="Enter Phone Number"
+              id="custrecord_lms_phonenumber"
+              {...register(
+                `custrecord_lms_phonenumber[${cellProps.row.index}]`
+              )}
+            />
+            {errors?.custrecord_lms_phonenumber?.[cellProps.row.index] && (
+              <FormErrorText>
+                {
+                  errors?.custrecord_lms_phonenumber?.[cellProps.row.index]
+                    ?.message
+                }
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Email",
+      accessor: "custrecord_location_email",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              placeholder="Enter Email"
+              id="custrecord_location_email"
+              {...register(`custrecord_location_email[${cellProps.row.index}]`)}
+            />
+            {errors?.custrecord_location_email?.[cellProps.row.index] && (
+              <FormErrorText>
+                {
+                  errors?.custrecord_location_email?.[cellProps.row.index]
+                    ?.message
+                }
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Designation",
+      accessor: "custrecord_lms_designation",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              placeholder="Enter Designation"
+              {...register(
+                `custrecord_lms_designation[${cellProps.row.index}]`
+              )}
+            />
+            {errors?.custrecord_lms_designation?.[cellProps.row.index] && (
+              <FormErrorText>
+                {
+                  errors?.custrecord_lms_designation?.[cellProps.row.index]
+                    ?.message
+                }
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Action",
+      accessor: "action",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkButton
+              type={"button"}
+              onClick={() => {
+                handleRemoveLocationRow(cellProps.row.index);
+              }}
+              disabled={locationRows.length === 1 || {viewMode}}
+            >
+              Delete
+            </TkButton>
+          </>
+        );
+      },
+    },
+  ];
+
+  // const phoneCallActivityColumns = [
+  //   {
+  //     Header: "Subject",
+  //     accessor: "subject",
+  //     Cell: (cellProps) => {
+  //       return (
+  //         <>
+  //           <TkInput
+  //             type="text"
+  //             id="subject"
+  //             placeholder="Enter Subject"
+  //             disabled={viewMode}
+  //             {...register(`subject[${cellProps.row.index}]`)}
+  //             rules={{ required: "Subject is required" }}
+  //           />
+  //           {errors?.subject?.[cellProps.row.index] && (
+  //             <FormErrorText>
+  //               {errors?.subject?.[cellProps.row.index]?.message}
+  //             </FormErrorText>
+  //           )}
+  //         </>
+  //       );
+  //     },
+  //   },
+
+  //   {
+  //     Header: "Phone Number",
+  //     accessor: "phone",
+  //     Cell: (cellProps) => {
+  //       return (
+  //         <>
+  //           <TkInput
+  //             type="text"
+  //             placeholder="Enter Phone Number"
+  //             id="phone"
+  //             disabled={viewMode}
+  //             {...register(`phone[${cellProps.row.index}]`)}
+  //           />
+  //           {errors?.phone?.[cellProps.row.index] && (
+  //             <FormErrorText>
+  //               {errors?.phone?.[cellProps.row.index]?.message}
+  //             </FormErrorText>
+  //           )}
+  //         </>
+  //       );
+  //     },
+  //   },
+
+  //   {
+  //     Header: "Status",
+  //     accessor: "status",
+  //     Cell: (cellProps) => {
+  //       return (
+  //         <>
+  //           <Controller
+  //             control={control}
+  //             name={`status[${cellProps.row.index}]`}
+  //             render={({ field }) => (
+  //               <>
+  //                 <TkSelect
+  //                   {...field}
+  //                   id="status"
+  //                   disabled={viewMode}
+  //                   options={[
+  //                     {
+  //                       label: "Completed",
+  //                       value: "Completed",
+  //                     },
+  //                     {
+  //                       label: "Scheduled",
+  //                       value: "Scheduled",
+  //                     },
+  //                   ]}
+  //                 />
+  //                 {errors?.status?.[cellProps.row.index] && (
+  //                   <FormErrorText>
+  //                     {errors?.status?.[cellProps.row.index]?.message}
+  //                   </FormErrorText>
+  //                 )}
+  //               </>
+  //             )}
+  //           />
+  //         </>
+  //       );
+  //     },
+  //   },
+
+  //   {
+  //     Header: "Organizer",
+  //     accessor: "organizer",
+  //     Cell: (cellProps) => {
+  //       return (
+  //         <>
+  //           <Controller
+  //             control={control}
+  //             name={`organizer[${cellProps.row.index}]`}
+  //             render={({ field }) => (
+  //               <>
+  //                 <TkSelect
+  //                   {...field}
+  //                   id="organizer"
+  //                   disabled={viewMode}
+  //                   options={allSalesTeamData}
+  //                 />
+  //                 {errors?.organizer?.[cellProps.row.index] && (
+  //                   <FormErrorText>
+  //                     {errors?.organizer?.[cellProps.row.index]?.message}
+  //                   </FormErrorText>
+  //                 )}
+  //               </>
+  //             )}
+  //           />
+  //         </>
+  //       );
+  //     },
+  //   },
+
+  //   {
+  //     Header: "Date",
+  //     accessor: "startDate",
+  //     Cell: (cellProps) => {
+  //       return (
+  //         <>
+  //           <Controller
+  //             control={control}
+  //             name={`startDate[${cellProps.row.index}]`}
+  //             render={({ field }) => (
+  //               <>
+  //                 <TkDate {...field} id="startDate"  disabled={viewMode} placeholder="Select Date" />
+  //                 {errors?.startDate?.[cellProps.row.index] && (
+  //                   <FormErrorText>
+  //                     {errors?.startDate?.[cellProps.row.index]?.message}
+  //                   </FormErrorText>
+  //                 )}
+  //               </>
+  //             )}
+  //           />
+  //         </>
+  //       );
+  //     },
+  //   },
+
+  //   {
+  //     Header: "Action",
+  //     accessor: "action",
+  //     Cell: (cellProps) => {
+  //       return (
+  //         <>
+  //           <TkButton
+  //             type={"button"}
+  //             onClick={() => {
+  //               handleRemovePhoneCallRow(cellProps.row.index);
+  //             }}
+  //             disabled={phoneCallRows.length === 1}
+  //           >
+  //             Delete
+  //           </TkButton>
+  //         </>
+  //       );
+  //     },
+  //   },
+  // ];
+
+  const phoneCallActivityColumns = [
+    {
+      Header: "Subject",
+      accessor: "subject",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              id="subject"
+              placeholder="Enter Subject"
+              {...register(`subject[${cellProps.row.index}]`)}
+              rules={{ required: "Subject is required" }}
+            />
+            {errors?.subject?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.subject?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Phone Number",
+      accessor: "phone",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              placeholder="Enter Phone Number"
+              id="phone"
+              {...register(`phone[${cellProps.row.index}]`)}
+            />
+            {errors?.phone?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.phone?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Status",
+      accessor: "status",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`status[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <>
+                  <TkSelect
+                    {...field}
+                    id="status"
+                    options={[
+                      {
+                        label: "Completed",
+                        value: "Completed",
+                      },
+                      {
+                        label: "Scheduled",
+                        value: "Scheduled",
+                      },
+                    ]}
+                  />
+                  {errors?.status?.[cellProps.row.index] && (
+                    <FormErrorText>
+                      {errors?.status?.[cellProps.row.index]?.message}
+                    </FormErrorText>
+                  )}
+                </>
+              )}
+            />
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Organizer",
+      accessor: "organizer",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`organizer[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <>
+                  <TkSelect
+                    {...field}
+                    id="organizer"
+                    options={allSalesTeamData}
+                  />
+                  {errors?.organizer?.[cellProps.row.index] && (
+                    <FormErrorText>
+                      {errors?.organizer?.[cellProps.row.index]?.message}
+                    </FormErrorText>
+                  )}
+                </>
+              )}
+            />
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Date",
+      accessor: "startDate",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`startDate[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <>
+                  <TkDate {...field} id="startDate" placeholder="Select Date" />
+                  {errors?.startDate?.[cellProps.row.index] && (
+                    <FormErrorText>
+                      {errors?.startDate?.[cellProps.row.index]?.message}
+                    </FormErrorText>
+                  )}
+                </>
+              )}
+            />
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Action",
+      accessor: "action",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkButton
+              type={"button"}
+              onClick={() => {
+                handleRemovePhoneCallRow(cellProps.row.index);
+              }}
+              disabled={phoneCallRows.length === 1}
+            >
+              Delete
+            </TkButton>
+          </>
+        );
+      },
+    },
+  ];
+
+  // const taskActivityColumns = [
+  //   {
+  //     Header: "Title",
+  //     accessor: "taskTitle",
+  //     Cell: (cellProps) => {
+  //       return (
+  //         <>
+  //           <TkInput
+  //             type="text"
+  //             id="taskTitle"
+  //             placeholder="Enter Title"
+  //             disabled={viewMode}
+  //             {...register(`taskTitle[${cellProps.row.index}]`)}
+  //             rules={{ required: "Title is required" }}
+  //           />
+  //           {errors?.taskTitle?.[cellProps.row.index] && (
+  //             <FormErrorText>
+  //               {errors?.taskTitle?.[cellProps.row.index]?.message}
+  //             </FormErrorText>
+  //           )}
+  //         </>
+  //       );
+  //     },
+  //   },
+
+  //   {
+  //     Header: "Proirity",
+  //     accessor: "priority",
+  //     Cell: (cellProps) => {
+  //       return (
+  //         <>
+  //           <Controller
+  //             control={control}
+  //             name={`priority[${cellProps.row.index}]`}
+  //             render={({ field }) => (
+  //               <>
+  //                 <TkSelect
+  //                   {...field}
+  //                   id="priority"
+  //                   disabled={viewMode}
+  //                   options={[
+  //                     { label: "High", value: "1" },
+  //                     { label: "Medium", value: "2" },
+  //                     { label: "Low", value: "3" },
+  //                   ]}
+  //                 />
+  //                 {errors?.priority?.[cellProps.row.index] && (
+  //                   <FormErrorText>
+  //                     {errors?.priority?.[cellProps.row.index]?.message}
+  //                   </FormErrorText>
+  //                 )}
+  //               </>
+  //             )}
+  //           />
+  //         </>
+  //       );
+  //     },
+  //   },
+
+  //   {
+  //     Header: "Date",
+  //     accessor: "startTasktDate",
+  //     Cell: (cellProps) => {
+  //       return (
+  //         <>
+  //           <Controller
+  //             control={control}
+  //             name={`startTasktDate[${cellProps.row.index}]`}
+  //             render={({ field }) => (
+  //               <>
+  //                 <TkDate
+  //                   {...field}
+  //                   id="startTasktDate"
+  //                   placeholder="Select Date"
+  //                   disabled={viewMode}
+  //                 />
+  //                 {errors?.startTasktDate?.[cellProps.row.index] && (
+  //                   <FormErrorText>
+  //                     {errors?.startTasktDate?.[cellProps.row.index]?.message}
+  //                   </FormErrorText>
+  //                 )}
+  //               </>
+  //             )}
+  //           />
+  //         </>
+  //       );
+  //     },
+  //   },
+
+  //   {
+  //     Header: "Date Date",
+  //     accessor: "dueTaskDate",
+  //     Cell: (cellProps) => {
+  //       return (
+  //         <>
+  //           <Controller
+  //             control={control}
+  //             name={`dueTaskDate[${cellProps.row.index}]`}
+  //             render={({ field }) => (
+  //               <>
+  //                 <TkDate
+  //                   {...field}
+  //                   id="dueTaskDate"
+  //                   placeholder="Select Date Completed"
+  //                   disabled={viewMode}
+  //                 />
+  //                 {errors?.dueTaskDate?.[cellProps.row.index] && (
+  //                   <FormErrorText>
+  //                     {errors?.dueTaskDate?.[cellProps.row.index]?.message}
+  //                   </FormErrorText>
+  //                 )}
+  //               </>
+  //             )}
+  //           />
+  //         </>
+  //       );
+  //     },
+  //   },
+
+  //   {
+  //     Header: "Action",
+  //     accessor: "action",
+  //     Cell: (cellProps) => {
+  //       return (
+  //         <>
+  //           <TkButton
+  //             type={"button"}
+  //             onClick={() => {
+  //               handleRemoveTaskRow(cellProps.row.index);
+  //             }}
+  //             disabled={taskCallRows.length === 1}
+  //           >
+  //             Delete
+  //           </TkButton>
+  //         </>
+  //       );
+  //     },
+  //   },
+  // ];
+
+  const taskActivityColumns = [
+    {
+      Header: "Title",
+      accessor: "taskTitle",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              id="taskTitle"
+              placeholder="Enter Title"
+              {...register(`taskTitle[${cellProps.row.index}]`)}
+              rules={{ required: "Title is required" }}
+            />
+            {errors?.taskTitle?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.taskTitle?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Proirity",
+      accessor: "priority",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`priority[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <>
+                  <TkSelect
+                    {...field}
+                    id="priority"
+                    options={[
+                      { label: "High", value: "1" },
+                      { label: "Medium", value: "2" },
+                      { label: "Low", value: "3" },
+                    ]}
+                  />
+                  {errors?.priority?.[cellProps.row.index] && (
+                    <FormErrorText>
+                      {errors?.priority?.[cellProps.row.index]?.message}
+                    </FormErrorText>
+                  )}
+                </>
+              )}
+            />
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Date",
+      accessor: "startTasktDate",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`startTasktDate[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <>
+                  <TkDate
+                    {...field}
+                    id="startTasktDate"
+                    placeholder="Select Date"
+                  />
+                  {errors?.startTasktDate?.[cellProps.row.index] && (
+                    <FormErrorText>
+                      {errors?.startTasktDate?.[cellProps.row.index]?.message}
+                    </FormErrorText>
+                  )}
+                </>
+              )}
+            />
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Date Date",
+      accessor: "dueTaskDate",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`dueTaskDate[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <>
+                  <TkDate
+                    {...field}
+                    id="dueTaskDate"
+                    placeholder="Select Date Completed"
+                  />
+                  {errors?.dueTaskDate?.[cellProps.row.index] && (
+                    <FormErrorText>
+                      {errors?.dueTaskDate?.[cellProps.row.index]?.message}
+                    </FormErrorText>
+                  )}
+                </>
+              )}
+            />
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Action",
+      accessor: "action",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkButton
+              type={"button"}
+              onClick={() => {
+                handleRemoveTaskRow(cellProps.row.index);
+              }}
+              disabled={taskCallRows.length === 1}
+            >
+              Delete
+            </TkButton>
+          </>
+        );
+      },
+    },
+  ];
+  // const eventActivityColumns = [
+  //   {
+  //     Header: "Title",
+  //     accessor: "eventTitle",
+  //     Cell: (cellProps) => {
+  //       return (
+  //         <>
+  //           <TkInput
+  //             type="text"
+  //             id="eventTitle"
+  //             placeholder="Enter Title"
+  //             disabled={viewMode}
+  //             {...register(`eventTitle[${cellProps.row.index}]`)}
+  //             rules={{ required: "Title is required" }}
+  //           />
+  //           {errors?.eventTitle?.[cellProps.row.index] && (
+  //             <FormErrorText>
+  //               {errors?.eventTitle?.[cellProps.row.index]?.message}
+  //             </FormErrorText>
+  //           )}
+  //         </>
+  //       );
+  //     },
+  //   },
+
+  //   {
+  //     Header: "Location",
+  //     accessor: "location",
+  //     Cell: (cellProps) => {
+  //       return (
+  //         <>
+  //           <TkInput
+  //             type="text"
+  //             id="location"
+  //             placeholder="Enter Location"
+  //             disabled={viewMode}
+  //             {...register(`location[${cellProps.row.index}]`)}
+  //             rules={{ required: "Location is required" }}
+  //           />
+  //           {errors?.location?.[cellProps.row.index] && (
+  //             <FormErrorText>
+  //               {errors?.location?.[cellProps.row.index]?.message}
+  //             </FormErrorText>
+  //           )}
+  //         </>
+  //       );
+  //     },
+  //   },
+
+  //   {
+  //     Header: "Date",
+  //     accessor: "startDate",
+  //     Cell: (cellProps) => {
+  //       return (
+  //         <>
+  //           <Controller
+  //             control={control}
+  //             name={`startDate[${cellProps.row.index}]`}
+  //             render={({ field }) => (
+  //               <>
+  //                 <TkDate {...field} id="startDate" placeholder="Select Date"  disabled={viewMode} />
+  //                 {errors?.startDate?.[cellProps.row.index] && (
+  //                   <FormErrorText>
+  //                     {errors?.startDate?.[cellProps.row.index]?.message}
+  //                   </FormErrorText>
+  //                 )}
+  //               </>
+  //             )}
+  //           />
+  //         </>
+  //       );
+  //     },
+  //   },
+
+  //   {
+  //     Header: "Start Time",
+  //     accessor: "starttime",
+  //     Cell: (cellProps) => {
+  //       return (
+  //         <>
+  //           <TkInput
+  //             type="text"
+  //             id="starttime"
+  //             placeholder="Enter Start Time"
+  //             disabled={viewMode}
+  //             {...register(`starttime[${cellProps.row.index}]`, {
+  //               required: "Start Time is required",
+  //               validate: (value) => {
+  //                 if (value && !/^[0-9]*([.:][0-9]+)?$/.test(value)) {
+  //                   return "Invalid Start Time";
+  //                 }
+  //               },
+  //             })}
+  //             onBlur={(e) => {
+  //               setValue(
+  //                 `starttime[${cellProps.row.index}]`,
+  //                 convertToTime(e.target.value)
+  //               );
+  //             }}
+  //           />
+  //           {errors?.starttime?.[cellProps.row.index] && (
+  //             <FormErrorText>
+  //               {errors?.starttime?.[cellProps.row.index]?.message}
+  //             </FormErrorText>
+  //           )}
+  //         </>
+  //       );
+  //     },
+  //   },
+
+  //   {
+  //     Header: "End Time",
+  //     accessor: "endtime",
+  //     Cell: (cellProps) => {
+  //       return (
+  //         <>
+  //           <TkInput
+  //             type="text"
+  //             id="endtime"
+  //             placeholder="Enter End Time"
+  //             disabled={viewMode}
+  //             {...register(`endtime[${cellProps.row.index}]`, {
+  //               required: "End Time is required",
+  //               validate: (value) => {
+  //                 if (value && !/^[0-9]*([.:][0-9]+)?$/.test(value)) {
+  //                   return "Invalid End Time";
+  //                 }
+  //               },
+  //             })}
+  //             onBlur={(e) => {
+  //               setValue(
+  //                 `endtime[${cellProps.row.index}]`,
+  //                 convertToTime(e.target.value)
+  //               );
+  //             }}
+  //           />
+  //           {errors?.endtime?.[cellProps.row.index] && (
+  //             <FormErrorText>
+  //               {errors?.endtime?.[cellProps.row.index]?.message}
+  //             </FormErrorText>
+  //           )}
+  //         </>
+  //       );
+  //     },
+  //   },
+  //   {
+  //     Header: "Action",
+  //     accessor: "action",
+  //     Cell: (cellProps) => {
+  //       return (
+  //         <>
+  //           <TkButton
+  //             type={"button"}
+  //             onClick={() => {
+  //               handleRemoveEventRow(cellProps.row.index);
+  //             }}
+  //             disabled={eventCallRows.length === 1}
+  //           >
+  //             Delete
+  //           </TkButton>
+  //         </>
+  //       );
+  //     },
+  //   },
+  // ];
+
+  const eventActivityColumns = [
+    {
+      Header: "Title",
+      accessor: "eventTitle",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              id="eventTitle"
+              placeholder="Enter Title"
+              {...register(`eventTitle[${cellProps.row.index}]`)}
+              rules={{ required: "Title is required" }}
+            />
+            {errors?.eventTitle?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.eventTitle?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Location",
+      accessor: "location",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              id="location"
+              placeholder="Enter Location"
+              {...register(`location[${cellProps.row.index}]`)}
+              rules={{ required: "Location is required" }}
+            />
+            {errors?.location?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.location?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Date",
+      accessor: "startDate",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`startDate[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <>
+                  <TkDate {...field} id="startDate" placeholder="Select Date" />
+                  {errors?.startDate?.[cellProps.row.index] && (
+                    <FormErrorText>
+                      {errors?.startDate?.[cellProps.row.index]?.message}
+                    </FormErrorText>
+                  )}
+                </>
+              )}
+            />
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Start Time",
+      accessor: "starttime",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              id="starttime"
+              placeholder="Enter Start Time"
+              {...register(`starttime[${cellProps.row.index}]`, {
+                required: "Start Time is required",
+                validate: (value) => {
+                  if (value && !/^[0-9]*([.:][0-9]+)?$/.test(value)) {
+                    return "Invalid Start Time";
+                  }
+                },
+              })}
+              onBlur={(e) => {
+                setValue(
+                  `starttime[${cellProps.row.index}]`,
+                  convertToTime(e.target.value)
+                );
+              }}
+            />
+            {errors?.starttime?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.starttime?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "End Time",
+      accessor: "endtime",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              id="endtime"
+              placeholder="Enter End Time"
+              {...register(`endtime[${cellProps.row.index}]`, {
+                required: "End Time is required",
+                validate: (value) => {
+                  if (value && !/^[0-9]*([.:][0-9]+)?$/.test(value)) {
+                    return "Invalid End Time";
+                  }
+                },
+              })}
+              onBlur={(e) => {
+                setValue(
+                  `endtime[${cellProps.row.index}]`,
+                  convertToTime(e.target.value)
+                );
+              }}
+            />
+            {errors?.endtime?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.endtime?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+    {
+      Header: "Action",
+      accessor: "action",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkButton
+              type={"button"}
+              onClick={() => {
+                handleRemoveEventRow(cellProps.row.index);
+              }}
+              disabled={eventCallRows.length === 1}
+            >
+              Delete
+            </TkButton>
+          </>
+        );
+      },
+    },
+  ];
+  
 
   const deleteLead = useMutation({
     mutationFn: tkFetch.deleteWithIdInUrl(`${API_BASE_URL}/lead`),
@@ -2667,6 +3464,11 @@ function EditLead({ id, mode }) {
     };
     deleteLead.mutate(apiData, {
       onSuccess: (data) => {
+        // if (data.calls === undefined) {
+        //   TkToastError("THIS_RECORD_CANNOT_BE_DELETED_BECAUSE_IT_HAS_DEPENDENT_RECORDS");
+        //   setWaiting(false);
+        //   return;
+        // }
         TkToastSuccess("Lead Deleted Successfully");
         queryClient.invalidateQueries({
           queryKey: [RQ.allLeads, lid],
@@ -2674,15 +3476,19 @@ function EditLead({ id, mode }) {
         router.push(`${urls.lead}`);
       },
       onError: (error) => {
-        if (error.message === 'THIS_RECORD_CANNOT_BE_DELETED_BECAUSE_IT_HAS_DEPENDENT_RECORDS') {
-          TkToastError("This record cannot be deleted because it has dependent records.");
+        if (
+          error.message ===
+          "THIS_RECORD_CANNOT_BE_DELETED_BECAUSE_IT_HAS_DEPENDENT_RECORDS"
+        ) {
+          TkToastError(
+            "This record cannot be deleted because it has dependent records."
+          );
         } else {
           console.log("error while deleting lead", error);
         }
       },
     });
   };
-    
 
   const toggleDeleteModelPopup = () => {
     setDeleteModal(true);
@@ -3554,7 +4360,7 @@ function EditLead({ id, mode }) {
                                   </NavLink>
                                 </NavItem>
 
-                                <NavItem>
+                                {/* <NavItem>
                                   <NavLink
                                     href="#"
                                     className={classnames({
@@ -3593,7 +4399,7 @@ function EditLead({ id, mode }) {
                                   >
                                     Event
                                   </NavLink>
-                                </NavItem>
+                                </NavItem> */}
                               </Nav>
                             </TkCol>
                           </TkRow>
@@ -3771,16 +4577,6 @@ function EditLead({ id, mode }) {
                                               placeholder="Select Lead Update"
                                               disabled={viewMode}
                                               options={allNurturStatusData}
-                                              // options={[
-                                              //   {
-                                              //     value: "1",
-                                              //     label: "Qualified",
-                                              //   },
-                                              //   {
-                                              //     value: "2",
-                                              //     label: "Unqualified",
-                                              //   },
-                                              // ]}
                                             />
                                           )}
                                         />
@@ -3847,7 +4643,7 @@ function EditLead({ id, mode }) {
                                   </div>
                                 </TabPane>
 
-                                <TabPane tabId={tabs.phoneCallActivity}>
+                                {/* <TabPane tabId={tabs.phoneCallActivity}>
                                   <TkContainer>
                                     <TkTableContainer
                                       customPageSize={true}
@@ -3861,9 +4657,9 @@ function EditLead({ id, mode }) {
                                       dynamicTable={true}
                                     />
                                   </TkContainer>
-                                </TabPane>
+                                </TabPane> */}
 
-                                <TabPane tabId={tabs.taskActivity}>
+                                {/* <TabPane tabId={tabs.taskActivity}>
                                   <TkContainer>
                                     <TkTableContainer
                                       customPageSize={true}
@@ -3877,9 +4673,24 @@ function EditLead({ id, mode }) {
                                       dynamicTable={true}
                                     />
                                   </TkContainer>
-                                </TabPane>
+                                </TabPane> */}
 
-                                <TabPane tabId={tabs.eventActivity}>
+                                {/* <TabPane tabId={tabs.taskActivity}>
+                                  <TkContainer>
+                                    <TkTableContainer
+                                      customPageSize={true}
+                                      showAddButton={true}
+                                      onClickAdd={handleAddTaskRow}
+                                      onclickDelete={handleRemoveTaskRow}
+                                      columns={taskActivityColumns}
+                                      data={taskCallRows}
+                                      thClass="text-dark"
+                                      dynamicTable={true}
+                                    />
+                                  </TkContainer>
+                                </TabPane> */}
+
+                                {/* <TabPane tabId={tabs.eventActivity}>
                                   <TkContainer>
                                     <TkTableContainer
                                       customPageSize={true}
@@ -3893,7 +4704,21 @@ function EditLead({ id, mode }) {
                                       dynamicTable={true}
                                     />
                                   </TkContainer>
-                                </TabPane>
+                                </TabPane> */}
+                                {/* <TabPane tabId={tabs.eventActivity}>
+                                  <TkContainer>
+                                    <TkTableContainer
+                                      customPageSize={true}
+                                      showAddButton={true}
+                                      onClickAdd={handleAddEventRow}
+                                      onclickDelete={handleRemoveEventRow}
+                                      columns={eventActivityColumns}
+                                      data={eventCallRows}
+                                      thClass="text-dark"
+                                      dynamicTable={true}
+                                    />
+                                  </TkContainer>
+                                </TabPane> */}
                               </TabContent>
                             </TkCol>
                           </TkRow>
@@ -3926,9 +4751,8 @@ function EditLead({ id, mode }) {
                 </TkRow>
               </TkCol>
 
-             
-              <ActivityTabs mode={mode} id={id}/>
-               
+              <ActivityTabs mode={mode} id={id} />
+
               {/* </TabPane> */}
             </TkRow>
           </div>

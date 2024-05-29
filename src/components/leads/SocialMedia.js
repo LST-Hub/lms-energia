@@ -96,7 +96,7 @@ const schema = Yup.object({
 
   custentity_lms_personal_phonenumber: Yup.string()
     .nullable()
-    .required("Phone Number is Required")
+    .required("Phone Number is required")
     .matches(/^[0-9+() -]*$/, "Phone Number must be number.")
     .max(
       MaxPhoneNumberLength,
@@ -134,7 +134,7 @@ const schema = Yup.object({
     ),
   phoneNo: Yup.string()
     .nullable()
-    .required("Contact Number is Required")
+    .required("Contact Number is required")
     .matches(/^[0-9+() -]*$/, "Contact Number must be number.")
     .max(
       MaxPhoneNumberLength,
@@ -2990,7 +2990,7 @@ function SocialMedia({ selectedButton }) {
                       </NavLink>
                     </NavItem>
 
-                    <NavItem>
+                    {/* <NavItem>
                       <NavLink
                         href="#"
                         className={classnames({
@@ -3022,7 +3022,7 @@ function SocialMedia({ selectedButton }) {
                       >
                         Event
                       </NavLink>
-                    </NavItem>
+                    </NavItem> */}
                   </Nav>
                 </TkCol>
               </TkRow>
@@ -3230,7 +3230,7 @@ function SocialMedia({ selectedButton }) {
                       </div>
                     </TabPane>
 
-                    <TabPane tabId={tabs.phoneCallActivity}>
+                    {/* <TabPane tabId={tabs.phoneCallActivity}>
                       <TkContainer>
                         <TkTableContainer
                           customPageSize={true}
@@ -3273,7 +3273,7 @@ function SocialMedia({ selectedButton }) {
                           dynamicTable={true}
                         />
                       </TkContainer>
-                    </TabPane>
+                    </TabPane> */}
                   </TabContent>
                 </TkCol>
               </TkRow>

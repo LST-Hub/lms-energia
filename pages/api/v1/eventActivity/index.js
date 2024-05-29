@@ -1,18 +1,19 @@
 import response from "../../../../lib/response";
-import { postCreateEventActivityRestletScriptDeploymentId, postCreatePhoneCallActivityRestletScriptDeploymentId } from "../../../../src/utils/createActivityNsAPI";
+import { getAllEventActivityRestletScriptDeploymentId, postCreateEventActivityRestletScriptDeploymentId, postCreatePhoneCallActivityRestletScriptDeploymentId } from "../../../../src/utils/createActivityNsAPI";
 
 export default async function handler(req, res) {
   try {
     if (req.method === "GET") {
-      //   const query = `SELECT id, companyname,custentity_lms_name, email, phone, entitystatus AS entitystatus_id, BUILTIN.DF( entitystatus ) AS entitystatus_name, custentity_lms_enquiryby AS custentity_lms_enquiryby_id, BUILTIN.DF( custentity_lms_enquiryby ) AS custentity_lms_enquiryby_name, custentity_lms_client_type AS custentity_lms_client_type_id, BUILTIN.DF( custentity_lms_client_type ) AS custentity_lms_client_type_name FROM customer WHERE searchstage='Lead' AND id > 31624`;
-      //   const allLeadData = await getAllLeadRestletScriptDeploymentId(query);
-      //   response({
-      //     res,
-      //     success: true,
-      //     status_code: 200,
-      //     data: allLeadData,
-      //     message: "All Lead Fetched successfully",
-      //   });
+      const query = `SELECT id,title,status,startdate,accessLevel FROM CalendarEvent`;
+      const gettingAllEventActivityData =
+        await getAllEventActivityRestletScriptDeploymentId(query);
+      response({
+        res,
+        success: true,
+        status_code: 200,
+        data: gettingAllEventActivityData,
+        message: "All Phone Call Activity Fetched successfully",
+      });
     } else if (req.method === "POST") {
       try {
         const eventActivityData =

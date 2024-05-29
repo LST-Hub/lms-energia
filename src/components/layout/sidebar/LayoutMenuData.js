@@ -59,45 +59,41 @@ function NavData(user, sessionData) {
           parentId: "leads",
         },
 
+        // {
+        //   id: "activity",
+        //   label: "Activity",
+        //   icon: "ri-links-line",
+        //   link: `${urls.activity}`,
+        //   parentId: "leads",
+        // },
+
+        // create phone call
         {
-          id: "activity",
-          label: "Activity",
+          id: "phone-call",
+          label: "Phone Call",
           icon: "ri-links-line",
-          link: `${urls.activity}`,
+          link: `${urls.phoneCall}`,
           parentId: "leads",
         },
+        // create task
+        {
+          id: "task",
+          label: "Task",
+          icon: "ri-links-line",
+          link: `${urls.taskk}`,
+          parentId: "leads",
+        },
+        // create event
+        {
+          id: "event",
+          label: "Event",
+          icon: "ri-links-line",
+          link: `${urls.event}`,
+          parentId: "leads",
+        },
+        
       ],
     },
-
-    // {
-    //   id: "leads",
-    //   label: "Lead",
-    //   icon: "ri-links-line",
-    //   link: "/#",
-    //   stateVariables: isLead,
-    //   click: handleLeadClick,
-    //   subItems: [
-    //     {
-    //       id: "add-lead",
-    //       label: "add Lead",
-    //       link: `${urls.lead}`,
-    //       parentId: "leads",
-    //     },
-    //     {
-    //       id: "activity",
-    //       label: "Activity",
-    //       link: `${urls.activity}`,
-    //       parentId: "leads",
-    //     },
-    //   ],
-    // },
-
-    // {
-    //   id: "leads",
-    //   label: "Lead",
-    //   icon: "ri-links-line",
-    //   link: `${urls.lead}`,
-    // },
 
     {
       id: "users",

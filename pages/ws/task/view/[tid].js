@@ -2,33 +2,35 @@ import React from "react";
 import BreadCrumb from "../../../../src/utils/BreadCrumb";
 import TkPageHead from "../../../../src/components/TkPageHead";
 import UserDetails from "../../../../src/components/users/UserDetails";
-import { demoPhoneCallData, demoUserData, modes, urls } from "../../../../src/utils/Constants";
+import { modes, taskData, urls } from "../../../../src/utils/Constants";
 import TkContainer from "../../../../src/components/TkContainer";
-import EditPhoneCall from "../../../../src/components/phoneCall/EditPhoneCall";
+import EditTask from "../../../../src/components/task/EditTask";
 import { useRouter } from "next/router";
 
-const PhoneCallDetailsPage = () => {
+const TaskDetailsPage = () => {
   const router = useRouter();
-  const { cid } = router.query;
+  const { tid } = router.query;
+  
   return (
     <>
       <TkPageHead>
-        <title>{`Phone Call Details`}</title>
+        <title>{`Task Details`}</title>
       </TkPageHead>
 
       <div className="page-content">
-        <BreadCrumb pageTitle={"Phone Call Details"} parentTitle="Phone Call" parentLink={`${urls.phoneCall}`} />
+        <BreadCrumb pageTitle={"Task Details"} parentTitle="Task" parentLink={`${urls.taskk}`} />
+
         <TkContainer>
-          <EditPhoneCall id={cid}  mode={modes.edit} />
+          <EditTask id={tid}  mode={modes.view} />
         </TkContainer>
       </div>
     </>
   );
 };
 
-export default PhoneCallDetailsPage;
+export default TaskDetailsPage;
 
-PhoneCallDetailsPage.options = {
+TaskDetailsPage.options = {
   layout: true,
   auth: false,
 };

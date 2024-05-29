@@ -80,7 +80,7 @@ const Login = () => {
 
     getUserData.mutate(apiData, {
       onSuccess: (apiData) => {
-  // console.log("apiData is:", apiData[0].list[0].values.custentity_lms_roles[0].value);
+  console.log("apiData is:", apiData[0].list[0].id);
 
         if (
           data?.password === apiData[0]?.list[0]?.values.custentity_lms_emppassword
@@ -89,6 +89,7 @@ const Login = () => {
           localStorage.setItem("email", data.email);
           localStorage.setItem("password", data.password);
           localStorage.setItem("role",apiData[0].list[0].values.custentity_lms_roles[0].value);
+          localStorage.setItem("internalid",apiData[0].list[0].id);
           
           router.push(`${urls.dashboard}`);
         } else {

@@ -1,22 +1,20 @@
 import React, { useEffect, useState } from "react";
+import Image from "next/future/image";
 import Link from "next/link";
 import TkInput from "../forms/TkInput";
 import { TkCardBody } from "../TkCard";
 import TkRow, { TkCol } from "../TkRow";
-import {
-  API_BASE_URL,
-  RQ,
-  filterFields,
-  minSearchLength,
-  urls,
-} from "../../utils/Constants";
+import { API_BASE_URL, RQ, filterFields, minSearchLength, urls } from "../../utils/Constants";
 import { isSearchonUI, searchDebounce } from "../../utils/utilsFunctions";
+import TkSelect from "../forms/TkSelect";
 import TkTableContainer from "../TkTableContainer";
 import { useMemo } from "react";
 import TkButton from "../TkButton";
 import TkIcon from "../TkIcon";
-import { useMutation, useQueries, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import tkFetch from "../../utils/fetch";
+
+
 
 function TableToolBar() {
   return (
@@ -30,89 +28,22 @@ function TableToolBar() {
               isSearchField={true}
             />
           </TkCol>
+
+          {/* <TkCol lg={2}>
+            <TkSelect
+              placeholder="Active/Inactive"
+              options={[]}
+              // onChange={onActiveChange}
+            />
+          </TkCol> */}
         </TkRow>
       </TkCardBody>
     </>
   );
 }
 
-const AllLead = ({ mounted }) => {
+const AllEvent = () => {
   const searchOnUI = isSearchonUI([]);
-  const [role, setRole] = useState(null);
-  const [userId, setUserId] = useState(null);
-
-  // get local sotorage for id 
-
-
- 
-  useEffect(() => {
-    if (typeof window !== 'undefined' && window.localStorage) {
-      const storedRole = window.localStorage.getItem('role');
-      setRole(storedRole);
-      // console.log('storedRole', storedRole);
-    }
-    if (typeof window !== 'undefined' && window.localStorage) {
-      const storedId = window.localStorage.getItem('internalid');
-      setUserId(storedId);
-      console.log('storedId', storedId);
-    }
-  }, []);
- 
-
-  
-  const {
-    data: leadData,
-    isLoading: isBackLoading,
-    isError,
-    error,
-  } = useQuery({
-    queryKey: [RQ.allLeads],
-    // queryFn: tkFetch.get(`${API_BASE_URL}/lead`),
-    // queryFn: tkFetch.get(`${API_BASE_URL}/lead?role=${role}`),
-    queryFn: tkFetch.get(`${API_BASE_URL}/lead${role ? `?role=${role}` : ''}`),
-    enabled: true,
-  });
-  // const results = useQueries({
-  //   queries: [
-  //     {
-  //       queryKey: [RQ.allPrimarySubsidiary],
-  //       queryFn: tkFetch.get(`${API_BASE_URL}/salesmanager-roles`),
-  //     },
-
-  //     {
-  //       queryKey: [RQ.allEnquiryBy],
-  //       queryFn: tkFetch.get(`${API_BASE_URL}/salesrepresentative-salessupportrole`),
-  //     },
-      
-  //   ],
-  // });
-
-  const {
-    data: salesManagerRolesData,
-    isLoading: isSalesManagerRolesLoading,
-    isError: issalesManagerRolesError,
-    error: salesManagerError,
-  } = useQuery({
-    queryKey: [RQ.salesManager],
-    queryFn: tkFetch.get(`${API_BASE_URL}/salesmanager-roles?id=${userId}`),
-    enabled: !!userId
-  });
-  console.log('salesManagerRolesData', salesManagerRolesData);
-
-  const {
-    data: salesSupportRolesData,
-    isLoading: isSalesSupportRolesLoading,
-    isError: issalesSupportRolesError,
-    error: salesSupportError,
-  } = useQuery({
-    queryKey: [RQ.salesSupport],
-    queryFn: tkFetch.get(
-      `${API_BASE_URL}/salesrepresentative-salessupportrole?id=${userId}`
-    ),
-    enabled: !!userId
-
-  });
-  
 
   const updateSearchText = (e) => {
     if (e.target.value.length >= minSearchLength) {
@@ -122,24 +53,35 @@ const AllLead = ({ mounted }) => {
     }
   };
 
-  const [isLead, setIsLead] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    setIsLead(true);
+    setIsClient(true);
   }, []);
 
+  const {
+    data: eventActivityData,
+    isLoading: isBackLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: [RQ.allTask],
+    queryFn: tkFetch.get(`${API_BASE_URL}/eventActivity`),
+    enabled: true,
+  });
   const columns = useMemo(
     () => [
       {
-        Header: "View | Edit ",
+        Header: "View | Edit",
         accessor: "id",
         filterable: false,
         Cell: (cellProps) => {
           return (
+            //   <div className="flex-grow-1 tasks_name">{cellProps.value}</div>
             <div className="d-flex align-items-center">
               <ul className="ps-0 mb-0">
                 <li className="list-inline-item">
-                  <Link href={`${urls.leadView}/${cellProps.value}`}>
+                  <Link href={`${urls.eventView}/${cellProps.value}`}>
                     <a>
                       <TkButton color="none">
                         <TkIcon className="ri-eye-fill align-bottom me-2 text-muted"></TkIcon>
@@ -151,7 +93,7 @@ const AllLead = ({ mounted }) => {
               |
               <ul className="ps-0 mb-0">
                 <li className="list-inline-item">
-                  <Link href={`${urls.leadEdit}/${cellProps.value}`}>
+                  <Link href={`${urls.eventEdit}/${cellProps.value}`}>
                     <a>
                       <TkButton color="none">
                         <TkIcon className="ri-edit-line fs-4 -fill align-bottom me-2 text-muted"></TkIcon>
@@ -165,39 +107,8 @@ const AllLead = ({ mounted }) => {
         },
       },
       {
-        Header: "Lead Channel",
-        accessor: "custentity_lms_channel_lead_name",
-        Cell: (cellProps) => {
-          // console.log("cellProps", cellProps);
-          return (
-            <>
-              <div className="table-text">
-                <span>
-                  {cellProps.value || <span> — </span>}
-                </span>
-                {/* {cellProps.value || <span> — </span>} */}
-              </div>
-            </>
-          );
-        },
-      },
-      {
-        Header: "Name",
-        accessor: "companyname",
-        Cell: (cellProps) => {
-          return (
-            <>
-              <div className="table-text">
-                {cellProps.value}
-              </div>
-            </>
-          );
-        },
-      },
-
-      {
-        Header: "Phone",
-        accessor: "phone",
+        Header: "Title",
+        accessor: "title",
         Cell: (cellProps) => {
           return (
             <>
@@ -208,9 +119,10 @@ const AllLead = ({ mounted }) => {
           );
         },
       },
+     
       {
-        Header: "Email",
-        accessor: "email",
+        Header: "Status",
+        accessor: "status",
         Cell: (cellProps) => {
           return (
             <>
@@ -221,47 +133,36 @@ const AllLead = ({ mounted }) => {
           );
         },
       },
+      
       {
-        Header: "Client Type",
-        accessor: "custentity_lms_client_type_name",
+        Header: "Date",
+        accessor: "startdate",
         Cell: (cellProps) => {
           return (
             <>
               <div className="table-text">
-                {cellProps.value }
+                {cellProps.value || <span> — </span>}
               </div>
             </>
           );
         },
       },
-      {
-        Header: "Enquiry By",
-        accessor: "custentity_lms_enquiryby_name",
-        Cell: (cellProps) => {
-          return (
-            <>
-              <div className="table-text">
-                {cellProps.value}
-              </div>
-            </>
-          );
-        },
-      },
+      
     ],
     []
   );
 
   return (
     <>
-      {isLead ? (
+      {isClient ? (
         <TkRow>
           <>
             <TkCol lg={12}>
               <TkCardBody className="pt-0">
                 <TkTableContainer
                   columns={columns}
-                  data={leadData?.items || []}
-                  loading={isBackLoading}
+                  data={eventActivityData?.items || []}
+
                   Toolbar={
                     <TableToolBar
                       onSearchChange={searchDebounce(
@@ -303,4 +204,4 @@ const AllLead = ({ mounted }) => {
   );
 };
 
-export default AllLead;
+export default AllEvent;

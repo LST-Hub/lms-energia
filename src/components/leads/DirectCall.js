@@ -93,7 +93,7 @@ const schema = Yup.object({
 
   custentity_lms_personal_phonenumber: Yup.string()
     .nullable()
-    .required("Phone Number is Required")
+    .required("Phone Number is required")
     .matches(/^[0-9+() -]*$/, "Phone Number must be number.")
     .max(
       MaxPhoneNumberLength,
@@ -131,7 +131,7 @@ const schema = Yup.object({
     ),
   phoneNo: Yup.string()
     .nullable()
-    .required("Contact Number is Required")
+    .required("Contact Number is required")
     .matches(/^[0-9+() -]*$/, "Contact number must be number.")
     .max(
       MaxPhoneNumberLength,
@@ -2061,12 +2061,18 @@ function DirectCall({ selectedButton }) {
       },
       linefields: {
         recmachcustrecord_lms_requirement_details:
-          formData.custrecord_lms_requirement.map((req, i) => ({
+          formData.custrecord_lms_division.map((req, i) => ({
+            // custrecord_lms_division: {
+            //   value: formData.custrecord_lms_division[i]?.value || "",
+            //   label: formData.custrecord_lms_division[i]?.text || "",
+            // },
             custrecord_lms_division: {
-              value: formData.custrecord_lms_division[i]?.value || "",
-              label: formData.custrecord_lms_division[i]?.text || "",
+              value: formData.custrecord_lms_division[i]?.value,
+              text: formData.custrecord_lms_division[i]?.text,
             },
-            custrecord_lms_requirement: req,
+            // custrecord_lms_requirement: req,
+            custrecord_lms_requirement: formData.custrecord_lms_requirement[i],
+
             custrecord_lms_project_name:
               formData.custrecord_lms_project_name[i],
 
@@ -2078,7 +2084,7 @@ function DirectCall({ selectedButton }) {
             // ),
             custrecord_lms_unit_of_measure: {
               value: formData.custrecord_lms_unit_of_measure[i]?.value,
-              label: formData.custrecord_lms_unit_of_measure[i]?.text,
+              text: formData.custrecord_lms_unit_of_measure[i]?.text,
             },
             custrecord_lms_value: Number(formData.custrecord_lms_value[i]),
             custrecord_lms_expected_delivery_date: [
@@ -2994,7 +3000,7 @@ function DirectCall({ selectedButton }) {
                         Activity
                       </NavLink>
                     </NavItem> */}
-                    <NavItem>
+                    {/* <NavItem>
                       <NavLink
                         href="#"
                         className={classnames({
@@ -3026,7 +3032,7 @@ function DirectCall({ selectedButton }) {
                       >
                         Event
                       </NavLink>
-                    </NavItem>
+                    </NavItem> */}
                   </Nav>
                 </TkCol>
               </TkRow>
@@ -3233,7 +3239,7 @@ function DirectCall({ selectedButton }) {
                       </div>
                     </TabPane>
 
-                    <TabPane tabId={tabs.phoneCallActivity}>
+                    {/* <TabPane tabId={tabs.phoneCallActivity}>
                       <TkContainer>
                         <TkTableContainer
                           customPageSize={true}
@@ -3276,7 +3282,7 @@ function DirectCall({ selectedButton }) {
                           dynamicTable={true}
                         />
                       </TkContainer>
-                    </TabPane>
+                    </TabPane> */}
                   </TabContent>
                 </TkCol>
               </TkRow>

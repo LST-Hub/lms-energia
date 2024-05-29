@@ -38,11 +38,10 @@ import { convertTimeToSec, convertToTimeFotTimeSheet } from "../../utils/time";
 const schema = Yup.object({
   title: Yup.string().required("Subject is required").nullable(),
   company: Yup.object().required("Lead name is required").nullable(),
-  // assigned: Yup.object().required("Organizer is required").nullable(),
-  priority: Yup.object().required("Proirity is required").nullable(),
   status: Yup.object().required("Status is required").nullable(),
   startDate: Yup.string().required("Date is required").nullable(),
-  dueDate: Yup.string().required("Due date is required").nullable(),
+  starttime: Yup.string().required("Start Time is required").nullable(),
+  endtime: Yup.string().required("End Time is required").nullable(),
   message: Yup.string()
     .nullable()
     .max(
@@ -51,7 +50,7 @@ const schema = Yup.object({
     ),
 }).required();
 
-const AddTask = ({ value }) => {
+const AddEvent = ({ value }) => {
   const router = useRouter();
   const {
     control,
@@ -98,42 +97,45 @@ const AddTask = ({ value }) => {
     }
   }, [salesTeamData]);
 
-  const taskActivityPost = useMutation({
+  const eventActivityPost = useMutation({
     mutationFn: tkFetch.post(`${API_BASE_URL}/taskActivity`),
   });
 
   const onSubmit = (formData) => {
     const apiData = {
       resttype: "Add",
-      recordtype: "task",
+      recordtype: "calendarevent",
       bodyfields: {
         title: formData.title,
         company: {
           value: formData.company.value,
           label: formData.company.text,
         },
-        // assigned: {
-        //   value: formData.assigned.value,
-        //   label: formData.assigned.text,
-        // },
-        priority: {
-          value: formData.priority.value,
-          label: formData.priority.text,
-        },
+        location: formData.location,
         status: {
           value: formData.status.value,
           label: formData.status.text,
         },
+        // accesslevel: {
+        //   value: formData.accesslevel.value,
+        //   label: formData.accesslevel.text,
+        // },
+        // organizer: {
+        //   value: formData.organizer.value,
+        //   label: formData.organizer.text,
+        // },
+
         startdate: formatDateForAPI(formData.startdate),
-        dueDate: formatDateForAPI(formData.dueDate),
+        starttime: formData.starttime,
+        endtime: formData.endtime,
         message: formData.message,
       },
     };
-    taskActivityPost.mutate(apiData),
+    eventActivityPost.mutate(apiData),
       {
         onSuccess: (data) => {
-          TkToastSuccess("Task Created Successfully");
-          router.push(`${urls.taskk}`);
+          TkToastSuccess("Event Created Successfully");
+          router.push(`${urls.event}`);
         },
         onError: (error) => {
           TkToastError("error while creating Lead", error);
@@ -198,6 +200,7 @@ const AddTask = ({ value }) => {
                                 </FormErrorText>
                               )}
                             </TkCol>
+
                             {/* <TkCol lg={4}>
                               <TkInput
                                 {...register("company")}
@@ -215,52 +218,18 @@ const AddTask = ({ value }) => {
                               )}
                             </TkCol> */}
 
-                            {/* <TkCol lg={4}>
-                              <Controller
-                                name="assigned"
-                                control={control}
-                                render={({ field }) => (
-                                  <TkSelect
-                                    {...field}
-                                    labelName="Assigned To"
-                                    labelId={"assigned"}
-                                    id="assigned"
-                                    options={allSalesTeamData}
-                                    placeholder="Select Assigned To"
-                                    requiredStarOnLabel={true}
-                                  />
-                                )}
-                              />
-                              {errors.assigned && (
-                                <FormErrorText>
-                                  {errors.assigned.message}
-                                </FormErrorText>
-                              )}
-                            </TkCol> */}
-
                             <TkCol lg={4}>
-                              <Controller
-                                name="priority"
-                                control={control}
-                                render={({ field }) => (
-                                  <TkSelect
-                                    {...field}
-                                    labelName="Proirity"
-                                    labelId={"priority"}
-                                    id="priority"
-                                    options={[
-                                      { label: "High", value: "1" },
-                                      { label: "Medium", value: "2" },
-                                      { label: "Low", value: "3" },
-                                    ]}
-                                    placeholder="Select Proirity"
-                                    requiredStarOnLabel={true}
-                                  />
-                                )}
+                              <TkInput
+                                {...register("location")}
+                                id="location"
+                                name="location"
+                                type="text"
+                                labelName="Location"
+                                placeholder="Enter Location"
                               />
-                              {errors.priority && (
+                              {errors.location && (
                                 <FormErrorText>
-                                  {errors.priority.message}
+                                  {errors.location.message}
                                 </FormErrorText>
                               )}
                             </TkCol>
@@ -276,15 +245,15 @@ const AddTask = ({ value }) => {
                                     labelId={"_status"}
                                     id="status"
                                     options={[
-                                        {
-                                          label: "Completed",
-                                          value: "Completed",
-                                        },
-                                        {
-                                          label: "Scheduled",
-                                          value: "Scheduled",
-                                        },
-                                      ]}
+                                      {
+                                        label: "Completed",
+                                        value: "Completed",
+                                      },
+                                      {
+                                        label: "Scheduled",
+                                        value: "Scheduled",
+                                      },
+                                    ]}
                                     placeholder="Select Type"
                                     requiredStarOnLabel={true}
                                   />
@@ -297,19 +266,72 @@ const AddTask = ({ value }) => {
                               )}
                             </TkCol>
 
+                            {/* <TkCol lg={4}>
+                              <Controller
+                                name="accesslevel"
+                                control={control}
+                                render={({ field }) => (
+                                  <TkSelect
+                                    {...field}
+                                    labelName="Event Access"
+                                    labelId={"accesslevel"}
+                                    id="accesslevel"
+                                    options={[
+                                      { label: "Public", value: "Public" },
+                                      { label: "Private", value: "Private" },
+                                      {
+                                        label: "Show as Busy",
+                                        value: "Show as Busy",
+                                      },
+                                    ]}
+                                    placeholder="Select Event Access"
+                                    requiredStarOnLabel={true}
+                                  />
+                                )}
+                              />
+                              {errors.accesslevel && (
+                                <FormErrorText>
+                                  {errors.accesslevel.message}
+                                </FormErrorText>
+                              )}
+                            </TkCol> */}
+
+                            {/* <TkCol lg={4}>
+                              <Controller
+                                name="organizer"
+                                control={control}
+                                render={({ field }) => (
+                                  <TkSelect
+                                    {...field}
+                                    labelName="Organizer"
+                                    labelId={"organizer"}
+                                    id="organizer"
+                                    options={allSalesTeamData}
+                                    placeholder="Select Organizer"
+                                    requiredStarOnLabel={true}
+                                  />
+                                )}
+                              />
+                              {errors.organizer && (
+                                <FormErrorText>
+                                  {errors.organizer.message}
+                                </FormErrorText>
+                              )}
+                            </TkCol> */}
+
                             <TkCol lg={4}>
                               <Controller
                                 name="startDate"
                                 control={control}
                                 rules={{
-                                  required: "Start Date is required",
+                                  required: "Date is required",
                                 }}
                                 render={({ field }) => (
                                   <TkDate
                                     {...field}
-                                    labelName="Start Date"
+                                    labelName="Date"
                                     id={"startDate"}
-                                    placeholder="Select Start Date"
+                                    placeholder="Select Date"
                                     options={{
                                       altInput: true,
                                       dateFormat: "d M, Y",
@@ -326,29 +348,79 @@ const AddTask = ({ value }) => {
                             </TkCol>
 
                             <TkCol lg={4}>
-                              <Controller
-                                name="dueDate"
-                                control={control}
-                                rules={{
-                                  required: "Due Date is required",
+                              <TkInput
+                                {...register(`starttime`, {
+                                  required: "Start Time is required",
+                                  validate: (value) => {
+                                    if (
+                                      value &&
+                                      !/^[0-9]*([.:][0-9]+)?$/.test(value)
+                                    ) {
+                                      return "Invalid Start Time";
+                                    }
+                                    if (
+                                      convertTimeToSec(value) > 86400 ||
+                                      value > 24
+                                    ) {
+                                      return "Start Time should be less than 24 hours";
+                                    }
+                                  },
+                                })}
+                                onBlur={(e) => {
+                                  setValue(
+                                    `starttime`,
+                                    convertToTimeFotTimeSheet(e.target.value)
+                                  );
                                 }}
-                                render={({ field }) => (
-                                  <TkDate
-                                    {...field}
-                                    labelName="Due Date"
-                                    id={"dueDate"}
-                                    placeholder="Select Due Date"
-                                    options={{
-                                      altInput: true,
-                                      dateFormat: "d M, Y",
-                                    }}
-                                    requiredStarOnLabel={true}
-                                  />
-                                )}
+                                labelName="Start Time (HH:MM)"
+                                id={"starttime"}
+                                name="starttime"
+                                type="text"
+                                placeholder="Enter Start Time"
+                                requiredStarOnLabel={true}
                               />
-                              {errors.dueDate && (
+                              {errors.starttime && (
                                 <FormErrorText>
-                                  {errors.dueDate.message}
+                                  {errors.starttime.message}
+                                </FormErrorText>
+                              )}
+                            </TkCol>
+
+                            <TkCol lg={4}>
+                              <TkInput
+                                {...register(`endtime`, {
+                                  required: "End Time is required",
+                                  validate: (value) => {
+                                    if (
+                                      value &&
+                                      !/^[0-9]*([.:][0-9]+)?$/.test(value)
+                                    ) {
+                                      return "Invalid End Time";
+                                    }
+                                    if (
+                                      convertTimeToSec(value) > 86400 ||
+                                      value > 24
+                                    ) {
+                                      return "End Time should be less than 24 hours";
+                                    }
+                                  },
+                                })}
+                                onBlur={(e) => {
+                                  setValue(
+                                    `endtime`,
+                                    convertToTimeFotTimeSheet(e.target.value)
+                                  );
+                                }}
+                                labelName="End Time (HH:MM)"
+                                id={"endtime"}
+                                name="endtime"
+                                type="text"
+                                placeholder="Enter End Time"
+                                requiredStarOnLabel={true}
+                              />
+                              {errors.endtime && (
+                                <FormErrorText>
+                                  {errors.endtime.message}
                                 </FormErrorText>
                               )}
                             </TkCol>
@@ -372,17 +444,17 @@ const AddTask = ({ value }) => {
                                 <TkButton
                                   color="secondary"
                                   onClick={() => {
-                                    router.push(`${urls.taskk}`);
+                                    router.push(`${urls.event}`);
                                   }}
                                   type="button"
-                                  disabled={taskActivityPost.isLoading}
+                                  disabled={eventActivityPost.isLoading}
                                 >
                                   Cancel
                                 </TkButton>{" "}
                                 <TkButton
                                   type="submit"
                                   color="primary"
-                                  loading={taskActivityPost.isLoading}
+                                  loading={eventActivityPost.isLoading}
                                 >
                                   Save
                                 </TkButton>
@@ -403,4 +475,4 @@ const AddTask = ({ value }) => {
   );
 };
 
-export default AddTask;
+export default AddEvent;

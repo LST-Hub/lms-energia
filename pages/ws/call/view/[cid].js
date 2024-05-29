@@ -9,7 +9,6 @@ import EditPhoneCall from "../../../../src/components/phoneCall/EditPhoneCall";
 const PhoneCallDetailsPage = () => {
   const router = useRouter();
   const { cid } = router.query;
-  const user = demoPhoneCallData.find((user) => user.id === parseInt(cid));
   return (
     <>
       <TkPageHead>
@@ -20,7 +19,7 @@ const PhoneCallDetailsPage = () => {
         <BreadCrumb pageTitle={"Phone Call Details"} parentTitle="Phone Call" parentLink={`${urls.phoneCall}`} />
 
         <TkContainer>
-          <EditPhoneCall id={cid} userData={user} mode={modes.view} />
+          <EditPhoneCall id={cid}  mode={modes.view} />
         </TkContainer>
       </div>
     </>
