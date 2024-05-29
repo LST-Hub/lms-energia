@@ -32,7 +32,7 @@ import {
   stausTypes,
 } from "../../utils/Constants";
 import tkFetch from "../../utils/fetch";
-import { useMutation, useQueries, useQuery } from "@tanstack/react-query";
+import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import useUserAccessLevel from "../../utils/hooks/useUserAccessLevel";
 import { permissionTypeIds } from "../../../DBConstants";
@@ -83,6 +83,7 @@ const EditTask = ({ id, userData, mode }) => {
   useEffect(() => {
     setIsTaskk(true);
   }, []);
+  const queryClient = useQueryClient();
 
   const [allSalesTeamData, setAllSalesTeamData] = useState([{}]);
   const results = useQueries({

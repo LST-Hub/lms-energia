@@ -37,7 +37,7 @@ import {
   remindersTypes,
 } from "../../utils/Constants";
 import tkFetch from "../../utils/fetch";
-import { useMutation, useQueries, useQuery } from "@tanstack/react-query";
+import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import useUserAccessLevel from "../../utils/hooks/useUserAccessLevel";
 import { perAccessIds, permissionTypeIds } from "../../../DBConstants";
@@ -71,7 +71,6 @@ const EditEvent = ({ id, userData, mode }) => {
   const editMode = mode === modes.edit;
   const eid = Number(id);
   const accessLevel = useUserAccessLevel(permissionTypeIds.users);
-  const [isPhoneCall, setIsPhoneCall] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
 
   const {
@@ -85,6 +84,7 @@ const EditEvent = ({ id, userData, mode }) => {
   } = useForm({
     resolver: yupResolver(schema),
   });
+  const queryClient = useQueryClient();
 
   const [allSalesTeamData, setAllSalesTeamData] = useState([{}]);
   const results = useQueries({
@@ -122,11 +122,6 @@ const EditEvent = ({ id, userData, mode }) => {
     }
   }, [salesTeamData]);
 
-  useEffect(() => {
-    setIsPhoneCall(true);
-  }, []);
-
-  
   const { data, isLoading, isFetched, isError, error } = useQuery({
     queryKey: [RQ.lead, eid],
     queryFn: tkFetch.get(`${API_BASE_URL}/eventActivity/${eid}`),

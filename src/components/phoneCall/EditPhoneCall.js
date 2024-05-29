@@ -84,7 +84,6 @@ const EditPhoneCall = ({ id, mode }) => {
   const editMode = mode === modes.edit;
   const cid = Number(id);
   const accessLevel = useUserAccessLevel(permissionTypeIds.users);
-  const [isPhoneCall, setIsPhoneCall] = useState(false);
   const {
     control,
     register,
@@ -100,6 +99,7 @@ const EditPhoneCall = ({ id, mode }) => {
   const [allSalesTeamData, setAllSalesTeamData] = useState([{}]);
   const [allLeadNameListData, setAllLeadNameListData] = useState([{}]);
   const [deleteModal, setDeleteModal] = useState(false);
+
 
   const queryClient = useQueryClient();
 
@@ -163,10 +163,6 @@ const EditPhoneCall = ({ id, mode }) => {
     }
   }, [salesTeamData, leadListData]);
   // console.log("allLeadNameListData", allLeadNameListData?.items[0].companyname);
-
-  useEffect(() => {
-    setIsPhoneCall(true);
-  }, []);
 
   const { data, isLoading, isFetched, isError, error } = useQuery({
     queryKey: [RQ.lead, cid],
