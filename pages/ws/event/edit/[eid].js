@@ -16,7 +16,7 @@ const EventDetailsPage = () => {
       </TkPageHead>
 
       <div className="page-content">
-        <BreadCrumb pageTitle={"Event Details"} parentTitle="Task" parentLink={`${urls.event}`} />
+        <BreadCrumb pageTitle={"Event Details"} parentTitle="Event" parentLink={`${urls.event}`} />
         <TkContainer>
           <EditEvent id={eid}  mode={modes.edit} />
         </TkContainer>
