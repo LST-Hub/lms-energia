@@ -66,14 +66,7 @@ export default async function handler(req, res) {
         data: [deleteLeadData],
         message: "Activity Deleted successfully",
       });
-    } else {
-      response({
-        res,
-        success: false,
-        status_code: 405,
-        message: "Method Not Allowed",
-      });
-    }
+    } 
   } catch (err) {
     console.error("error in project index file", err);
     response({
