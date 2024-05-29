@@ -9,8 +9,6 @@ import { CSVLink } from "react-csv";
 import TkLoader from "../TkLoader";
 
 const headers = [
-  { label: "First Name", key: "firstname" },
-  { label: "Last Name", key: "lastname" },
   { label: "Company Name", key: "companyname" },
   { label: "Email", key: "email" },
   { label: "Phone Number", key: "phone" },

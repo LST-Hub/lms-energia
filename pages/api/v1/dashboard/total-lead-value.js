@@ -23,8 +23,6 @@ export default async function handler(req, res) {
 
       const allLeadData = await getLeadByIdRestletScriptDeploymentId(body);
 
-      console.log("allLeadData", allLeadData);
-
       //   let result = [];
       //   allLeadData?.list?.forEach((dataItem) => {
       //     const leadId = dataItem.values.custentity_lms_channel_lead[0].value;
