@@ -129,7 +129,7 @@ const AddTask = ({ value }) => {
         message: formData.message,
       },
     };
-    taskActivityPost.mutate(apiData),
+    taskActivityPost.mutate(apiData,
       {
         onSuccess: (data) => {
           TkToastSuccess("Task Created Successfully");
@@ -138,7 +138,7 @@ const AddTask = ({ value }) => {
         onError: (error) => {
           TkToastError("error while creating Lead", error);
         },
-      };
+      });
   };
 
   return (
@@ -353,7 +353,7 @@ const AddTask = ({ value }) => {
                               )}
                             </TkCol>
 
-                            <TkCol lg={8}>
+                            <TkCol lg={12}>
                               <TkInput
                                 {...register("message")}
                                 id="message"

@@ -36,7 +36,12 @@ import { formatDateForAPI } from "../../utils/date";
 import { convertTimeToSec, convertToTimeFotTimeSheet } from "../../utils/time";
 
 const schema = Yup.object({
-  title: Yup.string().required("Subject is required").nullable(),
+  title: Yup.string().required("Subject is required")
+  .max(
+    MaxPhoneNumberLength,
+    `Subject must be at most ${MaxPhoneNumberLength} characters.`
+  )
+  .nullable(),
   phone: Yup.string()
     .nullable()
     .required("Phone number is required")
@@ -50,6 +55,12 @@ const schema = Yup.object({
   status: Yup.object().required("Status is required").nullable(),
   organizer: Yup.object().required("Organizer is required").nullable(),
   startDate: Yup.date().required("Date is required").nullable(),
+  message: Yup.string()
+    .nullable()
+    .max(
+      bigInpuMaxLength,
+      `Message must be at most ${bigInpuMaxLength} characters.`
+    ),
   // completeddate: Yup.date().required("Due date is required").nullable(),
 }).required();
 
@@ -135,7 +146,6 @@ const AddPhoneCallActivty = ({ value }) => {
   });
 
   const onSubmit = (formData) => {
-    console.log("formData", formData);
     const apiData = {
       resttype: "Add",
       recordtype: "phonecall",
@@ -159,16 +169,18 @@ const AddPhoneCallActivty = ({ value }) => {
         },
       },
     };
-    phoneCallActivityPost.mutate(apiData),
+    phoneCallActivityPost.mutate(apiData,
       {
         onSuccess: (data) => {
+          console.log("data", data);
           TkToastSuccess("Phone Call Created Successfully");
           router.push(`${urls.phoneCall}`);
         },
         onError: (error) => {
+          console.log("error", error);
           TkToastError("error while creating Lead", error);
         },
-      };
+      });
   };
 
   return (
@@ -210,13 +222,13 @@ const AddPhoneCallActivty = ({ value }) => {
                                     labelName="Lead Name"
                                     labelId={"company"}
                                     id="company"
-                                    // options={[
-                                    //     { label: "Email", value: "Email" },
-                                    //     { label: "Direct Call", value: "Direct Call" },
-                                    //     { label: "Social Media", value: "Social Media" },
-                                    //     { label: "Portals", value: "Portals" },
-                                    //   ]}
-                                    options={allLeadNameListData}
+                                    options={[
+                                        { label: "Email", value: "Email" },
+                                        { label: "Direct Call", value: "Direct Call" },
+                                        { label: "Social Media", value: "Social Media" },
+                                        { label: "Portals", value: "Portals" },
+                                      ]}
+                                    // options={allLeadNameListData}
                                     placeholder="Select Lead Name"
                                     requiredStarOnLabel={true}
                                     loading={leadListLoading}
@@ -358,7 +370,7 @@ const AddPhoneCallActivty = ({ value }) => {
                               )}
                             </TkCol> */}
 
-                            <TkCol lg={8}>
+                            <TkCol lg={12}>
                               <TkInput
                                 {...register("message")}
                                 id="message"

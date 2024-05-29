@@ -75,7 +75,12 @@ const schema = Yup.object({
   status: Yup.object().required("Status is required").nullable(),
   organizer: Yup.object().required("Organizer is required").nullable(),
   startDate: Yup.date().required("Date is required").nullable(),
-  // completeddate: Yup.date().required("Due date is required").nullable(),
+  message: Yup.string()
+    .nullable()
+    .max(
+      bigInpuMaxLength,
+      `Message must be at most ${bigInpuMaxLength} characters.`
+    ),
 }).required();
 
 const EditPhoneCall = ({ id, mode }) => {
@@ -223,7 +228,7 @@ const EditPhoneCall = ({ id, mode }) => {
         bodyfilters: [["internalid", "anyof", cid]],
       },
     };
-    phoneCallActivityPost.mutate(apiData),
+    phoneCallActivityPost.mutate(apiData,
       {
         onSuccess: (data) => {
           TkToastSuccess("Phone Call Updated Successfully");
@@ -232,7 +237,7 @@ const EditPhoneCall = ({ id, mode }) => {
         onError: (error) => {
           TkToastError("error while creating Lead", error);
         },
-      };
+      });
   };
 
   const deletePhoneCall = useMutation({
@@ -244,7 +249,7 @@ const EditPhoneCall = ({ id, mode }) => {
     const apiData = {
       id: cid,
     };
-    deletePhoneCall.mutate(apiData),
+    deletePhoneCall.mutate(apiData,
       {
         onSuccess: (data) => {
           TkToastSuccess("Phone Call Deleted Successfully");
@@ -256,7 +261,7 @@ const EditPhoneCall = ({ id, mode }) => {
         onError: (error) => {
           TkToastError("error while deleting Phone Call", error);
         },
-      };
+      });
   };
 
   const toggleDeleteModelPopup = () => {
@@ -465,7 +470,7 @@ const EditPhoneCall = ({ id, mode }) => {
                              )}
                            </TkCol> */}
 
-                              <TkCol lg={8}>
+                              <TkCol lg={12}>
                                 <TkInput
                                   {...register("message")}
                                   id="message"

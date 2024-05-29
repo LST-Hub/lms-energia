@@ -156,7 +156,7 @@ const EditTask = ({ id, userData, mode }) => {
   }, [data, setValue, isFetched]);
 
   const taskActivityPost = useMutation({
-    mutationFn: tkFetch.post(`${API_BASE_URL}/taskActivity/${tid}`),
+    mutationFn: tkFetch.patch(`${API_BASE_URL}/taskActivity/${tid}`),
   });
 
   const onSubmit = (formData) => {
@@ -182,7 +182,7 @@ const EditTask = ({ id, userData, mode }) => {
         message: formData.message,
       },
     };
-    taskActivityPost.mutate(apiData),
+    taskActivityPost.mutate(apiData,
       {
         onSuccess: (data) => {
           TkToastSuccess("Task Created Successfully");
@@ -191,7 +191,7 @@ const EditTask = ({ id, userData, mode }) => {
         onError: (error) => {
           TkToastError("error while creating Lead", error);
         },
-      };
+      });
   };
 
   const deleteTask = useMutation({
@@ -203,7 +203,7 @@ const EditTask = ({ id, userData, mode }) => {
     const apiData = {
       id: tid,
     };
-    deleteTask.mutate(apiData),
+    deleteTask.mutate(apiData,
       {
         onSuccess: (data) => {
           TkToastSuccess("Task Deleted Successfully");
@@ -215,7 +215,7 @@ const EditTask = ({ id, userData, mode }) => {
         onError: (error) => {
           TkToastError("error while deleting Phone Call", error);
         },
-      };
+      });
   };
 
   const toggleDeleteModelPopup = () => {
@@ -458,7 +458,7 @@ const EditTask = ({ id, userData, mode }) => {
                                 )}
                               </TkCol>
 
-                              <TkCol lg={8}>
+                              <TkCol lg={12}>
                                 <TkInput
                                   {...register("message")}
                                   id="message"

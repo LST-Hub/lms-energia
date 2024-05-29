@@ -861,6 +861,11 @@ const ws = "/ws";
 
 const urls = {
   roles: `${ws}/roles`,
+  
+  lead: `${ws}/lead`,
+  leadAdd: `${ws}/lead/add`,
+  leadEdit: `${ws}/lead/edit`,
+  leadView: `${ws}/lead/view`,
   phoneCall: `${ws}/call`,
   phoneCallAdd: `${ws}/call/add`,
   phoneCallEdit: `${ws}/call/edit`,
@@ -873,10 +878,6 @@ const urls = {
   eventAdd: `${ws}/event/add`,
   eventEdit: `${ws}/event/edit`,
   eventView: `${ws}/event/view`,
-  lead: `${ws}/lead`,
-  leadAdd: `${ws}/lead/add`,
-  leadEdit: `${ws}/lead/edit`,
-  leadView: `${ws}/lead/view`,
   activity: `${ws}/activity`,
   activityEdit: `${ws}/activity/edit`,
   activityView: `${ws}/activity/view`,

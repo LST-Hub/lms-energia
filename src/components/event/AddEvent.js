@@ -131,7 +131,7 @@ const AddEvent = ({ value }) => {
         message: formData.message,
       },
     };
-    eventActivityPost.mutate(apiData),
+    eventActivityPost.mutate(apiData,
       {
         onSuccess: (data) => {
           TkToastSuccess("Event Created Successfully");
@@ -140,7 +140,7 @@ const AddEvent = ({ value }) => {
         onError: (error) => {
           TkToastError("error while creating Lead", error);
         },
-      };
+      });
   };
 
   return (
@@ -425,7 +425,7 @@ const AddEvent = ({ value }) => {
                               )}
                             </TkCol>
 
-                            <TkCol lg={8}>
+                            <TkCol lg={12}>
                               <TkInput
                                 {...register("message")}
                                 id="message"
