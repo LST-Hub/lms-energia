@@ -80,7 +80,7 @@ const Login = () => {
 
     getUserData.mutate(apiData, {
       onSuccess: (apiData) => {
-  console.log("apiData is:", apiData[0].list[0].id);
+  // console.log("apiData is:", apiData[0].list[0].values.custentity_lms_roles[0].value);
 
         if (
           data?.password === apiData[0]?.list[0]?.values.custentity_lms_emppassword
