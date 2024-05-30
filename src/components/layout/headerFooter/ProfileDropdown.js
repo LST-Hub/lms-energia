@@ -36,10 +36,16 @@ const ProfileDropdown = () => {
 
   const router = useRouter();
 
+  // const { data, isLoading, isError, error } = useQuery({
+  //   queryKey: [RQ.profileData],
+  //   queryFn: tkFetch.get(`${API_BASE_URL}/profile?email=${email}`),
+  // });
+
   const { data, isLoading, isError, error } = useQuery({
     queryKey: [RQ.profileData],
-    queryFn: tkFetch.get(`${API_BASE_URL}/profile?email=${email}`),
+    queryFn: tkFetch.get(`${API_BASE_URL}/profile`),
   });
+
 
 
   // useEffect(() => {

@@ -144,14 +144,15 @@ const AddPhoneCallActivty = ({ value }) => {
   });
 
   const onSubmit = (formData) => {
+    console.log("formData", formData);
     const apiData = {
       resttype: "Add",
       recordtype: "phonecall",
       bodyfields: {
         title: formData.title,
         company: {
-          value: formData.company.value,
-          label: formData.company.text,
+          // value: formData.company.value,
+          label: formData.company.value,
         },
         phone: formData.phone,
         status: {

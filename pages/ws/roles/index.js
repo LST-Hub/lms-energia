@@ -21,11 +21,11 @@ const Roles = () => {
         <title>{"Roles"}</title>
       </TkPageHead>
       <div className="page-content">
-        <BreadCrumb
+        {/* <BreadCrumb
           pageTitle={"Roles And Permisssions"}
           buttonText={"Add Role"}
           onButtonClick={handleButtonClick}
-        />
+        /> */}
         <TkContainer>
           <AllRoles />
         </TkContainer>
