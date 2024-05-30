@@ -159,6 +159,7 @@ const EditEvent = ({ id, userData, mode }) => {
   });
 
   const onSubmit = (formData) => {
+    console.log("formData", formData);
     const apiData = {
       resttype: "Update",
       recordtype: "calendarevent",
@@ -186,6 +187,9 @@ const EditEvent = ({ id, userData, mode }) => {
         starttime: formData.starttime,
         endtime: formData.endtime,
         message: formData.message,
+      },
+      filters: {
+        bodyfilters: [["internalid", "anyof", eid]],
       },
     };
     eventActivityPost.mutate(apiData,

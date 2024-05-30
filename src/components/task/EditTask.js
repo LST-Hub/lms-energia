@@ -146,19 +146,19 @@ const EditTask = ({ id, userData, mode }) => {
         label: bodyValues?.company?.value,
       });
       setValue("priority", {
-        value: bodyValues?.priority?.text,
-        label: bodyValues?.priority?.value,
+        value: bodyValues?.priority[0].text,
+        label: bodyValues?.priority[0].value,
       });
       setValue("status", {
-        value: bodyValues?.status?.text,
-        label: bodyValues?.status?.value,
+        value: bodyValues?.status[0].text,
+        label: bodyValues?.status[0].value,
       });
       setValue("organizer", {
         value: bodyValues?.organizer?.text,
         label: bodyValues?.organizer?.value,
       });
       setValue("startDate", bodyValues?.startdate);
-      setValue("dueDate", bodyValues?.dueDate);
+      setValue("dueDate", bodyValues?.duedate);
       setValue("message", bodyValues?.message);
     }
   }, [data, setValue, isFetched]);
@@ -185,9 +185,12 @@ const EditTask = ({ id, userData, mode }) => {
           value: formData.status.value,
           label: formData.status.text,
         },
-        startdate: formatDateForAPI(formData.startdate),
-        dueDate: formatDateForAPI(formData.dueDate),
+        startdate: formData.startdate,
+        duedate: formData.duedate,
         message: formData.message,
+      },
+      filters: {
+        bodyfilters: [["internalid", "anyof", tid]],
       },
     };
     taskActivityPost.mutate(apiData, {
@@ -202,7 +205,7 @@ const EditTask = ({ id, userData, mode }) => {
   };
 
   const deleteTask = useMutation({
-    mutationFnn: tkFetch.deleteWithIdInUrl(`${API_BASE_URL}/taskActivity`),
+    mutationFn: tkFetch.deleteWithIdInUrl(`${API_BASE_URL}/taskActivity`),
   });
 
   const handleDeleteTask = () => {
@@ -219,7 +222,7 @@ const EditTask = ({ id, userData, mode }) => {
         router.push(`${urls.taskk}`);
       },
       onError: (error) => {
-        TkToastError("error while deleting Phone Call", error);
+        TkToastError("error while deleting task", error);
       },
     });
   };

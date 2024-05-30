@@ -124,7 +124,7 @@ const AddTask = ({ value }) => {
           value: formData.status.value,
           label: formData.status.text,
         },
-        startdate: formatDateForAPI(formData.startdate),
+        // startdate: formatDateForAPI(formData.startdate),
         dueDate: formatDateForAPI(formData.dueDate),
         message: formData.message,
       },

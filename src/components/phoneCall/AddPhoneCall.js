@@ -101,7 +101,7 @@ const AddPhoneCallActivty = ({ value }) => {
   } = salesTeam;
 
   const {
-    data: leadListData,
+    data: leadNameListData,
     isLoading: leadListLoading,
     isError: leadListIsError,
     error: leadListError,
@@ -129,17 +129,17 @@ const AddPhoneCallActivty = ({ value }) => {
       );
     }
 
-    if (leadListData) {
+    if (leadNameListData) {
       setAllLeadNameListData(
-        leadListData.items.map((leadListType) => ({
-          label: leadListType.companyname,
+        leadNameListData?.list?.map((leadListType) => ({
+          label: leadListType?.values?.companyname,
           // value: leadListType.id,
         }))
       );
     }
-  }, [salesTeamData,leadListData]);
+  }, [salesTeamData,leadNameListData]);
   // console.log("allLeadNameListData", allLeadNameListData?.items[0].companyname);
-  // console.log("allLeadNameListData", leadListData.items[0].companyname);
+  // console.log("leadNameListData", leadNameListData?.list);
 
 
   const phoneCallActivityPost = useMutation({
@@ -223,13 +223,13 @@ const AddPhoneCallActivty = ({ value }) => {
                                     labelName="Lead Name"
                                     labelId={"company"}
                                     id="company"
-                                    options={[
-                                        { label: "Email", value: "Email" },
-                                        { label: "Direct Call", value: "Direct Call" },
-                                        { label: "Social Media", value: "Social Media" },
-                                        { label: "Portals", value: "Portals" },
-                                      ]}
-                                    // options={allLeadNameListData}
+                                    // options={[
+                                    //     { label: "Email", value: "Email" },
+                                    //     { label: "Direct Call", value: "Direct Call" },
+                                    //     { label: "Social Media", value: "Social Media" },
+                                    //     { label: "Portals", value: "Portals" },
+                                    //   ]}
+                                    options={allLeadNameListData}
                                     placeholder="Select Lead Name"
                                     requiredStarOnLabel={true}
                                     loading={leadListLoading}

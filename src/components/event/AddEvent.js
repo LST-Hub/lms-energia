@@ -98,7 +98,7 @@ const AddEvent = ({ value }) => {
   }, [salesTeamData]);
 
   const eventActivityPost = useMutation({
-    mutationFn: tkFetch.post(`${API_BASE_URL}/taskActivity`),
+    mutationFn: tkFetch.post(`${API_BASE_URL}/eventActivity`),
   });
 
   const onSubmit = (formData) => {
