@@ -845,6 +845,7 @@ const RQ = {
   leadChannel: "leadChannel",
   leadCount: "leadCount",
   leadReport: "leadReport",
+  phoneCallReport: "phoneCallReport",
   leadCountperDay: "leadCountperDay",
 };
 

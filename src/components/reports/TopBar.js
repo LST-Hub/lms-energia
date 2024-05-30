@@ -4,7 +4,21 @@ import TkSelect from "../forms/TkSelect";
 import { perDefinedProjectManagerRoleID } from "../../utils/Constants";
 import useSessionData from "../../utils/hooks/useSessionData";
 
-const tableSelectOptions = [{ label: "Leads", value: "leads" }];
+const tableSelectOptions = [
+  { label: "Leads", value: "leads" },
+  {
+    label: "Phone Call",
+    value: "phoneCall",
+  },
+  {
+    label: "Task",
+    value: "task",
+  },
+  {
+    label: "Event",
+    value: "event",
+  },
+];
 
 const TopBar = ({ onTableChange }) => {
   const sessionData = useSessionData();
