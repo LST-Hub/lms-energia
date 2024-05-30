@@ -7,9 +7,6 @@ import {
 export default async function handler(req, res) {
   try {
     if (req.method === "GET") {
-      // const query = `SELECT id,title,phone, status, contact AS contact_id, BUILTIN.DF( contact ) AS contact_text, company AS company_id, BUILTIN.DF( company ) AS company_text, timedevent FROM PhoneCall`;
-
-     
       const gettingAllPhoneCallActivityData =
         await getAllPhoneCallActivityRestletScriptDeploymentId();
       response({

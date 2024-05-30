@@ -155,6 +155,20 @@ const AllUsers = () => {
         },
       },
       {
+        Header: "Roles",
+        accessor: "custentity_lms_roles",
+        filterable: false,
+        Cell: (cellProps) => {
+          return (
+            <>
+              <div className="table-text">
+                {cellProps.value || <span> — </span>}
+              </div>
+            </>
+          );
+        },
+      },
+      {
         Header: "Email",
         accessor: "email",
         filterable: false,

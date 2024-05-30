@@ -211,6 +211,10 @@ const EditPhoneCall = ({ id, mode }) => {
       bodyfields: {
         title: formData.title,
         phone: formData.phone,
+        company: {
+          value: formData.company.value,
+          label: formData.company.text,
+        },
         status: {
           value: formData.status.value,
           label: formData.status.text,
@@ -222,10 +226,7 @@ const EditPhoneCall = ({ id, mode }) => {
         startdate: formatDateForAPI(formData.startdate),
         // completeddate: formatDateForAPI(formData.completeddate),
         message: formData.message,
-        company: {
-          value: formData.company.value,
-          label: formData.company.text,
-        },
+        
       },
       filters: {
         bodyfilters: [["internalid", "anyof", cid]],
