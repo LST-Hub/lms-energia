@@ -1,26 +1,27 @@
-import { useQuery } from "@tanstack/react-query";
 import React, { useEffect, useMemo, useState } from "react";
+import { TkCardHeader, TkCardTitle } from "../TkCard";
+import { CSVLink } from "react-csv";
+import TkIcon from "../TkIcon";
+import TkLoader from "../TkLoader";
+import TkTableContainer from "../TkTableContainer";
+import { useQuery } from "@tanstack/react-query";
 import { API_BASE_URL, RQ } from "../../utils/Constants";
 import tkFetch from "../../utils/fetch";
-import TkTableContainer from "../TkTableContainer";
-import { TkCardHeader, TkCardTitle } from "../TkCard";
-import TkIcon from "../TkIcon";
-import { CSVLink } from "react-csv";
-import TkLoader from "../TkLoader";
 
 const headers = [
-  { label: "Company Name", key: "companyname" },
-  { label: "Email", key: "email" },
-  { label: "Phone Number", key: "phone" },
-  { label: "Lead Channel", key: "custentity_lms_channel_lead" },
-  { label: "Created By", key: "custentity_lms_createdby" },
-  { label: "Primary Action", key: "custrecord_lms_primary_action" },
+  { label: "Title", key: "title" },
+  { label: "Status", key: "status" },
+  { label: "Start Date", key: "startdate" },
+  { label: "Start Time", key: "starttime" },
+  { label: "End Time", key: "endtime" },
+  { label: "Owner", key: "owner" },
+  { label: "Markdone", key: "markdone" },
 ];
 
-function LeadReport() {
+function Eventreport() {
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: [RQ.leadReport],
-    queryFn: tkFetch.get(`${API_BASE_URL}/reports/leads-report`),
+    queryKey: [RQ.phoneCallReport],
+    queryFn: tkFetch.get(`${API_BASE_URL}/reports/event-report`),
     // enabled: Number(accessLevel) >= perAccessIds.view,
   });
 
@@ -35,68 +36,80 @@ function LeadReport() {
   const column = useMemo(
     () => [
       {
-        Header: "Company Name",
-        accessor: "companyname",
+        Header: "Title",
+        accessor: "title",
         filterable: false,
         Cell: (cellProps) => {
           return (
             <>
-              <div>{cellProps.value === null ? <span>NA</span> : <span>{cellProps.value}</span>}</div>
+              <div>{<span>{cellProps.value}</span>}</div>
             </>
           );
         },
       },
       {
-        Header: "Email",
-        accessor: "email",
+        Header: "Status",
+        accessor: "status",
         filterable: false,
         Cell: (cellProps) => {
           return (
             <>
-              <div>{cellProps.value === null ? <span>NA</span> : <span>{cellProps.value}</span>}</div>
+              <div>{<span>{cellProps.value}</span>}</div>
             </>
           );
         },
       },
       {
-        Header: "Phone Number",
-        accessor: "phone",
+        Header: "Start Date",
+        accessor: "startdate",
         filterable: false,
         Cell: (cellProps) => {
           return (
             <>
-              <div>{cellProps.value === null ? <span>NA</span> : <span>{cellProps.value}</span>}</div>
+              <div>{<span>{cellProps.value}</span>}</div>
             </>
           );
         },
       },
       {
-        Header: "Lead Channel",
-        accessor: "custentity_lms_channel_lead",
+        Header: "Start Time",
+        accessor: "starttime",
         filterable: false,
         Cell: (cellProps) => {
           return (
             <>
-              <div>{cellProps.value === null ? <span>NA</span> : <span>{cellProps.value}</span>}</div>
+              <div>{<span>{cellProps.value}</span>}</div>
             </>
           );
         },
       },
       {
-        Header: "Created By",
-        accessor: "custentity_lms_createdby",
+        Header: "End Time",
+        accessor: "endtime",
         filterable: false,
         Cell: (cellProps) => {
           return (
             <>
-              <div>{cellProps.value === null ? <span>NA</span> : <span>{cellProps.value}</span>}</div>
+              <div>{cellProps.value === "" ? <span>-</span> : <span>{cellProps.value}</span>}</div>
             </>
           );
         },
       },
       {
-        Header: "Primary Action",
-        accessor: "custrecord_lms_primary_action",
+        Header: "Owner",
+        accessor: "owner",
+        filterable: false,
+        Cell: (cellProps) => {
+          return (
+            <>
+              <div>{cellProps.value === "" ? <span>-</span> : <span>{cellProps.value}</span>}</div>
+            </>
+          );
+        },
+      },
+      {
+        Header: "Markdone",
+        accessor: "markdone",
         filterable: false,
         Cell: (cellProps) => {
           return (
@@ -115,13 +128,13 @@ function LeadReport() {
       <TkCardHeader className="tk-card-header">
         <div className="d-flex align-items-center">
           <TkCardTitle className="mb-0 flex-grow-1">
-            <h3>Leads</h3>
+            <h3>Event</h3>
           </TkCardTitle>
           <div className="d-flex flex-shrink-0">
             <div>
               <CSVLink
                 data={csvData}
-                filename={"Leads.csv"}
+                filename={"Event.csv"}
                 headers={headers}
                 className={`btn btn-primary add-btn text-white ${data?.length === 0 || isLoading ? "disabled" : ""}`}
               >
@@ -146,4 +159,4 @@ function LeadReport() {
   );
 }
 
-export default LeadReport;
+export default Eventreport;
