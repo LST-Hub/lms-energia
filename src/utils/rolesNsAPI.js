@@ -15,7 +15,7 @@ const consumerSecretKey = process.env.CONSUMERSECRETKEY;
 const accessToken = process.env.ACCESSTOKEN;
 const accessSecretToken = process.env.ACCESSTOKENSECRETTOKEN;
 
-const getSalesManagerRoleRestletScriptDeploymentId = async (roleId, id) => {
+const getSalesManagerRoleRestletScriptDeploymentId = async (userId, roleId) => {
   try {
     const body = {
       resttype: "Search",
@@ -24,7 +24,7 @@ const getSalesManagerRoleRestletScriptDeploymentId = async (roleId, id) => {
         ["stage", "anyof", "LEAD"],
         "AND",
         [
-          ["custentity_lms_createdby", "anyof", id],
+          ["custentity_lms_createdby", "anyof", userId],
           "OR",
           ["custentity_lms_createdby.custentity_lms_roles", "anyof", roleId],
         ],
@@ -213,7 +213,7 @@ const getSalesManagerRoleRestletScriptDeploymentId = async (roleId, id) => {
 //   }
 // };
 
-const getSalesSupportRoleRestletScriptDeploymentId = async ( id) => {
+const getSalesSupportRoleRestletScriptDeploymentId = async (userId) => {
   try {
     const body = {
       resttype: "Search",
@@ -221,7 +221,7 @@ const getSalesSupportRoleRestletScriptDeploymentId = async ( id) => {
       filters: [
         ["stage", "anyof", "LEAD"],
         "AND",
-        ["custentity_lms_createdby", "anyof", id],
+        ["custentity_lms_createdby", "anyof", userId],
       ],
       columns: [
         "internalid",

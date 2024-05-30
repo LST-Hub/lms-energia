@@ -61,12 +61,10 @@ import DeleteModal from "../../utils/DeleteModal";
 import TkEditCardHeader from "../TkEditCardHeader";
 
 const schema = Yup.object({
-  title: Yup.string().required("Subject is required")
-  .max(
-    MaxNameLength,
-    `Subject must be at most ${MaxNameLength} characters.`
-  )
-  .nullable(),
+  title: Yup.string()
+    .required("Subject is required")
+    .max(MaxNameLength, `Subject must be at most ${MaxNameLength} characters.`)
+    .nullable(),
   phone: Yup.string()
     .nullable()
     .required("Phone number is required")
@@ -78,7 +76,7 @@ const schema = Yup.object({
   company: Yup.object().required("Lead name is required").nullable(),
 
   status: Yup.object().required("Status is required").nullable(),
-  organizer: Yup.object().required("Organizer is required").nullable(),
+  assigned: Yup.object().required("Organizer is required").nullable(),
   startDate: Yup.date().required("Date is required").nullable(),
   message: Yup.string()
     .nullable()
@@ -109,7 +107,6 @@ const EditPhoneCall = ({ id, mode }) => {
   const [allSalesTeamData, setAllSalesTeamData] = useState([{}]);
   const [allLeadNameListData, setAllLeadNameListData] = useState([{}]);
   const [deleteModal, setDeleteModal] = useState(false);
-
 
   const queryClient = useQueryClient();
 
@@ -165,8 +162,8 @@ const EditPhoneCall = ({ id, mode }) => {
 
     if (leadListData) {
       setAllLeadNameListData(
-        leadListData?.items?.map((leadListType) => ({
-          label: leadListType.companyname,
+        leadListData?.list?.map((leadListType) => ({
+          label: leadListType?.values?.companyname,
           // value: leadListType.id,
         }))
       );
@@ -183,6 +180,7 @@ const EditPhoneCall = ({ id, mode }) => {
   useEffect(() => {
     if (isFetched && Array.isArray(data) && data.length > 0) {
       const { bodyValues } = data[0];
+      console.log("bodyValues", bodyValues);
       setValue("title", bodyValues?.title);
       setValue("phone", bodyValues?.phone);
       setValue("company", {
@@ -193,9 +191,9 @@ const EditPhoneCall = ({ id, mode }) => {
         value: bodyValues?.status[0].text,
         label: bodyValues?.status[0].value,
       });
-      setValue("organizer", {
-        value: bodyValues?.organizer?.text,
-        label: bodyValues?.organizer?.value,
+      setValue("assigned", {
+        value: bodyValues?.assigned[0].text,
+        label: bodyValues?.assigned[0].text,
       });
       setValue("startDate", bodyValues?.startdate);
       setValue("message", bodyValues?.message);
@@ -217,9 +215,9 @@ const EditPhoneCall = ({ id, mode }) => {
           value: formData.status.value,
           label: formData.status.text,
         },
-        organizer: {
-          value: formData.organizer.value,
-          label: formData.organizer.text,
+        assigned: {
+          value: formData.assigned.value,
+          label: formData.assigned.text,
         },
         startdate: formatDateForAPI(formData.startdate),
         // completeddate: formatDateForAPI(formData.completeddate),
@@ -233,16 +231,15 @@ const EditPhoneCall = ({ id, mode }) => {
         bodyfilters: [["internalid", "anyof", cid]],
       },
     };
-    phoneCallActivityPost.mutate(apiData,
-      {
-        onSuccess: (data) => {
-          TkToastSuccess("Phone Call Updated Successfully");
-          router.push(`${urls.phoneCall}`);
-        },
-        onError: (error) => {
-          TkToastError("error while creating Lead", error);
-        },
-      });
+    phoneCallActivityPost.mutate(apiData, {
+      onSuccess: (data) => {
+        TkToastSuccess("Phone Call Updated Successfully");
+        router.push(`${urls.phoneCall}`);
+      },
+      onError: (error) => {
+        TkToastError("error while creating Lead", error);
+      },
+    });
   };
 
   const deletePhoneCall = useMutation({
@@ -254,19 +251,18 @@ const EditPhoneCall = ({ id, mode }) => {
     const apiData = {
       id: cid,
     };
-    deletePhoneCall.mutate(apiData,
-      {
-        onSuccess: (data) => {
-          TkToastSuccess("Phone Call Deleted Successfully");
-          queryClient.invalidateQueries({
-            queryKey: [RQ.allLeads, cid],
-          });
-          router.push(`${urls.phoneCall}`);
-        },
-        onError: (error) => {
-          TkToastError("error while deleting Phone Call", error);
-        },
-      });
+    deletePhoneCall.mutate(apiData, {
+      onSuccess: (data) => {
+        TkToastSuccess("Phone Call Deleted Successfully");
+        queryClient.invalidateQueries({
+          queryKey: [RQ.allLeads, cid],
+        });
+        router.push(`${urls.phoneCall}`);
+      },
+      onError: (error) => {
+        TkToastError("error while deleting Phone Call", error);
+      },
+    });
   };
 
   const toggleDeleteModelPopup = () => {
@@ -337,6 +333,7 @@ const EditPhoneCall = ({ id, mode }) => {
                                       //     { label: "Portals", value: "Portals" },
                                       //   ]}
                                       options={allLeadNameListData}
+                                      loading={leadListLoading}
                                       placeholder="Select Lead Name"
                                       requiredStarOnLabel={true}
                                       disabled={viewMode}
@@ -380,11 +377,11 @@ const EditPhoneCall = ({ id, mode }) => {
                                       id="status"
                                       options={[
                                         {
-                                          label: "Completed",
+                                          label: "COMPLETED",
                                           value: "Completed",
                                         },
                                         {
-                                          label: "Scheduled",
+                                          label: "SCHEDULED",
                                           value: "Scheduled",
                                         },
                                       ]}
@@ -403,14 +400,14 @@ const EditPhoneCall = ({ id, mode }) => {
 
                               <TkCol lg={4}>
                                 <Controller
-                                  name="organizer"
+                                  name="assigned"
                                   control={control}
                                   render={({ field }) => (
                                     <TkSelect
                                       {...field}
                                       labelName="Organizer"
-                                      labelId={"organizer"}
-                                      id="organizer"
+                                      labelId={"assigned"}
+                                      id="assigned"
                                       options={allSalesTeamData}
                                       placeholder="Select Organizer"
                                       requiredStarOnLabel={true}
@@ -418,9 +415,9 @@ const EditPhoneCall = ({ id, mode }) => {
                                     />
                                   )}
                                 />
-                                {errors.organizer && (
+                                {errors.assigned && (
                                   <FormErrorText>
-                                    {errors.organizer.message}
+                                    {errors.assigned.message}
                                   </FormErrorText>
                                 )}
                               </TkCol>
@@ -497,27 +494,30 @@ const EditPhoneCall = ({ id, mode }) => {
                                 )}
                               </TkCol>
                               <div className="d-flex mt-4 space-childern">
-                              {editMode ? (
-                                <div className="ms-auto" id="update-form-btns">
-                                  <TkButton
-                                    color="secondary"
-                                    onClick={() => {
-                                      router.push(`${urls.phoneCall}`);
-                                    }}
-                                    type="button"
-                                    disabled={phoneCallActivityPost.isLoading}
+                                {editMode ? (
+                                  <div
+                                    className="ms-auto"
+                                    id="update-form-btns"
                                   >
-                                    Cancel
-                                  </TkButton>{" "}
-                                  <TkButton
-                                    type="submit"
-                                    color="primary"
-                                    loading={phoneCallActivityPost.isLoading}
-                                  >
-                                    Update
-                                  </TkButton>
-                                </div>
-                                  ) : null}
+                                    <TkButton
+                                      color="secondary"
+                                      onClick={() => {
+                                        router.push(`${urls.phoneCall}`);
+                                      }}
+                                      type="button"
+                                      disabled={phoneCallActivityPost.isLoading}
+                                    >
+                                      Cancel
+                                    </TkButton>{" "}
+                                    <TkButton
+                                      type="submit"
+                                      color="primary"
+                                      loading={phoneCallActivityPost.isLoading}
+                                    >
+                                      Update
+                                    </TkButton>
+                                  </div>
+                                ) : null}
                               </div>
                             </TkRow>
                           </div>

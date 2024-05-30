@@ -17,7 +17,7 @@ export default async function handler(req, res) {
           "title",
           "phone",
           "status",
-          "organizer",
+          "assigned",
           "startdate",
           "message",
           "company",

@@ -77,6 +77,8 @@ const EditTask = ({ id, userData, mode }) => {
   const accessLevel = useUserAccessLevel(permissionTypeIds.users);
   const [isTaskk, setIsTaskk] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
+  const [allLeadNameListData, setAllLeadNameListData] = useState([{}]);
+
 
   const {
     control,
@@ -101,10 +103,15 @@ const EditTask = ({ id, userData, mode }) => {
         queryKey: [RQ.allSalesTeam],
         queryFn: tkFetch.get(`${API_BASE_URL}/sales-team`),
       },
+
+      {
+        queryKey: [RQ.allLeadName],
+        queryFn: tkFetch.get(`${API_BASE_URL}/lead-name`),
+      },
     ],
   });
 
-  const [salesTeam] = results;
+  const [salesTeam, leadList] = results;
   const {
     data: salesTeamData,
     isLoading: salesTeamLoading,
@@ -112,12 +119,24 @@ const EditTask = ({ id, userData, mode }) => {
     error: salesTeamError,
   } = salesTeam;
 
+  const {
+    data: leadNameListData,
+    isLoading: leadListLoading,
+    isError: leadListIsError,
+    error: leadListError,
+  } = leadList;
+
   useEffect(() => {
     if (salesTeamIsError) {
       console.log("salesTeamIsError", salesTeamError);
       TkToastError(salesTeamError.message);
     }
-  }, [salesTeamIsError, salesTeamError]);
+
+    if (leadListIsError) {
+      console.log("leadListIsError", leadListError);
+      TkToastError(leadListError.message);
+    }
+  }, [salesTeamIsError, salesTeamError,leadListIsError,leadListError]);
 
   useEffect(() => {
     if (salesTeamData) {
@@ -290,21 +309,11 @@ const EditTask = ({ id, userData, mode }) => {
                                       labelName="Lead Name"
                                       labelId={"_status"}
                                       id="company"
-                                      options={[
-                                        { label: "Email", value: "Email" },
-                                        {
-                                          label: "Direct Call",
-                                          value: "Direct Call",
-                                        },
-                                        {
-                                          label: "Social Media",
-                                          value: "Social Media",
-                                        },
-                                        { label: "Portals", value: "Portals" },
-                                      ]}
+                                      options={allLeadNameListData}
                                       placeholder="Select Lead Name"
                                       requiredStarOnLabel={true}
                                       disabled={viewMode}
+                                      loading={leadListLoading}
                                     />
                                   )}
                                 />

@@ -54,7 +54,7 @@ const schema = Yup.object({
   company: Yup.object().required("Lead name is required").nullable(),
 
   status: Yup.object().required("Status is required").nullable(),
-  organizer: Yup.object().required("Organizer is required").nullable(),
+  assigned: Yup.object().required("Organizer is required").nullable(),
   startDate: Yup.date().required("Date is required").nullable(),
   message: Yup.string()
     .nullable()
@@ -86,7 +86,7 @@ const AddPhoneCallActivty = ({ value }) => {
       },
 
       {
-        queryKey: [RQ.allSalesTeam],
+        queryKey: [RQ.allLeadName],
         queryFn: tkFetch.get(`${API_BASE_URL}/lead-name`),
       },
     ],
@@ -152,22 +152,23 @@ const AddPhoneCallActivty = ({ value }) => {
       recordtype: "phonecall",
       bodyfields: {
         title: formData.title,
+        company: {
+          value: formData.company.value,
+          label: formData.company.text,
+        },
         phone: formData.phone,
         status: {
           value: formData.status.value,
           label: formData.status.text,
         },
-        organizer: {
-          value: formData.organizer.value,
-          label: formData.organizer.text,
+        assigned: {
+          value: formData.assigned.value,
+          label: formData.assigned.text,
         },
         startdate: formatDateForAPI(formData.startdate),
         // completeddate: formatDateForAPI(formData.completeddate),
-        message: formData.message,
-        company: {
-          value: formData.company.value,
-          label: formData.company.text,
-        },
+        message: formData.message
+        
       },
     };
     phoneCallActivityPost.mutate(apiData,
@@ -223,12 +224,6 @@ const AddPhoneCallActivty = ({ value }) => {
                                     labelName="Lead Name"
                                     labelId={"company"}
                                     id="company"
-                                    // options={[
-                                    //     { label: "Email", value: "Email" },
-                                    //     { label: "Direct Call", value: "Direct Call" },
-                                    //     { label: "Social Media", value: "Social Media" },
-                                    //     { label: "Portals", value: "Portals" },
-                                    //   ]}
                                     options={allLeadNameListData}
                                     placeholder="Select Lead Name"
                                     requiredStarOnLabel={true}
@@ -272,11 +267,11 @@ const AddPhoneCallActivty = ({ value }) => {
                                     id="status"
                                     options={[
                                         {
-                                          label: "Completed",
+                                          label: "COMPLETED",
                                           value: "Completed",
                                         },
                                         {
-                                          label: "Scheduled",
+                                          label: "SCHEDULED",
                                           value: "Scheduled",
                                         },
                                       ]}
@@ -294,14 +289,14 @@ const AddPhoneCallActivty = ({ value }) => {
 
                             <TkCol lg={4}>
                               <Controller
-                                name="organizer"
+                                name="assigned"
                                 control={control}
                                 render={({ field }) => (
                                   <TkSelect
                                     {...field}
                                     labelName="Organizer"
-                                    labelId={"organizer"}
-                                    id="organizer"
+                                    labelId={"assigned"}
+                                    id="assigned"
                                     options={allSalesTeamData}
                                     placeholder="Select Organizer"
                                     requiredStarOnLabel={true}
@@ -309,9 +304,9 @@ const AddPhoneCallActivty = ({ value }) => {
                                   />
                                 )}
                               />
-                              {errors.organizer && (
+                              {errors.assigned && (
                                 <FormErrorText>
-                                  {errors.organizer.message}
+                                  {errors.assigned.message}
                                 </FormErrorText>
                               )}
                             </TkCol>

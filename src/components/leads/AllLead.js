@@ -40,52 +40,31 @@ const AllLead = ({ mounted }) => {
   const searchOnUI = isSearchonUI([]);
   const [role, setRole] = useState(null);
   const [userId, setUserId] = useState(null);
+  const [isSalesManager, setIsSalesManager] = useState(false);
+  const [leadData, setLeadData] = useState([]);
+  const [isDataLoading, setIsDataLoading] = useState(false);
 
-  // get local sotorage for id 
+  // get local sotorage for id
 
-
- 
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.localStorage) {
-      const storedRole = window.localStorage.getItem('role');
+    if (typeof window !== "undefined" && window.localStorage) {
+      const storedRole = window.localStorage.getItem("role");
       setRole(storedRole);
+      if (storedRole === "2") {
+        setIsSalesManager(true);
+      } else {
+        setIsSalesManager(false);
+      }
       // console.log('storedRole', storedRole);
     }
-    if (typeof window !== 'undefined' && window.localStorage) {
-      const storedId = window.localStorage.getItem('internalid');
+    if (typeof window !== "undefined" && window.localStorage) {
+      const storedId = window.localStorage.getItem("internalid");
       setUserId(storedId);
-      console.log('storedId', storedId);
+      console.log("storedId", storedId);
     }
   }, []);
+
  
-
-  
-  const {
-    data: leadData,
-    isLoading: isBackLoading,
-    isError,
-    error,
-  } = useQuery({
-    queryKey: [RQ.allLeads],
-    // queryFn: tkFetch.get(`${API_BASE_URL}/lead`),
-    // queryFn: tkFetch.get(`${API_BASE_URL}/lead?role=${role}`),
-    queryFn: tkFetch.get(`${API_BASE_URL}/lead${role ? `?role=${role}` : ''}`),
-    enabled: true,
-  });
-  // const results = useQueries({
-  //   queries: [
-  //     {
-  //       queryKey: [RQ.allPrimarySubsidiary],
-  //       queryFn: tkFetch.get(`${API_BASE_URL}/salesmanager-roles`),
-  //     },
-
-  //     {
-  //       queryKey: [RQ.allEnquiryBy],
-  //       queryFn: tkFetch.get(`${API_BASE_URL}/salesrepresentative-salessupportrole`),
-  //     },
-      
-  //   ],
-  // });
 
   const {
     data: salesManagerRolesData,
@@ -94,10 +73,11 @@ const AllLead = ({ mounted }) => {
     error: salesManagerError,
   } = useQuery({
     queryKey: [RQ.salesManager],
-    queryFn: tkFetch.get(`${API_BASE_URL}/salesmanager-roles?id=${userId}`),
-    enabled: !!userId
+    queryFn: tkFetch.get(
+      `${API_BASE_URL}/salesmanager-roles?userId=${userId}&roleId=${role}`
+    ),
+    enabled: !!userId && !!role && isSalesManager,
   });
-  console.log('salesManagerRolesData', salesManagerRolesData);
 
   const {
     data: salesSupportRolesData,
@@ -107,12 +87,10 @@ const AllLead = ({ mounted }) => {
   } = useQuery({
     queryKey: [RQ.salesSupport],
     queryFn: tkFetch.get(
-      `${API_BASE_URL}/salesrepresentative-salessupportrole?id=${userId}`
+      `${API_BASE_URL}/salesrepresentative-salessupportrole?userId=${userId}}`
     ),
-    enabled: !!userId
-
+    enabled: !!role && !isSalesManager,
   });
-  
 
   const updateSearchText = (e) => {
     if (e.target.value.length >= minSearchLength) {
@@ -121,6 +99,14 @@ const AllLead = ({ mounted }) => {
       setSearchText("");
     }
   };
+
+  useEffect(() => {
+    if (isSalesManager) {
+      setLeadData(salesManagerRolesData);
+    } else {
+      setLeadData(salesSupportRolesData);
+    }
+  }, [salesManagerRolesData, salesSupportRolesData, isSalesManager]);
 
   const [isLead, setIsLead] = useState(false);
 
@@ -166,16 +152,13 @@ const AllLead = ({ mounted }) => {
       },
       {
         Header: "Lead Channel",
-        accessor: "custentity_lms_channel_lead_name",
+        accessor: "custentity_lms_channel_lead",
         Cell: (cellProps) => {
-          // console.log("cellProps", cellProps);
+          // console.log("cellProps", cellProps.list[0].values.custentity_lms_channel_lead_name[0].text);
           return (
             <>
               <div className="table-text">
-                <span>
-                  {cellProps.value || <span> — </span>}
-                </span>
-                {/* {cellProps.value || <span> — </span>} */}
+                <span>{cellProps.value}</span>
               </div>
             </>
           );
@@ -187,9 +170,7 @@ const AllLead = ({ mounted }) => {
         Cell: (cellProps) => {
           return (
             <>
-              <div className="table-text">
-                {cellProps.value}
-              </div>
+              <div className="table-text">{cellProps.value}</div>
             </>
           );
         },
@@ -223,26 +204,22 @@ const AllLead = ({ mounted }) => {
       },
       {
         Header: "Client Type",
-        accessor: "custentity_lms_client_type_name",
+        accessor: "custentity_lms_client_type",
         Cell: (cellProps) => {
           return (
             <>
-              <div className="table-text">
-                {cellProps.value }
-              </div>
+              <div className="table-text">{cellProps.value}</div>
             </>
           );
         },
       },
       {
         Header: "Enquiry By",
-        accessor: "custentity_lms_enquiryby_name",
+        accessor: "custentity_lms_enquiryby",
         Cell: (cellProps) => {
           return (
             <>
-              <div className="table-text">
-                {cellProps.value}
-              </div>
+              <div className="table-text">{cellProps.value}</div>
             </>
           );
         },
@@ -260,8 +237,8 @@ const AllLead = ({ mounted }) => {
               <TkCardBody className="pt-0">
                 <TkTableContainer
                   columns={columns}
-                  data={leadData?.items || []}
-                  loading={isBackLoading}
+                  data={leadData || []}
+                  loading={isDataLoading}
                   Toolbar={
                     <TableToolBar
                       onSearchChange={searchDebounce(
