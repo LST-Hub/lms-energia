@@ -43,7 +43,7 @@ import useUserAccessLevel from "../../utils/hooks/useUserAccessLevel";
 import { perAccessIds, permissionTypeIds } from "../../../DBConstants";
 import axios from "axios";
 import TkDate from "../forms/TkDate";
-import { convertTimeToSec, convertToTimeFotTimeSheet } from "../../utils/time";
+import { convertTimeToSec, convertToTime, convertToTimeFotTimeSheet } from "../../utils/time";
 import DeleteModal from "../../utils/DeleteModal";
 import TkLoader from "../TkLoader";
 import TkEditCardHeader from "../TkEditCardHeader";
@@ -184,8 +184,8 @@ const EditEvent = ({ id, userData, mode }) => {
         // },
 
         startdate: formatDateForAPI(formData.startdate),
-        starttime: formData.starttime,
-        endtime: formData.endtime,
+        starttime: convertToTime(formData.starttime),
+        endtime: convertToTime(formData.endtime),
         message: formData.message,
       },
       filters: {
@@ -470,18 +470,19 @@ const EditEvent = ({ id, userData, mode }) => {
                                     ) {
                                       return "Invalid Start Time";
                                     }
-                                    if (
-                                      convertTimeToSec(value) > 86400 ||
-                                      value > 24
-                                    ) {
-                                      return "Start Time should be less than 24 hours";
-                                    }
+                                    // if (
+                                    //   convertTimeToSec(value) > 86400 ||
+                                    //   value > 24
+                                    // ) {
+                                    //   return "Start Time should be less than 24 hours";
+                                    // }
                                   },
                                 })}
                                 onBlur={(e) => {
                                   setValue(
                                     `starttime`,
-                                    convertToTimeFotTimeSheet(e.target.value)
+                                    convertToTime(e.target.value)
+                                    (e.target.value)
                                   );
                                 }}
                                 labelName="Start Time (HH:MM)"
@@ -510,18 +511,18 @@ const EditEvent = ({ id, userData, mode }) => {
                                     ) {
                                       return "Invalid End Time";
                                     }
-                                    if (
-                                      convertTimeToSec(value) > 86400 ||
-                                      value > 24
-                                    ) {
-                                      return "End Time should be less than 24 hours";
-                                    }
+                                    // if (
+                                    //   convertTimeToSec(value) > 86400 ||
+                                    //   value > 24
+                                    // ) {
+                                    //   return "End Time should be less than 24 hours";
+                                    // }
                                   },
                                 })}
                                 onBlur={(e) => {
                                   setValue(
                                     `endtime`,
-                                    convertToTimeFotTimeSheet(e.target.value)
+                                    convertToTime(e.target.value)
                                   );
                                 }}
                                 labelName="End Time (HH:MM)"

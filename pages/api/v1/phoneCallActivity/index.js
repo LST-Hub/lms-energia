@@ -7,9 +7,11 @@ import {
 export default async function handler(req, res) {
   try {
     if (req.method === "GET") {
-      const query = `SELECT id,title,phone, status, contact AS contact_id, BUILTIN.DF( contact ) AS contact_text, company AS company_id, BUILTIN.DF( company ) AS company_text, timedevent FROM PhoneCall`;
+      // const query = `SELECT id,title,phone, status, contact AS contact_id, BUILTIN.DF( contact ) AS contact_text, company AS company_id, BUILTIN.DF( company ) AS company_text, timedevent FROM PhoneCall`;
+
+     
       const gettingAllPhoneCallActivityData =
-        await getAllPhoneCallActivityRestletScriptDeploymentId(query);
+        await getAllPhoneCallActivityRestletScriptDeploymentId();
       response({
         res,
         success: true,
@@ -17,7 +19,6 @@ export default async function handler(req, res) {
         data: gettingAllPhoneCallActivityData,
         message: "All Phone Call Activity Fetched successfully",
       });
-      
     } else if (req.method === "POST") {
       try {
         const phoneCallActivityData =

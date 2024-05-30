@@ -4,7 +4,13 @@ import Link from "next/link";
 import TkInput from "../forms/TkInput";
 import { TkCardBody } from "../TkCard";
 import TkRow, { TkCol } from "../TkRow";
-import { API_BASE_URL, RQ, filterFields, minSearchLength, urls } from "../../utils/Constants";
+import {
+  API_BASE_URL,
+  RQ,
+  filterFields,
+  minSearchLength,
+  urls,
+} from "../../utils/Constants";
 import { isSearchonUI, searchDebounce } from "../../utils/utilsFunctions";
 import TkSelect from "../forms/TkSelect";
 import TkTableContainer from "../TkTableContainer";
@@ -13,8 +19,6 @@ import TkButton from "../TkButton";
 import TkIcon from "../TkIcon";
 import { useQuery } from "@tanstack/react-query";
 import tkFetch from "../../utils/fetch";
-
-
 
 function TableToolBar() {
   return (
@@ -108,7 +112,7 @@ const AllTask = () => {
       },
       {
         Header: "Title",
-        accessor: "title",
+        accessor: "values.title",
         Cell: (cellProps) => {
           return (
             <>
@@ -119,15 +123,15 @@ const AllTask = () => {
           );
         },
       },
-     
+
       {
         Header: "Status",
-        accessor: "status",
+        accessor: "status[0].text",
         Cell: (cellProps) => {
           return (
             <>
               <div className="table-text">
-                {cellProps.value || <span> — </span>}
+                {cellProps?.row.original.values.status[0].text}
               </div>
             </>
           );
@@ -135,12 +139,12 @@ const AllTask = () => {
       },
       {
         Header: "Priority",
-        accessor: "priority",
+        accessor: "priority[0].text",
         Cell: (cellProps) => {
           return (
             <>
               <div className="table-text">
-                {cellProps.value || <span> — </span>}
+                {cellProps?.row.original.values.priority[0].text}
               </div>
             </>
           );
@@ -148,7 +152,7 @@ const AllTask = () => {
       },
       {
         Header: "Date",
-        accessor: "startdate",
+        accessor: "values.startdate",
         Cell: (cellProps) => {
           return (
             <>
@@ -172,7 +176,7 @@ const AllTask = () => {
               <TkCardBody className="pt-0">
                 <TkTableContainer
                   columns={columns}
-                  data={taskActivityData?.items || []}
+                  data={taskActivityData?.list || []}
                   Toolbar={
                     <TableToolBar
                       onSearchChange={searchDebounce(

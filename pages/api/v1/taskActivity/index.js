@@ -4,9 +4,9 @@ import {  getAllTaskActivityRestletScriptDeploymentId, postCreateTaskActivityRes
 export default async function handler(req, res) {
   try {
     if (req.method === "GET") {
-      const query = `SELECT id,title,status,priority,startdate,accessLevel FROM Task`;
+      // const query = `SELECT id,title,status,priority,startdate,accessLevel FROM Task`;
       const gettingAllTaskActivityData =
-        await getAllTaskActivityRestletScriptDeploymentId(query);
+        await getAllTaskActivityRestletScriptDeploymentId();
       response({
         res,
         success: true,

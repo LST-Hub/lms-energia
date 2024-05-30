@@ -33,7 +33,7 @@ import useUserAccessLevel from "../../utils/hooks/useUserAccessLevel";
 import { permissionTypeIds } from "../../../DBConstants";
 import TkDate from "../forms/TkDate";
 import { formatDateForAPI } from "../../utils/date";
-import { convertTimeToSec, convertToTimeFotTimeSheet } from "../../utils/time";
+import { convertTimeToSec, convertToTime, convertToTimeFotTimeSheet } from "../../utils/time";
 
 const schema = Yup.object({
   title: Yup.string().required("Subject is required").nullable(),
@@ -126,8 +126,8 @@ const AddEvent = ({ value }) => {
         // },
 
         startdate: formatDateForAPI(formData.startdate),
-        starttime: formData.starttime,
-        endtime: formData.endtime,
+        starttime: convertToTime(formData.starttime),
+        endtime: convertToTime(formData.endtime),
         message: formData.message,
       },
     };
@@ -358,18 +358,18 @@ const AddEvent = ({ value }) => {
                                     ) {
                                       return "Invalid Start Time";
                                     }
-                                    if (
-                                      convertTimeToSec(value) > 86400 ||
-                                      value > 24
-                                    ) {
-                                      return "Start Time should be less than 24 hours";
-                                    }
+                                    // if (
+                                    //   convertTimeToSec(value) > 86400 ||
+                                    //   value > 24
+                                    // ) {
+                                    //   return "Start Time should be less than 24 hours";
+                                    // }
                                   },
                                 })}
                                 onBlur={(e) => {
                                   setValue(
                                     `starttime`,
-                                    convertToTimeFotTimeSheet(e.target.value)
+                                    convertToTime(e.target.value)
                                   );
                                 }}
                                 labelName="Start Time (HH:MM)"
@@ -397,18 +397,18 @@ const AddEvent = ({ value }) => {
                                     ) {
                                       return "Invalid End Time";
                                     }
-                                    if (
-                                      convertTimeToSec(value) > 86400 ||
-                                      value > 24
-                                    ) {
-                                      return "End Time should be less than 24 hours";
-                                    }
+                                    // if (
+                                    //   convertTimeToSec(value) > 86400 ||
+                                    //   value > 24
+                                    // ) {
+                                    //   return "End Time should be less than 24 hours";
+                                    // }
                                   },
                                 })}
                                 onBlur={(e) => {
                                   setValue(
                                     `endtime`,
-                                    convertToTimeFotTimeSheet(e.target.value)
+                                    convertToTime(e.target.value)
                                   );
                                 }}
                                 labelName="End Time (HH:MM)"

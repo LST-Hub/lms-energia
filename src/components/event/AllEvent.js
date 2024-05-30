@@ -108,7 +108,7 @@ const AllEvent = () => {
       },
       {
         Header: "Title",
-        accessor: "title",
+        accessor: "values.title",
         Cell: (cellProps) => {
           return (
             <>
@@ -122,12 +122,12 @@ const AllEvent = () => {
      
       {
         Header: "Status",
-        accessor: "status",
+        accessor: "status[0].text",
         Cell: (cellProps) => {
           return (
             <>
               <div className="table-text">
-                {cellProps.value || <span> — </span>}
+                {cellProps?.row.original.values.status[0].text}
               </div>
             </>
           );
@@ -136,7 +136,7 @@ const AllEvent = () => {
       
       {
         Header: "Date",
-        accessor: "startdate",
+        accessor: "values.startdate",
         Cell: (cellProps) => {
           return (
             <>
@@ -161,7 +161,7 @@ const AllEvent = () => {
               <TkCardBody className="pt-0">
                 <TkTableContainer
                   columns={columns}
-                  data={eventActivityData?.items || []}
+                  data={eventActivityData?.list || []}
 
                   Toolbar={
                     <TableToolBar

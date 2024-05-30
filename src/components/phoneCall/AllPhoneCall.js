@@ -68,7 +68,6 @@ const AllPhoneCall = () => {
     enabled: true,
   });
 
-  console.log("phoneCallActivityData", phoneCallActivityData);
   const columns = useMemo(
     () => [
      
@@ -109,7 +108,7 @@ const AllPhoneCall = () => {
       },
       {
         Header: "Title",
-        accessor: "title",
+        accessor: "values.title",
         Cell: (cellProps) => {
           return (
             <>
@@ -123,12 +122,12 @@ const AllPhoneCall = () => {
      
       {
         Header: "Status",
-        accessor: "status",
+        accessor: "status[0].text",
         Cell: (cellProps) => {
           return (
             <>
               <div className="table-text">
-                {cellProps.value || <span> — </span>}
+                {cellProps?.row.original.values.status[0].text}
               </div>
             </>
           );
@@ -162,9 +161,8 @@ const AllPhoneCall = () => {
       // },
       {
         Header: "Phone Number",
-        accessor: "phone",
+        accessor: "values.phone",
         Cell: (cellProps) => {
-          console.log("cellProps", cellProps);
           return (
             <>
               <div className="table-text">
@@ -187,7 +185,7 @@ const AllPhoneCall = () => {
               <TkCardBody className="pt-0">
                 <TkTableContainer
                   columns={columns}
-                  data={phoneCallActivityData?.items || []}
+                  data={phoneCallActivityData?.list || []}
                   loading = {isBackLoading}
                   Toolbar={
                     <TableToolBar

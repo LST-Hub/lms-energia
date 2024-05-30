@@ -1,18 +1,22 @@
 import response from "../../../../lib/response";
-import { getAllEventActivityRestletScriptDeploymentId, postCreateEventActivityRestletScriptDeploymentId, postCreatePhoneCallActivityRestletScriptDeploymentId } from "../../../../src/utils/createActivityNsAPI";
+import {
+  getAllEventActivityRestletScriptDeploymentId,
+  postCreateEventActivityRestletScriptDeploymentId,
+  postCreatePhoneCallActivityRestletScriptDeploymentId,
+} from "../../../../src/utils/createActivityNsAPI";
 
 export default async function handler(req, res) {
   try {
     if (req.method === "GET") {
-      const query = `SELECT id,title,status,startdate,accessLevel FROM CalendarEvent`;
+      // const query = `SELECT id,title,status,startdate,accessLevel FROM CalendarEvent`;
       const gettingAllEventActivityData =
-        await getAllEventActivityRestletScriptDeploymentId(query);
+        await getAllEventActivityRestletScriptDeploymentId();
       response({
         res,
         success: true,
         status_code: 200,
         data: gettingAllEventActivityData,
-        message: "All Phone Call Activity Fetched successfully",
+        message: "All Event Activity Fetched successfully",
       });
     } else if (req.method === "POST") {
       try {
