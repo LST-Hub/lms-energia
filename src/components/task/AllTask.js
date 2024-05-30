@@ -126,7 +126,7 @@ const AllTask = () => {
 
       {
         Header: "Status",
-        accessor: "status[0].text",
+        accessor: "status.text",
         Cell: (cellProps) => {
           return (
             <>
@@ -139,7 +139,7 @@ const AllTask = () => {
       },
       {
         Header: "Priority",
-        accessor: "priority[0].text",
+        accessor: "priority.text",
         Cell: (cellProps) => {
           return (
             <>

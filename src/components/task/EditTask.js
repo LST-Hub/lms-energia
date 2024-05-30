@@ -147,7 +147,15 @@ const EditTask = ({ id, userData, mode }) => {
         }))
       );
     }
-  }, [salesTeamData]);
+
+    if (leadNameListData) {
+      setAllLeadNameListData(
+        leadNameListData?.list?.map((leadListType) => ({
+          label: leadListType?.values?.companyname,
+        }))
+      );
+    }
+  }, [salesTeamData, leadNameListData]);
 
   const { data, isLoading, isFetched, isError, error } = useQuery({
     queryKey: [RQ.lead, tid],
@@ -289,7 +297,7 @@ const EditTask = ({ id, userData, mode }) => {
                                   type="text"
                                   labelName="Title"
                                   placeholder="Enter Title"
-                                  requiredStarOnLabel={true}
+                                  requiredStarOnLabel={editMode}
                                   disabled={viewMode}
                                 />
                                 {errors.title && (
@@ -311,7 +319,7 @@ const EditTask = ({ id, userData, mode }) => {
                                       id="company"
                                       options={allLeadNameListData}
                                       placeholder="Select Lead Name"
-                                      requiredStarOnLabel={true}
+                                      requiredStarOnLabel={editMode}
                                       disabled={viewMode}
                                       loading={leadListLoading}
                                     />
@@ -379,7 +387,7 @@ const EditTask = ({ id, userData, mode }) => {
                                         { label: "Low", value: "3" },
                                       ]}
                                       placeholder="Select Proirity"
-                                      requiredStarOnLabel={true}
+                                      requiredStarOnLabel={editMode}
                                       disabled={viewMode}
                                     />
                                   )}
@@ -412,7 +420,7 @@ const EditTask = ({ id, userData, mode }) => {
                                         },
                                       ]}
                                       placeholder="Select Type"
-                                      requiredStarOnLabel={true}
+                                      requiredStarOnLabel={editMode}
                                       disabled={viewMode}
                                     />
                                   )}
@@ -441,7 +449,7 @@ const EditTask = ({ id, userData, mode }) => {
                                         altInput: true,
                                         dateFormat: "d M, Y",
                                       }}
-                                      requiredStarOnLabel={true}
+                                      requiredStarOnLabel={editMode}
                                       disabled={viewMode}
                                     />
                                   )}
@@ -470,7 +478,7 @@ const EditTask = ({ id, userData, mode }) => {
                                         altInput: true,
                                         dateFormat: "d M, Y",
                                       }}
-                                      requiredStarOnLabel={true}
+                                      requiredStarOnLabel={editMode}
                                       disabled={viewMode}
                                     />
                                   )}

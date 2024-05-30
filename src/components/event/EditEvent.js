@@ -299,7 +299,7 @@ const EditEvent = ({ id, userData, mode }) => {
                                 type="text"
                                 labelName="Title"
                                 placeholder="Enter Title"
-                                requiredStarOnLabel={true}
+                                requiredStarOnLabel={editMode}
                                 disabled={viewMode}
                               />
                               {errors.title && (
@@ -321,7 +321,7 @@ const EditEvent = ({ id, userData, mode }) => {
                                     id="company"
                                     options={allLeadNameListData}
                                     placeholder="Select Lead Name"
-                                    requiredStarOnLabel={true}
+                                    requiredStarOnLabel={editMode}
                                     disabled={viewMode}
                                     loading={leadListLoading}
 
@@ -390,7 +390,7 @@ const EditEvent = ({ id, userData, mode }) => {
                                       },
                                     ]}
                                     placeholder="Select Type"
-                                    requiredStarOnLabel={true}
+                                    requiredStarOnLabel={editMode}
                                     disabled={viewMode}
                                   />
                                 )}
@@ -472,7 +472,7 @@ const EditEvent = ({ id, userData, mode }) => {
                                       altInput: true,
                                       dateFormat: "d M, Y",
                                     }}
-                                    requiredStarOnLabel={true}
+                                    requiredStarOnLabel={editMode}
                                     disabled={viewMode}
                                   />
                                 )}
@@ -515,7 +515,7 @@ const EditEvent = ({ id, userData, mode }) => {
                                 name="starttime"
                                 type="text"
                                 placeholder="Enter Start Time"
-                                requiredStarOnLabel={true}
+                                requiredStarOnLabel={editMode}
                                 disabled={viewMode}
                               />
                               {errors.starttime && (
@@ -555,7 +555,7 @@ const EditEvent = ({ id, userData, mode }) => {
                                 name="endtime"
                                 type="text"
                                 placeholder="Enter End Time"
-                                requiredStarOnLabel={true}
+                                requiredStarOnLabel={editMode}
                                 disabled={viewMode}
                               />
                               {errors.endtime && (

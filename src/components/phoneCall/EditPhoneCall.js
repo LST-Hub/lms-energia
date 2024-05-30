@@ -118,7 +118,7 @@ const EditPhoneCall = ({ id, mode }) => {
       },
 
       {
-        queryKey: [RQ.allSalesTeam],
+        queryKey: [RQ.allLeadName],
         queryFn: tkFetch.get(`${API_BASE_URL}/lead-name`),
       },
     ],
@@ -164,12 +164,10 @@ const EditPhoneCall = ({ id, mode }) => {
       setAllLeadNameListData(
         leadListData?.list?.map((leadListType) => ({
           label: leadListType?.values?.companyname,
-          // value: leadListType.id,
         }))
       );
     }
   }, [salesTeamData, leadListData]);
-  // console.log("allLeadNameListData", allLeadNameListData?.items[0].companyname);
 
   const { data, isLoading, isFetched, isError, error } = useQuery({
     queryKey: [RQ.lead, cid],
@@ -180,7 +178,6 @@ const EditPhoneCall = ({ id, mode }) => {
   useEffect(() => {
     if (isFetched && Array.isArray(data) && data.length > 0) {
       const { bodyValues } = data[0];
-      console.log("bodyValues", bodyValues);
       setValue("title", bodyValues?.title);
       setValue("phone", bodyValues?.phone);
       setValue("company", {
@@ -205,6 +202,7 @@ const EditPhoneCall = ({ id, mode }) => {
   });
 
   const onSubmit = (formData) => {
+
     const apiData = {
       resttype: "Update",
       recordtype: "phonecall",
@@ -213,7 +211,7 @@ const EditPhoneCall = ({ id, mode }) => {
         phone: formData.phone,
         company: {
           value: formData.company.value,
-          label: formData.company.text,
+          label: formData.company.value,
         },
         status: {
           value: formData.status.value,
@@ -308,7 +306,7 @@ const EditPhoneCall = ({ id, mode }) => {
                                   type="text"
                                   labelName="Subject"
                                   placeholder="Enter Subject"
-                                  requiredStarOnLabel={true}
+                                  requiredStarOnLabel={editMode}
                                   disabled={viewMode}
                                 />
                                 {errors.title && (
@@ -336,7 +334,7 @@ const EditPhoneCall = ({ id, mode }) => {
                                       options={allLeadNameListData}
                                       loading={leadListLoading}
                                       placeholder="Select Lead Name"
-                                      requiredStarOnLabel={true}
+                                      requiredStarOnLabel={editMode}
                                       disabled={viewMode}
                                     />
                                   )}
@@ -356,7 +354,7 @@ const EditPhoneCall = ({ id, mode }) => {
                                   type="text"
                                   labelName="Phone Number"
                                   placeholder="Enter Phone Number"
-                                  requiredStarOnLabel="true"
+                                  requiredStarOnLabel={editMode}
                                   disabled={viewMode}
                                 />
                                 {errors.phone && (
@@ -387,7 +385,7 @@ const EditPhoneCall = ({ id, mode }) => {
                                         },
                                       ]}
                                       placeholder="Select Type"
-                                      requiredStarOnLabel={true}
+                                      requiredStarOnLabel={editMode}
                                       disabled={viewMode}
                                     />
                                   )}
@@ -411,7 +409,7 @@ const EditPhoneCall = ({ id, mode }) => {
                                       id="assigned"
                                       options={allSalesTeamData}
                                       placeholder="Select Organizer"
-                                      requiredStarOnLabel={true}
+                                      requiredStarOnLabel={editMode}
                                       disabled={viewMode}
                                     />
                                   )}
@@ -440,7 +438,7 @@ const EditPhoneCall = ({ id, mode }) => {
                                         altInput: true,
                                         dateFormat: "d M, Y",
                                       }}
-                                      requiredStarOnLabel={true}
+                                      requiredStarOnLabel={editMode}
                                       disabled={viewMode}
                                     />
                                   )}

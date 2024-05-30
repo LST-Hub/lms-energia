@@ -133,13 +133,10 @@ const AddPhoneCallActivty = ({ value }) => {
       setAllLeadNameListData(
         leadNameListData?.list?.map((leadListType) => ({
           label: leadListType?.values?.companyname,
-          // value: leadListType.id,
         }))
       );
     }
   }, [salesTeamData,leadNameListData]);
-  // console.log("allLeadNameListData", allLeadNameListData?.items[0].companyname);
-  // console.log("leadNameListData", leadNameListData?.list);
 
 
   const phoneCallActivityPost = useMutation({
@@ -166,7 +163,6 @@ const AddPhoneCallActivty = ({ value }) => {
           label: formData.assigned.text,
         },
         startdate: formatDateForAPI(formData.startdate),
-        // completeddate: formatDateForAPI(formData.completeddate),
         message: formData.message
         
       },

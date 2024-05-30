@@ -243,6 +243,8 @@ function DirectCall({ selectedButton }) {
   const [fullAddress, setFullAddress] = useState(false);
   const [allNurturStatusData, setAllNurturStatusData] = useState([{}]);
   const [selectedEnquiryBy, setSelectedEnquiryBy] = useState(false);
+  const[selectedLeadStatus, setSelectedLeadStatus] = useState(false);
+
 
   const results = useQueries({
     queries: [
@@ -3155,6 +3157,15 @@ function DirectCall({ selectedButton }) {
                                   placeholder="Select Lead Status"
                                   requiredStarOnLabel={true}
                                   options={allNurturStatusData}
+                                  onChange={(e) => {
+                                    field.onChange(e);
+                                    if (e.value === "6") {
+                                      // replace "value_for_other" with the actual value for "Other"
+                                      setSelectedLeadStatus(true);
+                                    } else {
+                                      setSelectedLeadStatus(false);
+                                    }
+                                  }}
                                 />
                               )}
                             />
@@ -3167,12 +3178,19 @@ function DirectCall({ selectedButton }) {
 
                           <TkCol lg={4}>
                             <TkInput
-                              {...register("custrecord_lms_lead_unqualifie")}
+                               {...register(
+                                "custrecord_lms_lead_unqualifie", {
+                                  required: selectedLeadStatus
+                                  ? "Reason is required"
+                                  : false
+                                }
+                              )}
                               id="custrecord_lms_lead_unqualifie"
                               name="custrecord_lms_lead_unqualifie"
                               labelName="Reason if unqualified lead"
                               type="textarea"
                               placeholder="Enter Reason"
+                              requiredStarOnLabel = {selectedLeadStatus}
                             />
                             {errors.custrecord_lms_lead_unqualifie && (
                               <FormErrorText>

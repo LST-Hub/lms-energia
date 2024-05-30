@@ -281,6 +281,7 @@ function EditLead({ id, mode }) {
   const [directCallId, setDirectCallId] = useState(null);
   const [newAddress, setNewAddress] = useState(null);
   const [selectedEnquiryBy, setSelectedEnquiryBy] = useState(false);
+  const [selectedLeadStatus, setSelectedLeadStatus] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
   const [requirementDetailsId, setRequirementDetailsId] = useState(null);
   const [locationDetailsId, setLocationDetailsId] = useState(null);
@@ -959,8 +960,6 @@ function EditLead({ id, mode }) {
       setValue("custentity_lms_address", bodyValues?.custentity_lms_address),
         // set the line level fields
 
-       
-
         // lineValues?.calls?.forEach((detail, index) => {
         //   setValue(`subject[${index}]`, detail.title);
         //   setValue(`phone[${index}]`, detail.phone);
@@ -978,34 +977,34 @@ function EditLead({ id, mode }) {
         //   setValue(`startdate[${index}]`, detail.startdate);
         // });
 
-       
-
         setValue(
           `custrecord_lms_region`,
           lineValues?.recmachcustrecord_lms_lead_assigning[0]
-          ?.custrecord_lms_region[0]
-          ?
-         {
+            ?.custrecord_lms_region[0]
+            ? {
                 label:
                   lineValues?.recmachcustrecord_lms_lead_assigning[0]
                     ?.custrecord_lms_region[0]?.text,
                 value:
                   lineValues?.recmachcustrecord_lms_lead_assigning[0]
                     ?.custrecord_lms_region[0]?.value,
-              } : null
+              }
+            : null
         );
 
       setValue(
         `custrecord_lms_sales_team_name`,
-        lineValues?.recmachcustrecord_lms_lead_assigning[0]?.custrecord_lms_sales_team_name[0] 
-        ?
-        {
+        lineValues?.recmachcustrecord_lms_lead_assigning[0]
+          ?.custrecord_lms_sales_team_name[0]
+          ? {
               label:
-                lineValues?.recmachcustrecord_lms_lead_assigning[0]?.custrecord_lms_sales_team_name[0]?.text,
+                lineValues?.recmachcustrecord_lms_lead_assigning[0]
+                  ?.custrecord_lms_sales_team_name[0]?.text,
               value:
-                lineValues?.recmachcustrecord_lms_lead_assigning[0]?.custrecord_lms_sales_team_name[0]?.value,
+                lineValues?.recmachcustrecord_lms_lead_assigning[0]
+                  ?.custrecord_lms_sales_team_name[0]?.value,
             }
-         : null
+          : null
       );
 
       setValue(
@@ -1165,7 +1164,7 @@ function EditLead({ id, mode }) {
         }
       );
     }
-  }, [ data, isFetched, setValue]);
+  }, [data, isFetched, setValue]);
 
   useEffect(() => {
     const now = new Date();
@@ -1523,8 +1522,6 @@ function EditLead({ id, mode }) {
   }, [data]);
 
   const onSubmit = (formData) => {
-
-    
     if (!editMode) return;
 
     const apiData = {
@@ -1758,8 +1755,8 @@ function EditLead({ id, mode }) {
         },
       },
     };
-    console.log('apiData', apiData)
-    console.log('requirementDetailsId', requirementDetailsId)
+    console.log("apiData", apiData);
+    console.log("requirementDetailsId", requirementDetailsId);
     leadPost.mutate(apiData, {
       onSuccess: (data) => {
         // setRows(data.updatedRequirementDetails);
@@ -1773,8 +1770,6 @@ function EditLead({ id, mode }) {
       },
     });
   };
-
- 
 
   const requirementDetailsColumns = [
     {
@@ -2025,7 +2020,7 @@ function EditLead({ id, mode }) {
       },
     },
   ];
-  
+
   const locationDetailsColumns = [
     {
       Header: "Location",
@@ -3297,7 +3292,10 @@ function EditLead({ id, mode }) {
                                         <Controller
                                           name="custentity_lms_name_of_the_platform_dd"
                                           control={control}
-                                          rules={{ required: "Name Of Platform is required" }}
+                                          rules={{
+                                            required:
+                                              "Name Of Platform is required",
+                                          }}
                                           render={({ field }) => (
                                             <TkSelect
                                               {...field}
@@ -3305,7 +3303,7 @@ function EditLead({ id, mode }) {
                                               name="custentity_lms_name_of_the_platform_dd"
                                               labelName="Name Of Platform"
                                               placeholder="Select Platform"
-                                              requiredStarOnLabel="true"
+                                              requiredStarOnLabel={editMode}
                                               // options={allPlatformData}
                                               // loading={leadPlatformLoading}
                                             />
@@ -3326,7 +3324,10 @@ function EditLead({ id, mode }) {
                                         <Controller
                                           name="custentity_lms_campaign_name"
                                           control={control}
-                                          rules={{ required: "Campaign Name is required" }}
+                                          rules={{
+                                            required:
+                                              "Campaign Name is required",
+                                          }}
                                           render={({ field }) => (
                                             <TkSelect
                                               {...field}
@@ -3334,7 +3335,7 @@ function EditLead({ id, mode }) {
                                               name="custentity_lms_campaign_name"
                                               labelName="Campaign Name"
                                               placeholder="Enter Campaign Name"
-                                              requiredStarOnLabel="true"
+                                              requiredStarOnLabel={editMode}
                                               // options={allCampaignData}
                                               // loading={leadCampaignLoading}
                                             />
@@ -3355,7 +3356,10 @@ function EditLead({ id, mode }) {
                                         <Controller
                                           name="custentity_lms_visit_update"
                                           control={control}
-                                          rules={{ required: "Visit Update is required" }}
+                                          rules={{
+                                            required:
+                                              "Visit Update is required",
+                                          }}
                                           render={({ field }) => (
                                             <TkSelect
                                               {...field}
@@ -3364,7 +3368,7 @@ function EditLead({ id, mode }) {
                                               labelName="Visit Update"
                                               options={allVisitUpdateData}
                                               placeholder="Select Visit Update"
-                                              requiredStarOnLabel="true"
+                                              requiredStarOnLabel={editMode}
                                               loading={leadVisitUpdateLoading}
                                             />
                                           )}
@@ -3389,7 +3393,10 @@ function EditLead({ id, mode }) {
                                         <Controller
                                           name="custentity_lms_name_of_the_portal_dd"
                                           control={control}
-                                          rules={{ required: "Name Of Portal is required" }}
+                                          rules={{
+                                            required:
+                                              "Name Of Portal is required",
+                                          }}
                                           render={({ field }) => (
                                             <TkSelect
                                               {...field}
@@ -3397,7 +3404,7 @@ function EditLead({ id, mode }) {
                                               name="custentity_lms_name_of_the_portal_dd"
                                               labelName="Name Of Portal"
                                               placeholder="Select Portal"
-                                              requiredStarOnLabel="true"
+                                              requiredStarOnLabel={editMode}
                                               options={allPortalData}
                                               loading={leadPortalLoading}
                                             />
@@ -3445,7 +3452,7 @@ function EditLead({ id, mode }) {
                                                 setSelectedDate(e);
                                                 setAllDurations({});
                                               }}
-                                              requiredStarOnLabel={true}
+                                              requiredStarOnLabel={editMode}
                                             />
                                           )}
                                         />
@@ -3485,8 +3492,10 @@ function EditLead({ id, mode }) {
                                               },
                                             }
                                           )}
-                                          rules={{ required: "Time Of Visit is required" }}
-
+                                          rules={{
+                                            required:
+                                              "Time Of Visit is required",
+                                          }}
                                           onBlur={(e) => {
                                             setValue(
                                               `custentity_lms_time_of_visit`,
@@ -3500,7 +3509,7 @@ function EditLead({ id, mode }) {
                                           name="custentity_lms_time_of_visit"
                                           type="text"
                                           placeholder="Select Visit Time"
-                                          requiredStarOnLabel={true}
+                                          requiredStarOnLabel={editMode}
                                         />
                                         {errors.custentity_lms_time_of_visit && (
                                           <FormErrorText>
@@ -3517,7 +3526,10 @@ function EditLead({ id, mode }) {
                                         <Controller
                                           name="custentity_lms_visit_update"
                                           control={control}
-                                          rules={{ required: "Visit Update is required" }}
+                                          rules={{
+                                            required:
+                                              "Visit Update is required",
+                                          }}
                                           render={({ field }) => (
                                             <TkSelect
                                               {...field}
@@ -3526,7 +3538,7 @@ function EditLead({ id, mode }) {
                                               labelName="Visit Update"
                                               options={allVisitUpdateData}
                                               placeholder="Select Visit Update"
-                                              requiredStarOnLabel="true"
+                                              requiredStarOnLabel={editMode}
                                               loading={leadVisitUpdateLoading}
                                             />
                                           )}
@@ -4263,6 +4275,15 @@ function EditLead({ id, mode }) {
                                               placeholder="Select Lead Update"
                                               disabled={viewMode}
                                               options={allNurturStatusData}
+                                              onChange={(e) => {
+                                                field.onChange(e);
+                                                if (e.value === "6") {
+                                                  // replace "value_for_other" with the actual value for "Other"
+                                                  setSelectedLeadStatus(true);
+                                                } else {
+                                                  setSelectedLeadStatus(false);
+                                                }
+                                              }}
                                             />
                                           )}
                                         />
@@ -4279,7 +4300,12 @@ function EditLead({ id, mode }) {
                                       <TkCol lg={4}>
                                         <TkInput
                                           {...register(
-                                            "custrecord_lms_lead_unqualifie"
+                                            "custrecord_lms_lead_unqualifie",
+                                            {
+                                              required: selectedLeadStatus
+                                                ? "Reason is required"
+                                                : false,
+                                            }
                                           )}
                                           id="custrecord_lms_lead_unqualifie"
                                           name="custrecord_lms_lead_unqualifie"
@@ -4287,6 +4313,9 @@ function EditLead({ id, mode }) {
                                           type="textarea"
                                           placeholder="Enter Reason"
                                           disabled={viewMode}
+                                          requiredStarOnLabel={
+                                            selectedLeadStatus
+                                          }
                                         />
                                         {errors.custrecord_lms_lead_unqualifie && (
                                           <FormErrorText>
