@@ -15,7 +15,7 @@ import TkTableContainer from "../TkTableContainer";
 import { useMemo } from "react";
 import TkButton from "../TkButton";
 import TkIcon from "../TkIcon";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQueries, useQuery } from "@tanstack/react-query";
 import tkFetch from "../../utils/fetch";
 
 function TableToolBar() {
@@ -38,16 +38,58 @@ function TableToolBar() {
 
 const AllLead = ({ mounted }) => {
   const searchOnUI = isSearchonUI([]);
+  const [role, setRole] = useState(null);
+  const [userId, setUserId] = useState(null);
+  const [isSalesManager, setIsSalesManager] = useState(false);
+  const [leadData, setLeadData] = useState([]);
+  const [isDataLoading, setIsDataLoading] = useState(false);
+
+  // get local sotorage for id
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.localStorage) {
+      const storedRole = window.localStorage.getItem("role");
+      setRole(storedRole);
+      if (storedRole === "2") {
+        setIsSalesManager(true);
+      } else {
+        setIsSalesManager(false);
+      }
+      // console.log('storedRole', storedRole);
+    }
+    if (typeof window !== "undefined" && window.localStorage) {
+      const storedId = window.localStorage.getItem("internalid");
+      setUserId(storedId);
+      console.log("storedId", storedId);
+    }
+  }, []);
+
+ 
 
   const {
-    data: leadData,
-    isLoading: isBackLoading,
-    isError,
-    error,
+    data: salesManagerRolesData,
+    isLoading: isSalesManagerRolesLoading,
+    isError: issalesManagerRolesError,
+    error: salesManagerError,
   } = useQuery({
-    queryKey: [RQ.allLeads],
-    queryFn: tkFetch.get(`${API_BASE_URL}/lead`),
-    enabled: true,
+    queryKey: [RQ.salesManager],
+    queryFn: tkFetch.get(
+      `${API_BASE_URL}/salesmanager-roles?userId=${userId}&roleId=${role}`
+    ),
+    enabled: !!userId && !!role && isSalesManager,
+  });
+
+  const {
+    data: salesSupportRolesData,
+    isLoading: isSalesSupportRolesLoading,
+    isError: issalesSupportRolesError,
+    error: salesSupportError,
+  } = useQuery({
+    queryKey: [RQ.salesSupport],
+    queryFn: tkFetch.get(
+      `${API_BASE_URL}/salesrepresentative-salessupportrole?userId=${userId}}`
+    ),
+    enabled: !!role && !isSalesManager,
   });
 
   const updateSearchText = (e) => {
@@ -57,6 +99,14 @@ const AllLead = ({ mounted }) => {
       setSearchText("");
     }
   };
+
+  useEffect(() => {
+    if (isSalesManager) {
+      setLeadData(salesManagerRolesData);
+    } else {
+      setLeadData(salesSupportRolesData);
+    }
+  }, [salesManagerRolesData, salesSupportRolesData, isSalesManager]);
 
   const [isLead, setIsLead] = useState(false);
 
@@ -100,16 +150,27 @@ const AllLead = ({ mounted }) => {
           );
         },
       },
-
+      {
+        Header: "Lead Channel",
+        accessor: "custentity_lms_channel_lead",
+        Cell: (cellProps) => {
+          // console.log("cellProps", cellProps.list[0].values.custentity_lms_channel_lead_name[0].text);
+          return (
+            <>
+              <div className="table-text">
+                <span>{cellProps.value}</span>
+              </div>
+            </>
+          );
+        },
+      },
       {
         Header: "Name",
         accessor: "companyname",
         Cell: (cellProps) => {
           return (
             <>
-              <div className="table-text">
-                {cellProps.value || <span> — </span>}
-              </div>
+              <div className="table-text">{cellProps.value}</div>
             </>
           );
         },
@@ -143,26 +204,22 @@ const AllLead = ({ mounted }) => {
       },
       {
         Header: "Client Type",
-        accessor: "custentity_lms_client_type_name",
+        accessor: "custentity_lms_client_type",
         Cell: (cellProps) => {
           return (
             <>
-              <div className="table-text">
-                {cellProps.value || <span> — </span>}
-              </div>
+              <div className="table-text">{cellProps.value}</div>
             </>
           );
         },
       },
       {
         Header: "Enquiry By",
-        accessor: "custentity_lms_enquiryby_name",
+        accessor: "custentity_lms_enquiryby",
         Cell: (cellProps) => {
           return (
             <>
-              <div className="table-text">
-                {cellProps.value || <span> — </span>}
-              </div>
+              <div className="table-text">{cellProps.value}</div>
             </>
           );
         },
@@ -180,8 +237,8 @@ const AllLead = ({ mounted }) => {
               <TkCardBody className="pt-0">
                 <TkTableContainer
                   columns={columns}
-                  data={leadData?.items || []}
-                  loading={isBackLoading}
+                  data={leadData || []}
+                  loading={isDataLoading}
                   Toolbar={
                     <TableToolBar
                       onSearchChange={searchDebounce(

@@ -4,51 +4,17 @@ import Link from "next/link";
 import TkInput from "../forms/TkInput";
 import { TkCardBody } from "../TkCard";
 import TkRow, { TkCol } from "../TkRow";
-import { filterFields, minSearchLength, urls } from "../../utils/Constants";
+import { API_BASE_URL, RQ, filterFields, minSearchLength, urls } from "../../utils/Constants";
 import { isSearchonUI, searchDebounce } from "../../utils/utilsFunctions";
 import TkSelect from "../forms/TkSelect";
 import TkTableContainer from "../TkTableContainer";
 import { useMemo } from "react";
 import TkButton from "../TkButton";
 import TkIcon from "../TkIcon";
+import { useQuery } from "@tanstack/react-query";
+import tkFetch from "../../utils/fetch";
 
-const usersData = [
-  {
-    id: 1,
-    lead: "John Doe",
-    phoneNumber: "1234567890",
-    status: "Qualified",
-    date: "2021-09-01",
-  },
-  {
-    id: 2,
-    lead: "Steave Smith",
-    phoneNumber: "1234567890",
-    status: "Unqualified",
-    date: "2021-09-01",
-  },
-  {
-    id: 3,
-    lead: "Will Smith",
-    phoneNumber: "1234567890",
-    status: "Qualified",
-    date: "2021-09-01",
-  },
-  {
-    id: 4,
-    lead: "Adam Miller",
-    phoneNumber: "1234567890",
-    status: "Unqualified",
-    date: "2021-09-01",
-  },
-  {
-    id: 5,
-    lead: "Tom Riddle",
-    phoneNumber: "1234567890",
-    status: "Qualified",
-    date: "2021-09-01",
-  },
-];
+
 
 function TableToolBar() {
   return (
@@ -78,7 +44,6 @@ function TableToolBar() {
 
 const AllPhoneCall = () => {
   const searchOnUI = isSearchonUI([]);
-
   const updateSearchText = (e) => {
     if (e.target.value.length >= minSearchLength) {
       setSearchText(e.target.value);
@@ -86,12 +51,22 @@ const AllPhoneCall = () => {
       setSearchText("");
     }
   };
-
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
   }, []);
+  
+  const {
+    data: phoneCallActivityData,
+    isLoading: isBackLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: [RQ.allPhoneCall],
+    queryFn: tkFetch.get(`${API_BASE_URL}/phoneCallActivity`),
+    enabled: true,
+  });
 
   const columns = useMemo(
     () => [
@@ -132,35 +107,69 @@ const AllPhoneCall = () => {
         },
       },
       {
-        Header: "Lead",
-        accessor: "lead",
-        filterable: false,
+        Header: "Title",
+        accessor: "values.title",
         Cell: (cellProps) => {
-          return <div className="table-text">{cellProps.value}</div>;
+          return (
+            <>
+              <div className="table-text">
+                {cellProps.value || <span> — </span>}
+              </div>
+            </>
+          );
         },
       },
-      {
-        Header: "Phone Number",
-        accessor: "phoneNumber",
-        filterable: false,
-        Cell: (cellProps) => {
-          return <div className="table-text">{cellProps.value}</div>;
-        },
-      },
+     
       {
         Header: "Status",
-        accessor: "status",
-        filterable: false,
+        accessor: "status[0].text",
         Cell: (cellProps) => {
-          return <div className="table-text">{cellProps.value}</div>;
+          return (
+            <>
+              <div className="table-text">
+                {cellProps?.row.original.values.status[0].text}
+              </div>
+            </>
+          );
         },
       },
+      // {
+      //   Header: "Organizer",
+      //   accessor: "assigned",
+      //   Cell: (cellProps) => {
+      //     return (
+      //       <>
+      //         <div className="table-text">
+      //           {cellProps.value || <span> — </span>}
+      //         </div>
+      //       </>
+      //     );
+      //   },
+      // },
+      // {
+      //   Header: "Date",
+      //   accessor: "startdate",
+      //   Cell: (cellProps) => {
+      //     return (
+      //       <>
+      //         <div className="table-text">
+      //           {cellProps.value || <span> — </span>}
+      //         </div>
+      //       </>
+      //     );
+      //   },
+      // },
       {
-        Header: "Date",
-        accessor: "date",
-        filterable: false,
+        Header: "Phone Number",
+        accessor: "values.phone",
         Cell: (cellProps) => {
-          return <div className="table-text">{cellProps.value}</div>;
+          return (
+            <>
+              <div className="table-text">
+                {cellProps.value || <span> — </span>}
+              </div>
+            </>
+          );
         },
       },
     ],
@@ -176,7 +185,8 @@ const AllPhoneCall = () => {
               <TkCardBody className="pt-0">
                 <TkTableContainer
                   columns={columns}
-                  data={usersData || []}
+                  data={phoneCallActivityData?.list || []}
+                  loading = {isBackLoading}
                   Toolbar={
                     <TableToolBar
                       onSearchChange={searchDebounce(

@@ -7,311 +7,413 @@ import TkCard, { TkCardHeader, TkCardBody, TkCardTitle } from "../TkCard";
 import TkContainer from "../TkContainer";
 import TkRow, { TkCol } from "../TkRow";
 import TkForm from "../forms/TkForm";
-import TkLabel from "../forms/TkLabel";
-import TkCheckBox from "../forms/TkCheckBox";
-import avatar1 from "/public/images/users/avatar-1.jpg";
 import { TkToastError, TkToastSuccess } from "../TkToastContainer";
 import { useForm, Controller } from "react-hook-form";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import FormErrorText, { FormErrorBox } from "../forms/ErrorText";
 import {
-  MinNameLength,
-  MaxNameLength,
-  bigInpuMaxLength,
-  MinEmailLength,
-  MaxEmailLength,
-  MaxPhoneNumberLength,
-  smallInputMaxLength,
-  employeeTypes,
-  genderTypes,
   API_BASE_URL,
   RQ,
   modes,
   PUBLIC_BUCKET_BASE_URL,
   urls,
   countries,
-  reminderTypes,
-  remindersTypes,
-  stausTypes,
-  customFormTypes,
-  leadTypes,
+  organizerTypes,
+  statusTypes,
+  MaxPhoneNumberLength,
+  MinEmailLength,
+  MaxEmailLength,
+  bigInpuMaxLength,
 } from "../../utils/Constants";
 import tkFetch from "../../utils/fetch";
-import { useMutation, useQueries } from "@tanstack/react-query";
+import { useMutation, useQueries, useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import useUserAccessLevel from "../../utils/hooks/useUserAccessLevel";
-import { perAccessIds, permissionTypeIds } from "../../../DBConstants";
-import hasPageModeAccess from "../../utils/hasPageAccess";
-import TkAccessDenied from "../TkAccessDenied";
-import Image from "next/image";
-import axios from "axios";
+import { permissionTypeIds } from "../../../DBConstants";
 import TkDate from "../forms/TkDate";
+import { formatDateForAPI } from "../../utils/date";
 import { convertTimeToSec, convertToTimeFotTimeSheet } from "../../utils/time";
-import { Nav, NavItem, NavLink } from "reactstrap";
-import classNames from "classnames";
 
 const schema = Yup.object({
-  firstName: Yup.string()
-    .min(
-      MinNameLength,
-      `First name should have at least ${MinNameLength} character.`
-    )
+  title: Yup.string().required("Subject is required").nullable(),
+  company: Yup.object().required("Lead name is required").nullable(),
+  // assigned: Yup.object().required("Organizer is required").nullable(),
+  priority: Yup.object().required("Proirity is required").nullable(),
+  status: Yup.object().required("Status is required").nullable(),
+  startDate: Yup.string().required("Date is required").nullable(),
+  dueDate: Yup.string().required("Due date is required").nullable(),
+  message: Yup.string()
+    .nullable()
     .max(
-      MaxNameLength,
-      `First name should have at most ${MaxNameLength} characters.`
-    )
-    .required("First name is required"),
-
-  lastName: Yup.string()
-    .min(
-      MinNameLength,
-      `Last name should have at least ${MinNameLength} character.`
-    )
-    .max(
-      MaxNameLength,
-      `Last name should have at most ${MaxNameLength} characters.`
-    )
-    .required("Last name is required"),
-
-  email: Yup.string()
-    .email("Email must be valid.")
-    .min(
-      MinEmailLength,
-      `Email should have at least ${MinEmailLength} characters.`
-    )
-    .max(
-      MaxEmailLength,
-      `Email should have at most ${MaxEmailLength} characters.`
-    )
-    .required("Email is required"),
-
-  designation: Yup.string().max(
-    smallInputMaxLength,
-    `Designation should have at most ${smallInputMaxLength} characters.`
-  ),
-  // .required("Designation is required"),
-
-  phoneNumber: Yup.string()
-    .matches(/^[0-9+() -]*$/, "Phone number must be number.")
-    .max(
-      MaxPhoneNumberLength,
-      `Phone number must be at most   ${MaxPhoneNumberLength} numbers.`
-    )
-    .nullable(),
-
-  // we romoved supervisor field mandatory from here as for admin role supervisor field id not mandatory, we checked it manually
-  supervisor: Yup.object().nullable(),
-  department: Yup.object().nullable(),
-  type: Yup.object().nullable(),
-  role: Yup.object().nullable().required("Select Role"),
-  // zip code an dphoen number has same max lenght so we are usign it here
-  zipCode: Yup.string()
-    .test("test-name", "Zip code does not accept characters", function (value) {
-      if (value === "" || value === null || value === undefined) {
-        return true;
-      } else {
-        return value.trim().match(/^[0-9]*$/, "Zip code must be numeric.");
-      }
-    })
-    .max(
-      MaxPhoneNumberLength,
-      `Zip code must be at most   ${MaxPhoneNumberLength} numbers.`
-    )
-    .nullable(),
-  country: Yup.object().nullable(),
-  gender: Yup.object().nullable(),
-  notes: Yup.string().max(
-    bigInpuMaxLength,
-    `Notes must be at most ${bigInpuMaxLength} characters.`
-  ),
-  workCalendar: Yup.object().nullable().required("Select Work Calendar"),
-  canBePM: Yup.boolean(),
-  canBeSupervisor: Yup.boolean(),
-  address: Yup.string().max(
-    bigInpuMaxLength,
-    `Address must be at most ${bigInpuMaxLength} characters.`
-  ),
+      bigInpuMaxLength,
+      `Message must be at most ${bigInpuMaxLength} characters.`
+    ),
 }).required();
 
-const AddTask = () => {
+const AddTask = ({ value }) => {
   const router = useRouter();
-  const accessLevel = useUserAccessLevel(permissionTypeIds.users);
-  const [isTaskk, setIsTaskk] = useState(false);
-
-  useEffect(() => {
-    setIsTaskk(true);
-  }, []);
-
   const {
     control,
     register,
-    handleSubmit,
-    getValues,
     setValue,
-    setError,
+    handleSubmit,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
   });
+  const [allSalesTeamData, setAllSalesTeamData] = useState([{}]);
+  const [allLeadNameListData, setAllLeadNameListData] = useState([{}]);
+
+  const results = useQueries({
+    queries: [
+      {
+        queryKey: [RQ.allSalesTeam],
+        queryFn: tkFetch.get(`${API_BASE_URL}/sales-team`),
+      },
+
+      {
+        queryKey: [RQ.allLeadName],
+        queryFn: tkFetch.get(`${API_BASE_URL}/lead-name`),
+      },
+    ],
+  });
+
+  const [salesTeam,leadList] = results;
+  const {
+    data: salesTeamData,
+    isLoading: salesTeamLoading,
+    isError: salesTeamIsError,
+    error: salesTeamError,
+  } = salesTeam;
+
+  const {
+    data: leadNameListData,
+    isLoading: leadListLoading,
+    isError: leadListIsError,
+    error: leadListError,
+  } = leadList;
+
+  useEffect(() => {
+    if (salesTeamIsError) {
+      console.log("salesTeamIsError", salesTeamError);
+      TkToastError(salesTeamError.message);
+    }
+
+    if (leadListIsError) {
+      console.log("leadListIsError", leadListError);
+      TkToastError(leadListError.message);
+    }
+  }, [salesTeamIsError, salesTeamError,leadListIsError,leadListError]);
+
+  useEffect(() => {
+    if (salesTeamData) {
+      setAllSalesTeamData(
+        salesTeamData?.items?.map((salesTeamType) => ({
+          label: salesTeamType.firstname,
+          value: salesTeamType.entityid,
+        }))
+      );
+    }
+  }, [salesTeamData]);
+
+  const taskActivityPost = useMutation({
+    mutationFn: tkFetch.post(`${API_BASE_URL}/taskActivity`),
+  });
+
+  const onSubmit = (formData) => {
+    const apiData = {
+      resttype: "Add",
+      recordtype: "task",
+      bodyfields: {
+        title: formData.title,
+        company: {
+          value: formData.company.value,
+          label: formData.company.text,
+        },
+        // assigned: {
+        //   value: formData.assigned.value,
+        //   label: formData.assigned.text,
+        // },
+        priority: {
+          value: formData.priority.value,
+          label: formData.priority.text,
+        },
+        status: {
+          value: formData.status.value,
+          label: formData.status.text,
+        },
+        // startdate: formatDateForAPI(formData.startdate),
+        dueDate: formatDateForAPI(formData.dueDate),
+        message: formData.message,
+      },
+    };
+    taskActivityPost.mutate(apiData,
+      {
+        onSuccess: (data) => {
+          TkToastSuccess("Task Created Successfully");
+          router.push(`${urls.taskk}`);
+        },
+        onError: (error) => {
+          TkToastError("error while creating Lead", error);
+        },
+      });
+  };
 
   return (
     <>
-      {isTaskk && (
+      <div>
         <div>
-          <TkRow className="mt-3">
-            <TkCol>
-              <TkCardHeader tag="h5" className="mb-4">
-                <h4>Primary Information</h4>
-              </TkCardHeader>
-              <div>
-                <TkRow className="g-3">
-                  <TkCol lg={4}>
-                    <Controller
-                      name="lead"
-                      control={control}
-                      render={({ field }) => (
-                        <TkSelect
-                          {...field}
-                          labelName="Lead"
-                          labelId={"_lead"}
-                          id="lead"
-                          options={leadTypes}
-                          placeholder="Select Leads"
-                          requiredStarOnLabel={true}
-                        />
-                      )}
-                    />
-                  </TkCol>
-                  <TkCol lg={4}>
-                    <Controller
-                      name="status"
-                      control={control}
-                      render={({ field }) => (
-                        <TkSelect
-                          {...field}
-                          labelName="Status"
-                          labelId={"_status"}
-                          id="status"
-                          options={[]}
-                          placeholder="Select Status"
-                          requiredStarOnLabel={true}
-                        />
-                      )}
-                    />
-                  </TkCol>
+          <TkRow className="justify-content-center">
+            <TkCol lg={12}>
+              <TkCardBody className="mt-4">
+                <TkForm onSubmit={handleSubmit(onSubmit)}>
+                  <div>
+                    <TkRow className="mt-3">
+                      <TkCol>
+                        <div>
+                          <TkRow className="g-3">
+                            <TkCol lg={4}>
+                              <TkInput
+                                {...register("title")}
+                                id="title"
+                                name="title"
+                                type="text"
+                                labelName="Title"
+                                placeholder="Enter Title"
+                                requiredStarOnLabel={true}
+                              />
+                              {errors.title && (
+                                <FormErrorText>
+                                  {errors.title.message}
+                                </FormErrorText>
+                              )}
+                            </TkCol>
 
-                  <TkCol lg={4}>
-                    <TkInput
-                      {...register("title")}
-                      labelName="Title"
-                      labelId={"_title"}
-                      id="title"
-                      type="text"
-                      placeholder="Enter Title"
-                      requiredStarOnLabel={true}
-                    />
-                  </TkCol>
-                </TkRow>
-              </div>
-              <div>
-                <TkRow className="mt-3">
-                  <TkCol lg={4}>
-                    {/* add checkbox that user can be project manager */}
-                    <TkRow className="justify-content-start mt-4">
-                      <TkCol xs={"auto"}>
-                        <TkCheckBox
-                          {...register("canBeSupervisor")}
-                          id="canBeSupervisor"
-                          type="checkbox"
-                        />
-                        <TkLabel className="ms-3 me-lg-5" id="supervisor">
-                          Notify Assign By Email
-                        </TkLabel>
+                            <TkCol lg={4}>
+                              <Controller
+                                name="company"
+                                control={control}
+                                render={({ field }) => (
+                                  <TkSelect
+                                    {...field}
+                                    labelName="Lead Name"
+                                    labelId={"_status"}
+                                    id="company"
+                                    options={allLeadNameListData}
+                                    placeholder="Select Lead Name"
+                                    requiredStarOnLabel={true}
+                                    loading={leadListLoading}
+                                  />
+                                )}
+                              />
+                              {errors.company && (
+                                <FormErrorText>
+                                  {errors.company.message}
+                                </FormErrorText>
+                              )}
+                            </TkCol>
+                            {/* <TkCol lg={4}>
+                              <TkInput
+                                {...register("company")}
+                                id="company"
+                                name="company"
+                                type="text"
+                                labelName="Lead Name"
+                                placeholder="Enter Lead Name"
+                                requiredStarOnLabel={true}
+                              />
+                              {errors.company && (
+                                <FormErrorText>
+                                  {errors.company.message}
+                                </FormErrorText>
+                              )}
+                            </TkCol> */}
+
+                            {/* <TkCol lg={4}>
+                              <Controller
+                                name="assigned"
+                                control={control}
+                                render={({ field }) => (
+                                  <TkSelect
+                                    {...field}
+                                    labelName="Assigned To"
+                                    labelId={"assigned"}
+                                    id="assigned"
+                                    options={allSalesTeamData}
+                                    placeholder="Select Assigned To"
+                                    requiredStarOnLabel={true}
+                                  />
+                                )}
+                              />
+                              {errors.assigned && (
+                                <FormErrorText>
+                                  {errors.assigned.message}
+                                </FormErrorText>
+                              )}
+                            </TkCol> */}
+
+                            <TkCol lg={4}>
+                              <Controller
+                                name="priority"
+                                control={control}
+                                render={({ field }) => (
+                                  <TkSelect
+                                    {...field}
+                                    labelName="Proirity"
+                                    labelId={"priority"}
+                                    id="priority"
+                                    options={[
+                                      { label: "High", value: "1" },
+                                      { label: "Medium", value: "2" },
+                                      { label: "Low", value: "3" },
+                                    ]}
+                                    placeholder="Select Proirity"
+                                    requiredStarOnLabel={true}
+                                  />
+                                )}
+                              />
+                              {errors.priority && (
+                                <FormErrorText>
+                                  {errors.priority.message}
+                                </FormErrorText>
+                              )}
+                            </TkCol>
+
+                            <TkCol lg={4}>
+                              <Controller
+                                name="status"
+                                control={control}
+                                render={({ field }) => (
+                                  <TkSelect
+                                    {...field}
+                                    labelName="Status"
+                                    labelId={"_status"}
+                                    id="status"
+                                    options={[
+                                        {
+                                          label: "Completed",
+                                          value: "Completed",
+                                        },
+                                        {
+                                          label: "Scheduled",
+                                          value: "Scheduled",
+                                        },
+                                      ]}
+                                    placeholder="Select Type"
+                                    requiredStarOnLabel={true}
+                                  />
+                                )}
+                              />
+                              {errors.status && (
+                                <FormErrorText>
+                                  {errors.status.message}
+                                </FormErrorText>
+                              )}
+                            </TkCol>
+
+                            <TkCol lg={4}>
+                              <Controller
+                                name="startDate"
+                                control={control}
+                                rules={{
+                                  required: "Start Date is required",
+                                }}
+                                render={({ field }) => (
+                                  <TkDate
+                                    {...field}
+                                    labelName="Start Date"
+                                    id={"startDate"}
+                                    placeholder="Select Start Date"
+                                    options={{
+                                      altInput: true,
+                                      dateFormat: "d M, Y",
+                                    }}
+                                    requiredStarOnLabel={true}
+                                  />
+                                )}
+                              />
+                              {errors.startDate && (
+                                <FormErrorText>
+                                  {errors.startDate.message}
+                                </FormErrorText>
+                              )}
+                            </TkCol>
+
+                            <TkCol lg={4}>
+                              <Controller
+                                name="dueDate"
+                                control={control}
+                                rules={{
+                                  required: "Due Date is required",
+                                }}
+                                render={({ field }) => (
+                                  <TkDate
+                                    {...field}
+                                    labelName="Due Date"
+                                    id={"dueDate"}
+                                    placeholder="Select Due Date"
+                                    options={{
+                                      altInput: true,
+                                      dateFormat: "d M, Y",
+                                    }}
+                                    requiredStarOnLabel={true}
+                                  />
+                                )}
+                              />
+                              {errors.dueDate && (
+                                <FormErrorText>
+                                  {errors.dueDate.message}
+                                </FormErrorText>
+                              )}
+                            </TkCol>
+
+                            <TkCol lg={12}>
+                              <TkInput
+                                {...register("message")}
+                                id="message"
+                                type="textarea"
+                                labelName="Message"
+                                placeholder="Enter Message"
+                              />
+                              {errors.message && (
+                                <FormErrorText>
+                                  {errors.message.message}
+                                </FormErrorText>
+                              )}
+                            </TkCol>
+                            <div className="d-flex mt-4 space-childern">
+                              <div className="ms-auto" id="update-form-btns">
+                                <TkButton
+                                  color="secondary"
+                                  onClick={() => {
+                                    router.push(`${urls.taskk}`);
+                                  }}
+                                  type="button"
+                                  disabled={taskActivityPost.isLoading}
+                                >
+                                  Cancel
+                                </TkButton>{" "}
+                                <TkButton
+                                  type="submit"
+                                  color="primary"
+                                  loading={taskActivityPost.isLoading}
+                                >
+                                  Save
+                                </TkButton>
+                              </div>
+                            </div>
+                          </TkRow>
+                        </div>
                       </TkCol>
-
-                      {/* <TkCol xs={"auto"}>
-                        <TkCheckBox
-                          {...register("privatePhoenCall")}
-                          id="privatePhoenCall"
-                          type="checkbox"
-                        />
-                        <TkLabel className="ms-3 me-lg-5" id="privatePhoenCall">
-                          Private Task
-                        </TkLabel>
-                      </TkCol> */}
                     </TkRow>
-                  </TkCol>
-                </TkRow>
-              </div>
+                  </div>
+                </TkForm>
+              </TkCardBody>
             </TkCol>
           </TkRow>
-
-          <TkRow className="mt-5">
-            <TkCol>
-              <TkCardHeader tag="h5" className="mb-4">
-                <h4>Date and Time</h4>
-              </TkCardHeader>
-              <div>
-                <TkRow className="g-3">
-                  <TkCol lg={4}>
-                    <Controller
-                      name="date"
-                      control={control}
-                      rules={{ required: "Date is required" }}
-                      render={({ field }) => (
-                        <TkDate
-                          {...field}
-                          labelName="Date"
-                          id={"date"}
-                          placeholder="Select Date"
-                          options={{
-                            altInput: true,
-                            dateFormat: "d M, Y",
-                          }}
-                          requiredStarOnLabel={true}
-                        />
-                      )}
-                    />
-                    {errors.date?.message ? (
-                      <FormErrorText>{errors.date?.message}</FormErrorText>
-                    ) : null}
-                  </TkCol>
-
-                  {/* <TkCol lg={6}>
-                    <TkRow className="justify-content-start mt-4">
-                      <TkCol xs={"auto"}>
-                        <TkCheckBox
-                          {...register("canBeSupervisor")}
-                          id="canBeSupervisor"
-                          type="checkbox"
-                        />
-                        <TkLabel className="ms-3 me-lg-5" id="supervisor">
-                          Notify Assign By Email
-                        </TkLabel>
-                      </TkCol>
-                    </TkRow>
-                  </TkCol> */}
-                </TkRow>
-              </div>
-            </TkCol>
-          </TkRow>
-          <div className="d-flex mt-4 space-childern">
-            <div className="ms-auto" id="update-form-btns">
-              <TkButton
-                color="secondary"
-                type="button"
-                onClick={() => router.push(`${urls.taskk}`)}
-              >
-                Cancel
-              </TkButton>{" "}
-              <TkButton type="submit" color="primary">
-                Save
-              </TkButton>
-            </div>
-          </div>
         </div>
-      )}
+      </div>
     </>
   );
 };

@@ -1,7 +1,11 @@
-import { getLeadByIdRestletScriptDeploymentId } from "../../../../src/utils/NsAPIcal";
+// import { getLeadByIdRestletScriptDeploymentId } from "../../../../src/utils/NsAPIcal";
 import response from "../../../../lib/response";
 import { id } from "date-fns/locale";
-import { deleteLeadByIdRestletScriptDeploymentId, updateLeadDataRestletScriptDeploymentId } from "../../../../src/utils/createNsAPIcal";
+import {
+  getLeadByIdRestletScriptDeploymentId,
+  deleteLeadByIdRestletScriptDeploymentId,
+  updateLeadDataRestletScriptDeploymentId,
+} from "../../../../src/utils/createNsAPIcal";
 
 export default async function handler(req, res) {
   try {
@@ -32,13 +36,19 @@ export default async function handler(req, res) {
           "custentity_lms_personal_phonenumber",
           "custentity_lms_noteother",
           "companyname",
-          "defaultaddress",
           "phone",
           "email",
           "custentity_lms_cr_no",
           "custentity3",
           "custentity_lms_client_type",
           "custentity_market_segment",
+          "addr1",
+          "addr2",
+          "city",
+          "state",
+          "zip",
+          "country",
+          "custentity_lms_address",
           "custentity_lms_primary_action",
           "custentity_lms_lastactivitydate",
           "custentity_lms_lastactivitydate",
@@ -83,21 +93,43 @@ export default async function handler(req, res) {
               "custrecord_lms_lead_unqualifie",
               "custrecord_lms_prospect_nurtur",
             ],
-            addressbook: [
+            // addressbook: [
+            //   "id",
+            //   "label",
+            //   "defaultbilling",
+            //   "defaultshipping",
+            //   "addr1_initialvalue",
+            //   "addr2_initialvalue",
+            //   "phone_initialvalue",
+            //   "city_initialvalue",
+            //   "state_initialvalue",
+            //   "zip_initialvalue",
+            //   "country_initialvalue",
+            //   "addressbookaddress",
+            // ],
+            calls: [
               "id",
-              "label",
-              "defaultbilling",
-              "defaultshipping",
-              "addr1_initialvalue",
-              "addr2_initialvalue",
-              "phone_initialvalue",
-              "city_initialvalue",
-              "state_initialvalue",
-              "zip_initialvalue",
-              "country_initialvalue",
-              "addressbookaddress",
+              "title",
+              "phone",
+              "status",
+              "endtime",
+              "status",
+              "startdate",
             ],
-          },
+            tasks: [
+              "id",
+              "title",
+              "priority",
+              "duedate",
+            ],
+            events: [
+              "id",
+              "title",
+              "location",
+              "starttime",
+              "endtime",
+            ]
+          }
         ],
       };
 
@@ -112,7 +144,6 @@ export default async function handler(req, res) {
     } else if (req.method === "PATCH") {
       const body = req.body;
 
-      // const leadUpdatedData = await updateLeadRestletScriptDeploymentId(body);
       const leadUpdatedData = await updateLeadDataRestletScriptDeploymentId(
         body
       );

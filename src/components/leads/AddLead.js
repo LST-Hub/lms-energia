@@ -83,7 +83,7 @@ function AddLead() {
           <TkRow className="mt-3">
             <TkCol>
               <TkCardHeader tag="h5" className="mb-3">
-                <h4>Lead Types</h4>
+                <h4>Lead Channels</h4>
               </TkCardHeader>
               <div>
                 <Button

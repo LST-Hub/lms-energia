@@ -10,8 +10,6 @@ import { useRouter } from "next/router";
 const PhoneCallDetailsPage = () => {
   const router = useRouter();
   const { cid } = router.query;
-  const user = demoPhoneCallData.find((user) => user.id === parseInt(cid));
-  console.log(user)
   return (
     <>
       <TkPageHead>
@@ -21,7 +19,7 @@ const PhoneCallDetailsPage = () => {
       <div className="page-content">
         <BreadCrumb pageTitle={"Phone Call Details"} parentTitle="Phone Call" parentLink={`${urls.phoneCall}`} />
         <TkContainer>
-          <EditPhoneCall id={cid} userData={user} mode={modes.edit} />
+          <EditPhoneCall id={cid}  mode={modes.edit} />
         </TkContainer>
       </div>
     </>

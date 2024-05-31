@@ -5,7 +5,6 @@ export default async function handler(req, res) {
   try {
     if (req.method === "GET") {
       const id = Number(req.query.uid);
-      console.log("Employee id:", id);
       const userDataId = await getEmployeeByIdRestletScriptDeploymentId(id);
       response({
         res,

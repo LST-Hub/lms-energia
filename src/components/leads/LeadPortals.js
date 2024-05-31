@@ -46,7 +46,7 @@ import TkContainer from "../TkContainer";
 import TkIcon from "../TkIcon";
 import ActivityPopup from "./ActivityPopup";
 import FormErrorText, { FormErrorBox } from "../forms/ErrorText";
-import { convertTimeToSec, convertToTimeFotTimeSheet } from "../../utils/time";
+import { convertTimeToSec, convertToTime, convertToTimeFotTimeSheet } from "../../utils/time";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { useMutation, useQueries } from "@tanstack/react-query";
 import tkFetch from "../../utils/fetch";
@@ -54,6 +54,7 @@ import { TkToastError, TkToastSuccess } from "../TkToastContainer";
 import LeadTaskPopup from "./LeadTaskPopup";
 import LeadEventPopup from "./LeadEventPopup";
 import { formatDateForAPI } from "../../utils/date";
+import { MaxCrNoLength } from "../../../lib/constants";
 const tabs = {
   directCall: "primary",
   email: "email",
@@ -65,16 +66,19 @@ const tabs = {
   requirementDetails: "requirementDetails",
   locationDetails: "locationDetails",
   leadActivity: "leadActivity",
+  phoneCallActivity: "phoneCallActivity",
+  taskActivity: "taskActivity",
+  eventActivity: "eventActivity",
 };
 
 const schema = Yup.object({
   custentity_lms_leadsource: Yup.object()
     .nullable()
-    .required("Lead source is required"),
+    .required("Lead Source is required"),
 
   custentity_lms_name_of_the_portal_dd: Yup.object()
     .nullable()
-    .required("Lead portal is required"),
+    .required("Lead Portal is required"),
   subsidiary: Yup.object().required("Primary subsidairy is required"),
 
   custentity_lms_name: Yup.string()
@@ -87,11 +91,11 @@ const schema = Yup.object({
 
   custentity_lms_personal_phonenumber: Yup.string()
     .nullable()
-    .required("Phone number is Required")
-    .matches(/^[0-9+() -]*$/, "Phone number must be number.")
+    .required("Phone Number is required")
+    .matches(/^[0-9+() -]*$/, "Phone Number must be number.")
     .max(
       MaxPhoneNumberLength,
-      `Phone number must be at most ${MaxPhoneNumberLength} numbers.`
+      `Phone Number must be at most ${MaxPhoneNumberLength} numbers.`
     ),
   custentity_lms_personal_email: Yup.string()
     .nullable()
@@ -107,7 +111,7 @@ const schema = Yup.object({
     ),
   custentity_lms_enquiryby: Yup.object()
     .nullable()
-    .required("Enquiry by is required"),
+    .required("Enquiry By is required"),
 
   custentity_lms_noteother: Yup.string()
     .nullable()
@@ -121,15 +125,15 @@ const schema = Yup.object({
     .required("Company Name is required")
     .max(
       smallInputMaxLength,
-      `Company name should have at most ${smallInputMaxLength} characters.`
+      `Company Name should have at most ${smallInputMaxLength} characters.`
     ),
-  phone: Yup.string()
+  phoneNo: Yup.string()
     .nullable()
-    .required("Contact number is Required")
-    .matches(/^[0-9+() -]*$/, "Contact number must be number.")
+    .required("Contact Number is required")
+    .matches(/^[0-9+() -]*$/, "Contact Number must be number.")
     .max(
       MaxPhoneNumberLength,
-      `Contact number must be at most ${MaxPhoneNumberLength} numbers.`
+      `Contact Number must be at most ${MaxPhoneNumberLength} numbers.`
     ),
   email: Yup.string()
     .nullable()
@@ -139,11 +143,28 @@ const schema = Yup.object({
       MaxEmailLength,
       `Company Email should have at most ${MaxEmailLength} characters.`
     ),
-  custentity_lms_cr_no: Yup.string()
-    .nullable()
-    .required("CR Number is required"),
+  // custentity_lms_cr_no: Yup.string()
+  //   .nullable()
+  //   .required("CR Number is required"),
 
-  custentity3: Yup.string().nullable().required("VAT Number is required"),
+  // custentity3: Yup.string().nullable().required("VAT Number is required"),
+
+  custentity_lms_cr_no: Yup.string()
+  .nullable()
+  .required("CR Number is required")
+  .matches(/^[a-zA-Z0-9]*$/, 'CR Number must be alphanumeric')
+    .max(
+      MaxCrNoLength,
+      `CR Number should have at most ${MaxCrNoLength} characters.`
+    ),
+
+custentity3: Yup.string().nullable()
+.required("VAT Number is required")
+.matches(/^[a-zA-Z0-9]*$/, 'VAT Number must be alphanumeric')
+.max(
+  MaxCrNoLength,
+  `VAT Number should have at most ${MaxCrNoLength} characters.`
+),
 
   custentity_lms_client_type: Yup.object()
     .nullable()
@@ -153,16 +174,24 @@ const schema = Yup.object({
     .nullable()
     .required("Segment is required"),
 
-  addr1: Yup.string().max(
-    smallInputMaxLength,
-    `Address 1 should have at most ${smallInputMaxLength} characters.`
-  ),
-  // .nullable(),
+    addr1: Yup.string()
+    .max(
+      smallInputMaxLength,
+      `Address 1 should have at most ${smallInputMaxLength} characters.`
+    )
+    .nullable(),
+
+  addr2: Yup.string()
+    .max(
+      smallInputMaxLength,
+      `Address 2 should have at most ${smallInputMaxLength} characters.`
+    )
+    .nullable(),
   city: Yup.string().max(
     smallInputMaxLength,
     `City should have at most ${smallInputMaxLength} characters.`
-  ),
-  // .nullable(),
+  )
+  .nullable(),
 
   state: Yup.string().nullable(),
 
@@ -225,6 +254,7 @@ function LeadPortals({ selectedButton }) {
   const [fullAddress, setFullAddress] = useState(false);
   const [allCountryData, setAllCountryData] = useState([{}]);
   const [selectedEnquiryBy, setSelectedEnquiryBy] = useState(false);
+  const [allNurturStatusData, setAllNurturStatusData] = useState([{}]);
 
   const results = useQueries({
     queries: [
@@ -287,6 +317,10 @@ function LeadPortals({ selectedButton }) {
         queryKey: [RQ.allCountry],
         queryFn: tkFetch.get(`${API_BASE_URL}/country`),
       },
+      {
+        queryKey: [RQ.allNurturingStatus],
+        queryFn: tkFetch.get(`${API_BASE_URL}/nurtur-status`),
+      },
     ],
   });
 
@@ -304,6 +338,7 @@ function LeadPortals({ selectedButton }) {
     leadSource,
     leadPortal,
     country,
+    status
   ] = results;
   const {
     data: primarySubisdiaryData,
@@ -396,6 +431,13 @@ function LeadPortals({ selectedButton }) {
     error: countryError,
   } = country;
 
+  const {
+    data: statusNurturData,
+    isLoading: statusNurturLoading,
+    isError: statusNurturIsError,
+    error: statusNurturError,
+  } = status;
+
   useEffect(() => {
     if (primarySubisdiaryIsError) {
       console.log("primarySubisdiaryIsError", primarySubisdiaryError);
@@ -461,6 +503,11 @@ function LeadPortals({ selectedButton }) {
       console.log("countryIsError", countryError);
       TkToastError(countryError.message);
     }
+
+    if (statusNurturIsError) {
+      console.log("statusNurturIsError", statusNurturError);
+      TkToastError(statusNurturError.message);
+    }
   }, [
     primarySubisdiaryIsError,
     primarySubisdiaryError,
@@ -488,6 +535,8 @@ function LeadPortals({ selectedButton }) {
     leadPortalError,
     countryIsError,
     countryError,
+    statusNurturIsError,
+    statusNurturError,
   ]);
 
   useEffect(() => {
@@ -591,7 +640,6 @@ function LeadPortals({ selectedButton }) {
     }
 
     if (leadPortalData) {
-      console.log("leadPortalData", leadPortalData);
       setAllPortalData(
         leadPortalData?.items?.map((leadPortalType) => ({
           label: leadPortalType.name,
@@ -605,6 +653,15 @@ function LeadPortals({ selectedButton }) {
         countryData?.items?.map((countryType) => ({
           label: countryType.name,
           value: countryType.id,
+        }))
+      );
+    }
+
+    if (statusNurturData) {
+      setAllNurturStatusData(
+        statusNurturData?.items?.map((nurturStatusType) => ({
+          label: nurturStatusType.name,
+          value: nurturStatusType.id,
         }))
       );
     }
@@ -622,6 +679,7 @@ function LeadPortals({ selectedButton }) {
     leadSourceData,
     leadPortalData,
     countryData,
+    statusNurturData,
   ]);
   const [rows, setRows] = useState([
     {
@@ -641,6 +699,35 @@ function LeadPortals({ selectedButton }) {
       custrecord_lms_phonenumber: "",
       custrecord_location_email: "",
       custrecord_lms_designation: "",
+    },
+  ]);
+
+  const [phoneCallRows, setPhoneCallRows] = useState([
+    {
+      subject: "",
+      phone: "",
+      status: null,
+      organizer: null,
+      startDate: "",
+    },
+  ]);
+
+  const [taskCallRows, setTaskCallRows] = useState([
+    {
+      taskTitle: "",
+      priority: null,
+      startTasktDate: "",
+      dueTaskDate: "",
+    },
+  ]);
+
+  const [eventCallRows, setEventCallRows] = useState([
+    {
+      eventTitle: "",
+      location: "",
+      startEventtDate: "",
+      starttime: "",
+      endtime: "",
     },
   ]);
 
@@ -674,7 +761,7 @@ function LeadPortals({ selectedButton }) {
 
   useEffect(() => {
     if (fullAddress) {
-      setValue("addrtext", fullAddress);
+      setValue("custentity_lms_address", fullAddress);
     }
   }, [fullAddress, setValue]);
   // useEffect(() => {
@@ -738,6 +825,44 @@ function LeadPortals({ selectedButton }) {
     ]);
   };
 
+  const handleAddPhoneCallRow = () => {
+    setPhoneCallRows([
+      ...phoneCallRows,
+      {
+        subject: "",
+        phone: "",
+        status: null,
+        organizer: null,
+        startDate: "",
+      },
+    ]);
+  };
+
+  const handleAddTaskRow = () => {
+    setTaskCallRows([
+      ...taskCallRows,
+      {
+        taskTitle: "",
+        priority: null,
+        startTasktDate: "",
+        dueTaskDate: "",
+      },
+    ]);
+  };
+
+  const handleAddEventRow = () => {
+    setEventCallRows([
+      ...eventCallRows,
+      {
+        eventTitle: "",
+        location: "",
+        startEventtDate: "",
+        starttime: "",
+        endtime: "",
+      },
+    ]);
+  };
+
   const { remove: removeDivision } = useFieldArray({
     control,
     name: "custrecord_lms_division",
@@ -786,6 +911,66 @@ function LeadPortals({ selectedButton }) {
     control,
     name: "custrecord_lms_designation",
   });
+  const { remove: removeSubject } = useFieldArray({
+    control,
+    name: "subject",
+  });
+  const { remove: removePhoneNumber } = useFieldArray({
+    control,
+    name: "phone",
+  });
+  const { remove: removeStatus } = useFieldArray({
+    control,
+    name: "status",
+  });
+  const { remove: removeOrganizer } = useFieldArray({
+    control,
+    name: "organizer",
+  });
+  const { remove: removeStartDate } = useFieldArray({
+    control,
+    name: "startDate",
+  });
+  const { remove: removeTaskTitle } = useFieldArray({
+    control,
+    name: "taskTitle",
+  });
+  const { remove: removeTaskPriority } = useFieldArray({
+    control,
+    name: "priority",
+  });
+  const { remove: removeTaskStartDate } = useFieldArray({
+    control,
+    name: "startTasktDate",
+  });
+  const { remove: removeTaskDueDate } = useFieldArray({
+    control,
+    name: "dueTaskDate",
+  });
+  const { remove: removeEventTitle } = useFieldArray({
+    control,
+    name: "eventTitle",
+  });
+
+  const { remove: removeEventLocation } = useFieldArray({
+    control,
+    name: "location",
+  });
+
+  const { remove: removeEventStartDate } = useFieldArray({
+    control,
+    name: "startEventtDate",
+  });
+
+  const { remove: removeEventStartTime } = useFieldArray({
+    control,
+    name: "starttime",
+  });
+
+  const { remove: removeEventEndTime } = useFieldArray({
+    control,
+    name: "endtime",
+  });
 
   const handleRemoveRow = (index) => {
     removeDivision(index);
@@ -816,303 +1001,43 @@ function LeadPortals({ selectedButton }) {
     setLocationRows(newLocationRows);
   };
 
+  const handleRemovePhoneCallRow = (i) => {
+    removeSubject(i);
+    removePhoneNumber(i);
+    removeStatus(i);
+    removeOrganizer(i);
+    removeStartDate(i);
+    const newPhoneCallRows = [...phoneCallRows];
+    newPhoneCallRows.splice(i, 1);
+    setPhoneCallRows(newPhoneCallRows);
+  };
+
+  const handleRemoveTaskRow = (i) => {
+    removeTaskTitle(i);
+    removeTaskPriority(i);
+    removeTaskStartDate(i);
+    removeTaskDueDate(i);
+    const newTaskRows = [...taskCallRows];
+    newTaskRows.splice(i, 1);
+    setPhoneCallRows(newTaskRows);
+  };
+
+  const handleRemoveEventRow = (i) => {
+    removeEventTitle(i);
+    removeEventLocation(i);
+    removeEventAccess(i);
+    removeEventStartDate(i);
+    removeEventStartTime(i);
+    removeEventEndTime(i);
+
+    const newEventRows = [...eventCallRows];
+    newEventRows.splice(i, 1);
+    setPhoneCallRows(newEventRows);
+  };
+
   const leadPortalPost = useMutation({
     mutationFn: tkFetch.post(`${API_BASE_URL}/lead`),
   });
-
-  const onSubmit = (formData) => {
-    // const apiData = {
-    //   customForm: {
-    //     id: "135",
-    //     refName: "LMS CRM FORM",
-    //   },
-    //   entitystatus: {
-    //     id: "7",
-    //     refName: "LEAD-Qualified",
-    //   },
-    //   custentity_lms_channel_lead: {
-    //     id: selectedButton.id,
-    //   },
-    //   custentity_lms_leadsource: {
-    //     id: formData.custentity_lms_leadsource.value,
-    //   },
-
-    //   custentity_lms_name_of_the_portal_dd: {
-    //     id: formData.custentity_lms_name_of_the_portal_dd.value,
-    //   },
-    //   custentity_lms_createdby: formData.custentity_lms_createdby,
-    //   custentity_lms_createddate: formData.custentity_lms_createddate,
-    //   subsidiary: {
-    //     id: formData.subsidiary.value,
-    //   },
-    //   custentity_lms_name: formData.custentity_lms_name,
-    //   custentity_lms_personal_phonenumber:
-    //     formData.custentity_lms_personal_phonenumber,
-    //   custentity_lms_personal_email: formData.custentity_lms_personal_email,
-    //   custentity_lms_enquiryby: {
-    //     id: formData.custentity_lms_enquiryby.value,
-    //   },
-    //   custentity_lms_noteother: formData.custentity_lms_noteother,
-    //   //   companyName: formData.companyName,
-    //   //   phone: formData.phone,
-    //   //   email: formData.email,
-    //   //   custentity_lms_cr_no: formData.custentity_lms_cr_no,
-    //   //   custentity3: formData.custentity3,
-    //   //   custentity_lms_client_type: {
-    //   //     id: formData.custentity_lms_client_type.value,
-    //   //   },
-    //   //   custentity_market_segment: {
-    //   //     id: formData.custentity_market_segment.value,
-    //   //   },
-    //   //   addressBook: {
-    //   //     items: [
-    //   //       {
-    //   //         addressBookAddress: {
-    //   //           addr1: formData.addr1,
-    //   //           addr2: formData.addr2,
-    //   //           city: formData.city,
-    //   //           state: formData.state,
-    //   //           zip: formData.zip,
-    //   //           country: {
-    //   //             id: formData.country.value,
-    //   //           },
-    //   //           defaultBilling: true,
-    //   //           defaultShipping: true,
-    //   //           addrtext: formData.addrtext,
-    //   //         },
-    //   //       },
-    //   //     ],
-    //   //   },
-    //   // };
-    //   companyName: formData.companyName ?? "", // Use empty string if companyName is null or undefined
-    //   phone: formData.phone ?? "", // Use empty string if phone is null or undefined
-    //   email: formData.email ?? "", // Use empty string if email is null or undefined
-    //   custentity_lms_cr_no: formData.custentity_lms_cr_no ?? "", // Use empty string if custentity_lms_cr_no is null or undefined
-    //   custentity3: formData.custentity3 ?? "", // Use empty string if custentity3 is null or undefined
-    //   custentity_lms_client_type: formData.custentity_lms_client_type?.value
-    //     ? { id: formData.custentity_lms_client_type.value }
-    //     : null, // Use null if custentity_lms_client_type is null or undefined
-    //   custentity_market_segment: formData.custentity_market_segment?.value
-    //     ? { id: formData.custentity_market_segment.value }
-    //     : null, // Use null if custentity_market_segment is null or undefined
-    //   addressBook:
-    //     formData.addr1 ||
-    //     formData.addr2 ||
-    //     formData.city ||
-    //     formData.state ||
-    //     formData.zip ||
-    //     formData.country
-    //       ? {
-    //           items: [
-    //             {
-    //               addressBookAddress: {
-    //                 addr1: formData.addr1 ?? "",
-    //                 addr2: formData.addr2 ?? "",
-    //                 city: formData.city ?? "",
-    //                 state: formData.state ?? "",
-    //                 zip: formData.zip ?? "",
-    //                 country: formData.country?.value
-    //                   ? { id: formData.country.value }
-    //                   : null,
-    //                 defaultBilling: true,
-    //                 defaultShipping: true,
-    //                 addrtext: formData.addrtext ?? "",
-    //               },
-    //             },
-    //           ],
-    //         }
-    //       : null, // Use null if all address fields are null or undefined
-    // };
-
-    const apiData = {
-      resttype: "Add",
-      recordtype: "lead",
-      bodyfields: {
-        customform: { value: "135", text: "LMS CRM FORM" },
-        entitystatus: { value: "7", text: "LEAD-Qualified" },
-        custentity_lms_channel_lead: { value: selectedButton.id },
-        custentity_lms_leadsource: {
-          value: formData.custentity_lms_leadsource.value,
-          text: formData.custentity_lms_leadsource.text,
-        },
-
-        custentity_lms_name_of_the_portal_dd: {
-          value: formData.custentity_lms_name_of_the_portal_dd.value,
-          text: formData.custentity_lms_name_of_the_portal_dd.text,
-        },
-
-        custentity_lms_createdby: formData.custentity_lms_createdby,
-        custentity_lms_createddate: formData.custentity_lms_createddate,
-        subsidiary: {
-          value: formData.subsidiary.value,
-          text: formData.subsidiary.text,
-        },
-        custentity_lms_name: formData.custentity_lms_name,
-        custentity_lms_personal_phonenumber:
-          formData.custentity_lms_personal_phonenumber,
-        custentity_lms_personal_email: formData.custentity_lms_personal_email,
-        custentity_lms_enquiryby: {
-          value: formData.custentity_lms_enquiryby.value,
-          text: formData.custentity_lms_enquiryby.text,
-        },
-        custentity_lms_noteother: formData.custentity_lms_noteother,
-        companyname: formData.companyname,
-        phone: formData.phone,
-        email: formData.email,
-        custentity_lms_cr_no: formData.custentity_lms_cr_no,
-        custentity3: formData.custentity3,
-        custentity_lms_client_type: {
-          value: formData.custentity_lms_client_type.value,
-          text: formData.custentity_lms_client_type.text,
-        },
-        custentity_market_segment: {
-          value: formData.custentity_market_segment.value,
-          text: formData.custentity_market_segment.text,
-        },
-      },
-      linefields: {
-        addressbook: [
-          {
-            subrecord: {
-              addressbookaddress: {
-                addr1: formData.addr1,
-                addr2: formData.addr2,
-                city: formData.city,
-                state: formData.state,
-                zip: formData.zip,
-                country: {
-                  value: formData.country.value,
-                  text: formData.country.text,
-                },
-              },
-            },
-            defaultBilling: true,
-            defaultShipping: true,
-            addrtext: formData.addrtext,
-          },
-        ],
-        recmachcustrecord_lms_requirement_details:
-          formData.custrecord_lms_requirement.flatMap((req, i) => ({
-            custrecord_lms_requirement: req,
-            custrecord_lms_project_name:
-              formData.custrecord_lms_project_name[i],
-
-            custrecord_lms_division: {
-              value: formData.custrecord_lms_division.value,
-              text: formData.custrecord_lms_division.text,
-            },
-            custrecord_lms_duration: Number(
-              formData.custrecord_lms_duration[i]
-            ),
-            custrecord_lms_unit_of_measure: {
-              value: formData.custrecord_lms_unit_of_measure.value,
-              text: formData.custrecord_lms_unit_of_measure.text,
-            },
-            custrecord_lms_value: Number(formData.custrecord_lms_value[i]),
-            custrecord_lms_expected_delivery_date: [
-              formData.custrecord_lms_expected_delivery_date[i],
-            ],
-          })),
-
-        recmachcustrecord_parent_record: formData.custrecordlms_location.map(
-          (loc, i) => ({
-            custrecordlms_location: loc,
-            custrecord_lms_contactperson_name:
-              formData.custrecord_lms_contactperson_name[i],
-            custrecord_lms_phonenumber: formData.custrecord_lms_phonenumber[i],
-            custrecord_location_email:
-              formData.custrecord_location_email[i] || "",
-            custrecord_lms_designation: formData.custrecord_lms_designation[i],
-          })
-        ),
-
-        recmachcustrecord_lms_lead_assigning: [
-          {
-            custrecord_lms_region: {
-              value: formData.custrecord_lms_region?.value,
-              text: formData.custrecord_lms_region?.text,
-            },
-            custrecord_lms_sales_team_name: {
-              value: formData.custrecord_lms_sales_team_name?.value || "",
-              text: formData.custrecord_lms_sales_team_name?.text || "",
-            },
-          },
-        ],
-
-        recmachcustrecord_lms_leadnurt: [
-          {
-            custrecord_lms_primary_action: {
-              value: formData.custrecord_lms_primary_action?.value,
-              text: formData.custrecord_lms_primary_action?.text,
-            },
-            custrecord_lms_datetime: formatDateForAPI(
-              formData.custrecord_lms_datetime
-            ),
-            custrecord_lms_lead_value: Number(
-              formData.custrecord_lms_lead_value
-            ),
-            custrecord_lms_statusoflead: {
-              value: formData.custrecord_lms_statusoflead?.value,
-              text: formData.custrecord_lms_statusoflead?.text,
-            },
-            custrecord_lms_lead_unqualifie:
-              formData.custrecord_lms_lead_unqualifie,
-            custrecord_lms_prospect_nurtur: {
-              value: formData.custrecord_lms_prospect_nurtur?.value,
-              text: formData.custrecord_lms_prospect_nurtur?.text,
-            },
-          },
-        ],
-
-        calls: {
-          title: formData.title,
-          company: formData.company,
-          phone: formData.phone,
-          status: {
-            value: formData.status?.value,
-            text: formData.status?.text,
-          },
-          organizer: {
-            value: formData.organizer?.value,
-            text: formData.organizer?.text,
-          },
-          startdate: formatDateForAPI(formData.startdate),
-          message: formData.message,
-        },
-
-        tasks: {
-          title: formData.title,
-          company: formData.company,
-          priority: {
-            value: formData.priority?.value,
-            text: formData.priority?.text,
-          },
-          startdate: formatDateForAPI(formData.startdate),
-          duedate: formatDateForAPI(formData.duedate),
-          message: formData.message,
-        },
-
-        events: {
-          title: formData.title,
-          company: formData.company,
-          location: formData.location,
-          starttime: formData.starttime,
-          endtime: formData.endtime,
-          message: formData.message,
-        },
-      },
-    };
-
-    leadPortalPost.mutate(apiData, {
-      onSuccess: (data) => {
-        TkToastSuccess("Portal Lead Created Successfully");
-        router.push(`${urls.lead}`);
-      },
-      onError: (error) => {
-        TkToastError("error while creating Lead", error);
-      },
-    });
-  };
 
   const requirementDetailsColumns = [
     {
@@ -1218,15 +1143,15 @@ function LeadPortals({ selectedButton }) {
                   if (value && !/^[0-9]*([.:][0-9]+)?$/.test(value)) {
                     return "Invalid Duration";
                   }
-                  if (convertTimeToSec(value) > 86400 || value > 24) {
-                    return "Duration should be less than 24 hours";
-                  }
+                  // if (convertTimeToSec(value) > 86400 || value > 24) {
+                  //   return "Duration should be less than 24 hours";
+                  // }
                 },
               })}
               onBlur={(e) => {
                 setValue(
                   `custrecord_lms_duration[${cellProps.row.index}]`,
-                  convertToTimeFotTimeSheet(e.target.value)
+                  convertToTime(e.target.value)
                 );
               }}
             />
@@ -1607,6 +1532,768 @@ function LeadPortals({ selectedButton }) {
     []
   );
 
+  const phoneCallActivityColumns = [
+    {
+      Header: "Subject",
+      accessor: "subject",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              id="subject"
+              placeholder="Enter Subject"
+              {...register(`subject[${cellProps.row.index}]`)}
+              rules={{ required: "Subject is required" }}
+            />
+            {errors?.subject?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.subject?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Phone Number",
+      accessor: "phone",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              placeholder="Enter Phone Number"
+              id="phone"
+              {...register(`phone[${cellProps.row.index}]`)}
+            />
+            {errors?.phone?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.phone?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Status",
+      accessor: "status",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`status[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <>
+                  <TkSelect
+                    {...field}
+                    id="status"
+                    options={[
+                      {
+                        label: "Completed",
+                        value: "Completed",
+                      },
+                      {
+                        label: "Scheduled",
+                        value: "Scheduled",
+                      },
+                    ]}
+                  />
+                  {errors?.status?.[cellProps.row.index] && (
+                    <FormErrorText>
+                      {errors?.status?.[cellProps.row.index]?.message}
+                    </FormErrorText>
+                  )}
+                </>
+              )}
+            />
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Organizer",
+      accessor: "organizer",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`organizer[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <>
+                  <TkSelect
+                    {...field}
+                    id="organizer"
+                    options={allSalesTeamData}
+                  />
+                  {errors?.organizer?.[cellProps.row.index] && (
+                    <FormErrorText>
+                      {errors?.organizer?.[cellProps.row.index]?.message}
+                    </FormErrorText>
+                  )}
+                </>
+              )}
+            />
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Date",
+      accessor: "startDate",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`startDate[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <>
+                  <TkDate {...field} id="startDate" placeholder="Select Date" />
+                  {errors?.startDate?.[cellProps.row.index] && (
+                    <FormErrorText>
+                      {errors?.startDate?.[cellProps.row.index]?.message}
+                    </FormErrorText>
+                  )}
+                </>
+              )}
+            />
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Action",
+      accessor: "action",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkButton
+              type={"button"}
+              onClick={() => {
+                handleRemovePhoneCallRow(cellProps.row.index);
+              }}
+              disabled={phoneCallRows.length === 1}
+            >
+              Delete
+            </TkButton>
+          </>
+        );
+      },
+    },
+  ];
+
+  const taskActivityColumns = [
+    {
+      Header: "Title",
+      accessor: "taskTitle",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              id="taskTitle"
+              placeholder="Enter Title"
+              {...register(`taskTitle[${cellProps.row.index}]`)}
+              rules={{ required: "Title is required" }}
+            />
+            {errors?.taskTitle?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.taskTitle?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Proirity",
+      accessor: "priority",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`priority[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <>
+                  <TkSelect
+                    {...field}
+                    id="priority"
+                    options={[
+                      { label: "High", value: "1" },
+                      { label: "Medium", value: "2" },
+                      { label: "Low", value: "3" },
+                    ]}
+                  />
+                  {errors?.priority?.[cellProps.row.index] && (
+                    <FormErrorText>
+                      {errors?.priority?.[cellProps.row.index]?.message}
+                    </FormErrorText>
+                  )}
+                </>
+              )}
+            />
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Date",
+      accessor: "startTasktDate",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`startTasktDate[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <>
+                  <TkDate
+                    {...field}
+                    id="startTasktDate"
+                    placeholder="Select Date"
+                  />
+                  {errors?.startTasktDate?.[cellProps.row.index] && (
+                    <FormErrorText>
+                      {errors?.startTasktDate?.[cellProps.row.index]?.message}
+                    </FormErrorText>
+                  )}
+                </>
+              )}
+            />
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Date Date",
+      accessor: "dueTaskDate",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`dueTaskDate[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <>
+                  <TkDate
+                    {...field}
+                    id="dueTaskDate"
+                    placeholder="Select Date Completed"
+                  />
+                  {errors?.dueTaskDate?.[cellProps.row.index] && (
+                    <FormErrorText>
+                      {errors?.dueTaskDate?.[cellProps.row.index]?.message}
+                    </FormErrorText>
+                  )}
+                </>
+              )}
+            />
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Action",
+      accessor: "action",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkButton
+              type={"button"}
+              onClick={() => {
+                handleRemoveTaskRow(cellProps.row.index);
+              }}
+              disabled={taskCallRows.length === 1}
+            >
+              Delete
+            </TkButton>
+          </>
+        );
+      },
+    },
+  ];
+
+  const eventActivityColumns = [
+    {
+      Header: "Title",
+      accessor: "eventTitle",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              id="eventTitle"
+              placeholder="Enter Title"
+              {...register(`eventTitle[${cellProps.row.index}]`)}
+              rules={{ required: "Title is required" }}
+            />
+            {errors?.eventTitle?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.eventTitle?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Location",
+      accessor: "location",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              id="location"
+              placeholder="Enter Location"
+              {...register(`location[${cellProps.row.index}]`)}
+              rules={{ required: "Location is required" }}
+            />
+            {errors?.location?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.location?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Date",
+      accessor: "startDate",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`startDate[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <>
+                  <TkDate {...field} id="startDate" placeholder="Select Date" />
+                  {errors?.startDate?.[cellProps.row.index] && (
+                    <FormErrorText>
+                      {errors?.startDate?.[cellProps.row.index]?.message}
+                    </FormErrorText>
+                  )}
+                </>
+              )}
+            />
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Start Time",
+      accessor: "starttime",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              id="starttime"
+              placeholder="Enter Start Time"
+              {...register(`starttime[${cellProps.row.index}]`, {
+                required: "Start Time is required",
+                validate: (value) => {
+                  if (value && !/^[0-9]*([.:][0-9]+)?$/.test(value)) {
+                    return "Invalid Start Time";
+                  }
+                },
+              })}
+              onBlur={(e) => {
+                setValue(
+                  `starttime[${cellProps.row.index}]`,
+                  convertToTime(e.target.value)
+                );
+              }}
+            />
+            {errors?.starttime?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.starttime?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "End Time",
+      accessor: "endtime",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              id="endtime"
+              placeholder="Enter End Time"
+              {...register(`endtime[${cellProps.row.index}]`, {
+                required: "End Time is required",
+                validate: (value) => {
+                  if (value && !/^[0-9]*([.:][0-9]+)?$/.test(value)) {
+                    return "Invalid End Time";
+                  }
+                },
+              })}
+              onBlur={(e) => {
+                setValue(
+                  `endtime[${cellProps.row.index}]`,
+                  convertToTime(e.target.value)
+                );
+              }}
+            />
+            {errors?.endtime?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.endtime?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+    {
+      Header: "Action",
+      accessor: "action",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkButton
+              type={"button"}
+              onClick={() => {
+                handleRemoveEventRow(cellProps.row.index);
+              }}
+              disabled={eventCallRows.length === 1}
+            >
+              Delete
+            </TkButton>
+          </>
+        );
+      },
+    },
+  ];
+  const onSubmit = (formData) => {
+    // const apiData = {
+    //   customForm: {
+    //     id: "135",
+    //     refName: "LMS CRM FORM",
+    //   },
+    //   entitystatus: {
+    //     id: "7",
+    //     refName: "LEAD-Qualified",
+    //   },
+    //   custentity_lms_channel_lead: {
+    //     id: selectedButton.id,
+    //   },
+    //   custentity_lms_leadsource: {
+    //     id: formData.custentity_lms_leadsource.value,
+    //   },
+
+    //   custentity_lms_name_of_the_portal_dd: {
+    //     id: formData.custentity_lms_name_of_the_portal_dd.value,
+    //   },
+    //   custentity_lms_createdby: formData.custentity_lms_createdby,
+    //   custentity_lms_createddate: formData.custentity_lms_createddate,
+    //   subsidiary: {
+    //     id: formData.subsidiary.value,
+    //   },
+    //   custentity_lms_name: formData.custentity_lms_name,
+    //   custentity_lms_personal_phonenumber:
+    //     formData.custentity_lms_personal_phonenumber,
+    //   custentity_lms_personal_email: formData.custentity_lms_personal_email,
+    //   custentity_lms_enquiryby: {
+    //     id: formData.custentity_lms_enquiryby.value,
+    //   },
+    //   custentity_lms_noteother: formData.custentity_lms_noteother,
+    //   //   companyName: formData.companyName,
+    //   //   phone: formData.phone,
+    //   //   email: formData.email,
+    //   //   custentity_lms_cr_no: formData.custentity_lms_cr_no,
+    //   //   custentity3: formData.custentity3,
+    //   //   custentity_lms_client_type: {
+    //   //     id: formData.custentity_lms_client_type.value,
+    //   //   },
+    //   //   custentity_market_segment: {
+    //   //     id: formData.custentity_market_segment.value,
+    //   //   },
+    //   //   addressBook: {
+    //   //     items: [
+    //   //       {
+    //   //         addressBookAddress: {
+    //   //           addr1: formData.addr1,
+    //   //           addr2: formData.addr2,
+    //   //           city: formData.city,
+    //   //           state: formData.state,
+    //   //           zip: formData.zip,
+    //   //           country: {
+    //   //             id: formData.country.value,
+    //   //           },
+    //   //           defaultBilling: true,
+    //   //           defaultShipping: true,
+    //   //           addrtext: formData.addrtext,
+    //   //         },
+    //   //       },
+    //   //     ],
+    //   //   },
+    //   // };
+    //   companyName: formData.companyName ?? "", // Use empty string if companyName is null or undefined
+    //   phone: formData.phone ?? "", // Use empty string if phone is null or undefined
+    //   email: formData.email ?? "", // Use empty string if email is null or undefined
+    //   custentity_lms_cr_no: formData.custentity_lms_cr_no ?? "", // Use empty string if custentity_lms_cr_no is null or undefined
+    //   custentity3: formData.custentity3 ?? "", // Use empty string if custentity3 is null or undefined
+    //   custentity_lms_client_type: formData.custentity_lms_client_type?.value
+    //     ? { id: formData.custentity_lms_client_type.value }
+    //     : null, // Use null if custentity_lms_client_type is null or undefined
+    //   custentity_market_segment: formData.custentity_market_segment?.value
+    //     ? { id: formData.custentity_market_segment.value }
+    //     : null, // Use null if custentity_market_segment is null or undefined
+    //   addressBook:
+    //     formData.addr1 ||
+    //     formData.addr2 ||
+    //     formData.city ||
+    //     formData.state ||
+    //     formData.zip ||
+    //     formData.country
+    //       ? {
+    //           items: [
+    //             {
+    //               addressBookAddress: {
+    //                 addr1: formData.addr1 ?? "",
+    //                 addr2: formData.addr2 ?? "",
+    //                 city: formData.city ?? "",
+    //                 state: formData.state ?? "",
+    //                 zip: formData.zip ?? "",
+    //                 country: formData.country?.value
+    //                   ? { id: formData.country.value }
+    //                   : null,
+    //                 defaultBilling: true,
+    //                 defaultShipping: true,
+    //                 addrtext: formData.addrtext ?? "",
+    //               },
+    //             },
+    //           ],
+    //         }
+    //       : null, // Use null if all address fields are null or undefined
+    // };
+
+    const apiData = {
+      resttype: "Add",
+      recordtype: "lead",
+      bodyfields: {
+        customform: { value: "135", text: "LMS CRM FORM" },
+        entitystatus: { value: "7", text: "LEAD-Qualified" },
+        custentity_lms_channel_lead: { value: selectedButton.id },
+        custentity_lms_leadsource: {
+          value: formData.custentity_lms_leadsource.value,
+          text: formData.custentity_lms_leadsource.text,
+        },
+
+        custentity_lms_name_of_the_portal_dd: {
+          value: formData.custentity_lms_name_of_the_portal_dd.value,
+          text: formData.custentity_lms_name_of_the_portal_dd.text,
+        },
+
+        custentity_lms_createdby: formData.custentity_lms_createdby,
+        custentity_lms_createddate: formData.custentity_lms_createddate,
+        subsidiary: {
+          value: formData.subsidiary.value,
+          text: formData.subsidiary.text,
+        },
+        custentity_lms_name: formData.custentity_lms_name,
+        custentity_lms_personal_phonenumber:
+          formData.custentity_lms_personal_phonenumber,
+        custentity_lms_personal_email: formData.custentity_lms_personal_email,
+        custentity_lms_enquiryby: {
+          value: formData.custentity_lms_enquiryby.value,
+          text: formData.custentity_lms_enquiryby.text,
+        },
+        custentity_lms_noteother: formData.custentity_lms_noteother,
+        companyname: formData.companyname,
+        phone: formData.phoneNo,
+        email: formData.email,
+        custentity_lms_cr_no: formData.custentity_lms_cr_no,
+        custentity3: formData.custentity3,
+        custentity_lms_client_type: {
+          value: formData.custentity_lms_client_type.value,
+          text: formData.custentity_lms_client_type.text,
+        },
+        custentity_market_segment: {
+          value: formData.custentity_market_segment.value,
+          text: formData.custentity_market_segment.text,
+        },
+        addr1: formData.addr1,
+        addr2: formData.addr2,
+        city: formData.city,
+        state: formData.state,
+        zip: formData.zip,
+        country: {
+          value: formData.country?.value,
+          label: formData.country?.text,
+        },
+        custentity_lms_address: formData.custentity_lms_address,
+      },
+      linefields: {
+        // addressbook: [
+        //   {
+        //     subrecord: {
+        //       addressbookaddress: {
+        //         addr1: formData.addr1,
+        //         addr2: formData.addr2,
+        //         city: formData.city,
+        //         state: formData.state,
+        //         zip: formData.zip,
+        //         country: {
+        //           value: formData.country.value,
+        //           text: formData.country.text,
+        //         },
+        //       },
+        //     },
+        //     defaultBilling: true,
+        //     defaultShipping: true,
+        //     addrtext: formData.addrtext,
+        //   },
+        // ],
+        recmachcustrecord_lms_requirement_details:
+          formData.custrecord_lms_requirement.flatMap((req, i) => ({
+            custrecord_lms_requirement: req,
+            custrecord_lms_project_name:
+              formData.custrecord_lms_project_name[i],
+
+            custrecord_lms_division: {
+              value: formData.custrecord_lms_division.value,
+              text: formData.custrecord_lms_division.text,
+            },
+            custrecord_lms_duration: convertToTime(
+              formData.custrecord_lms_duration[i]
+            ),
+            custrecord_lms_unit_of_measure: {
+              value: formData.custrecord_lms_unit_of_measure.value,
+              text: formData.custrecord_lms_unit_of_measure.text,
+            },
+            custrecord_lms_value: Number(formData.custrecord_lms_value[i]),
+            custrecord_lms_expected_delivery_date: [
+              formData.custrecord_lms_expected_delivery_date[i],
+            ],
+          })),
+
+        recmachcustrecord_parent_record: formData.custrecordlms_location.map(
+          (loc, i) => ({
+            custrecordlms_location: loc,
+            custrecord_lms_contactperson_name:
+              formData.custrecord_lms_contactperson_name[i],
+            custrecord_lms_phonenumber: formData.custrecord_lms_phonenumber[i],
+            custrecord_location_email:
+              formData.custrecord_location_email[i] || "",
+            custrecord_lms_designation: formData.custrecord_lms_designation[i],
+          })
+        ),
+
+        recmachcustrecord_lms_lead_assigning: [
+          {
+            custrecord_lms_region: {
+              value: formData.custrecord_lms_region?.value,
+              text: formData.custrecord_lms_region?.text,
+            },
+            custrecord_lms_sales_team_name: {
+              value: formData.custrecord_lms_sales_team_name?.value || "",
+              text: formData.custrecord_lms_sales_team_name?.text || "",
+            },
+          },
+        ],
+
+        recmachcustrecord_lms_leadnurt: [
+          {
+            custrecord_lms_primary_action: {
+              value: formData.custrecord_lms_primary_action?.value,
+              text: formData.custrecord_lms_primary_action?.text,
+            },
+            custrecord_lms_datetime: formatDateForAPI(
+              formData.custrecord_lms_datetime
+            ),
+            custrecord_lms_lead_value: Number(
+              formData.custrecord_lms_lead_value
+            ),
+            custrecord_lms_statusoflead: {
+              value: formData.custrecord_lms_statusoflead?.value,
+              text: formData.custrecord_lms_statusoflead?.text,
+            },
+            custrecord_lms_lead_unqualifie:
+              formData.custrecord_lms_lead_unqualifie,
+            custrecord_lms_prospect_nurtur: {
+              value: formData.custrecord_lms_prospect_nurtur?.value,
+              text: formData.custrecord_lms_prospect_nurtur?.text,
+            },
+          },
+        ],
+
+        // calls:
+        // formData.phone?.map((call, i) => ({
+        //   phone: call,
+        //   title: formData.subject[i],
+        //   status: {
+        //     value: formData.status[i]?.value,
+        //     text: formData.status[i]?.label,
+        //   },
+        //   organizer: {
+        //     value: formData.organizer[i]?.value,
+        //     text: formData.organizer[i]?.label,
+        //   }
+        //   // startdate: [formData.startdate]
+        // })),
+
+        // tasks: formData.title?.map((task, i) => ({
+        //   title: formData.taskTitle[i],
+
+        //   priority: {
+        //     value: formData.status[i]?.value,
+        //     label: formData.status[i]?.text,
+        //   },
+        //   // startdate: [
+        //   //   formData.startTasktDate[i],
+        //   // ],
+        //   // dueDate: [formData.dueTaskDate[i]]
+
+        // })),
+
+        // events: formData.location?.map((event, i) => ({
+        //   title: formData.eventTitle[i],
+        //   location: event,
+        //   starttime: [formData.starttime[i]],
+        //   endtime: [formData.endtime[i]],
+        //   // startdate: formData.startEventtDate,
+        // })),
+      },
+    };
+
+    leadPortalPost.mutate(apiData, {
+      onSuccess: (data) => {
+        TkToastSuccess("Portal Lead Created Successfully");
+        router.push(`${urls.lead}`);
+      },
+      onError: (error) => {
+        TkToastError("error while creating Lead", error);
+      },
+    });
+  };
+
+  
+
   const concatenateAddress = () => {
     const addr1 = getValues("addr1") || "";
     const addr2 = getValues("addr2") || "";
@@ -1897,16 +2584,16 @@ function LeadPortals({ selectedButton }) {
                       </TkCol>
                       <TkCol lg={4}>
                         <TkInput
-                          {...register("phone")}
-                          id="phone"
-                          name="phone"
+                          {...register("phoneNo")}
+                          id="phoneNo"
+                          name="phoneNo"
                           type="text"
                           labelName="Contact No"
                           placeholder="Enter Contact No"
                           requiredStarOnLabel="true"
                         />
-                        {errors.phone && (
-                          <FormErrorText>{errors.phone.message}</FormErrorText>
+                        {errors.phoneNo && (
+                          <FormErrorText>{errors.phoneNo.message}</FormErrorText>
                         )}
                       </TkCol>
                       <TkCol lg={4}>
@@ -2105,17 +2792,17 @@ function LeadPortals({ selectedButton }) {
 
                       <TkCol lg={12}>
                         <TkInput
-                          {...register("addrtext")}
-                          id="addrtext"
-                          name="addrtext"
+                          {...register("custentity_lms_address")}
+                          id="custentity_lms_address"
+                          name="custentity_lms_address"
                           type="textarea"
                           labelName="Address "
                           placeholder="Enter Address"
                           disabled={true}
                         />
-                        {errors.addrtext && (
+                        {errors.custentity_lms_address && (
                           <FormErrorText>
-                            {errors.addrtext.message}
+                            {errors.custentity_lms_address.message}
                           </FormErrorText>
                         )}
                       </TkCol>
@@ -2184,17 +2871,39 @@ function LeadPortals({ selectedButton }) {
                         Lead Nurturing
                       </NavLink>
                     </NavItem>
+                    {/* <NavItem>
+                      <NavLink
+                        href="#"
+                        className={classnames({
+                          active: activeSubTab === tabs.phoneCallActivity,
+                        })}
+                        onClick={() => toggleTab(tabs.phoneCallActivity)}
+                      >
+                        Phone Call
+                      </NavLink>
+                    </NavItem>
                     <NavItem>
                       <NavLink
                         href="#"
                         className={classnames({
-                          active: activeSubTab === tabs.leadActivity,
+                          active: activeSubTab === tabs.taskActivity,
                         })}
-                        onClick={() => toggleTab(tabs.leadActivity)}
+                        onClick={() => toggleTab(tabs.taskActivity)}
                       >
-                        Activity
+                        Task
                       </NavLink>
                     </NavItem>
+                    <NavItem>
+                      <NavLink
+                        href="#"
+                        className={classnames({
+                          active: activeSubTab === tabs.eventActivity,
+                        })}
+                        onClick={() => toggleTab(tabs.eventActivity)}
+                      >
+                        Event
+                      </NavLink>
+                    </NavItem> */}
                   </Nav>
                 </TkCol>
               </TkRow>
@@ -2346,16 +3055,7 @@ function LeadPortals({ selectedButton }) {
                                   name="custrecord_lms_statusoflead"
                                   labelName="Lead Status"
                                   placeholder="Select Lead Status"
-                                  options={[
-                                    {
-                                      value: "7",
-                                      label: "Qualified",
-                                    },
-                                    {
-                                      value: "8",
-                                      label: "Unqualified",
-                                    },
-                                  ]}
+                                  options={allNurturStatusData}
                                 />
                               )}
                             />
@@ -2411,70 +3111,50 @@ function LeadPortals({ selectedButton }) {
                       </div>
                     </TabPane>
 
-                    <TabPane tabId={tabs.leadActivity}>
-                      <div>
-                        <TkRow className="g-3">
-                          <TkCol lg={2}>
-                            <TkButton
-                              type="button"
-                              color="primary"
-                              onClick={leadActivityToggle}
-                              style={{ width: "80%" }}
-                            >
-                              Phone Call
-                            </TkButton>
-                          </TkCol>
-                          <TkCol lg={2}>
-                            <TkButton
-                              type="button"
-                              color="primary"
-                              onClick={leadTaskActivityToggle}
-                              style={{ width: "80%" }}
-                            >
-                              Task
-                            </TkButton>
-                          </TkCol>
-                          <TkCol lg={2}>
-                            <TkButton
-                              type="button"
-                              color="primary"
-                              onClick={leadEventActivityToggle}
-                              style={{ width: "80%" }}
-                            >
-                              Event
-                            </TkButton>
-                          </TkCol>
-
-                          <Nav className="nav-tabs dropdown-tabs nav-tabs-custom mb-3 mt-4">
-                            <NavItem>
-                              <NavLink
-                                // href="#"
-                                className={classnames({
-                                  active: activeTab === tabs.phoneCall,
-                                })}
-                              >
-                                Lead Activity
-                              </NavLink>
-                            </NavItem>
-                          </Nav>
-
-                          <TabContent activeTab={activeTab}>
-                            <TabPane tabId={tabs.leadActivity}>
-                              <TkCardBody className="table-padding pt-0">
-                                <TkTableContainer
-                                  columns={columns}
-                                  data={[]}
-                                  isSearch={false}
-                                  defaultPageSize={10}
-                                  isFilters={true}
-                                  showPagination={true}
-                                />
-                              </TkCardBody>
-                            </TabPane>
-                          </TabContent>
-                        </TkRow>
-                      </div>
+                    {/* <TabPane tabId={tabs.phoneCallActivity}>
+                      <TkContainer>
+                        <TkTableContainer
+                          customPageSize={true}
+                          showAddButton={true}
+                          onClickAdd={handleAddPhoneCallRow}
+                          onclickDelete={handleRemovePhoneCallRow}
+                          columns={phoneCallActivityColumns}
+                          data={phoneCallRows}
+                          thClass="text-dark"
+                          dynamicTable={true}
+                        />
+                      </TkContainer>
                     </TabPane>
+
+                    <TabPane tabId={tabs.taskActivity}>
+                      <TkContainer>
+                        <TkTableContainer
+                          customPageSize={true}
+                          showAddButton={true}
+                          onClickAdd={handleAddTaskRow}
+                          onclickDelete={handleRemoveTaskRow}
+                          columns={taskActivityColumns}
+                          data={taskCallRows}
+                          thClass="text-dark"
+                          dynamicTable={true}
+                        />
+                      </TkContainer>
+                    </TabPane>
+
+                    <TabPane tabId={tabs.eventActivity}>
+                      <TkContainer>
+                        <TkTableContainer
+                          customPageSize={true}
+                          showAddButton={true}
+                          onClickAdd={handleAddEventRow}
+                          onclickDelete={handleRemoveEventRow}
+                          columns={eventActivityColumns}
+                          data={eventCallRows}
+                          thClass="text-dark"
+                          dynamicTable={true}
+                        />
+                      </TkContainer>
+                    </TabPane> */}
                   </TabContent>
                 </TkCol>
               </TkRow>
@@ -2505,7 +3185,7 @@ function LeadPortals({ selectedButton }) {
               </div>
             </TkForm>
 
-            <TkModal
+            {/* <TkModal
               isOpen={activityModal}
               toggle={leadActivityToggle}
               leadActivityToggle={leadActivityToggle}
@@ -2587,7 +3267,7 @@ function LeadPortals({ selectedButton }) {
                   />
                 </TkCardBody>
               </TkContainer>
-            </TkModal>
+            </TkModal> */}
           </TkCardBody>
         </TkCol>
       </TkRow>

@@ -4,33 +4,33 @@ import TkPageHead from "../../../../src/components/TkPageHead";
 import UserDetails from "../../../../src/components/users/UserDetails";
 import { modes, taskData, urls } from "../../../../src/utils/Constants";
 import TkContainer from "../../../../src/components/TkContainer";
-import EditPhoneCall from "../../../../src/components/phoneCall/EditPhoneCall";
-import EditTask from "../../../../src/components/task/EditTask";
 import { useRouter } from "next/router";
+import EditEvent from "../../../../src/components/event/EditEvent";
 
-const TaskDetailsPage = () => {
+const EventDetailsPage = () => {
   const router = useRouter();
   const { eid } = router.query;
-  const user = taskData.find((user) => user.id === parseInt(eid));
+  
   return (
     <>
       <TkPageHead>
-        <title>{`Task Details`}</title>
+        <title>{`Event Details`}</title>
       </TkPageHead>
 
       <div className="page-content">
-        <BreadCrumb pageTitle={"Task Details"} parentTitle="Task" parentLink={`${urls.taskk}`} />
+        <BreadCrumb pageTitle={"Event Details"} parentTitle="Event" parentLink={`${urls.event}`} />
+
         <TkContainer>
-          <EditTask id={eid} userData={user} mode={modes.edit} />
+          <EditEvent id={eid} mode={modes.view} />
         </TkContainer>
       </div>
     </>
   );
 };
 
-export default TaskDetailsPage;
+export default EventDetailsPage;
 
-TaskDetailsPage.options = {
+EventDetailsPage.options = {
   layout: true,
   auth: false,
 };

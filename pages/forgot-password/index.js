@@ -13,14 +13,27 @@ import TkButton from "../../src/components/TkButton";
 import TkAlert from "../../src/components/TkAlert";
 import TkFormFeedback from "../../src/components/TkFormFeedback";
 import TkPageHead from "../../src/components/TkPageHead";
-
 import { useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import FormErrorText from "../../src/components/forms/ErrorText";
-import { MinEmailLength, MaxEmailLength, urls } from "../../src/utils/Constants";
-import { TkToastError, TkToastSuccess } from "../../src/components/TkToastContainer";
+import {
+  MinEmailLength,
+  MaxEmailLength,
+  urls,
+  MinPasswordLength,
+  MaxPasswordLength,
+  API_BASE_URL,
+} from "../../src/utils/Constants";
+import {
+  TkToastError,
+  TkToastSuccess,
+} from "../../src/components/TkToastContainer";
 import TkIcon from "../../src/components/TkIcon";
+import { useMutation } from "@tanstack/react-query";
+import tkFetch from "../../src/utils/fetch";
+
+
 
 const schema = Yup.object({
   email: Yup.string()
@@ -28,6 +41,36 @@ const schema = Yup.object({
     .min(MinEmailLength, `Email must be at least ${MinEmailLength} characters.`)
     .max(MaxEmailLength, `Email must be at most ${MaxEmailLength} characters.`)
     .required("Email is required"),
+
+    password: Yup.string()
+    .min(
+      MinPasswordLength,
+      `Password should contain at least ${MinPasswordLength} characters`
+    )
+    .max(
+      MaxPasswordLength,
+      `Password cannot contain more than ${MaxPasswordLength} characters`
+    )
+    .matches(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$#^()+!%*?&])[A-Za-z\d@$#^()+!%*?&]{8,32}$/,
+      "Password must have One Uppercase, One Lowercase, One Number and one Special Character. \n Special Characters can be on of @ $ # ^ ( ) + ! % * ? &"
+    )
+    .required("Password is required"),
+
+    confirmNePpassword: Yup.string()
+    .min(
+      MinPasswordLength,
+      `Password should contain at least ${MinPasswordLength} characters`
+    )
+    .max(
+      MaxPasswordLength,
+      `Password cannot contain more than ${MaxPasswordLength} characters`
+    )
+    .matches(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$#^()+!%*?&])[A-Za-z\d@$#^()+!%*?&]{8,32}$/,
+      "Password must have One Uppercase, One Lowercase, One Number and one Special Character. \n Special Characters can be on of @ $ # ^ ( ) + ! % * ? &"
+    )
+    .required("Password is required"),
 }).required();
 
 const ForgetPasswordPage = () => {
@@ -42,6 +85,9 @@ const ForgetPasswordPage = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
+  const forgotPassword = useMutation({
+    mutationFn: tkFetch.patch(`${API_BASE_URL}/reset-password`),
+  });
   const onSubmit = (data) => {
     setIsLoading(true);
     const sendLink = fetch("/api/v1/users/password/forgot", {
@@ -98,7 +144,12 @@ const ForgetPasswordPage = () => {
                       >
                         <g filter="url(#filter0_d_201_708)">
                           <circle cx="61" cy="57" r="31" fill="#EDF7FF" />
-                          <circle cx="60.9999" cy="56.9999" r="22.7333" fill="#CCE9FF" />
+                          <circle
+                            cx="60.9999"
+                            cy="56.9999"
+                            r="22.7333"
+                            fill="#CCE9FF"
+                          />
                           <path
                             fillRule="evenodd"
                             clipRule="evenodd"
@@ -116,7 +167,10 @@ const ForgetPasswordPage = () => {
                             filterUnits="userSpaceOnUse"
                             color-interpolation-filters="sRGB"
                           >
-                            <feFlood floodOpacity="0" result="BackgroundImageFix" />
+                            <feFlood
+                              floodOpacity="0"
+                              result="BackgroundImageFix"
+                            />
                             <feColorMatrix
                               in="SourceAlpha"
                               type="matrix"
@@ -126,22 +180,34 @@ const ForgetPasswordPage = () => {
                             <feOffset dy="4" />
                             <feGaussianBlur stdDeviation="15" />
                             <feComposite in2="hardAlpha" operator="out" />
-                            <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0" />
-                            <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_201_708" />
-                            <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_201_708" result="shape" />
+                            <feColorMatrix
+                              type="matrix"
+                              values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0"
+                            />
+                            <feBlend
+                              mode="normal"
+                              in2="BackgroundImageFix"
+                              result="effect1_dropShadow_201_708"
+                            />
+                            <feBlend
+                              mode="normal"
+                              in="SourceGraphic"
+                              in2="effect1_dropShadow_201_708"
+                              result="shape"
+                            />
                           </filter>
                         </defs>
                       </svg>
                     </div>
                     <h2 className="mb-4">Forgot Password?</h2>
-                    <span className="fs-16">Please enter the email address associated with your account, and we&apos;ll send you a link to reset your password.</span>
+                    
                   </div>
                   {/* <TkAlert className="alert-borderless alert-warning text-center mb-2 mx-2" role="alert">
                     Enter your email and instructions will be sent to you!
                   </TkAlert> */}
                   <div className="p-2 mt-4">
                     <TkForm onSubmit={handleSubmit(onSubmit)}>
-                      <div className="mb-4">
+                      {/* <div className="mb-4">
                         <TkInput
                           {...register("email")}
                           type="email"
@@ -152,9 +218,47 @@ const ForgetPasswordPage = () => {
                           invalid={errors.email?.message ? true : false}
                         />
                         {errors.email?.message ? <FormErrorText>{errors.email?.message}</FormErrorText> : null}
+                      </div> */}
+
+                      <div className="mb-3">
+                        <TkInput
+                          {...register("password")}
+                          labelName="New Password"
+                          id="password"
+                          name="password"
+                          type="password"
+                          requiredStarOnLabel={true}
+                          required={true}
+                          placeholder="Enter Password"
+                          invalid={errors.password?.message ? true : false}
+                        />
+                        {errors.password?.message && (
+                          <FormErrorText>
+                            {errors.password?.message}
+                          </FormErrorText>
+                        )}
                       </div>
 
-                      <div className="text-center mt-4">
+                      <div className="mb-3">
+                        <TkInput
+                          {...register("confirmNePpassword")}
+                          labelName="Confirm New Password"
+                          id="confirmNePpassword"
+                          name="confirmNePpassword"
+                          type="password"
+                          requiredStarOnLabel={true}
+                          required={true}
+                          placeholder="Enter Password"
+                          invalid={errors.confirmNePpassword?.message ? true : false}
+                        />
+                        {errors.confirmNePpassword?.message && (
+                          <FormErrorText>
+                            {errors.confirmNePpassword?.message}
+                          </FormErrorText>
+                        )}
+                      </div>
+
+                      {/* <div className="text-center mt-4">
                         <TkButton
                           loading={isLoading}
                           className="w-100 login-button-height"
@@ -163,10 +267,24 @@ const ForgetPasswordPage = () => {
                         >
                           Send Reset Link
                         </TkButton>
+                      </div> */}
+
+                      <div className="text-center mt-4">
+                        <TkButton
+                          loading={isLoading}
+                          className="w-100 login-button-height"
+                          color="primary"
+                          type="submit"
+                          onClick={() => {
+                            router.push(`${urls.login}`);
+                          }}
+                        >
+                          Back to Login
+                        </TkButton>
                       </div>
                     </TkForm>
                   </div>
-                  <div className="mt-3">
+                  {/* <div className="mt-3">
                     <Link href={`${urls.login}`}>
                       <a className="font-weight-bold text-muted">
                         {" "}
@@ -176,7 +294,7 @@ const ForgetPasswordPage = () => {
                         </b>
                       </a>
                     </Link>
-                  </div>
+                  </div> */}
                 </TkCardBody>
               </TkCard>
             </TkCol>

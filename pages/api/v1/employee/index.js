@@ -1,32 +1,15 @@
 import response from "../../../../lib/response";
 import { getRestletScriptDeploymentId } from "../../../../src/utils/NsAPIcal";
+import { getAllEmployeeData } from "../../../../src/utils/employeeNsAPI";
 
 export default async function handler(req, res) {
   try {
     if (req.method === "GET") {
-      const body = {
-        resttype: "Search",
-        recordtype: "employee",
-        filters: [],
-        columns: [
-          "internalid",
-          "entityid",
-          "altname",
-          "firstname",
-          "middlename",
-          "lastname",
-          "email",
-          "title",
-          "phone",
-          "supervisor",
-          "department",
-          "employeetype",
-          "role",
-        ],
-      };
+      
 
-      const query= `SELECT * FROM employee`
+      const query = `SELECT * FROM employee`;
       const employeeData = await getRestletScriptDeploymentId(query);
+      // const employeeData = await getAllEmployeeData();
       response({
         res,
         success: true,

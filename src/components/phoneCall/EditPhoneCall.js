@@ -38,7 +38,12 @@ import {
   remindersTypes,
 } from "../../utils/Constants";
 import tkFetch from "../../utils/fetch";
-import { useMutation, useQueries } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQueries,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import useUserAccessLevel from "../../utils/hooks/useUserAccessLevel";
 import { perAccessIds, permissionTypeIds } from "../../../DBConstants";
@@ -50,136 +55,43 @@ import TkDate from "../forms/TkDate";
 import { convertTimeToSec, convertToTimeFotTimeSheet } from "../../utils/time";
 import { Nav, NavItem, NavLink } from "reactstrap";
 import classNames from "classnames";
-
-// const data = [
-//   {
-//     id: 1,
-//     subject: "Test Subject",
-//     phoneCallDate: "2021-06-01",
-//     phoneNumber: "1234567890",
-//     priority: "High",
-//     status: "Open",
-//     contact: "7262054789",
-//   },
-//   {
-//     id: 2,
-//     subject: "Demo",
-//     phoneCallDate: "2021-14-01",
-//     phoneNumber: "7451681245",
-//     priority: "Low",
-//     status: "Close",
-//     contact: "8845127896",
-//   },
-//   {
-//     id: 3,
-//     subject: "Test Subject",
-//     phoneCallDate: "2021-06-01",
-//     phoneNumber: "1234567890",
-//     priority: "High",
-//     status: "Open",
-//     contact: "7262054789",
-//   },
-//   {
-//     id: 4,
-//     subject: "Test Subject",
-//     phoneCallDate: "2021-06-01",
-//     phoneNumber: "1234567890",
-//     priority: "High",
-//     status: "Open",
-//     contact: "7262054789",
-//   },
-// ];
+import { formatDateForAPI } from "../../utils/date";
+import TkLoader from "../TkLoader";
+import DeleteModal from "../../utils/DeleteModal";
+import TkEditCardHeader from "../TkEditCardHeader";
 
 const schema = Yup.object({
-  firstName: Yup.string()
-    .min(
-      MinNameLength,
-      `First name should have at least ${MinNameLength} character.`
-    )
-    .max(
-      MaxNameLength,
-      `First name should have at most ${MaxNameLength} characters.`
-    )
-    .required("First name is required"),
-
-  lastName: Yup.string()
-    .min(
-      MinNameLength,
-      `Last name should have at least ${MinNameLength} character.`
-    )
-    .max(
-      MaxNameLength,
-      `Last name should have at most ${MaxNameLength} characters.`
-    )
-    .required("Last name is required"),
-
-  email: Yup.string()
-    .email("Email must be valid.")
-    .min(
-      MinEmailLength,
-      `Email should have at least ${MinEmailLength} characters.`
-    )
-    .max(
-      MaxEmailLength,
-      `Email should have at most ${MaxEmailLength} characters.`
-    )
-    .required("Email is required"),
-
-  designation: Yup.string().max(
-    smallInputMaxLength,
-    `Designation should have at most ${smallInputMaxLength} characters.`
-  ),
-  // .required("Designation is required"),
-
-  phoneNumber: Yup.string()
+  title: Yup.string()
+    .required("Subject is required")
+    .max(MaxNameLength, `Subject must be at most ${MaxNameLength} characters.`)
+    .nullable(),
+  phone: Yup.string()
+    .nullable()
+    .required("Phone number is required")
     .matches(/^[0-9+() -]*$/, "Phone number must be number.")
     .max(
       MaxPhoneNumberLength,
-      `Phone number must be at most   ${MaxPhoneNumberLength} numbers.`
-    )
-    .nullable(),
+      `Phone number must be at most ${MaxPhoneNumberLength} numbers.`
+    ),
+  company: Yup.object().required("Lead name is required").nullable(),
 
-  // we romoved supervisor field mandatory from here as for admin role supervisor field id not mandatory, we checked it manually
-  supervisor: Yup.object().nullable(),
-  department: Yup.object().nullable(),
-  type: Yup.object().nullable(),
-  role: Yup.object().nullable().required("Select Role"),
-  // zip code an dphoen number has same max lenght so we are usign it here
-  zipCode: Yup.string()
-    .test("test-name", "Zip code does not accept characters", function (value) {
-      if (value === "" || value === null || value === undefined) {
-        return true;
-      } else {
-        return value.trim().match(/^[0-9]*$/, "Zip code must be numeric.");
-      }
-    })
+  status: Yup.object().required("Status is required").nullable(),
+  assigned: Yup.object().required("Organizer is required").nullable(),
+  startDate: Yup.date().required("Date is required").nullable(),
+  message: Yup.string()
+    .nullable()
     .max(
-      MaxPhoneNumberLength,
-      `Zip code must be at most   ${MaxPhoneNumberLength} numbers.`
-    )
-    .nullable(),
-  country: Yup.object().nullable(),
-  gender: Yup.object().nullable(),
-  notes: Yup.string().max(
-    bigInpuMaxLength,
-    `Notes must be at most ${bigInpuMaxLength} characters.`
-  ),
-  workCalendar: Yup.object().nullable().required("Select Work Calendar"),
-  canBePM: Yup.boolean(),
-  canBeSupervisor: Yup.boolean(),
-  address: Yup.string().max(
-    bigInpuMaxLength,
-    `Address must be at most ${bigInpuMaxLength} characters.`
-  ),
+      bigInpuMaxLength,
+      `Message must be at most ${bigInpuMaxLength} characters.`
+    ),
 }).required();
 
-const EditPhoneCall = ({ id, userData, mode }) => {
+const EditPhoneCall = ({ id, mode }) => {
   const router = useRouter();
   const viewMode = mode === modes.view;
   const editMode = mode === modes.edit;
   const cid = Number(id);
   const accessLevel = useUserAccessLevel(permissionTypeIds.users);
-  const [isPhoneCall, setIsPhoneCall] = useState(false);
   const {
     control,
     register,
@@ -192,282 +104,431 @@ const EditPhoneCall = ({ id, userData, mode }) => {
     resolver: yupResolver(schema),
   });
 
-  useEffect(() => {
-    setIsPhoneCall(true);
-  }, []);
+  const [allSalesTeamData, setAllSalesTeamData] = useState([{}]);
+  const [allLeadNameListData, setAllLeadNameListData] = useState([{}]);
+  const [deleteModal, setDeleteModal] = useState(false);
+
+  const queryClient = useQueryClient();
+
+  const results = useQueries({
+    queries: [
+      {
+        queryKey: [RQ.allSalesTeam],
+        queryFn: tkFetch.get(`${API_BASE_URL}/sales-team`),
+      },
+
+      {
+        queryKey: [RQ.allLeadName],
+        queryFn: tkFetch.get(`${API_BASE_URL}/lead-name`),
+      },
+    ],
+  });
+  const [salesTeam, leadList] = results;
+  const {
+    data: salesTeamData,
+    isLoading: salesTeamLoading,
+    isError: salesTeamIsError,
+    error: salesTeamError,
+  } = salesTeam;
+
+  const {
+    data: leadListData,
+    isLoading: leadListLoading,
+    isError: leadListIsError,
+    error: leadListError,
+  } = leadList;
 
   useEffect(() => {
-    if (userData) {
-      setValue("lead", {
-        value: userData.lead,
-        label: userData.lead,
-      });
-      setValue("phoneNumber", userData.phoneNumber);
-      setValue("organizer", {
-        value: userData.organizer,
-        label: userData.organizer,
+    if (salesTeamIsError) {
+      console.log("salesTeamIsError", salesTeamError);
+      TkToastError(salesTeamError.message);
+    }
+
+    if (leadListIsError) {
+      console.log("leadListIsError", leadListError);
+      TkToastError(leadListError.message);
+    }
+  }, [salesTeamIsError, salesTeamError, leadListIsError, leadListError]);
+
+  useEffect(() => {
+    if (salesTeamData) {
+      setAllSalesTeamData(
+        salesTeamData?.items?.map((salesTeamType) => ({
+          label: salesTeamType.firstname,
+          value: salesTeamType.entityid,
+        }))
+      );
+    }
+
+    if (leadListData) {
+      setAllLeadNameListData(
+        leadListData?.list?.map((leadListType) => ({
+          label: leadListType?.values?.companyname,
+        }))
+      );
+    }
+  }, [salesTeamData, leadListData]);
+
+  const { data, isLoading, isFetched, isError, error } = useQuery({
+    queryKey: [RQ.lead, cid],
+    queryFn: tkFetch.get(`${API_BASE_URL}/phoneCallActivity/${cid}`),
+    enabled: !!cid,
+  });
+
+  useEffect(() => {
+    if (isFetched && Array.isArray(data) && data.length > 0) {
+      const { bodyValues } = data[0];
+      setValue("title", bodyValues?.title);
+      setValue("phone", bodyValues?.phone);
+      setValue("company", {
+        value: bodyValues?.company?.text,
+        label: bodyValues?.company?.value,
       });
       setValue("status", {
-        value: userData.status,
-        label: userData.status,
+        value: bodyValues?.status[0].text,
+        label: bodyValues?.status[0].value,
       });
-      setValue("comments", userData.comments);
-      setValue("date", userData.date);
-      setValue("startTime", userData.startTime);
-      setValue("endTime", userData.endTime);
-      setValue("reminder", {
-        value: userData.reminder,
-        label: userData.reminder,
+      setValue("assigned", {
+        value: bodyValues?.assigned[0].text,
+        label: bodyValues?.assigned[0].text,
       });
-      setValue("callDeatilscomments", userData.callDeatilscomments);
+      setValue("startDate", bodyValues?.startdate);
+      setValue("message", bodyValues?.message);
     }
-  }, [setValue, userData]);
+  }, [data, setValue, isFetched]);
 
+  const phoneCallActivityPost = useMutation({
+    mutationFn: tkFetch.patch(`${API_BASE_URL}/phoneCallActivity/${cid}`),
+  });
+
+  const onSubmit = (formData) => {
+
+    const apiData = {
+      resttype: "Update",
+      recordtype: "phonecall",
+      bodyfields: {
+        title: formData.title,
+        phone: formData.phone,
+        company: {
+          value: formData.company.value,
+          label: formData.company.value,
+        },
+        status: {
+          value: formData.status.value,
+          label: formData.status.text,
+        },
+        assigned: {
+          value: formData.assigned.value,
+          label: formData.assigned.text,
+        },
+        startdate: formatDateForAPI(formData.startdate),
+        // completeddate: formatDateForAPI(formData.completeddate),
+        message: formData.message,
+        
+      },
+      filters: {
+        bodyfilters: [["internalid", "anyof", cid]],
+      },
+    };
+    phoneCallActivityPost.mutate(apiData, {
+      onSuccess: (data) => {
+        TkToastSuccess("Phone Call Updated Successfully");
+        router.push(`${urls.phoneCall}`);
+      },
+      onError: (error) => {
+        TkToastError("error while creating Lead", error);
+      },
+    });
+  };
+
+  const deletePhoneCall = useMutation({
+    mutationFn: tkFetch.deleteWithIdInUrl(`${API_BASE_URL}/phoneCallActivity`),
+  });
+
+  const handleDeletePhoneCall = () => {
+    if (!editMode) return;
+    const apiData = {
+      id: cid,
+    };
+    deletePhoneCall.mutate(apiData, {
+      onSuccess: (data) => {
+        TkToastSuccess("Phone Call Deleted Successfully");
+        queryClient.invalidateQueries({
+          queryKey: [RQ.allLeads, cid],
+        });
+        router.push(`${urls.phoneCall}`);
+      },
+      onError: (error) => {
+        TkToastError("error while deleting Phone Call", error);
+      },
+    });
+  };
+
+  const toggleDeleteModelPopup = () => {
+    setDeleteModal(true);
+  };
   return (
     <>
-      {isPhoneCall && (
-        <div>
-          <TkForm>
-            <TkRow className="mt-3">
-              <TkCol>
-                <TkCardHeader tag="h5" className="mb-4">
-                  <h4>Primary Information</h4>
-                </TkCardHeader>
-                <div>
-                  <TkRow className="g-3">
-                    <TkCol lg={4}>
-                      <Controller
-                        name="lead"
-                        control={control}
-                        render={({ field }) => (
-                          <TkSelect
-                            {...field}
-                            labelName="Lead"
-                            labelId={"_lead"}
-                            id="lead"
-                            placeholder="Select Leads"
-                            options={leadTypes}
-                            requiredStarOnLabel={true}
-                            disabled={viewMode}
-                          />
-                        )}
-                      />
-                    </TkCol>
+      {isLoading ? (
+        <TkLoader />
+      ) : (
+        <>
+          <DeleteModal
+            show={deleteModal}
+            onDeleteClick={() => {
+              handleDeletePhoneCall();
+              setDeleteModal(false);
+            }}
+            onCloseClick={() => setDeleteModal(false)}
+          />
+          <div>
+            <TkRow className="justify-content-center">
+              <TkCol lg={12}>
+                <TkEditCardHeader
+                  title={viewMode ? "Phone Call Details" : "Edit Phone Call"}
+                  viewMode={viewMode}
+                  editLink={`${urls.phoneCallEdit}/${cid}`}
+                  onDeleteClick={handleDeletePhoneCall}
+                  toggleDeleteModel={toggleDeleteModelPopup}
+                />
+                <TkCardBody className="mt-4">
+                  <TkForm onSubmit={handleSubmit(onSubmit)}>
+                    <div>
+                      <TkRow className="mt-3">
+                        <TkCol>
+                          <div>
+                            <TkRow className="g-3">
+                              <TkCol lg={4}>
+                                <TkInput
+                                  {...register("title")}
+                                  id="title"
+                                  name="title"
+                                  type="text"
+                                  labelName="Subject"
+                                  placeholder="Enter Subject"
+                                  requiredStarOnLabel={editMode}
+                                  disabled={viewMode}
+                                />
+                                {errors.title && (
+                                  <FormErrorText>
+                                    {errors.title.message}
+                                  </FormErrorText>
+                                )}
+                              </TkCol>
+                              <TkCol lg={4}>
+                                <Controller
+                                  name="company"
+                                  control={control}
+                                  render={({ field }) => (
+                                    <TkSelect
+                                      {...field}
+                                      labelName="Lead Name"
+                                      labelId={"company"}
+                                      id="company"
+                                      // options={[
+                                      //     { label: "Email", value: "Email" },
+                                      //     { label: "Direct Call", value: "Direct Call" },
+                                      //     { label: "Social Media", value: "Social Media" },
+                                      //     { label: "Portals", value: "Portals" },
+                                      //   ]}
+                                      options={allLeadNameListData}
+                                      loading={leadListLoading}
+                                      placeholder="Select Lead Name"
+                                      requiredStarOnLabel={editMode}
+                                      disabled={viewMode}
+                                    />
+                                  )}
+                                />
+                                {errors.company && (
+                                  <FormErrorText>
+                                    {errors.company.message}
+                                  </FormErrorText>
+                                )}
+                              </TkCol>
 
-                    <TkCol lg={4}>
-                      <TkInput
-                        {...register("phoneNumber")}
-                        labelName=" Phone Number"
-                        labelId={"phoneNumber"}
-                        id="phoneNumber"
-                        type="text"
-                        placeholder="Enter Phone Number"
-                        requiredStarOnLabel={true}
-                        disabled={viewMode}
-                      />
-                    </TkCol>
+                              <TkCol lg={4}>
+                                <TkInput
+                                  {...register("phone")}
+                                  id="phone"
+                                  name="phone"
+                                  type="text"
+                                  labelName="Phone Number"
+                                  placeholder="Enter Phone Number"
+                                  requiredStarOnLabel={editMode}
+                                  disabled={viewMode}
+                                />
+                                {errors.phone && (
+                                  <FormErrorText>
+                                    {errors.phone.message}
+                                  </FormErrorText>
+                                )}
+                              </TkCol>
 
-                    <TkCol lg={4}>
-                      <Controller
-                        name="organizer"
-                        control={control}
-                        render={({ field }) => (
-                          <TkSelect
-                            {...field}
-                            labelName="Organizer"
-                            tooltip="Select Organizer"
-                            labelId={"organizer"}
-                            id="organizer"
-                            options={organizerTypes}
-                            placeholder="Select Organizer"
-                            requiredStarOnLabel={true}
-                            disabled={viewMode}
-                          />
-                        )}
-                      />
-                    </TkCol>
-                  </TkRow>
-                </div>
-                <div>
-                  <TkRow className="mt-3">
-                    <TkCol lg={4}>
-                      <Controller
-                        name="status"
-                        control={control}
-                        render={({ field }) => (
-                          <TkSelect
-                            {...field}
-                            labelName="Status"
-                            labelId="status"
-                            id="status"
-                            options={[]}
-                            placeholder="Select Status"
-                            requiredStarOnLabel={true}
-                            disabled={viewMode}
-                          />
-                        )}
-                      />
-                    </TkCol>
-                    <TkCol lg={4}>
-                      <TkInput
-                        {...register("comments")}
-                        labelName="Comments"
-                        tooltip="Enter comments"
-                        labelId={"_comments"}
-                        id="comments"
-                        type="textarea"
-                        placeholder="Enter Comments"
-                        disabled={viewMode}
-                      />
-                    </TkCol>
-                  </TkRow>
-                </div>
+                              <TkCol lg={4}>
+                                <Controller
+                                  name="status"
+                                  control={control}
+                                  render={({ field }) => (
+                                    <TkSelect
+                                      {...field}
+                                      labelName="Status"
+                                      labelId={"_status"}
+                                      id="status"
+                                      options={[
+                                        {
+                                          label: "COMPLETED",
+                                          value: "Completed",
+                                        },
+                                        {
+                                          label: "SCHEDULED",
+                                          value: "Scheduled",
+                                        },
+                                      ]}
+                                      placeholder="Select Type"
+                                      requiredStarOnLabel={editMode}
+                                      disabled={viewMode}
+                                    />
+                                  )}
+                                />
+                                {errors.status && (
+                                  <FormErrorText>
+                                    {errors.status.message}
+                                  </FormErrorText>
+                                )}
+                              </TkCol>
+
+                              <TkCol lg={4}>
+                                <Controller
+                                  name="assigned"
+                                  control={control}
+                                  render={({ field }) => (
+                                    <TkSelect
+                                      {...field}
+                                      labelName="Organizer"
+                                      labelId={"assigned"}
+                                      id="assigned"
+                                      options={allSalesTeamData}
+                                      placeholder="Select Organizer"
+                                      requiredStarOnLabel={editMode}
+                                      disabled={viewMode}
+                                    />
+                                  )}
+                                />
+                                {errors.assigned && (
+                                  <FormErrorText>
+                                    {errors.assigned.message}
+                                  </FormErrorText>
+                                )}
+                              </TkCol>
+
+                              <TkCol lg={4}>
+                                <Controller
+                                  name="startDate"
+                                  control={control}
+                                  rules={{
+                                    required: "Date is required",
+                                  }}
+                                  render={({ field }) => (
+                                    <TkDate
+                                      {...field}
+                                      labelName="Date"
+                                      id={"startDate"}
+                                      placeholder="Select Date"
+                                      options={{
+                                        altInput: true,
+                                        dateFormat: "d M, Y",
+                                      }}
+                                      requiredStarOnLabel={editMode}
+                                      disabled={viewMode}
+                                    />
+                                  )}
+                                />
+                                {errors.startDate && (
+                                  <FormErrorText>
+                                    {errors.startDate.message}
+                                  </FormErrorText>
+                                )}
+                              </TkCol>
+
+                              {/* <TkCol lg={4}>
+                             <Controller
+                               name="completeddate"
+                               control={control}
+                               rules={{
+                                 required: "Date Completed is required",
+                               }}
+                               render={({ field }) => (
+                                 <TkDate
+                                   {...field}
+                                   labelName="Date Completed"
+                                   id={"completeddate"}
+                                   placeholder="Select Date Completed"
+                                   options={{
+                                     altInput: true,
+                                     dateFormat: "d M, Y",
+                                   }}
+                                 />
+                               )}
+                             />
+                             {errors.completeddate && (
+                               <FormErrorText>
+                                 {errors.completeddate.message}
+                               </FormErrorText>
+                             )}
+                           </TkCol> */}
+
+                              <TkCol lg={12}>
+                                <TkInput
+                                  {...register("message")}
+                                  id="message"
+                                  type="textarea"
+                                  labelName="Message"
+                                  placeholder="Enter Message"
+                                  disabled={viewMode}
+                                />
+                                {errors.message && (
+                                  <FormErrorText>
+                                    {errors.message.message}
+                                  </FormErrorText>
+                                )}
+                              </TkCol>
+                              <div className="d-flex mt-4 space-childern">
+                                {editMode ? (
+                                  <div
+                                    className="ms-auto"
+                                    id="update-form-btns"
+                                  >
+                                    <TkButton
+                                      color="secondary"
+                                      onClick={() => {
+                                        router.push(`${urls.phoneCall}`);
+                                      }}
+                                      type="button"
+                                      disabled={phoneCallActivityPost.isLoading}
+                                    >
+                                      Cancel
+                                    </TkButton>{" "}
+                                    <TkButton
+                                      type="submit"
+                                      color="primary"
+                                      loading={phoneCallActivityPost.isLoading}
+                                    >
+                                      Update
+                                    </TkButton>
+                                  </div>
+                                ) : null}
+                              </div>
+                            </TkRow>
+                          </div>
+                        </TkCol>
+                      </TkRow>
+                    </div>
+                  </TkForm>
+                </TkCardBody>
               </TkCol>
             </TkRow>
-
-            <TkRow className="mt-3">
-              <TkCol>
-                <TkCardHeader tag="h5" className="mb-4">
-                  <h4>Date and Time</h4>
-                </TkCardHeader>
-                <div>
-                  <TkRow className="g-3">
-                    <TkCol lg={4}>
-                      <Controller
-                        name="date"
-                        control={control}
-                        rules={{ required: "Date is required" }}
-                        render={({ field }) => (
-                          <TkDate
-                            {...field}
-                            labelName="Date"
-                            id={"date"}
-                            placeholder="Select Date"
-                            options={{
-                              altInput: true,
-                              dateFormat: "d M, Y",
-                            }}
-                            requiredStarOnLabel={true}
-                            disabled={viewMode}
-                          />
-                        )}
-                      />
-                    </TkCol>
-
-                    <TkCol lg={4}>
-                      <TkInput
-                        {...register(`startTime`, {
-                          required: "Time is required",
-                          validate: (value) => {
-                            if (value && !/^[0-9]*([.:][0-9]+)?$/.test(value)) {
-                              return "Invalid Time";
-                            }
-                            if (convertTimeToSec(value) > 86400 || value > 24) {
-                              return "Time should be less than 24 hours";
-                            }
-                          },
-                        })}
-                        onBlur={(e) => {
-                          setValue(
-                            `startTime`,
-                            convertToTimeFotTimeSheet(e.target.value)
-                          );
-                        }}
-                        labelName="Start Time"
-                        id={"startTime"}
-                        name="startTime"
-                        type="text"
-                        placeholder="Enter Start Time"
-                        disabled={viewMode}
-                        requiredStarOnLabel={true}
-                      />
-                    </TkCol>
-
-                    <TkCol lg={4}>
-                      <TkInput
-                        {...register(`endTime`, {
-                          required: "Time is required",
-                          validate: (value) => {
-                            if (value && !/^[0-9]*([.:][0-9]+)?$/.test(value)) {
-                              return "Invalid Time";
-                            }
-                            if (convertTimeToSec(value) > 86400 || value > 24) {
-                              return "Time should be less than 24 hours";
-                            }
-                          },
-                        })}
-                        onBlur={(e) => {
-                          setValue(
-                            `endTime`,
-                            convertToTimeFotTimeSheet(e.target.value)
-                          );
-                        }}
-                        labelName="End Time"
-                        id={"endTime"}
-                        name="endTime"
-                        type="text"
-                        placeholder="Enter End Time"
-                        disabled={viewMode}
-                        requiredStarOnLabel={true}
-                      />
-                    </TkCol>
-                  </TkRow>
-                </div>
-                <div>
-                  <TkRow className="mt-3">
-                    <TkCol lg={4}>
-                      <Controller
-                        name="reminder"
-                        control={control}
-                        render={({ field }) => (
-                          <TkSelect
-                            {...field}
-                            labelName="Reminder"
-                            labelId={"_reminder"}
-                            id="reminder"
-                            options={remindersTypes}
-                            placeholder="Select Reminder"
-                            requiredStarOnLabel={true}
-                            disabled={viewMode}
-                          />
-                        )}
-                      />
-                    </TkCol>
-
-                    <TkCol lg={4}>
-                      <TkInput
-                        {...register("callDeatilscomments")}
-                        labelName="After Call Details/Comments"
-                        tooltip="Enter comments"
-                        labelId={"_callDeatilscomments"}
-                        id="callDeatilscomments"
-                        type="textarea"
-                        placeholder="Enter Call Details/Comments"
-                        disabled={viewMode}
-                      />
-                    </TkCol>
-                  </TkRow>
-                </div>
-              </TkCol>
-            </TkRow>
-            <div className="d-flex mt-4 space-childern">
-              {editMode ? (
-                <div className="ms-auto" id="update-form-btns">
-                  <TkButton
-                    color="secondary"
-                    onClick={() => router.push(`${urls.phoneCall}`)}
-                    type="button"
-                  >
-                    Cancel
-                  </TkButton>{" "}
-                  <TkButton type="submit" color="primary">
-                    Update
-                  </TkButton>
-                </div>
-              ) : null}
-            </div>
-          </TkForm>
-        </div>
+          </div>
+        </>
       )}
     </>
   );

@@ -45,7 +45,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import TkContainer from "../TkContainer";
 import ActivityPopup from "./ActivityPopup";
 import FormErrorText, { FormErrorBox } from "../forms/ErrorText";
-import { convertTimeToSec, convertToTimeFotTimeSheet } from "../../utils/time";
+import { convertTimeToSec, convertToTime, convertToTimeFotTimeSheet } from "../../utils/time";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { useMutation, useQueries } from "@tanstack/react-query";
 import tkFetch from "../../utils/fetch";
@@ -54,6 +54,7 @@ import { TkToastError, TkToastSuccess } from "../TkToastContainer";
 import TkIcon from "../TkIcon";
 import LeadEventPopup from "./LeadEventPopup";
 import LeadTaskPopup from "./LeadTaskPopup";
+import { MaxCrNoLength } from "../../../lib/constants";
 const tabs = {
   directCall: "primary",
   email: "email",
@@ -64,13 +65,15 @@ const tabs = {
   leadNurutring: "nurturing",
   requirementDetails: "requirementDetails",
   locationDetails: "locationDetails",
-  leadActivity: "leadActivity",
+  phoneCallActivity: "phoneCallActivity",
+  taskActivity: "taskActivity",
+  eventActivity: "eventActivity",
 };
 
 const schema = Yup.object({
   custentity_lms_leadsource: Yup.object()
     .nullable()
-    .required("Lead source is required"),
+    .required("Lead Source is required"),
   custentity_lms_name_of_the_platform_dd: Yup.object().required(
     "Name Of Platform is required"
   ),
@@ -93,11 +96,11 @@ const schema = Yup.object({
 
   custentity_lms_personal_phonenumber: Yup.string()
     .nullable()
-    .required("Phone number is Required")
-    .matches(/^[0-9+() -]*$/, "Phone number must be number.")
+    .required("Phone Number is required")
+    .matches(/^[0-9+() -]*$/, "Phone Number must be number.")
     .max(
       MaxPhoneNumberLength,
-      `Phone number must be at most ${MaxPhoneNumberLength} numbers.`
+      `Phone Number must be at most ${MaxPhoneNumberLength} numbers.`
     ),
   custentity_lms_personal_email: Yup.string()
     .nullable()
@@ -113,7 +116,7 @@ const schema = Yup.object({
     ),
   custentity_lms_enquiryby: Yup.object()
     .nullable()
-    .required("Enquiry by is required"),
+    .required("Enquiry By is required"),
 
   custentity_lms_noteother: Yup.string()
     .nullable()
@@ -127,15 +130,15 @@ const schema = Yup.object({
     .required("Company Name is required")
     .max(
       smallInputMaxLength,
-      `Company name should have at most ${smallInputMaxLength} characters.`
+      `Company Name should have at most ${smallInputMaxLength} characters.`
     ),
-  phone: Yup.string()
+  phoneNo: Yup.string()
     .nullable()
-    .required("Contact number is Required")
-    .matches(/^[0-9+() -]*$/, "Contact number must be number.")
+    .required("Contact Number is required")
+    .matches(/^[0-9+() -]*$/, "Contact Number must be number.")
     .max(
       MaxPhoneNumberLength,
-      `Contact number must be at most ${MaxPhoneNumberLength} numbers.`
+      `Contact Number must be at most ${MaxPhoneNumberLength} numbers.`
     ),
   email: Yup.string()
     .nullable()
@@ -145,11 +148,28 @@ const schema = Yup.object({
       MaxEmailLength,
       `Company Email should have at most ${MaxEmailLength} characters.`
     ),
-  custentity_lms_cr_no: Yup.string()
-    .nullable()
-    .required("CR Number is required"),
+  // custentity_lms_cr_no: Yup.string()
+  //   .nullable()
+  //   .required("CR Number is required"),
 
-  custentity3: Yup.string().nullable().required("VAT Number is required"),
+  // custentity3: Yup.string().nullable().required("VAT Number is required"),
+
+  custentity_lms_cr_no: Yup.string()
+  .nullable()
+  .required("CR Number is required")
+  .matches(/^[a-zA-Z0-9]*$/, 'CR Number must be alphanumeric')
+    .max(
+      MaxCrNoLength,
+      `CR Number should have at most ${MaxCrNoLength} characters.`
+    ),
+
+custentity3: Yup.string().nullable()
+.required("VAT Number is required")
+.matches(/^[a-zA-Z0-9]*$/, 'VAT Number must be alphanumeric')
+.max(
+  MaxCrNoLength,
+  `VAT Number should have at most ${MaxCrNoLength} characters.`
+),
 
   custentity_lms_client_type: Yup.object()
     .nullable()
@@ -162,13 +182,19 @@ const schema = Yup.object({
   addr1: Yup.string().max(
     smallInputMaxLength,
     `Address 1 should have at most ${smallInputMaxLength} characters.`
-  ),
-  // .nullable(),
+  )
+  .nullable(),
+  addr2: Yup.string()
+    .max(
+      smallInputMaxLength,
+      `Address 2 should have at most ${smallInputMaxLength} characters.`
+    )
+    .nullable(),
   city: Yup.string().max(
     smallInputMaxLength,
     `City should have at most ${smallInputMaxLength} characters.`
-  ),
-  // .nullable(),
+  )
+  .nullable(),
 
   state: Yup.string().nullable(),
 
@@ -201,15 +227,11 @@ function SocialMedia({ selectedButton }) {
   const [activityModal, setActivityModal] = useState(false);
   const [leadTaskModal, setLeadTaskModal] = useState(false);
   const [leadEventModal, setLeadEventModal] = useState(false);
-
-  const [isLead, setIsLead] = useState(false);
   const [rSelected, setRSelected] = useState(0);
   const [activeTab, setActiveTab] = useState(tabs.directCall);
   const [activeSubTab, setActiveSubTab] = useState(tabs.requirementDetails);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showForm, setShowForm] = useState(false);
-  const [buttonsDisabled, setButtonsDisabled] = useState(false);
-  const [taskDropdown, setTaskDropdown] = useState([]);
   const [allPrimarySubsidiaryData, setAllPrimarySubsidiaryData] = useState([
     {},
   ]);
@@ -233,6 +255,7 @@ function SocialMedia({ selectedButton }) {
   const [allCountryData, setAllCountryData] = useState([{}]);
   const [fullAddress, setFullAddress] = useState(false);
   const [selectedEnquiryBy, setSelectedEnquiryBy] = useState(false);
+  const [allNurturStatusData, setAllNurturStatusData] = useState([{}]);
 
   const results = useQueries({
     queries: [
@@ -305,6 +328,10 @@ function SocialMedia({ selectedButton }) {
         queryKey: [RQ.allCountry],
         queryFn: tkFetch.get(`${API_BASE_URL}/country`),
       },
+      {
+        queryKey: [RQ.allNurturingStatus],
+        queryFn: tkFetch.get(`${API_BASE_URL}/nurtur-status`),
+      },
     ],
   });
 
@@ -324,6 +351,7 @@ function SocialMedia({ selectedButton }) {
     leadCampaign,
     leadVisitUpdate,
     country,
+    status,
   ] = results;
   const {
     data: primarySubisdiaryData,
@@ -430,6 +458,13 @@ function SocialMedia({ selectedButton }) {
     error: countryError,
   } = country;
 
+  const {
+    data: statusNurturData,
+    isLoading: statusNurturLoading,
+    isError: statusNurturIsError,
+    error: statusNurturError,
+  } = status;
+
   useEffect(() => {
     if (primarySubisdiaryIsError) {
       console.log("primarySubisdiaryIsError", primarySubisdiaryError);
@@ -504,6 +539,11 @@ function SocialMedia({ selectedButton }) {
       console.log("countryIsError", countryError);
       TkToastError(countryError.message);
     }
+
+    if (statusNurturIsError) {
+      console.log("statusNurturIsError", statusNurturError);
+      TkToastError(statusNurturError.message);
+    }
   }, [
     primarySubisdiaryIsError,
     primarySubisdiaryError,
@@ -535,6 +575,8 @@ function SocialMedia({ selectedButton }) {
     leadVisitUpdateError,
     countryIsError,
     countryError,
+    statusNurturIsError,
+    statusNurturError,
   ]);
 
   useEffect(() => {
@@ -672,6 +714,15 @@ function SocialMedia({ selectedButton }) {
         }))
       );
     }
+
+    if (statusNurturData) {
+      setAllNurturStatusData(
+        statusNurturData?.items?.map((nurturStatusType) => ({
+          label: nurturStatusType.name,
+          value: nurturStatusType.id,
+        }))
+      );
+    }
   }, [
     primarySubisdiaryData,
     enquiryByData,
@@ -688,6 +739,7 @@ function SocialMedia({ selectedButton }) {
     leadCampaignData,
     leadVisitUpdateData,
     countryData,
+    statusNurturData,
   ]);
 
   const [rows, setRows] = useState([
@@ -708,6 +760,35 @@ function SocialMedia({ selectedButton }) {
       custrecord_lms_phonenumber: "",
       custrecord_location_email: "",
       custrecord_lms_designation: "",
+    },
+  ]);
+
+  const [phoneCallRows, setPhoneCallRows] = useState([
+    {
+      subject: "",
+      phone: "",
+      status: null,
+      organizer: null,
+      startDate: "",
+    },
+  ]);
+
+  const [taskCallRows, setTaskCallRows] = useState([
+    {
+      taskTitle: "",
+      priority: null,
+      startTasktDate: "",
+      dueTaskDate: "",
+    },
+  ]);
+
+  const [eventCallRows, setEventCallRows] = useState([
+    {
+      eventTitle: "",
+      location: "",
+      startEventtDate: "",
+      starttime: "",
+      endtime: "",
     },
   ]);
 
@@ -741,13 +822,9 @@ function SocialMedia({ selectedButton }) {
 
   useEffect(() => {
     if (fullAddress) {
-      setValue("addrtext", fullAddress);
+      setValue("custentity_lms_address", fullAddress);
     }
   }, [fullAddress, setValue]);
-
-  useEffect(() => {
-    setIsLead(true);
-  }, []);
 
   useEffect(() => {
     const now = new Date();
@@ -801,6 +878,44 @@ function SocialMedia({ selectedButton }) {
     ]);
   };
 
+  const handleAddPhoneCallRow = () => {
+    setPhoneCallRows([
+      ...phoneCallRows,
+      {
+        subject: "",
+        phone: "",
+        status: null,
+        organizer: null,
+        startDate: "",
+      },
+    ]);
+  };
+
+  const handleAddTaskRow = () => {
+    setTaskCallRows([
+      ...taskCallRows,
+      {
+        taskTitle: "",
+        priority: null,
+        startTasktDate: "",
+        dueTaskDate: "",
+      },
+    ]);
+  };
+
+  const handleAddEventRow = () => {
+    setEventCallRows([
+      ...eventCallRows,
+      {
+        eventTitle: "",
+        location: "",
+        startEventtDate: "",
+        starttime: "",
+        endtime: "",
+      },
+    ]);
+  };
+
   const { remove: removeDivision } = useFieldArray({
     control,
     name: "custrecord_lms_division",
@@ -849,6 +964,67 @@ function SocialMedia({ selectedButton }) {
     control,
     name: "custrecord_lms_designation",
   });
+  const { remove: removeSubject } = useFieldArray({
+    control,
+    name: "subject",
+  });
+  const { remove: removePhoneNumber } = useFieldArray({
+    control,
+    name: "phone",
+  });
+  const { remove: removeStatus } = useFieldArray({
+    control,
+    name: "status",
+  });
+  const { remove: removeOrganizer } = useFieldArray({
+    control,
+    name: "organizer",
+  });
+  const { remove: removeStartDate } = useFieldArray({
+    control,
+    name: "startDate",
+  });
+  const { remove: removeTaskTitle } = useFieldArray({
+    control,
+    name: "taskTitle",
+  });
+  const { remove: removeTaskPriority } = useFieldArray({
+    control,
+    name: "priority",
+  });
+  const { remove: removeTaskStartDate } = useFieldArray({
+    control,
+    name: "startTasktDate",
+  });
+  const { remove: removeTaskDueDate } = useFieldArray({
+    control,
+    name: "dueTaskDate",
+  });
+  const { remove: removeEventTitle } = useFieldArray({
+    control,
+    name: "eventTitle",
+  });
+
+  const { remove: removeEventLocation } = useFieldArray({
+    control,
+    name: "location",
+  });
+
+  const { remove: removeEventStartDate } = useFieldArray({
+    control,
+    name: "startEventtDate",
+  });
+
+  const { remove: removeEventStartTime } = useFieldArray({
+    control,
+    name: "starttime",
+  });
+
+  const { remove: removeEventEndTime } = useFieldArray({
+    control,
+    name: "endtime",
+  });
+
 
   const handleRemoveRow = (index) => {
     removeDivision(index);
@@ -877,6 +1053,40 @@ function SocialMedia({ selectedButton }) {
     const newLocationRows = [...locationRows];
     newLocationRows.splice(i, 1);
     setLocationRows(newLocationRows);
+  };
+
+  const handleRemovePhoneCallRow = (i) => {
+    removeSubject(i);
+    removePhoneNumber(i);
+    removeStatus(i);
+    removeOrganizer(i);
+    removeStartDate(i);
+    const newPhoneCallRows = [...phoneCallRows];
+    newPhoneCallRows.splice(i, 1);
+    setPhoneCallRows(newPhoneCallRows);
+  };
+
+  const handleRemoveTaskRow = (i) => {
+    removeTaskTitle(i);
+    removeTaskPriority(i);
+    removeTaskStartDate(i);
+    removeTaskDueDate(i);
+    const newTaskRows = [...taskCallRows];
+    newTaskRows.splice(i, 1);
+    setPhoneCallRows(newTaskRows);
+  };
+
+  const handleRemoveEventRow = (i) => {
+    removeEventTitle(i);
+    removeEventLocation(i);
+    removeEventAccess(i);
+    removeEventStartDate(i);
+    removeEventStartTime(i);
+    removeEventEndTime(i);
+
+    const newEventRows = [...eventCallRows];
+    newEventRows.splice(i, 1);
+    setPhoneCallRows(newEventRows);
   };
 
   const leadSocialMediaPost = useMutation({
@@ -1035,7 +1245,7 @@ function SocialMedia({ selectedButton }) {
         },
         custentity_lms_noteother: formData.custentity_lms_noteother,
         companyname: formData.companyname,
-        phone: formData.phone,
+        phone: formData.phoneNo,
         email: formData.email,
         custentity_lms_cr_no: formData.custentity_lms_cr_no,
         custentity3: formData.custentity3,
@@ -1047,28 +1257,38 @@ function SocialMedia({ selectedButton }) {
           value: formData.custentity_market_segment.value,
           text: formData.custentity_market_segment.text,
         },
+        addr1: formData.addr1,
+        addr2: formData.addr2,
+        city: formData.city,
+        state: formData.state,
+        zip: formData.zip,
+        country: {
+          value: formData.country?.value,
+          label: formData.country?.text,
+        },
+        custentity_lms_address: formData.custentity_lms_address,
       },
       linefields: {
-        addressbook: [
-          {
-            subrecord: {
-              addressbookaddress: {
-                addr1: formData.addr1,
-                addr2: formData.addr2,
-                city: formData.city,
-                state: formData.state,
-                zip: formData.zip,
-                country: {
-                  value: formData.country.value,
-                  text: formData.country.text,
-                },
-              },
-            },
-            defaultBilling: true,
-            defaultShipping: true,
-            addrtext: formData.addrtext,
-          },
-        ],
+        // addressbook: [
+        //   {
+        //     subrecord: {
+        //       addressbookaddress: {
+        //         addr1: formData.addr1,
+        //         addr2: formData.addr2,
+        //         city: formData.city,
+        //         state: formData.state,
+        //         zip: formData.zip,
+        //         country: {
+        //           value: formData.country?.value,
+        //           text: formData.country?.text,
+        //         },
+        //       },
+        //     },
+        //     defaultBilling: true,
+        //     defaultShipping: true,
+        //     addrtext: formData.addrtext,
+        //   },
+        // ],
         recmachcustrecord_lms_requirement_details:
           formData.custrecord_lms_requirement.flatMap((req, i) => ({
             custrecord_lms_requirement: req,
@@ -1079,7 +1299,7 @@ function SocialMedia({ selectedButton }) {
               value: formData.custrecord_lms_division.value,
               text: formData.custrecord_lms_division.text,
             },
-            custrecord_lms_duration: Number(
+            custrecord_lms_duration: convertToTime(
               formData.custrecord_lms_duration[i]
             ),
             custrecord_lms_unit_of_measure: {
@@ -1142,42 +1362,42 @@ function SocialMedia({ selectedButton }) {
           },
         ],
 
-        calls: {
-          title: formData.title,
-          company: formData.company,
-          phone: formData.phone,
-          status: {
-            value: formData.status?.value,
-            text: formData.status?.text,
-          },
-          organizer: {
-            value: formData.organizer?.value,
-            text: formData.organizer?.text,
-          },
-          startdate: formatDateForAPI(formData.startdate),
-          message: formData.message,
-        },
+        // calls:
+        // formData.phone?.map((call, i) => ({
+        //   phone: call,
+        //   title: formData.subject[i],
+        //   status: {
+        //     value: formData.status[i]?.value,
+        //     text: formData.status[i]?.label,
+        //   },
+        //   organizer: {
+        //     value: formData.organizer[i]?.value,
+        //     text: formData.organizer[i]?.label,
+        //   }
+        //   // startdate: [formData.startdate]
+        // })),
 
-        tasks: {
-          title: formData.title,
-          company: formData.company,
-          priority: {
-            value: formData.priority?.value,
-            text: formData.priority?.text,
-          },
-          startdate: formatDateForAPI(formData.startdate),
-          duedate: formatDateForAPI(formData.duedate),
-          message: formData.message,
-        },
+        // tasks: formData.title?.map((task, i) => ({
+        //   title: formData.taskTitle[i],
 
-        events: {
-          title: formData.title,
-          company: formData.company,
-          location: formData.location,
-          starttime: formData.starttime,
-          endtime: formData.endtime,
-          message: formData.message,
-        },
+        //   priority: {
+        //     value: formData.status[i]?.value,
+        //     label: formData.status[i]?.text,
+        //   },
+        //   // startdate: [
+        //   //   formData.startTasktDate[i],
+        //   // ],
+        //   // dueDate: [formData.dueTaskDate[i]]
+
+        // })),
+
+        // events: formData.location?.map((event, i) => ({
+        //   title: formData.eventTitle[i],
+        //   location: event,
+        //   starttime: [formData.starttime[i]],
+        //   endtime: [formData.endtime[i]],
+        //   // startdate: formData.startEventtDate,
+        // })),
       },
     };
 
@@ -1296,15 +1516,15 @@ function SocialMedia({ selectedButton }) {
                   if (value && !/^[0-9]*([.:][0-9]+)?$/.test(value)) {
                     return "Invalid Duration";
                   }
-                  if (convertTimeToSec(value) > 86400 || value > 24) {
-                    return "Duration should be less than 24 hours";
-                  }
+                  // if (convertTimeToSec(value) > 86400 || value > 24) {
+                  //   return "Duration should be less than 24 hours";
+                  // }
                 },
               })}
               onBlur={(e) => {
                 setValue(
                   `custrecord_lms_duration[${cellProps.row.index}]`,
-                  convertToTimeFotTimeSheet(e.target.value)
+                  convertToTime(e.target.value)
                 );
               }}
             />
@@ -1685,6 +1905,463 @@ function SocialMedia({ selectedButton }) {
     []
   );
 
+  const phoneCallActivityColumns = [
+    {
+      Header: "Subject",
+      accessor: "subject",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              id="subject"
+              placeholder="Enter Subject"
+              {...register(`subject[${cellProps.row.index}]`)}
+              rules={{ required: "Subject is required" }}
+            />
+            {errors?.subject?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.subject?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Phone Number",
+      accessor: "phone",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              placeholder="Enter Phone Number"
+              id="phone"
+              {...register(`phone[${cellProps.row.index}]`)}
+            />
+            {errors?.phone?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.phone?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Status",
+      accessor: "status",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`status[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <>
+                  <TkSelect
+                    {...field}
+                    id="status"
+                    options={[
+                      {
+                        label: "Completed",
+                        value: "Completed",
+                      },
+                      {
+                        label: "Scheduled",
+                        value: "Scheduled",
+                      },
+                    ]}
+                  />
+                  {errors?.status?.[cellProps.row.index] && (
+                    <FormErrorText>
+                      {errors?.status?.[cellProps.row.index]?.message}
+                    </FormErrorText>
+                  )}
+                </>
+              )}
+            />
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Organizer",
+      accessor: "organizer",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`organizer[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <>
+                  <TkSelect
+                    {...field}
+                    id="organizer"
+                    options={allSalesTeamData}
+                  />
+                  {errors?.organizer?.[cellProps.row.index] && (
+                    <FormErrorText>
+                      {errors?.organizer?.[cellProps.row.index]?.message}
+                    </FormErrorText>
+                  )}
+                </>
+              )}
+            />
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Date",
+      accessor: "startDate",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`startDate[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <>
+                  <TkDate {...field} id="startDate" placeholder="Select Date" />
+                  {errors?.startDate?.[cellProps.row.index] && (
+                    <FormErrorText>
+                      {errors?.startDate?.[cellProps.row.index]?.message}
+                    </FormErrorText>
+                  )}
+                </>
+              )}
+            />
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Action",
+      accessor: "action",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkButton
+              type={"button"}
+              onClick={() => {
+                handleRemovePhoneCallRow(cellProps.row.index);
+              }}
+              disabled={phoneCallRows.length === 1}
+            >
+              Delete
+            </TkButton>
+          </>
+        );
+      },
+    },
+  ];
+
+  const taskActivityColumns = [
+    {
+      Header: "Title",
+      accessor: "taskTitle",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              id="taskTitle"
+              placeholder="Enter Title"
+              {...register(`taskTitle[${cellProps.row.index}]`)}
+              rules={{ required: "Title is required" }}
+            />
+            {errors?.taskTitle?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.taskTitle?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Proirity",
+      accessor: "priority",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`priority[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <>
+                  <TkSelect
+                    {...field}
+                    id="priority"
+                    options={[
+                      { label: "High", value: "1" },
+                      { label: "Medium", value: "2" },
+                      { label: "Low", value: "3" },
+                    ]}
+                  />
+                  {errors?.priority?.[cellProps.row.index] && (
+                    <FormErrorText>
+                      {errors?.priority?.[cellProps.row.index]?.message}
+                    </FormErrorText>
+                  )}
+                </>
+              )}
+            />
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Date",
+      accessor: "startTasktDate",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`startTasktDate[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <>
+                  <TkDate
+                    {...field}
+                    id="startTasktDate"
+                    placeholder="Select Date"
+                  />
+                  {errors?.startTasktDate?.[cellProps.row.index] && (
+                    <FormErrorText>
+                      {errors?.startTasktDate?.[cellProps.row.index]?.message}
+                    </FormErrorText>
+                  )}
+                </>
+              )}
+            />
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Date Date",
+      accessor: "dueTaskDate",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`dueTaskDate[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <>
+                  <TkDate
+                    {...field}
+                    id="dueTaskDate"
+                    placeholder="Select Date Completed"
+                  />
+                  {errors?.dueTaskDate?.[cellProps.row.index] && (
+                    <FormErrorText>
+                      {errors?.dueTaskDate?.[cellProps.row.index]?.message}
+                    </FormErrorText>
+                  )}
+                </>
+              )}
+            />
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Action",
+      accessor: "action",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkButton
+              type={"button"}
+              onClick={() => {
+                handleRemoveTaskRow(cellProps.row.index);
+              }}
+              disabled={taskCallRows.length === 1}
+            >
+              Delete
+            </TkButton>
+          </>
+        );
+      },
+    },
+  ];
+
+  const eventActivityColumns = [
+    {
+      Header: "Title",
+      accessor: "eventTitle",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              id="eventTitle"
+              placeholder="Enter Title"
+              {...register(`eventTitle[${cellProps.row.index}]`)}
+              rules={{ required: "Title is required" }}
+            />
+            {errors?.eventTitle?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.eventTitle?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Location",
+      accessor: "location",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              id="location"
+              placeholder="Enter Location"
+              {...register(`location[${cellProps.row.index}]`)}
+              rules={{ required: "Location is required" }}
+            />
+            {errors?.location?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.location?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Date",
+      accessor: "startDate",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <Controller
+              control={control}
+              name={`startDate[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <>
+                  <TkDate {...field} id="startDate" placeholder="Select Date" />
+                  {errors?.startDate?.[cellProps.row.index] && (
+                    <FormErrorText>
+                      {errors?.startDate?.[cellProps.row.index]?.message}
+                    </FormErrorText>
+                  )}
+                </>
+              )}
+            />
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Start Time",
+      accessor: "starttime",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              id="starttime"
+              placeholder="Enter Start Time"
+              {...register(`starttime[${cellProps.row.index}]`, {
+                required: "Start Time is required",
+                validate: (value) => {
+                  if (value && !/^[0-9]*([.:][0-9]+)?$/.test(value)) {
+                    return "Invalid Start Time";
+                  }
+                },
+              })}
+              onBlur={(e) => {
+                setValue(
+                  `starttime[${cellProps.row.index}]`,
+                  convertToTime(e.target.value)
+                );
+              }}
+            />
+            {errors?.starttime?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.starttime?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "End Time",
+      accessor: "endtime",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkInput
+              type="text"
+              id="endtime"
+              placeholder="Enter End Time"
+              {...register(`endtime[${cellProps.row.index}]`, {
+                required: "End Time is required",
+                validate: (value) => {
+                  if (value && !/^[0-9]*([.:][0-9]+)?$/.test(value)) {
+                    return "Invalid End Time";
+                  }
+                },
+              })}
+              onBlur={(e) => {
+                setValue(
+                  `endtime[${cellProps.row.index}]`,
+                  convertToTime(e.target.value)
+                );
+              }}
+            />
+            {errors?.endtime?.[cellProps.row.index] && (
+              <FormErrorText>
+                {errors?.endtime?.[cellProps.row.index]?.message}
+              </FormErrorText>
+            )}
+          </>
+        );
+      },
+    },
+    {
+      Header: "Action",
+      accessor: "action",
+      Cell: (cellProps) => {
+        return (
+          <>
+            <TkButton
+              type={"button"}
+              onClick={() => {
+                handleRemoveEventRow(cellProps.row.index);
+              }}
+              disabled={eventCallRows.length === 1}
+            >
+              Delete
+            </TkButton>
+          </>
+        );
+      },
+    },
+  ];
+
   const concatenateAddress = () => {
     const addr1 = getValues("addr1") || "";
     const addr2 = getValues("addr2") || "";
@@ -2000,256 +2677,7 @@ function SocialMedia({ selectedButton }) {
                 </TkCol>
               </TkRow>
 
-              {/* <TkRow className="mt-5">
-                <TkCol>
-                  <TkCardHeader tag="h5" className="mb-4">
-                    <h4>Company Details</h4>
-                  </TkCardHeader>
-                  <div>
-                    <TkRow className="g-3">
-                      <TkCol lg={4}>
-                        <TkInput
-                          {...register("companyName")}
-                          id="companyName"
-                          type="text"
-                          labelName="Company Name"
-                          placeholder="Enter Company Name"
-                          requiredStarOnLabel="true"
-                        />
-                        {errors.companyName && (
-                          <FormErrorText>
-                            {errors.companyName.message}
-                          </FormErrorText>
-                        )}
-                      </TkCol>
-                      <TkCol lg={4}>
-                        <TkInput
-                          {...register("phone")}
-                          id="phone"
-                          name="phone"
-                          type="text"
-                          labelName="Contact No"
-                          placeholder="Enter Contact No"
-                          requiredStarOnLabel="true"
-                        />
-                        {errors.phone && (
-                          <FormErrorText>{errors.phone.message}</FormErrorText>
-                        )}
-                      </TkCol>
-                      <TkCol lg={4}>
-                        <TkInput
-                          {...register("email")}
-                          id="email"
-                          name="email"
-                          type="text"
-                          labelName="Email"
-                          placeholder="Enter Email"
-                          requiredStarOnLabel="true"
-                        />
-                        {errors.email && (
-                          <FormErrorText>{errors.email.message}</FormErrorText>
-                        )}
-                      </TkCol>
-
-                      <TkCol lg={4}>
-                        <TkInput
-                          {...register("custentity_lms_cr_no")}
-                          id="custentity_lms_cr_no"
-                          name="custentity_lms_cr_no"
-                          type="text"
-                          labelName="CR No"
-                          placeholder="Enter CR No"
-                          requiredStarOnLabel="true"
-                        />
-                        {errors.custentity_lms_cr_no && (
-                          <FormErrorText>
-                            {errors.custentity_lms_cr_no.message}
-                          </FormErrorText>
-                        )}
-                      </TkCol>
-
-                      <TkCol lg={4}>
-                        <TkInput
-                          {...register("custentity3")}
-                          id="custentity3"
-                          name="custentity3"
-                          type="text"
-                          labelName="VAT No"
-                          placeholder="Enter VAT No"
-                          requiredStarOnLabel="true"
-                        />
-                        {errors.custentity3 && (
-                          <FormErrorText>
-                            {errors.custentity3.message}
-                          </FormErrorText>
-                        )}
-                      </TkCol>
-                      <TkCol lg={4}>
-                        <Controller
-                          name="custentity_lms_client_type"
-                          control={control}
-                          render={({ field }) => (
-                            <TkSelect
-                              {...field}
-                              id="custentity_lms_client_type"
-                              name="custentity_lms_client_type"
-                              labelName="Client Type"
-                              placeholder="Select Client Type"
-                              options={allClientTypeData}
-                              loading={clientTypeLoading}
-                              requiredStarOnLabel="true"
-                            />
-                          )}
-                        />
-                        {errors.custentity_lms_client_type && (
-                          <FormErrorText>
-                            {errors.custentity_lms_client_type.message}
-                          </FormErrorText>
-                        )}
-                      </TkCol>
-                      <TkCol lg={2}>
-                        <Controller
-                          name="custentity_market_segment"
-                          control={control}
-                          render={({ field }) => (
-                            <TkSelect
-                              {...field}
-                              id="custentity_market_segment"
-                              name="custentity_market_segment"
-                              labelName="Segment"
-                              placeholder="Select Segment"
-                              options={allSegmentData}
-                              loading={segmentLoading}
-                              requiredStarOnLabel="true"
-                            />
-                          )}
-                        />
-                        {errors.custentity_market_segment && (
-                          <FormErrorText>
-                            {errors.custentity_market_segment.message}
-                          </FormErrorText>
-                        )}
-                      </TkCol>
-                      <TkCol lg={5}>
-                        <TkInput
-                          {...register("addr1")}
-                          id="addr1"
-                          name="addr1"
-                          type="textarea"
-                          labelName="Address 1"
-                          placeholder="Enter Address 1"
-                          onBlur={handleInputBlur}
-                        />
-                        {errors.addr1 && (
-                          <FormErrorText>{errors.addr1.message}</FormErrorText>
-                        )}
-                      </TkCol>
-
-                      <TkCol lg={5}>
-                        <TkInput
-                          {...register("addr2")}
-                          id="addr2"
-                          name="addr2"
-                          type="textarea"
-                          labelName="Address 2"
-                          placeholder="Enter Address 2"
-                          onBlur={handleInputBlur}
-                        />
-                        {errors.addr2 && (
-                          <FormErrorText>{errors.addr2.message}</FormErrorText>
-                        )}
-                      </TkCol>
-
-                      <TkCol lg={3}>
-                        <TkInput
-                          {...register("city")}
-                          id="city"
-                          name="city"
-                          type="text"
-                          labelName="City"
-                          placeholder="Enter City"
-                          onBlur={handleInputBlur}
-                        />
-                        {errors.city && (
-                          <FormErrorText>{errors.city.message}</FormErrorText>
-                        )}
-                      </TkCol>
-
-                      <TkCol lg={3}>
-                        <TkInput
-                          {...register("state")}
-                          id="state"
-                          name="state"
-                          type="text"
-                          labelName="State"
-                          placeholder="Enter State"
-                          onBlur={handleInputBlur}
-                        />
-                        {errors.state && (
-                          <FormErrorText>{errors.state.message}</FormErrorText>
-                        )}
-                      </TkCol>
-
-                      <TkCol lg={3}>
-                        <TkInput
-                          {...register("zip")}
-                          id="zip"
-                          name="zip"
-                          type="text"
-                          labelName="Zip"
-                          placeholder="Enter Zip"
-                          onBlur={handleInputBlur}
-                        />
-                        {errors.zip && (
-                          <FormErrorText>{errors.zip.message}</FormErrorText>
-                        )}
-                      </TkCol>
-
-                      <TkCol lg={3}>
-                        <Controller
-                          name="country"
-                          control={control}
-                          render={({ field }) => (
-                            <TkSelect
-                              {...field}
-                              labelName="Country"
-                              tooltip="Select Country"
-                              labelId={"_country"}
-                              id="country"
-                              options={allCountryData}
-                              placeholder="Select Country"
-                              onBlur={handleInputBlur}
-                            />
-                          )}
-                        />
-
-                        {errors.country && (
-                          <FormErrorText>
-                            {errors.country.message}
-                          </FormErrorText>
-                        )}
-                      </TkCol>
-
-                      <TkCol lg={12}>
-                        <TkInput
-                          {...register("addrtext")}
-                          id="addrtext"
-                          name="addrtext"
-                          type="textarea"
-                          labelName="Address "
-                          placeholder="Enter Address"
-                          disabled={true}
-                        />
-                        {errors.addrtext && (
-                          <FormErrorText>
-                            {errors.addrtext.message}
-                          </FormErrorText>
-                        )}
-                      </TkCol>
-                    </TkRow>
-                  </div>
-                </TkCol>
-              </TkRow> */}
+             
               <TkRow className="mt-5">
                 <TkCol>
                   <TkCardHeader tag="h5" className="mb-4">
@@ -2274,16 +2702,16 @@ function SocialMedia({ selectedButton }) {
                       </TkCol>
                       <TkCol lg={4}>
                         <TkInput
-                          {...register("phone")}
-                          id="phone"
-                          name="phone"
+                          {...register("phoneNo")}
+                          id="phoneNo"
+                          name="phoneNo"
                           type="text"
                           labelName="Contact No"
                           placeholder="Enter Contact No"
                           requiredStarOnLabel="true"
                         />
-                        {errors.phone && (
-                          <FormErrorText>{errors.phone.message}</FormErrorText>
+                        {errors.phoneNo && (
+                          <FormErrorText>{errors.phoneNo.message}</FormErrorText>
                         )}
                       </TkCol>
                       <TkCol lg={4}>
@@ -2482,17 +2910,17 @@ function SocialMedia({ selectedButton }) {
 
                       <TkCol lg={12}>
                         <TkInput
-                          {...register("addrtext")}
-                          id="addrtext"
-                          name="addrtext"
+                          {...register("custentity_lms_address")}
+                          id="custentity_lms_address"
+                          name="custentity_lms_address"
                           type="textarea"
                           labelName="Address "
                           placeholder="Enter Address"
                           disabled={true}
                         />
-                        {errors.addrtext && (
+                        {errors.custentity_lms_address && (
                           <FormErrorText>
-                            {errors.addrtext.message}
+                            {errors.custentity_lms_address.message}
                           </FormErrorText>
                         )}
                       </TkCol>
@@ -2562,17 +2990,39 @@ function SocialMedia({ selectedButton }) {
                       </NavLink>
                     </NavItem>
 
+                    {/* <NavItem>
+                      <NavLink
+                        href="#"
+                        className={classnames({
+                          active: activeSubTab === tabs.phoneCallActivity,
+                        })}
+                        onClick={() => toggleTab(tabs.phoneCallActivity)}
+                      >
+                        Phone Call
+                      </NavLink>
+                    </NavItem>
                     <NavItem>
                       <NavLink
                         href="#"
                         className={classnames({
-                          active: activeSubTab === tabs.leadActivity,
+                          active: activeSubTab === tabs.taskActivity,
                         })}
-                        onClick={() => toggleTab(tabs.leadActivity)}
+                        onClick={() => toggleTab(tabs.taskActivity)}
                       >
-                        Activity
+                        Task
                       </NavLink>
                     </NavItem>
+                    <NavItem>
+                      <NavLink
+                        href="#"
+                        className={classnames({
+                          active: activeSubTab === tabs.eventActivity,
+                        })}
+                        onClick={() => toggleTab(tabs.eventActivity)}
+                      >
+                        Event
+                      </NavLink>
+                    </NavItem> */}
                   </Nav>
                 </TkCol>
               </TkRow>
@@ -2724,16 +3174,7 @@ function SocialMedia({ selectedButton }) {
                                   name="custrecord_lms_statusoflead"
                                   labelName="Lead Status"
                                   placeholder="Select Lead Status"
-                                  options={[
-                                    {
-                                      value: "7",
-                                      label: "Qualified",
-                                    },
-                                    {
-                                      value: "8",
-                                      label: "Unqualified",
-                                    },
-                                  ]}
+                                  options={allNurturStatusData}
                                 />
                               )}
                             />
@@ -2789,70 +3230,50 @@ function SocialMedia({ selectedButton }) {
                       </div>
                     </TabPane>
 
-                    <TabPane tabId={tabs.leadActivity}>
-                      <div>
-                        <TkRow className="g-3">
-                          <TkCol lg={2}>
-                            <TkButton
-                              type="button"
-                              color="primary"
-                              onClick={leadActivityToggle}
-                              style={{ width: "80%" }}
-                            >
-                              Phone Call
-                            </TkButton>
-                          </TkCol>
-                          <TkCol lg={2}>
-                            <TkButton
-                              type="button"
-                              color="primary"
-                              onClick={leadTaskActivityToggle}
-                              style={{ width: "80%" }}
-                            >
-                              Task
-                            </TkButton>
-                          </TkCol>
-                          <TkCol lg={2}>
-                            <TkButton
-                              type="button"
-                              color="primary"
-                              onClick={leadEventActivityToggle}
-                              style={{ width: "80%" }}
-                            >
-                              Event
-                            </TkButton>
-                          </TkCol>
-
-                          <Nav className="nav-tabs dropdown-tabs nav-tabs-custom mb-3 mt-4">
-                            <NavItem>
-                              <NavLink
-                                // href="#"
-                                className={classnames({
-                                  active: activeTab === tabs.phoneCall,
-                                })}
-                              >
-                                Lead Activity
-                              </NavLink>
-                            </NavItem>
-                          </Nav>
-
-                          <TabContent activeTab={activeTab}>
-                            <TabPane tabId={tabs.leadActivity}>
-                              <TkCardBody className="table-padding pt-0">
-                                <TkTableContainer
-                                  columns={columns}
-                                  data={[]}
-                                  isSearch={false}
-                                  defaultPageSize={10}
-                                  isFilters={true}
-                                  showPagination={true}
-                                />
-                              </TkCardBody>
-                            </TabPane>
-                          </TabContent>
-                        </TkRow>
-                      </div>
+                    {/* <TabPane tabId={tabs.phoneCallActivity}>
+                      <TkContainer>
+                        <TkTableContainer
+                          customPageSize={true}
+                          showAddButton={true}
+                          onClickAdd={handleAddPhoneCallRow}
+                          onclickDelete={handleRemovePhoneCallRow}
+                          columns={phoneCallActivityColumns}
+                          data={phoneCallRows}
+                          thClass="text-dark"
+                          dynamicTable={true}
+                        />
+                      </TkContainer>
                     </TabPane>
+
+                    <TabPane tabId={tabs.taskActivity}>
+                      <TkContainer>
+                        <TkTableContainer
+                          customPageSize={true}
+                          showAddButton={true}
+                          onClickAdd={handleAddTaskRow}
+                          onclickDelete={handleRemoveTaskRow}
+                          columns={taskActivityColumns}
+                          data={taskCallRows}
+                          thClass="text-dark"
+                          dynamicTable={true}
+                        />
+                      </TkContainer>
+                    </TabPane>
+
+                    <TabPane tabId={tabs.eventActivity}>
+                      <TkContainer>
+                        <TkTableContainer
+                          customPageSize={true}
+                          showAddButton={true}
+                          onClickAdd={handleAddEventRow}
+                          onclickDelete={handleRemoveEventRow}
+                          columns={eventActivityColumns}
+                          data={eventCallRows}
+                          thClass="text-dark"
+                          dynamicTable={true}
+                        />
+                      </TkContainer>
+                    </TabPane> */}
                   </TabContent>
                 </TkCol>
               </TkRow>
@@ -2882,90 +3303,6 @@ function SocialMedia({ selectedButton }) {
                 </div>
               </div>
             </TkForm>
-
-            <TkModal
-              isOpen={activityModal}
-              toggle={leadActivityToggle}
-              leadActivityToggle={leadActivityToggle}
-              centered
-              size="lg"
-              className="border-0"
-              modalClassName="modal fade zoomIn"
-            >
-              <TkModalHeader
-                className="p-3 bg-soft-info"
-                partnerToggle={leadActivityToggle}
-                toggle={leadActivityToggle}
-              >
-                {"Phone Call"}
-              </TkModalHeader>
-              <TkContainer>
-                <TkCardBody>
-                  <ActivityPopup
-                    leadActivityToggle={leadActivityToggle}
-                    isPopup={true}
-                    directCallId={directCallId}
-                    setNewAddress={setNewAddress}
-                  />
-                </TkCardBody>
-              </TkContainer>
-            </TkModal>
-
-            <TkModal
-              isOpen={leadTaskModal}
-              toggle={leadTaskActivityToggle}
-              leadTaskActivityToggle={leadTaskActivityToggle}
-              centered
-              size="lg"
-              className="border-0"
-              modalClassName="modal fade zoomIn"
-            >
-              <TkModalHeader
-                className="p-3 bg-soft-info"
-                partnerToggle={leadTaskActivityToggle}
-                toggle={leadTaskActivityToggle}
-              >
-                {"Task"}
-              </TkModalHeader>
-              <TkContainer>
-                <TkCardBody>
-                  <LeadTaskPopup
-                    leadTaskActivityToggle={leadTaskActivityToggle}
-                    isPopup={true}
-                    directCallId={directCallId}
-                    setNewAddress={setNewAddress}
-                  />
-                </TkCardBody>
-              </TkContainer>
-            </TkModal>
-
-            <TkModal
-              isOpen={leadEventModal}
-              toggle={leadEventActivityToggle}
-              leadEventActivityToggle={leadEventActivityToggle}
-              centered
-              size="lg"
-              className="border-0"
-              modalClassName="modal fade zoomIn"
-            >
-              <TkModalHeader
-                className="p-3 bg-soft-info"
-                partnerToggle={leadEventActivityToggle}
-                toggle={leadEventActivityToggle}
-              >
-                {"Event"}
-              </TkModalHeader>
-              <TkContainer>
-                <TkCardBody>
-                  <LeadEventPopup
-                    leadEventActivityToggle={leadEventActivityToggle}
-                    isPopup={true}
-                    directCallId={directCallId}
-                    setNewAddress={setNewAddress}
-                  />
-                </TkCardBody>
-              </TkContainer>
-            </TkModal>
           </TkCardBody>
         </TkCol>
       </TkRow>

@@ -15,6 +15,83 @@ const consumerSecretKey = process.env.CONSUMERSECRETKEY;
 const accessToken = process.env.ACCESSTOKEN;
 const accessSecretToken = process.env.ACCESSTOKENSECRETTOKEN;
 
+const getLeadByIdRestletScriptDeploymentId = async (body) => {
+  try {
+    const authentication = {
+      authentication_code: authentication_code,
+      account: accountId,
+      consumerKey: consumerKey,
+      consumerSecret: consumerSecretKey,
+      tokenId: accessToken,
+      tokenSecret: accessSecretToken,
+      timestamp: Math.floor(Date.now() / 1000).toString(),
+      nonce: getNonce(10),
+      http_method: "POST",
+      version: "1.0",
+      signatureMethod: "HMAC-SHA256",
+      scriptId: "1020",
+      deployId: "1",
+    };
+ 
+    // var base_url = 'https://4667350-sb1.restlets.api.netsuite.com/app/site/hosting/restlet.nl/${id}';
+ 
+    const base_url =
+      `https://` +
+      authentication_code +
+      `.restlets.api.netsuite.com/app/site/hosting/restlet.nl`;
+ 
+    const concatenatedString = `deploy=${authentication.deployId}&oauth_consumer_key=${authentication.consumerKey}&oauth_nonce=${authentication.nonce}&oauth_signature_method=${authentication.signatureMethod}&oauth_timestamp=${authentication.timestamp}&oauth_token=${authentication.tokenId}&oauth_version=${authentication.version}&script=${authentication.scriptId}`;
+ 
+    const baseString = `${authentication.http_method}&${encodeURIComponent(
+      base_url
+    )}&${encodeURIComponent(concatenatedString)}`;
+    const keys = `${authentication.consumerSecret}&${authentication.tokenSecret}`;
+    const signature = crypto
+      .createHmac("sha256", keys)
+      .update(baseString)
+      .digest("base64");
+    const oAuth_String = `OAuth realm="${
+      authentication.account
+    }", oauth_consumer_key="${authentication.consumerKey}", oauth_token="${
+      authentication.tokenId
+    }", oauth_nonce="${authentication.nonce}", oauth_timestamp="${
+      authentication.timestamp
+    }", oauth_signature_method="HMAC-SHA256", oauth_version="1.0", oauth_signature="${encodeURIComponent(
+      signature
+    )}"`;
+ 
+    const url = `https://${authentication_code}.restlets.api.netsuite.com/app/site/hosting/restlet.nl?script=1020&deploy=1`;
+ 
+    // const url = `https://${authentication_code}.restlets.api.netsuite.com/app/site/hosting/restlet.nl?script=1020&deploy=1}`;
+ 
+    const data = {
+      body,
+    };
+ 
+    const payload = JSON.stringify(body);
+ 
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: oAuth_String,
+    };
+ 
+    const response = await axios({
+      method: "POST",
+      url: url,
+      headers: headers,
+      data: payload,
+    });
+ 
+    return response.data;
+  } catch (error) {
+    console.log("getLeadByIdRestletScriptDeploymentId error =>", error);
+    return {
+      success: false,
+      message: "Error while fetching restlet script deployment.",
+    };
+  }
+};
+
 //  Getting Employee/User Module Data
 const getRestletScriptDeploymentId = async (query) => {
   try {
@@ -87,153 +164,7 @@ const getRestletScriptDeploymentId = async (query) => {
   }
 };
 
-// const getLeadByIdRestletScriptDeploymentId = async (id) => {
-//   try {
-//     const authentication = {
-//       authentication_code: authentication_code,
-//       account: accountId,
-//       consumerKey: consumerKey,
-//       consumerSecret: consumerSecretKey,
-//       tokenId: accessToken,
-//       tokenSecret: accessSecretToken,
-//       timestamp: Math.floor(Date.now() / 1000).toString(),
-//       nonce: getNonce(10),
-//       http_method: "GET",
-//       version: "1.0",
-//       signatureMethod: "HMAC-SHA256",
-//     };
-//     const base_url =
-//       `https://` +
-//       authentication_code +
-//       `.suitetalk.api.netsuite.com/services/rest/record/v1/customer/${id}`;
 
-//     const concatenatedString = `oauth_consumer_key=${authentication.consumerKey}&oauth_nonce=${authentication.nonce}&oauth_signature_method=${authentication.signatureMethod}&oauth_timestamp=${authentication.timestamp}&oauth_token=${authentication.tokenId}&oauth_version=${authentication.version}`;
-//     const baseString = `${authentication.http_method}&${encodeURIComponent(
-//       base_url
-//     )}&${encodeURIComponent(concatenatedString)}`;
-//     const keys = `${authentication.consumerSecret}&${authentication.tokenSecret}`;
-//     const signature = crypto
-//       .createHmac("sha256", keys)
-//       .update(baseString)
-//       .digest("base64");
-//     const oAuth_String = `OAuth realm="${
-//       authentication.account
-//     }", oauth_consumer_key="${authentication.consumerKey}", oauth_token="${
-//       authentication.tokenId
-//     }", oauth_nonce="${authentication.nonce}", oauth_timestamp="${
-//       authentication.timestamp
-//     }", oauth_signature_method="HMAC-SHA256", oauth_version="1.0", oauth_signature="${encodeURIComponent(
-//       signature
-//     )}"`;
-
-//     const url = `https://${authentication_code}.suitetalk.api.netsuite.com/services/rest/record/v1/customer/${id}`;
-
-//     const data = {
-//       id: id,
-//     };
-
-//     const payload = JSON.stringify(data);
-
-//     const headers = {
-//       Prefer: "transient",
-//       "Content-Type": "application/json",
-//       "Access-Control-Allow-Origin": "*",
-//       Authorization: oAuth_String,
-//     };
-
-//     const response = await axios({
-//       method: "GET",
-//       url: url,
-//       headers: headers,
-//       data: payload,
-//     });
-
-//     return response.data;
-//   } catch (error) {
-//     console.log("getLeadByIdRestletScriptDeploymentId error =>", error);
-//     return {
-//       success: false,
-//       message: "Error while fetching restlet script deployment.",
-//     };
-//   }
-// };
-
-const getLeadByIdRestletScriptDeploymentId = async (body) => {
-  try {
-    const authentication = {
-      authentication_code: authentication_code,
-      account: accountId,
-      consumerKey: consumerKey,
-      consumerSecret: consumerSecretKey,
-      tokenId: accessToken,
-      tokenSecret: accessSecretToken,
-      timestamp: Math.floor(Date.now() / 1000).toString(),
-      nonce: getNonce(10),
-      http_method: "POST",
-      version: "1.0",
-      signatureMethod: "HMAC-SHA256",
-      scriptId: "1020",
-      deployId: "1",
-    };
-
-    // var base_url = 'https://4667350-sb1.restlets.api.netsuite.com/app/site/hosting/restlet.nl/${id}';
-
-    const base_url =
-      `https://` +
-      authentication_code +
-      `.restlets.api.netsuite.com/app/site/hosting/restlet.nl`;
-
-    const concatenatedString = `deploy=${authentication.deployId}&oauth_consumer_key=${authentication.consumerKey}&oauth_nonce=${authentication.nonce}&oauth_signature_method=${authentication.signatureMethod}&oauth_timestamp=${authentication.timestamp}&oauth_token=${authentication.tokenId}&oauth_version=${authentication.version}&script=${authentication.scriptId}`;
-
-    const baseString = `${authentication.http_method}&${encodeURIComponent(
-      base_url
-    )}&${encodeURIComponent(concatenatedString)}`;
-    const keys = `${authentication.consumerSecret}&${authentication.tokenSecret}`;
-    const signature = crypto
-      .createHmac("sha256", keys)
-      .update(baseString)
-      .digest("base64");
-    const oAuth_String = `OAuth realm="${
-      authentication.account
-    }", oauth_consumer_key="${authentication.consumerKey}", oauth_token="${
-      authentication.tokenId
-    }", oauth_nonce="${authentication.nonce}", oauth_timestamp="${
-      authentication.timestamp
-    }", oauth_signature_method="HMAC-SHA256", oauth_version="1.0", oauth_signature="${encodeURIComponent(
-      signature
-    )}"`;
-
-    const url = `https://${authentication_code}.restlets.api.netsuite.com/app/site/hosting/restlet.nl?script=1020&deploy=1`;
-
-    // const url = `https://${authentication_code}.restlets.api.netsuite.com/app/site/hosting/restlet.nl?script=1020&deploy=1}`;
-
-    const data = {
-      body,
-    };
-
-    const payload = JSON.stringify(body);
-
-    const headers = {
-      "Content-Type": "application/json",
-      Authorization: oAuth_String,
-    };
-
-    const response = await axios({
-      method: "POST",
-      url: url,
-      headers: headers,
-      data: payload,
-    });
-
-    return response.data;
-  } catch (error) {
-    console.log("getLeadByIdRestletScriptDeploymentId error =>", error);
-    return {
-      success: false,
-      message: "Error while fetching restlet script deployment.",
-    };
-  }
-};
 const getEmployeeByIdRestletScriptDeploymentId = async (id) => {
   try {
     const authentication = {
@@ -1374,7 +1305,6 @@ const getPortalRestletScriptDeploymentId = async (query) => {
       data: payload,
     });
 
-    // console.log(" *** data is : ***", response.data);
     return response.data;
   } catch (error) {
     console.log("getRestletScriptDeploymentId error =>", error);
@@ -1827,6 +1757,7 @@ const getLeadNurturStatusRestletScriptDeploymentId = async (query) => {
   }
 };
 
+
 // ***************************************************create record API's************************************************************************************
 // create Lead API
 const postRestletScriptDeploymentId = async (req, query) => {
@@ -2200,152 +2131,11 @@ const updateLeadRestletScriptDeploymentId = async (body) => {
   }
 };
 
-// const deleteRestletScriptDeploymentId = async (query) => {
-//   try {
-//     const accountId = "TSTDRV1423092";
-//     const consumerKey =
-//       "56a21f01a0a1ad08a11b4c48b2e4dc089fe7c33353e4b452425ed2eebd36bf39";
-//     const consumerSecretKey =
-//       "b3ca433871bbd7519f5c5a5593118af7b74d3ae4ce2e5b2b65e273849f395adb";
-//     const accessToken =
-//       "e1c57bbbeb3749e2963504adcf7795332804d3e465b483c2221a2adb3c2e2a47";
-//     const accessSecretToken =
-//       "bad7724d00ad2916b2f9f06b250dde344573e1ad0bcf8320bb7ce44d73971384";
 
-//     const authentication = {
-//       account: accountId,
-//       consumerKey: consumerKey,
-//       consumerSecret: consumerSecretKey,
-//       tokenId: accessToken,
-//       tokenSecret: accessSecretToken,
-//       timestamp: Math.floor(Date.now() / 1000).toString(),
-//       nonce: getNonce(10),
-//       http_method: "DELETE",
-//       version: "1.0",
-//       signatureMethod: "HMAC-SHA256",
-//     };
-//     const base_url =
-//       "https://" +
-//       authentication.account.toLowerCase() +
-//       ".suitetalk.api.netsuite.com/services/rest/record/v1/employee/24289";
-
-//     const concatenatedString = `oauth_consumer_key=${authentication.consumerKey}&oauth_nonce=${authentication.nonce}&oauth_signature_method=${authentication.signatureMethod}&oauth_timestamp=${authentication.timestamp}&oauth_token=${authentication.tokenId}&oauth_version=${authentication.version}`;
-//     const baseString = `${authentication.http_method}&${encodeURIComponent(
-//       base_url
-//     )}&${encodeURIComponent(concatenatedString)}`;
-//     const keys = `${authentication.consumerSecret}&${authentication.tokenSecret}`;
-//     const signature = crypto
-//       .createHmac("sha256", keys)
-//       .update(baseString)
-//       .digest("base64");
-//     const oAuth_String = `OAuth realm="${
-//       authentication.account
-//     }", oauth_consumer_key="${authentication.consumerKey}", oauth_token="${
-//       authentication.tokenId
-//     }", oauth_nonce="${authentication.nonce}", oauth_timestamp="${
-//       authentication.timestamp
-//     }", oauth_signature_method="HMAC-SHA256", oauth_version="1.0", oauth_signature="${encodeURIComponent(
-//       signature
-//     )}"`;
-
-//     const url = `https://${authentication.account.toLowerCase()}.suitetalk.api.netsuite.com/services/rest/record/v1/employee/24289`;
-
-//     const data = {
-//       firstName: "Prafull",
-//       lastName: "LST1",
-//       title: "PRAFULL  EMPLOYEE",
-//       supervisor: {
-//         id: "52",
-//         refName: "Prakash Bagul",
-//       },
-//       email: "test.user@livestrongtechnologies.com",
-//       phone: "8208651899",
-//       subsidiary: {
-//         id: "1",
-//         refName: "Consolidated",
-//       },
-//       department: {
-//         id: "33",
-//         refName: "Development",
-//       },
-//       class: {
-//         id: "11",
-//         refName: "TEST",
-//       },
-//       location: {
-//         id: "17",
-//         refName: "HeadQuarter",
-//       },
-//       employeetype: {
-//         id: "3",
-//         refName: "Regular Employee",
-//       },
-//       workCalendar: {
-//         id: "2",
-//         refName: "Nashik",
-//       },
-//       maritalstatus: {
-//         id: "1",
-//         refName: "Single",
-//       },
-//       gender: {
-//         id: "m",
-//         refName: "Male",
-//       },
-//       addressBook: {
-//         items: [
-//           {
-//             addressBookAddress: {
-//               addr1: "302 ABH Samruddhi,",
-//               addr2:
-//                 "Opposite to Hanuman Mandir, Near Dream Castle, Makhmalabad Road",
-//               addressee: "Mr.Prakash Bagul",
-//               addrPhone: "8208351855",
-//               city: "Nashik",
-//               country: {
-//                 id: "IN",
-//                 refName: "India",
-//               },
-//               state: "Maharashtra",
-//               zip: "422003",
-//             },
-//             defaultBilling: true,
-//             defaultShipping: true,
-//             label: "302 ABH Samruddhi",
-//           },
-//         ],
-//       },
-//     };
-//     const payload = JSON.stringify(data);
-
-//     // Delete API
-//     const headers = {
-//       Authorization: oAuth_String,
-//     };
-
-//     const response = await axios({
-//       method: "DELETE",
-//       url: url,
-//       headers: headers,
-//       data: payload,
-//     });
-
-//     console.log("data deleted", response);
-
-//     return response.data;
-//   } catch (error) {
-//     console.log("deleteRestletScriptDeploymentId error =>", error);
-//     return {
-//       success: false,
-//       message: "Error while fetching restlet script deployment.",
-//     };
-//   }
-// };
 
 export {
-  // getAllEmployeeRestletScriptDeploymentId,
-  getRestletScriptDeploymentId,
   getLeadByIdRestletScriptDeploymentId,
+  getRestletScriptDeploymentId,
   getEmployeeByIdRestletScriptDeploymentId,
   getSubsidiaryRestletScriptDeploymentId,
   getClientTypeRestletScriptDeploymentId,

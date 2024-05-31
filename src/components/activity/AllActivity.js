@@ -55,7 +55,19 @@ function TableToolBar() {
 }
 const AllActivity = ({ mounted }) => {
   const searchOnUI = isSearchonUI([]);
+  const {
+    data: activityData,
+    isLoading: isBackLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: [RQ.allActivity],
+    queryFn: tkFetch.get(`${API_BASE_URL}/activty`),
+    enabled: true,
+  });
 
+
+  console.log("activityData", activityData);
   const updateSearchText = (e) => {
     if (e.target.value.length >= minSearchLength) {
       setSearchText(e.target.value);
@@ -64,10 +76,10 @@ const AllActivity = ({ mounted }) => {
     }
   };
 
-  const [isLead, setIsLead] = useState(false);
+  const [isActivity, setIsActivity] = useState(false);
 
   useEffect(() => {
-    setIsLead(true);
+    setIsActivity(true);
   }, []);
 
   const columns = useMemo(
@@ -82,7 +94,7 @@ const AllActivity = ({ mounted }) => {
             <div className="d-flex align-items-center">
               <ul className="ps-0 mb-0">
                 <li className="list-inline-item">
-                  <Link href={`${urls.leadView}/${cellProps.value}`}>
+                  <Link href={`${urls.activityView}/${cellProps.value}`}>
                     <a>
                       <TkButton color="none">
                         <TkIcon className="ri-eye-fill align-bottom me-2 text-muted"></TkIcon>
@@ -94,7 +106,7 @@ const AllActivity = ({ mounted }) => {
               |
               <ul className="ps-0 mb-0">
                 <li className="list-inline-item">
-                  <Link href={`${urls.leadEdit}/${cellProps.value}`}>
+                  <Link href={`${urls.activityEdit}/${cellProps.value}`}>
                     <a>
                       <TkButton color="none">
                         <TkIcon className="ri-edit-line fs-4 -fill align-bottom me-2 text-muted"></TkIcon>
@@ -186,14 +198,15 @@ const AllActivity = ({ mounted }) => {
 
   return (
     <>
-      {isLead ? (
+      {isActivity ? (
         <TkRow>
           <>
             <TkCol lg={12}>
               <TkCardBody className="pt-0">
                 <TkTableContainer
                   columns={columns}
-                  data={[]}
+                  data={activityData?.list || []}
+                  loading={isBackLoading}
                   Toolbar={
                     <TableToolBar
                       onSearchChange={searchDebounce(

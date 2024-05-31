@@ -4,52 +4,21 @@ import Link from "next/link";
 import TkInput from "../forms/TkInput";
 import { TkCardBody } from "../TkCard";
 import TkRow, { TkCol } from "../TkRow";
-import { filterFields, minSearchLength, urls } from "../../utils/Constants";
+import {
+  API_BASE_URL,
+  RQ,
+  filterFields,
+  minSearchLength,
+  urls,
+} from "../../utils/Constants";
 import { isSearchonUI, searchDebounce } from "../../utils/utilsFunctions";
 import TkSelect from "../forms/TkSelect";
 import TkTableContainer from "../TkTableContainer";
 import { useMemo } from "react";
 import TkButton from "../TkButton";
 import TkIcon from "../TkIcon";
-
-const taskData = [
-  {
-    id: 1,
-    lead: "John Doe",
-    status: "Qualified",
-    title: "Task 1",
-    date: "2021-09-01",
-  },
-  {
-    id: 2,
-    lead: "Steave Smith",
-    status: "Unqualified",
-    title: "Task 2",
-    date: "2021-09-01",
-  },
-  {
-    id: 3,
-    lead: "Will Smith",
-    status: "Qualified",
-    title: "Task 3",
-    date: "2021-09-01",
-  },
-  {
-    id: 4,
-    lead: "Adam Miller",
-    status: "Unqualified",
-    title: "Task 4",
-    date: "2021-09-01",
-  },
-  {
-    id: 5,
-    lead: "Tom Riddle",
-    status: "Qualified",
-    title: "Task 5",
-    date: "2021-09-01",
-  },
-
-];
+import { useQuery } from "@tanstack/react-query";
+import tkFetch from "../../utils/fetch";
 
 function TableToolBar() {
   return (
@@ -93,6 +62,17 @@ const AllTask = () => {
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+  const {
+    data: taskActivityData,
+    isLoading: isBackLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: [RQ.allTask],
+    queryFn: tkFetch.get(`${API_BASE_URL}/taskActivity`),
+    enabled: true,
+  });
   const columns = useMemo(
     () => [
       {
@@ -131,36 +111,56 @@ const AllTask = () => {
         },
       },
       {
-        Header: "Lead",
-        accessor: "lead",
-        filterable: false,
+        Header: "Title",
+        accessor: "values.title",
         Cell: (cellProps) => {
-          return <div className="table-text">{cellProps.value}</div>;
+          return (
+            <>
+              <div className="table-text">
+                {cellProps.value || <span> — </span>}
+              </div>
+            </>
+          );
         },
       },
-      
+
       {
         Header: "Status",
-        accessor: "status",
-        filterable: false,
+        accessor: "status.text",
         Cell: (cellProps) => {
-          return <div className="table-text">{cellProps.value}</div>;
+          return (
+            <>
+              <div className="table-text">
+                {cellProps?.row.original.values.status[0].text}
+              </div>
+            </>
+          );
         },
       },
       {
-        Header: "Title",
-        accessor: "title",
-        filterable: false,
+        Header: "Priority",
+        accessor: "priority.text",
         Cell: (cellProps) => {
-          return <div className="table-text">{cellProps.value}</div>;
+          return (
+            <>
+              <div className="table-text">
+                {cellProps?.row.original.values.priority[0].text}
+              </div>
+            </>
+          );
         },
       },
       {
         Header: "Date",
-        accessor: "date",
-        filterable: false,
+        accessor: "values.startdate",
         Cell: (cellProps) => {
-          return <div className="table-text">{cellProps.value}</div>;
+          return (
+            <>
+              <div className="table-text">
+                {cellProps.value || <span> — </span>}
+              </div>
+            </>
+          );
         },
       },
     ],
@@ -176,7 +176,7 @@ const AllTask = () => {
               <TkCardBody className="pt-0">
                 <TkTableContainer
                   columns={columns}
-                  data={taskData || []}
+                  data={taskActivityData?.list || []}
                   Toolbar={
                     <TableToolBar
                       onSearchChange={searchDebounce(
