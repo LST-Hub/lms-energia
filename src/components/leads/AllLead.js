@@ -44,8 +44,6 @@ const AllLead = ({ mounted }) => {
   const [leadData, setLeadData] = useState([]);
   const [isDataLoading, setIsDataLoading] = useState(false);
 
-  // get local sotorage for id
-
   useEffect(() => {
     if (typeof window !== "undefined" && window.localStorage) {
       const storedRole = window.localStorage.getItem("role");
@@ -55,7 +53,6 @@ const AllLead = ({ mounted }) => {
       } else {
         setIsSalesManager(false);
       }
-      // console.log('storedRole', storedRole);
     }
     if (typeof window !== "undefined" && window.localStorage) {
       const storedId = window.localStorage.getItem("internalid");
@@ -101,6 +98,19 @@ const AllLead = ({ mounted }) => {
     enabled: !!role && !isSalesManager,
   });
 
+  // const {
+  //   data: salesSuppRolesData,
+  //   isLoading: isSalesSuppRolesLoading,
+  //   isError: issalesSuppRolesError,
+  //   error: salesSuppError,
+  // } = useQuery({
+  //   queryKey: [RQ.salesSupport],
+  //   queryFn: tkFetch.get(
+  //     `${API_BASE_URL}/salesrepresentative-sales-support?userId=${userId}`
+  //   ),
+  //   enabled: !!role && !isSalesManager,
+  // });
+
   const updateSearchText = (e) => {
     if (e.target.value.length >= minSearchLength) {
       setSearchText(e.target.value);
@@ -108,7 +118,6 @@ const AllLead = ({ mounted }) => {
       setSearchText("");
     }
   };
-
   useEffect(() => {
     if (isSalesManager) {
       setLeadData(salesManagerRolesData);
@@ -116,6 +125,46 @@ const AllLead = ({ mounted }) => {
       setLeadData(salesSupportRolesData);
     }
   }, [salesManagerRolesData, salesSupportRolesData, isSalesManager]);
+
+  // useEffect(() => {
+  //   if (isSalesManager && salesManagerRolesData) {
+  //     setLeadData(salesManagerRolesData);
+  //   } else if (!isSalesManager && salesSuppRolesData) {
+  //     setLeadData(salesSuppRolesData);
+  //   } else if (!isSalesManager && salesSupportRolesData) {
+  //     setLeadData(salesSupportRolesData);
+  //   } else {
+  //     setLeadData([]);
+  //   }
+  // }, [
+  //   salesSuppRolesData,
+  //   isSalesManager,
+  //   salesSupportRolesData,
+  //   salesManagerRolesData,
+  // ]);
+
+  // useEffect(() => {
+  //   if (isSalesManager) {
+  //     setLeadData(salesManagerRolesData);
+  //   } else if (!isSalesManager) {
+  //     setLeadData(salesSuppRolesData);
+  //   } else if (!isSalesManager) {
+  //     setLeadData(salesSupportRolesData);
+  //   }
+  // }, [
+  //   salesSuppRolesData,
+  //   isSalesManager,
+  //   salesSupportRolesData,
+  //   salesManagerRolesData,
+  // ]);
+
+  // useEffect(() => {
+  //   if (isAllLeadLoading) {
+  //     setIsDataLoading(true);
+  //   } else {
+  //     setIsDataLoading(false);
+  //   }
+  // }, [isAllLeadLoading]);
 
   const [isLead, setIsLead] = useState(false);
 
@@ -233,6 +282,17 @@ const AllLead = ({ mounted }) => {
           );
         },
       },
+      {
+        Header: "Created By",
+        accessor: "custentity_lms_createdby",
+        Cell: (cellProps) => {
+          return (
+            <>
+              <div className="table-text">{cellProps.value}</div>
+            </>
+          );
+        },
+      },
     ],
     []
   );
@@ -247,7 +307,7 @@ const AllLead = ({ mounted }) => {
                 <TkTableContainer
                   columns={columns}
                   data={leadData || []}
-                  loading={isDataLoading}
+                  // loading={isAllLeadLoading}
                   Toolbar={
                     <TableToolBar
                       onSearchChange={searchDebounce(
