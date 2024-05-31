@@ -1,24 +1,40 @@
 import response from "../../../../lib/response";
-import { getAllLeadRestletScriptDeploymentId } from "../../../../src/utils/NsAPIcal";
+import { getLeadByIdRestletScriptDeploymentId } from "../../../../src/utils/NsAPIcal";
 
 export default async function handler(req, res) {
   try {
     if (req.method === "GET") {
-      const query = `SELECT COUNT(*) FROM customer WHERE searchstage='Lead' AND id > 29824`;
+      const body = {
+        resttype: "Search",
+        recordtype: "task",
+        filters: [["systemnotes.type", "is", "T"], "AND", ["systemnotes.date", "onorafter", "01/05/2024 12:00 am"]],
+        columns: [
+          "internalid",
+          "order",
+          "title",
+          "priority",
+          "status",
+          "startdate",
+          "duedate",
+          "accesslevel",
+          "assigned",
+          "company",
+          "message",
+        ],
+      };
 
       try {
-        const allLeadData = await getAllLeadRestletScriptDeploymentId(query);
+        const taskData = await getLeadByIdRestletScriptDeploymentId(body);
 
-        console.log("All Lead Data", allLeadData?.items[0]?.expr1);
         response({
           res,
           success: true,
           status_code: 200,
-          data: [allLeadData?.items[0]?.expr1],
+          data: [taskData?.list.length],
           message: "All Lead Fetched successfully",
         });
       } catch (error) {
-        console.error("Error fetching lead data", error);
+        console.error("Error fetching calls data", error);
         response({
           res,
           success: false,

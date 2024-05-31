@@ -122,8 +122,8 @@ const meetingStatusTypes = [
   { value: "2", label: "Pending" },
   { value: "3", label: "In progress" },
   { value: "4", label: "Completed" },
-  { value: "5", label: "Closed"},
-  { value: "6", label: "On hold"}
+  { value: "5", label: "Closed" },
+  { value: "6", label: "On hold" },
 ];
 const reminderTypes = [
   { value: "none", label: "None" },
@@ -202,7 +202,6 @@ const demoUserData = [
     location: "Australia",
     locationContactPerson: "Steve Smith",
     note: "This is a note",
-
   },
   {
     id: 3,
@@ -232,7 +231,6 @@ const demoUserData = [
     location: "India",
     locationContactPerson: "Will Smith",
     note: "This is a note",
-
   },
   {
     id: 4,
@@ -262,7 +260,6 @@ const demoUserData = [
     location: "India",
     locationContactPerson: "Adam Miller",
     note: "This is a note",
-
   },
   {
     id: 5,
@@ -292,7 +289,6 @@ const demoUserData = [
     location: "England",
     locationContactPerson: "Tom Riddle",
     note: "This is a note",
-
   },
 ];
 
@@ -854,6 +850,9 @@ const RQ = {
   regionSettings: "regionSettings",
   leadChannel: "leadChannel",
   leadCount: "leadCount",
+  callCount: "callCount",
+  taskCount: "taskCount",
+  eventCount: "eventCount",
   leadReport: "leadReport",
   phoneCallReport: "phoneCallReport",
   leadCountperDay: "leadCountperDay",
@@ -1323,9 +1322,7 @@ const todaysTaskHighlightColumn = [
         <div className="d-flex align-items-center">
           <ul className="ps-0 mb-0">
             <li className="list-inline-item">
-              <Link
-                href={`${urls.todaysTaskView}/${cellProps.row.original.id}`}
-              >
+              <Link href={`${urls.todaysTaskView}/${cellProps.row.original.id}`}>
                 <a>
                   <TkButton color="none">
                     <TkIcon className="ri-eye-fill align-bottom text-muted"></TkIcon>

@@ -22,9 +22,9 @@ export default async function handler(req, res) {
         ],
       };
 
-      const phoneCallData = await getLeadByIdRestletScriptDeploymentId(body);
+      const eventData = await getLeadByIdRestletScriptDeploymentId(body);
 
-      const formatted = phoneCallData?.list?.map((item) => ({
+      const formatted = eventData?.list?.map((item) => ({
         id: item.id,
         title: item.values.title || "",
         status: item.values.status[0].text || "",
