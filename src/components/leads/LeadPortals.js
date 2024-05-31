@@ -255,6 +255,9 @@ function LeadPortals({ selectedButton }) {
   const [allCountryData, setAllCountryData] = useState([{}]);
   const [selectedEnquiryBy, setSelectedEnquiryBy] = useState(false);
   const [allNurturStatusData, setAllNurturStatusData] = useState([{}]);
+  const [userId, setUserId] = useState(0);
+
+
 
   const results = useQueries({
     queries: [
@@ -1988,110 +1991,16 @@ function LeadPortals({ selectedButton }) {
       },
     },
   ];
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.localStorage) {
+      const storedId = window.localStorage.getItem("internalid");
+      setUserId(storedId);
+    }
+  }, []);
+
+
   const onSubmit = (formData) => {
-    // const apiData = {
-    //   customForm: {
-    //     id: "135",
-    //     refName: "LMS CRM FORM",
-    //   },
-    //   entitystatus: {
-    //     id: "7",
-    //     refName: "LEAD-Qualified",
-    //   },
-    //   custentity_lms_channel_lead: {
-    //     id: selectedButton.id,
-    //   },
-    //   custentity_lms_leadsource: {
-    //     id: formData.custentity_lms_leadsource.value,
-    //   },
-
-    //   custentity_lms_name_of_the_portal_dd: {
-    //     id: formData.custentity_lms_name_of_the_portal_dd.value,
-    //   },
-    //   custentity_lms_createdby: formData.custentity_lms_createdby,
-    //   custentity_lms_createddate: formData.custentity_lms_createddate,
-    //   subsidiary: {
-    //     id: formData.subsidiary.value,
-    //   },
-    //   custentity_lms_name: formData.custentity_lms_name,
-    //   custentity_lms_personal_phonenumber:
-    //     formData.custentity_lms_personal_phonenumber,
-    //   custentity_lms_personal_email: formData.custentity_lms_personal_email,
-    //   custentity_lms_enquiryby: {
-    //     id: formData.custentity_lms_enquiryby.value,
-    //   },
-    //   custentity_lms_noteother: formData.custentity_lms_noteother,
-    //   //   companyName: formData.companyName,
-    //   //   phone: formData.phone,
-    //   //   email: formData.email,
-    //   //   custentity_lms_cr_no: formData.custentity_lms_cr_no,
-    //   //   custentity3: formData.custentity3,
-    //   //   custentity_lms_client_type: {
-    //   //     id: formData.custentity_lms_client_type.value,
-    //   //   },
-    //   //   custentity_market_segment: {
-    //   //     id: formData.custentity_market_segment.value,
-    //   //   },
-    //   //   addressBook: {
-    //   //     items: [
-    //   //       {
-    //   //         addressBookAddress: {
-    //   //           addr1: formData.addr1,
-    //   //           addr2: formData.addr2,
-    //   //           city: formData.city,
-    //   //           state: formData.state,
-    //   //           zip: formData.zip,
-    //   //           country: {
-    //   //             id: formData.country.value,
-    //   //           },
-    //   //           defaultBilling: true,
-    //   //           defaultShipping: true,
-    //   //           addrtext: formData.addrtext,
-    //   //         },
-    //   //       },
-    //   //     ],
-    //   //   },
-    //   // };
-    //   companyName: formData.companyName ?? "", // Use empty string if companyName is null or undefined
-    //   phone: formData.phone ?? "", // Use empty string if phone is null or undefined
-    //   email: formData.email ?? "", // Use empty string if email is null or undefined
-    //   custentity_lms_cr_no: formData.custentity_lms_cr_no ?? "", // Use empty string if custentity_lms_cr_no is null or undefined
-    //   custentity3: formData.custentity3 ?? "", // Use empty string if custentity3 is null or undefined
-    //   custentity_lms_client_type: formData.custentity_lms_client_type?.value
-    //     ? { id: formData.custentity_lms_client_type.value }
-    //     : null, // Use null if custentity_lms_client_type is null or undefined
-    //   custentity_market_segment: formData.custentity_market_segment?.value
-    //     ? { id: formData.custentity_market_segment.value }
-    //     : null, // Use null if custentity_market_segment is null or undefined
-    //   addressBook:
-    //     formData.addr1 ||
-    //     formData.addr2 ||
-    //     formData.city ||
-    //     formData.state ||
-    //     formData.zip ||
-    //     formData.country
-    //       ? {
-    //           items: [
-    //             {
-    //               addressBookAddress: {
-    //                 addr1: formData.addr1 ?? "",
-    //                 addr2: formData.addr2 ?? "",
-    //                 city: formData.city ?? "",
-    //                 state: formData.state ?? "",
-    //                 zip: formData.zip ?? "",
-    //                 country: formData.country?.value
-    //                   ? { id: formData.country.value }
-    //                   : null,
-    //                 defaultBilling: true,
-    //                 defaultShipping: true,
-    //                 addrtext: formData.addrtext ?? "",
-    //               },
-    //             },
-    //           ],
-    //         }
-    //       : null, // Use null if all address fields are null or undefined
-    // };
-
     const apiData = {
       resttype: "Add",
       recordtype: "lead",
@@ -2109,7 +2018,9 @@ function LeadPortals({ selectedButton }) {
           text: formData.custentity_lms_name_of_the_portal_dd.text,
         },
 
-        custentity_lms_createdby: formData.custentity_lms_createdby,
+        custentity_lms_createdby: {
+          value: userId,
+        },
         custentity_lms_createddate: formData.custentity_lms_createddate,
         subsidiary: {
           value: formData.subsidiary.value,

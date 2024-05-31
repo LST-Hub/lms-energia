@@ -67,11 +67,11 @@ const schema = Yup.object({
     .nullable(),
   phone: Yup.string()
     .nullable()
-    .required("Phone number is required")
-    .matches(/^[0-9+() -]*$/, "Phone number must be number.")
+    .required("Phone Number is required")
+    .matches(/^[0-9+() -]*$/, "Phone Number must be number.")
     .max(
       MaxPhoneNumberLength,
-      `Phone number must be at most ${MaxPhoneNumberLength} numbers.`
+      `Phone Number must be at most ${MaxPhoneNumberLength} numbers.`
     ),
   company: Yup.object().required("Lead name is required").nullable(),
 
@@ -164,6 +164,7 @@ const EditPhoneCall = ({ id, mode }) => {
       setAllLeadNameListData(
         leadListData?.list?.map((leadListType) => ({
           label: leadListType?.values?.companyname,
+          value: leadListType?.id,
         }))
       );
     }
@@ -179,13 +180,13 @@ const EditPhoneCall = ({ id, mode }) => {
     if (isFetched && Array.isArray(data) && data.length > 0) {
       const { bodyValues } = data[0];
       setValue("title", bodyValues?.title);
-      setValue("phone", bodyValues?.phone);
+      setValue("phone", bodyValues.phone);
       setValue("company", {
-        value: bodyValues?.company?.text,
-        label: bodyValues?.company?.value,
+        value: bodyValues?.company[0]?.value,
+        label: bodyValues?.company[0]?.text,
       });
       setValue("status", {
-        value: bodyValues?.status[0].text,
+        // value: bodyValues?.status[0].text,
         label: bodyValues?.status[0].value,
       });
       setValue("assigned", {
@@ -202,7 +203,6 @@ const EditPhoneCall = ({ id, mode }) => {
   });
 
   const onSubmit = (formData) => {
-
     const apiData = {
       resttype: "Update",
       recordtype: "phonecall",
@@ -211,15 +211,15 @@ const EditPhoneCall = ({ id, mode }) => {
         phone: formData.phone,
         company: {
           value: formData.company.value,
-          label: formData.company.value,
+          text: formData.company.label,
         },
         status: {
           value: formData.status.value,
-          label: formData.status.text,
+          text: formData.status.label,
         },
         assigned: {
           value: formData.assigned.value,
-          label: formData.assigned.text,
+          text: formData.assigned.label,
         },
         startdate: formatDateForAPI(formData.startdate),
         // completeddate: formatDateForAPI(formData.completeddate),
@@ -227,9 +227,10 @@ const EditPhoneCall = ({ id, mode }) => {
         
       },
       filters: {
-        bodyfilters: [["internalid", "anyof", cid]],
-      },
+        bodyfilters: [["internalid", "anyof", cid]]
+      }
     };
+    console.log("apiData",apiData)
     phoneCallActivityPost.mutate(apiData, {
       onSuccess: (data) => {
         TkToastSuccess("Phone Call Updated Successfully");
@@ -290,6 +291,8 @@ const EditPhoneCall = ({ id, mode }) => {
                   editLink={`${urls.phoneCallEdit}/${cid}`}
                   onDeleteClick={handleDeletePhoneCall}
                   toggleDeleteModel={toggleDeleteModelPopup}
+                  disableDelete={viewMode}
+                  isEditAccess={viewMode}
                 />
                 <TkCardBody className="mt-4">
                   <TkForm onSubmit={handleSubmit(onSubmit)}>
@@ -376,12 +379,12 @@ const EditPhoneCall = ({ id, mode }) => {
                                       id="status"
                                       options={[
                                         {
-                                          label: "COMPLETED",
-                                          value: "Completed",
+                                          label: "Completed",
+                                          value: "COMPLETED",
                                         },
                                         {
-                                          label: "SCHEDULED",
-                                          value: "Scheduled",
+                                          label: "Scheduled",
+                                          value: "SCHEDULED",
                                         },
                                       ]}
                                       placeholder="Select Type"

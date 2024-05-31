@@ -34,8 +34,6 @@ export default async function handler(req, res) {
       });
     } else if (req.method === "PATCH") {
       const body = req.body;
-      console.log("phone call updated body");
-
       const activityUpdatedData =
         await updatePhoneActivityRestletScriptDeploymentId(body);
       response({

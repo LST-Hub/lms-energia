@@ -150,7 +150,7 @@ const EditEvent = ({ id, userData, mode }) => {
       setAllLeadNameListData(
         leadNameListData?.list?.map((leadListType) => ({
           label: leadListType?.values?.companyname,
-          // value: leadListType.id,
+          value: leadListType?.id,
         }))
       );
     }
@@ -168,12 +168,12 @@ const EditEvent = ({ id, userData, mode }) => {
       setValue("title", bodyValues?.title);
       setValue("location", bodyValues?.location);
       setValue("company", {
-        value: bodyValues?.company?.text,
-        label: bodyValues?.company?.value,
+        // value: bodyValues?.company[0]?.value,
+        label: bodyValues?.company[0]?.text,
       });
       setValue("status", {
-        value: bodyValues?.status?.text,
-        label: bodyValues?.status?.value,
+        value: bodyValues?.status[0].text,
+        label: bodyValues?.status[0].value,
       });
       setValue("startDate", bodyValues?.startdate);
       setValue("starttime", bodyValues?.starttime);
@@ -195,12 +195,12 @@ const EditEvent = ({ id, userData, mode }) => {
         title: formData.title,
         company: {
           value: formData.company.value,
-          label: formData.company.text,
+          text: formData.company.label,
         },
         location: formData.location,
         status: {
           value: formData.status.value,
-          label: formData.status.text,
+          text: formData.status.label,
         },
         // accesslevel: {
         //   value: formData.accesslevel.value,
@@ -282,7 +282,9 @@ const EditEvent = ({ id, userData, mode }) => {
                   viewMode={viewMode}
                   editLink={`${urls.eventEdit}/${eid}`}
                   onDeleteClick={handleDeleteEvent}
+                  disableDelete={viewMode}
                   toggleDeleteModel={toggleDeleteModelPopup}
+                  isEditAccess={viewMode}
                 />
               <TkCardBody className="mt-4">
                 <TkForm onSubmit={handleSubmit(onSubmit)}>
@@ -382,12 +384,16 @@ const EditEvent = ({ id, userData, mode }) => {
                                     options={[
                                       {
                                         label: "Completed",
-                                        value: "Completed",
+                                        value: "COMPLETED",
                                       },
                                       {
-                                        label: "Scheduled",
-                                        value: "Scheduled",
+                                        label: "Confirmed",
+                                        value: "CONFIRMED",
                                       },
+                                      {
+                                        label: "Tentative",
+                                        value: "TENTATIVE",
+                                      }
                                     ]}
                                     placeholder="Select Type"
                                     requiredStarOnLabel={editMode}

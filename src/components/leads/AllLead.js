@@ -64,7 +64,16 @@ const AllLead = ({ mounted }) => {
     }
   }, []);
 
- 
+  const {
+    data: allLeadData,
+    isLoading: isAllLeadLoading,
+    isError: isAllLeadError,
+    error: allLeadError,
+  } = useQuery({
+    queryKey: [RQ.allLeads],
+    queryFn: tkFetch.get(`${API_BASE_URL}/lead`),
+    enabled: mounted,
+  });
 
   const {
     data: salesManagerRolesData,
@@ -87,7 +96,7 @@ const AllLead = ({ mounted }) => {
   } = useQuery({
     queryKey: [RQ.salesSupport],
     queryFn: tkFetch.get(
-      `${API_BASE_URL}/salesrepresentative-salessupportrole?userId=${userId}}`
+      `${API_BASE_URL}/salesrepresentative-salessupportrole?userId=${userId}`
     ),
     enabled: !!role && !isSalesManager,
   });

@@ -37,12 +37,10 @@ import { formatDateForAPI } from "../../utils/date";
 import { convertTimeToSec, convertToTimeFotTimeSheet } from "../../utils/time";
 
 const schema = Yup.object({
-  title: Yup.string().required("Subject is required")
-  .max(
-    MaxNameLength,
-    `Subject must be at most ${MaxNameLength} characters.`
-  )
-  .nullable(),
+  title: Yup.string()
+    .required("Subject is required")
+    .max(MaxNameLength, `Subject must be at most ${MaxNameLength} characters.`)
+    .nullable(),
   phone: Yup.string()
     .nullable()
     .required("Phone number is required")
@@ -117,7 +115,7 @@ const AddPhoneCallActivty = ({ value }) => {
       console.log("leadListIsError", leadListError);
       TkToastError(leadListError.message);
     }
-  }, [salesTeamIsError, salesTeamError,leadListIsError,leadListError]);
+  }, [salesTeamIsError, salesTeamError, leadListIsError, leadListError]);
 
   useEffect(() => {
     if (salesTeamData) {
@@ -133,53 +131,52 @@ const AddPhoneCallActivty = ({ value }) => {
       setAllLeadNameListData(
         leadNameListData?.list?.map((leadListType) => ({
           label: leadListType?.values?.companyname,
+          value: leadListType?.id,
         }))
       );
     }
-  }, [salesTeamData,leadNameListData]);
-
+  }, [salesTeamData, leadNameListData]);
 
   const phoneCallActivityPost = useMutation({
     mutationFn: tkFetch.post(`${API_BASE_URL}/phoneCallActivity`),
   });
 
   const onSubmit = (formData) => {
-    console.log("formData", formData);
     const apiData = {
       resttype: "Add",
       recordtype: "phonecall",
       bodyfields: {
+        // Netsuite field: FormaData Field
         title: formData.title,
         company: {
-          // value: formData.company.value,
-          label: formData.company.value,
+          value: formData.company.value,
+          text: formData.company.label,
         },
         phone: formData.phone,
         status: {
           value: formData.status.value,
-          label: formData.status.text,
+          text: formData.status.label,
         },
         assigned: {
           value: formData.assigned.value,
-          label: formData.assigned.text,
+          text: formData.assigned.label,
         },
         startdate: formatDateForAPI(formData.startdate),
-        message: formData.message
-        
+        message: formData.message,
       },
     };
-    phoneCallActivityPost.mutate(apiData,
-      {
-        onSuccess: (data) => {
-          console.log("data", data);
-          TkToastSuccess("Phone Call Created Successfully");
-          router.push(`${urls.phoneCall}`);
-        },
-        onError: (error) => {
-          console.log("error", error);
-          TkToastError("error while creating Lead", error);
-        },
-      });
+    console.log(" apiData", apiData);
+    phoneCallActivityPost.mutate(apiData, {
+      onSuccess: (data) => {
+        console.log("data", data);
+        TkToastSuccess("Phone Call Created Successfully");
+        router.push(`${urls.phoneCall}`);
+      },
+      onError: (error) => {
+        console.log("error", error);
+        TkToastError("error while creating Lead", error);
+      },
+    });
   };
 
   return (
@@ -263,15 +260,15 @@ const AddPhoneCallActivty = ({ value }) => {
                                     labelId={"_status"}
                                     id="status"
                                     options={[
-                                        {
-                                          label: "COMPLETED",
-                                          value: "Completed",
-                                        },
-                                        {
-                                          label: "SCHEDULED",
-                                          value: "Scheduled",
-                                        },
-                                      ]}
+                                      {
+                                        label: "Completed",
+                                        value: "COMPLETED",
+                                      },
+                                      {
+                                        label: "Scheduled",
+                                        value: "SCHEDULED",
+                                      },
+                                    ]}
                                     placeholder="Select Type"
                                     requiredStarOnLabel={true}
                                   />

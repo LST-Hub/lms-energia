@@ -216,7 +216,7 @@ const getEventDataActivityRestletScriptDeploymentId = async (lid) => {
       recordtype: "calendarevent",
       filters: [
         [
-            "company", "anyof", [lid]
+            "internalid", "anyof", String(lid)
         ]
       ],
       columns: [
@@ -227,11 +227,12 @@ const getEventDataActivityRestletScriptDeploymentId = async (lid) => {
         "endtime",
         "owner",
         "status",
-        "markdone",
+        // "markdone",
         "company",
         "message"
       ]
     }
+    console.log("body", body)
     const authentication = {
       authentication_code: authentication_code,
       account: accountId,

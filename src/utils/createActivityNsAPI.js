@@ -963,7 +963,7 @@ const getPhoneCallIdRestletScriptDeploymentId = async (body) => {
     // const url = `https://${authentication_code}.restlets.api.netsuite.com/app/site/hosting/restlet.nl?script=1020&deploy=1}`;
 
     const data = {
-      body,
+      q: body,
     };
 
     const payload = JSON.stringify(body);
@@ -1423,6 +1423,7 @@ const updatePhoneActivityRestletScriptDeploymentId = async (body) => {
     };
 
     const payload = JSON.stringify(body);
+    console.log("payload",payload)
 
     const headers = {
       "Content-Type": "application/json",

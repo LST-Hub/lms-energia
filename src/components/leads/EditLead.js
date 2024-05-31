@@ -292,6 +292,8 @@ function EditLead({ id, mode }) {
   const [allVisitUpdateData, setAlllVisitUpdateData] = useState([{}]);
   const [allPortalData, setAllPortalData] = useState([{}]);
   const [allNurturStatusData, setAllNurturStatusData] = useState([{}]);
+  const [userId, setUserId] = useState(0);
+
 
   const results = useQueries({
     queries: [
@@ -1521,6 +1523,13 @@ function EditLead({ id, mode }) {
     }
   }, [data]);
 
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.localStorage) {
+      const storedId = window.localStorage.getItem("internalid");
+      setUserId(storedId);
+    }
+  }, []);
+
   const onSubmit = (formData) => {
     if (!editMode) return;
 
@@ -1532,7 +1541,9 @@ function EditLead({ id, mode }) {
           value: formData.custentity_lms_leadsource?.value,
           label: formData.custentity_lms_leadsource?.text,
         },
-        custentity_lms_createdby: formData.custentity_lms_createdby,
+        custentity_lms_createdby: {
+          value: userId,
+        },
         custentity_lms_createddate: formData.custentity_lms_createddate,
         custentity_lms_name_of_the_platform_dd: {
           value: formData.custentity_lms_name_of_the_platform_dd?.value,
@@ -3198,6 +3209,8 @@ function EditLead({ id, mode }) {
                       editLink={`${urls.leadEdit}/${lid}`}
                       onDeleteClick={handleDeleteLead}
                       toggleDeleteModel={toggleDeleteModelPopup}
+                      disableDelete={viewMode}
+                      isEditAccess={viewMode}
                     />
                     <TkCardBody className="mt-4">
                       <TkForm onSubmit={handleSubmit(onSubmit)}>
@@ -3304,6 +3317,7 @@ function EditLead({ id, mode }) {
                                               labelName="Name Of Platform"
                                               placeholder="Select Platform"
                                               requiredStarOnLabel={editMode}
+                                              disabled={viewMode}
                                               // options={allPlatformData}
                                               // loading={leadPlatformLoading}
                                             />
@@ -3336,6 +3350,7 @@ function EditLead({ id, mode }) {
                                               labelName="Campaign Name"
                                               placeholder="Enter Campaign Name"
                                               requiredStarOnLabel={editMode}
+                                              disabled={viewMode}
                                               // options={allCampaignData}
                                               // loading={leadCampaignLoading}
                                             />
@@ -3370,6 +3385,7 @@ function EditLead({ id, mode }) {
                                               placeholder="Select Visit Update"
                                               requiredStarOnLabel={editMode}
                                               loading={leadVisitUpdateLoading}
+                                              disabled={viewMode}
                                             />
                                           )}
                                         />
@@ -3407,6 +3423,7 @@ function EditLead({ id, mode }) {
                                               requiredStarOnLabel={editMode}
                                               options={allPortalData}
                                               loading={leadPortalLoading}
+                                              disabled={viewMode}
                                             />
                                           )}
                                         />
@@ -3453,6 +3470,7 @@ function EditLead({ id, mode }) {
                                                 setAllDurations({});
                                               }}
                                               requiredStarOnLabel={editMode}
+                                              disabled={viewMode}
                                             />
                                           )}
                                         />
@@ -3510,6 +3528,7 @@ function EditLead({ id, mode }) {
                                           type="text"
                                           placeholder="Select Visit Time"
                                           requiredStarOnLabel={editMode}
+                                          disabled={viewMode}
                                         />
                                         {errors.custentity_lms_time_of_visit && (
                                           <FormErrorText>
@@ -3540,6 +3559,7 @@ function EditLead({ id, mode }) {
                                               placeholder="Select Visit Update"
                                               requiredStarOnLabel={editMode}
                                               loading={leadVisitUpdateLoading}
+                                              disabled={viewMode}
                                             />
                                           )}
                                         />

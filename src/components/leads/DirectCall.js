@@ -244,6 +244,7 @@ function DirectCall({ selectedButton }) {
   const [allNurturStatusData, setAllNurturStatusData] = useState([{}]);
   const [selectedEnquiryBy, setSelectedEnquiryBy] = useState(false);
   const[selectedLeadStatus, setSelectedLeadStatus] = useState(false);
+  const [userId, setUserId] = useState(0);
 
 
   const results = useQueries({
@@ -2004,21 +2005,29 @@ function DirectCall({ selectedButton }) {
   //     },
   //   },
   // ];
-
+  useEffect(() => {
+  if (typeof window !== "undefined" && window.localStorage) {
+    const storedId = window.localStorage.getItem("internalid");
+    setUserId(storedId);
+  }
+}, []);
+    
   const onSubmit = (formData) => {
-    // return;
     const apiData = {
       resttype: "Add",
       recordtype: "lead",
       bodyfields: {
         customform: { value: "135", text: "LMS CRM FORM" },
         entitystatus: { value: "7", text: "LEAD-Qualified" },
+        custentity_lms_createdby: {
+          value: userId,
+        },
         custentity_lms_channel_lead: { value: selectedButton.id },
         custentity_lms_leadsource: {
           value: formData.custentity_lms_leadsource.value,
           label: formData.custentity_lms_leadsource.text,
         },
-        custentity_lms_createdby: formData.custentity_lms_createdby,
+        // custentity_lms_createdby: formData.custentity_lms_createdby,
         custentity_lms_createddate: formData.custentity_lms_createddate,
         subsidiary: {
           value: formData.subsidiary.value,
@@ -2217,8 +2226,7 @@ function DirectCall({ selectedButton }) {
         //     : [],
       },
     };
-// IF CALL DATA IS FILLED THEN CALLS OBJECT IN APIDATA 
-
+    
 
 
     leadPost.mutate(apiData, {
@@ -2232,192 +2240,7 @@ function DirectCall({ selectedButton }) {
     });
   };
 
-  // const addressColumns = [
-  //   {
-  //     Header: "Address 1",
-  //     accessor: "addr1",
-  //     Cell: (cellProps) => {
-  //       return (
-  //         <>
-  //           <TkInput
-  //             type="textarea"
-  //             id="addr1"
-  //             placeholder="Enter Address 1"
-  //             // onBlur={handleInputBlur}
-  //             {...register(`addr1[${cellProps.row.index}]`)}
-  //           />
-  //           {errors?.addr1?.[cellProps.row.index] && (
-  //             <FormErrorText>
-  //               {errors?.addr1?.[cellProps.row.index]?.message}
-  //             </FormErrorText>
-  //           )}
-  //         </>
-  //       );
-  //     },
-  //   },
-  //   {
-  //     Header: "Address 2",
-  //     accessor: "addr2",
-  //     Cell: (cellProps) => {
-  //       return (
-  //         <>
-  //           <TkInput
-  //             type="textarea"
-  //             id="addr2"
-  //             // onBlur={handleInputBlur}
-  //             placeholder="Enter Address 2"
-  //             {...register(`addr2[${cellProps.row.index}]`)}
-  //           />
-  //           {errors?.addr2?.[cellProps.row.index] && (
-  //             <FormErrorText>
-  //               {errors?.addr2?.[cellProps.row.index]?.message}
-  //             </FormErrorText>
-  //           )}
-  //         </>
-  //       );
-  //     },
-  //   },
-  //   {
-  //     Header: "City",
-  //     accessor: "city",
-  //     Cell: (cellProps) => {
-  //       return (
-  //         <>
-  //           <TkInput
-  //             type="text"
-  //             id="city"
-  //             // onBlur={handleInputBlur}
-  //             placeholder="Enter City"
-  //             {...register(`city[${cellProps.row.index}]`)}
-  //           />
-  //           {errors?.city?.[cellProps.row.index] && (
-  //             <FormErrorText>
-  //               {errors?.city?.[cellProps.row.index]?.message}
-  //             </FormErrorText>
-  //           )}
-  //         </>
-  //       );
-  //     },
-  //   },
-  //   {
-  //     Header: "State",
-  //     accessor: "state",
-  //     Cell: (cellProps) => {
-  //       return (
-  //         <>
-  //           <TkInput
-  //             type="textarea"
-  //             id="state"
-  //             placeholder="Enter State"
-  //             // onBlur={handleInputBlur}
-  //             {...register(`state[${cellProps.row.index}]`)}
-  //           />
-  //           {errors?.state?.[cellProps.row.index] && (
-  //             <FormErrorText>
-  //               {errors?.state?.[cellProps.row.index]?.message}
-  //             </FormErrorText>
-  //           )}
-  //         </>
-  //       );
-  //     },
-  //   },
-  //   {
-  //     Header: "Zip",
-  //     accessor: "zip",
-  //     Cell: (cellProps) => {
-  //       return (
-  //         <>
-  //           <TkInput
-  //             type="textarea"
-  //             id="zip"
-  //             placeholder="Enter Zip"
-  //             // onBlur={handleInputBlur}
-  //             {...register(`zip[${cellProps.row.index}]`)}
-  //           />
-  //           {errors?.zip?.[cellProps.row.index] && (
-  //             <FormErrorText>
-  //               {errors?.zip?.[cellProps.row.index]?.message}
-  //             </FormErrorText>
-  //           )}
-  //         </>
-  //       );
-  //     },
-  //   },
-
-  //   {
-  //     Header: "Country *",
-  //     accessor: "country",
-  //     Cell: (cellProps) => {
-  //       return (
-  //         <>
-  //           <Controller
-  //             control={control}
-  //             name={`country[${cellProps.row.index}]`}
-  //             rules={{ required: "Country is required" }}
-  //             render={({ field }) => (
-  //               <TkSelect
-  //                 {...field}
-  //                 id={"country"}
-  //                 options={allCountryData}
-  //                 requiredStarOnLabel={true}
-  //                 style={{ width: "200px" }}
-  //                 loading={divisionLoading}
-  //                 // onBlur={handleInputBlur}
-  //               />
-  //             )}
-  //           />
-  //           {errors?.country?.[cellProps.row.index] && (
-  //             <FormErrorText>
-  //               {errors?.country?.[cellProps.row.index]?.message}
-  //             </FormErrorText>
-  //           )}
-  //         </>
-  //       );
-  //     },
-  //   },
-
-  //   {
-  //     Header: "Address",
-  //     accessor: "label",
-  //     Cell: (cellProps) => {
-  //       return (
-  //         <>
-  //           <TkInput
-  //             type="textarea"
-  //             id="label"
-  //             placeholder="Enter Address"
-  //             disabled={true}
-  //             {...register(`label[${cellProps.row.index}]`)}
-  //           />
-  //           {errors?.label?.[cellProps.row.index] && (
-  //             <FormErrorText>
-  //               {errors?.label?.[cellProps.row.index]?.message}
-  //             </FormErrorText>
-  //           )}
-  //         </>
-  //       );
-  //     },
-  //   },
-  //   {
-  //     Header: "Action",
-  //     accessor: "action",
-  //     Cell: (cellProps) => {
-  //       return (
-  //         <>
-  //           <TkButton
-  //             type={"button"}
-  //             onClick={() => {
-  //               handleRemoveAddressRow(cellProps.row.index);
-  //             }}
-  //             disabled={addressRows.length === 1}
-  //           >
-  //             Delete
-  //           </TkButton>
-  //         </>
-  //       );
-  //     },
-  //   },
-  // ];
+  
 
   const concatenateAddress = () => {
     const addr1 = getValues("addr1") || "";

@@ -256,6 +256,8 @@ function SocialMedia({ selectedButton }) {
   const [fullAddress, setFullAddress] = useState(false);
   const [selectedEnquiryBy, setSelectedEnquiryBy] = useState(false);
   const [allNurturStatusData, setAllNurturStatusData] = useState([{}]);
+  const [userId, setUserId] = useState(0);
+
 
   const results = useQueries({
     queries: [
@@ -1089,6 +1091,13 @@ function SocialMedia({ selectedButton }) {
     setPhoneCallRows(newEventRows);
   };
 
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.localStorage) {
+      const storedId = window.localStorage.getItem("internalid");
+      setUserId(storedId);
+    }
+  }, []);
+
   const leadSocialMediaPost = useMutation({
     mutationFn: tkFetch.post(`${API_BASE_URL}/lead`),
   });
@@ -1229,7 +1238,9 @@ function SocialMedia({ selectedButton }) {
           value: formData.custentity_lms_visit_update.value,
           text: formData.custentity_lms_visit_update.text,
         },
-        custentity_lms_createdby: formData.custentity_lms_createdby,
+        custentity_lms_createdby: {
+          value: userId,
+        },
         custentity_lms_createddate: formData.custentity_lms_createddate,
         subsidiary: {
           value: formData.subsidiary.value,

@@ -152,6 +152,7 @@ const EditTask = ({ id, userData, mode }) => {
       setAllLeadNameListData(
         leadNameListData?.list?.map((leadListType) => ({
           label: leadListType?.values?.companyname,
+          value: leadListType?.id,
         }))
       );
     }
@@ -169,15 +170,15 @@ const EditTask = ({ id, userData, mode }) => {
       setValue("title", bodyValues?.title);
       setValue("phone", bodyValues?.phone);
       setValue("company", {
-        value: bodyValues?.company?.text,
-        label: bodyValues?.company?.value,
+        value: bodyValues?.company[0]?.value,
+        label: bodyValues?.company[0]?.text,
       });
       setValue("priority", {
         value: bodyValues?.priority[0].text,
         label: bodyValues?.priority[0].value,
       });
       setValue("status", {
-        value: bodyValues?.status[0].text,
+        // value: bodyValues?.status[0].text,
         label: bodyValues?.status[0].value,
       });
       setValue("organizer", {
@@ -202,15 +203,15 @@ const EditTask = ({ id, userData, mode }) => {
         title: formData.title,
         company: {
           value: formData.company.value,
-          label: formData.company.text,
+          text: formData.company.label,
         },
         priority: {
           value: formData.priority.value,
-          label: formData.priority.text,
+          text: formData.priority.label,
         },
         status: {
           value: formData.status.value,
-          label: formData.status.text,
+          text: formData.status.label,
         },
         startdate: formData.startdate,
         duedate: formData.duedate,
@@ -281,6 +282,8 @@ const EditTask = ({ id, userData, mode }) => {
                   editLink={`${urls.taskkEdit}/${tid}`}
                   onDeleteClick={handleDeleteTask}
                   toggleDeleteModel={toggleDeleteModelPopup}
+                  disableDelete={viewMode}
+                  isEditAccess={viewMode}
                 />
                 <TkCardBody className="mt-4">
                   <TkForm onSubmit={handleSubmit(onSubmit)}>
@@ -382,9 +385,9 @@ const EditTask = ({ id, userData, mode }) => {
                                       labelId={"priority"}
                                       id="priority"
                                       options={[
-                                        { label: "High", value: "1" },
-                                        { label: "Medium", value: "2" },
-                                        { label: "Low", value: "3" },
+                                        { label: "High", value: "HIGH" },
+                                        { label: "Medium", value: "MEDIUM" },
+                                        { label: "Low", value: "LOW" },
                                       ]}
                                       placeholder="Select Proirity"
                                       requiredStarOnLabel={editMode}
@@ -412,12 +415,17 @@ const EditTask = ({ id, userData, mode }) => {
                                       options={[
                                         {
                                           label: "Completed",
-                                          value: "Completed",
+                                          value: "COMPLETED",
                                         },
                                         {
-                                          label: "Scheduled",
-                                          value: "Scheduled",
+                                          label: "In Progress",
+                                          value: "IN PROGRESS",
                                         },
+                                        {
+                                          label: "Not Started",
+                                          value: "NOT STARTED",
+                                        },
+  
                                       ]}
                                       placeholder="Select Type"
                                       requiredStarOnLabel={editMode}
