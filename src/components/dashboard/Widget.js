@@ -31,10 +31,22 @@ const Widget = () => {
         queryKey: [RQ.leadCount],
         queryFn: tkFetch.get(`${API_BASE_URL}/dashboard/lead-count`),
       },
+      {
+        queryKey: [RQ.callCount],
+        queryFn: tkFetch.get(`${API_BASE_URL}/dashboard/call-count`),
+      },
+      {
+        queryKey: [RQ.taskCount],
+        queryFn: tkFetch.get(`${API_BASE_URL}/dashboard/task-count`),
+      },
+      {
+        queryKey: [RQ.eventCount],
+        queryFn: tkFetch.get(`${API_BASE_URL}/dashboard/event-count`),
+      },
     ],
   });
 
-  const [leadCountData] = results;
+  const [leadCountData, callCount, taskCount, eventCount] = results;
 
   const {
     data: leadCountDataData,
@@ -42,6 +54,27 @@ const Widget = () => {
     isError: leadCountDataIsError,
     error: leadCountDataError,
   } = leadCountData;
+
+  const {
+    data: callCountData,
+    isLoading: callCountDataIsLoading,
+    isError: callCountDataIsError,
+    error: callCountDataError,
+  } = callCount;
+
+  const {
+    data: taskCountData,
+    isLoading: taskCountDataIsLoading,
+    isError: taskCountDataIsError,
+    error: taskCountDataError,
+  } = taskCount;
+
+  const {
+    data: eventCountData,
+    isLoading: eventCountDataIsLoading,
+    isError: eventCountDataIsError,
+    error: eventCountDataError,
+  } = eventCount;
 
   useEffect(() => {
     if (leadCountDataData) {
@@ -62,46 +95,46 @@ const Widget = () => {
     },
     {
       id: 2,
-      label: "Annual Profit",
+      label: "Total Calls",
       badge: "ri-arrow-up-circle-line text-success",
-      icon: "ri-exchange-dollar-line",
-      counter: "489.4",
-      decimals: 1,
-      suffix: "k",
-      prefix: "$",
+      icon: "ri-phone-line",
+      counter: `${callCountData?.[0]}`,
+      decimals: 0,
+      suffix: "",
+      prefix: "",
     },
     {
       id: 3,
-      label: "Lead Coversation",
+      label: "Total Tasks",
       badge: "ri-arrow-down-circle-line text-danger",
-      icon: "ri-pulse-line",
-      counter: "32.89",
-      decimals: 2,
-      suffix: "%",
+      icon: "ri-task-line",
+      counter: `${taskCountData?.[0]}`,
+      decimals: 0,
+      suffix: "",
       prefix: "",
     },
     {
       id: 4,
-      label: "Daily Average Income",
+      label: "Total Events",
       badge: "ri-arrow-up-circle-line text-success",
-      icon: "ri-trophy-line",
-      counter: "1596.5",
-      decimals: 1,
-      prefix: "$",
-      separator: ",",
-      suffix: "",
-    },
-    {
-      id: 5,
-      label: "Annual Deals",
-      badge: "ri-arrow-down-circle-line text-danger",
-      icon: "ri-service-line",
-      counter: "2659",
+      icon: "ri-calendar-event-line",
+      counter: `${eventCountData?.[0]}`,
       decimals: 0,
-      separator: ",",
-      suffix: "",
       prefix: "",
+      separator: "",
+      suffix: "",
     },
+    // {
+    //   id: 5,
+    //   label: "Annual Deals",
+    //   badge: "ri-arrow-down-circle-line text-danger",
+    //   icon: "ri-service-line",
+    //   counter: "2659",
+    //   decimals: 0,
+    //   separator: ",",
+    //   suffix: "",
+    //   prefix: "",
+    // },
   ];
 
   return (
@@ -109,8 +142,8 @@ const Widget = () => {
       <div className="col-xl-12">
         <div className="card crm-widget">
           <div className="card-body p-0">
-            <div className="row row-cols-xxl-5 row-cols-md-3 row-cols-1 g-0">
-              {crmWidgets.map((widget, index) => (
+            <div className="row row-cols-xxl-4 row-cols-md-3 row-cols-1 g-0">
+              {/* {crmWidgets.map((widget, index) => (
                 <div className="col" key={index}>
                   <div className="py-4 px-3">
                     <h5 className="text-muted text-uppercase fs-13">
@@ -139,7 +172,104 @@ const Widget = () => {
                     </div>
                   </div>
                 </div>
-              ))}
+              ))} */}
+
+              <div className="col">
+                {leadCountDataIsLoading ? (
+                  <Suspense />
+                ) : (
+                  <div className="py-4 px-3">
+                    <h5 className="text-muted text-uppercase fs-13">
+                      Total Leads
+                      {/* <i className={widget.badge + " fs-18 float-end align-middle"}></i> */}
+                    </h5>
+                    <div className="d-flex align-items-center">
+                      <div className="flex-shrink-0">
+                        <i className={"ri-space-ship-line" + " display-6 text-muted"}></i>
+                      </div>
+                      <div className="flex-grow-1 ms-3">
+                        <h2 className="mb-0">
+                          <span className="counter-value" data-target="197">
+                            <CountUp start={0} end={leadCount} duration={1} />
+                          </span>
+                        </h2>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+              <div className="col">
+                {callCountDataIsLoading ? (
+                  <Suspense />
+                ) : (
+                  <div className="py-4 px-3">
+                    <h5 className="text-muted text-uppercase fs-13">
+                      Total Calls
+                      {/* <i className={widget.badge + " fs-18 float-end align-middle"}></i> */}
+                    </h5>
+                    <div className="d-flex align-items-center">
+                      <div className="flex-shrink-0">
+                        <i className={"ri-phone-line" + " display-6 text-muted"}></i>
+                      </div>
+                      <div className="flex-grow-1 ms-3">
+                        <h2 className="mb-0">
+                          <span className="counter-value" data-target="197">
+                            <CountUp start={0} end={callCountData?.[0]} duration={1} />
+                          </span>
+                        </h2>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+              <div className="col">
+                {taskCountDataIsLoading ? (
+                  <Suspense />
+                ) : (
+                  <div className="py-4 px-3">
+                    <h5 className="text-muted text-uppercase fs-13">
+                      Total Tasks
+                      {/* <i className={widget.badge + " fs-18 float-end align-middle"}></i> */}
+                    </h5>
+                    <div className="d-flex align-items-center">
+                      <div className="flex-shrink-0">
+                        <i className={"ri-task-line" + " display-6 text-muted"}></i>
+                      </div>
+                      <div className="flex-grow-1 ms-3">
+                        <h2 className="mb-0">
+                          <span className="counter-value" data-target="197">
+                            <CountUp start={0} end={taskCountData?.[0]} duration={1} />
+                          </span>
+                        </h2>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+              <div className="col">
+                {eventCountDataIsLoading ? (
+                  <Suspense />
+                ) : (
+                  <div className="py-4 px-3">
+                    <h5 className="text-muted text-uppercase fs-13">
+                      Total Events
+                      {/* <i className={widget.badge + " fs-18 float-end align-middle"}></i> */}
+                    </h5>
+                    <div className="d-flex align-items-center">
+                      <div className="flex-shrink-0">
+                        <i className={"ri-calendar-event-line" + " display-6 text-muted"}></i>
+                      </div>
+                      <div className="flex-grow-1 ms-3">
+                        <h2 className="mb-0">
+                          <span className="counter-value" data-target="197">
+                            <CountUp start={0} end={eventCountData?.[0]} duration={1} />
+                          </span>
+                        </h2>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>

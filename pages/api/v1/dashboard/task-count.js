@@ -6,40 +6,30 @@ export default async function handler(req, res) {
     if (req.method === "GET") {
       const body = {
         resttype: "Search",
-        recordtype: "calendarevent",
+        recordtype: "task",
         filters: [["systemnotes.type", "is", "T"], "AND", ["systemnotes.date", "onorafter", "01/05/2024 12:00 am"]],
         columns: [
           "internalid",
+          "order",
           "title",
-          "startdate",
-          "starttime",
-          "endtime",
-          "owner",
+          "priority",
           "status",
-          "markdone",
+          "startdate",
+          "duedate",
+          "accesslevel",
+          "assigned",
           "company",
           "message",
         ],
       };
 
-      const eventData = await getLeadByIdRestletScriptDeploymentId(body);
-
-      const formatted = eventData?.list?.map((item) => ({
-        id: item.id,
-        title: item.values.title || "",
-        status: item.values.status[0].text || "",
-        startdate: item.values.startdate || "",
-        starttime: item.values.starttime || "",
-        endtime: item.values.endtime || "",
-        owner: item.values.owner[0].text || "",
-        markdone: item.values.markdone || "",
-      }));
+      const taskData = await getLeadByIdRestletScriptDeploymentId(body);
 
       response({
         res,
         success: true,
         status_code: 200,
-        data: formatted,
+        data: [taskData?.list.length],
         message: "All Lead Fetched successfully",
       });
     } else {
