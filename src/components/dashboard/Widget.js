@@ -23,8 +23,6 @@ const Suspense = () => {
 };
 
 const Widget = () => {
-  const [leadCount, setLeadCount] = useState(0);
-
   const results = useQueries({
     queries: [
       {
@@ -76,19 +74,13 @@ const Widget = () => {
     error: eventCountDataError,
   } = eventCount;
 
-  useEffect(() => {
-    if (leadCountDataData) {
-      setLeadCount(leadCountDataData?.items[0]?.expr1);
-    }
-  }, [leadCountDataData]);
-
   const crmWidgets = [
     {
       id: 1,
       label: "Total Leads",
       //   badge: "ri-arrow-up-circle-line text-success",
       icon: "ri-space-ship-line",
-      counter: `${leadCount}`,
+      counter: `${leadCountDataData?.[0]}`,
       decimals: 0,
       suffix: "",
       prefix: "",
@@ -147,7 +139,7 @@ const Widget = () => {
                 {leadCountDataIsLoading ? (
                   <Suspense />
                 ) : (
-                  <div className="py-4 px-3">
+                  <div className={`py-4 px-3 fade-in ${leadCountDataIsLoading ? "" : "loaded"}`}>
                     <h5 className="text-muted text-uppercase fs-13">
                       Total Leads
                       {/* <i className={widget.badge + " fs-18 float-end align-middle"}></i> */}
@@ -159,7 +151,7 @@ const Widget = () => {
                       <div className="flex-grow-1 ms-3">
                         <h2 className="mb-0">
                           <span className="counter-value" data-target="197">
-                            <CountUp start={0} end={leadCount} duration={1} />
+                            <CountUp start={0} end={leadCountDataData?.[0]} duration={1} />
                           </span>
                         </h2>
                       </div>
@@ -171,7 +163,7 @@ const Widget = () => {
                 {callCountDataIsLoading ? (
                   <Suspense />
                 ) : (
-                  <div className="py-4 px-3">
+                  <div className={`py-4 px-3 fade-in ${leadCountDataIsLoading ? "" : "loaded"}`}>
                     <h5 className="text-muted text-uppercase fs-13">
                       Total Calls
                       {/* <i className={widget.badge + " fs-18 float-end align-middle"}></i> */}
@@ -195,7 +187,7 @@ const Widget = () => {
                 {taskCountDataIsLoading ? (
                   <Suspense />
                 ) : (
-                  <div className="py-4 px-3">
+                  <div className={`py-4 px-3 fade-in ${leadCountDataIsLoading ? "" : "loaded"}`}>
                     <h5 className="text-muted text-uppercase fs-13">
                       Total Tasks
                       {/* <i className={widget.badge + " fs-18 float-end align-middle"}></i> */}
@@ -219,7 +211,7 @@ const Widget = () => {
                 {eventCountDataIsLoading ? (
                   <Suspense />
                 ) : (
-                  <div className="py-4 px-3">
+                  <div className={`py-4 px-3 fade-in ${leadCountDataIsLoading ? "" : "loaded"}`}>
                     <h5 className="text-muted text-uppercase fs-13">
                       Total Events
                       {/* <i className={widget.badge + " fs-18 float-end align-middle"}></i> */}

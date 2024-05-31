@@ -8,11 +8,13 @@ export default async function handler(req, res) {
 
       try {
         const allLeadData = await getAllLeadRestletScriptDeploymentId(query);
+
+        console.log("All Lead Data", allLeadData?.items[0]?.expr1);
         response({
           res,
           success: true,
           status_code: 200,
-          data: allLeadData,
+          data: [allLeadData?.items[0]?.expr1],
           message: "All Lead Fetched successfully",
         });
       } catch (error) {
