@@ -16,31 +16,31 @@ import tkFetch from "../../utils/fetch";
 
 
 
-function TableToolBar() {
-  return (
-    <>
-      <TkCardBody className="table-toolbar mt-3">
-        <TkRow className="mb-3">
-          <TkCol lg={4}>
-            <TkInput
-              // onChange={onSearchChange}
-              placeholder="Search by name/Mobile No/ Company Name"
-              isSearchField={true}
-            />
-          </TkCol>
+// function TableToolBar() {
+//   return (
+//     <>
+//       <TkCardBody className="table-toolbar mt-3">
+//         <TkRow className="mb-3">
+//           <TkCol lg={4}>
+//             <TkInput
+//               // onChange={onSearchChange}
+//               placeholder="Search by name/Mobile No/ Company Name"
+//               isSearchField={true}
+//             />
+//           </TkCol>
 
-          {/* <TkCol lg={2}>
-            <TkSelect
-              placeholder="Active/Inactive"
-              options={[]}
-              // onChange={onActiveChange}
-            />
-          </TkCol> */}
-        </TkRow>
-      </TkCardBody>
-    </>
-  );
-}
+//           {/* <TkCol lg={2}>
+//             <TkSelect
+//               placeholder="Active/Inactive"
+//               options={[]}
+//               // onChange={onActiveChange}
+//             />
+//           </TkCol> */}
+//         </TkRow>
+//       </TkCardBody>
+//     </>
+//   );
+// }
 
 const AllPhoneCall = () => {
   const searchOnUI = isSearchonUI([]);
@@ -187,32 +187,32 @@ const AllPhoneCall = () => {
                   columns={columns}
                   data={phoneCallActivityData?.list || []}
                   loading = {isBackLoading}
-                  Toolbar={
-                    <TableToolBar
-                      onSearchChange={searchDebounce(
-                        updateSearchText,
-                        searchOnUI
-                      )}
-                      // accessLevel={accessLevel}
-                      onSupervisorChange={(item) => {
-                        updateFilters({
-                          [filterFields.users.supervisor]: item
-                            ? item.value
-                            : null,
-                        });
-                      }}
-                      onRoleChange={(item) => {
-                        updateFilters({
-                          [filterFields.users.role]: item ? item.value : null,
-                        });
-                      }}
-                      onActiveChange={(item) => {
-                        updateFilters({
-                          [filterFields.users.active]: item ? item.value : null,
-                        });
-                      }}
-                    />
-                  }
+                  // Toolbar={
+                  //   <TableToolBar
+                  //     onSearchChange={searchDebounce(
+                  //       updateSearchText,
+                  //       searchOnUI
+                  //     )}
+                  //     // accessLevel={accessLevel}
+                  //     onSupervisorChange={(item) => {
+                  //       updateFilters({
+                  //         [filterFields.users.supervisor]: item
+                  //           ? item.value
+                  //           : null,
+                  //       });
+                  //     }}
+                  //     onRoleChange={(item) => {
+                  //       updateFilters({
+                  //         [filterFields.users.role]: item ? item.value : null,
+                  //       });
+                  //     }}
+                  //     onActiveChange={(item) => {
+                  //       updateFilters({
+                  //         [filterFields.users.active]: item ? item.value : null,
+                  //       });
+                  //     }}
+                  //   />
+                  // }
                   defaultPageSize={10}
                   customPageSize={true}
                   showPagination={true}

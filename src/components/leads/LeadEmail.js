@@ -1150,9 +1150,9 @@ function LeadEmail({ selectedButton }) {
             custrecord_lms_datetime: formatDateForAPI(
               formData.custrecord_lms_datetime
             ),
-            custrecord_lms_lead_value: Number(
-              formData.custrecord_lms_lead_value
-            ),
+            // custrecord_lms_lead_value: Number(
+            //   formData.custrecord_lms_lead_value
+            // ),
             custrecord_lms_statusoflead: {
               value: formData.custrecord_lms_statusoflead?.value,
               text: formData.custrecord_lms_statusoflead?.text,
@@ -2910,7 +2910,7 @@ function LeadEmail({ selectedButton }) {
                             />
                           </TkCol>
 
-                          <TkCol lg={3}>
+                          {/* <TkCol lg={3}>
                             <TkInput
                               {...register("custrecord_lms_lead_value")}
                               id="custrecord_lms_lead_value"
@@ -2924,7 +2924,7 @@ function LeadEmail({ selectedButton }) {
                                 {errors.custrecord_lms_lead_value.message}
                               </FormErrorText>
                             )}
-                          </TkCol>
+                          </TkCol> */}
                           <TkCol lg={3}>
                             <Controller
                               name="custrecord_lms_statusoflead"

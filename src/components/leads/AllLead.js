@@ -98,18 +98,18 @@ const AllLead = ({ mounted }) => {
     enabled: !!role && !isSalesManager,
   });
 
-  // const {
-  //   data: salesSuppRolesData,
-  //   isLoading: isSalesSuppRolesLoading,
-  //   isError: issalesSuppRolesError,
-  //   error: salesSuppError,
-  // } = useQuery({
-  //   queryKey: [RQ.salesSupport],
-  //   queryFn: tkFetch.get(
-  //     `${API_BASE_URL}/salesrepresentative-sales-support?userId=${userId}`
-  //   ),
-  //   enabled: !!role && !isSalesManager,
-  // });
+  const {
+    data: salesSuppRolesData,
+    isLoading: isSalesSuppRolesLoading,
+    isError: issalesSuppRolesError,
+    error: salesSuppError,
+  } = useQuery({
+    queryKey: [RQ.salesSupport],
+    queryFn: tkFetch.get(
+      `${API_BASE_URL}/salesrepresentative-sales-support?userId=${userId}`
+    ),
+    enabled: !!role && !isSalesManager,
+  });
 
   const updateSearchText = (e) => {
     if (e.target.value.length >= minSearchLength) {
@@ -118,30 +118,30 @@ const AllLead = ({ mounted }) => {
       setSearchText("");
     }
   };
-  useEffect(() => {
-    if (isSalesManager) {
-      setLeadData(salesManagerRolesData);
-    } else {
-      setLeadData(salesSupportRolesData);
-    }
-  }, [salesManagerRolesData, salesSupportRolesData, isSalesManager]);
-
   // useEffect(() => {
-  //   if (isSalesManager && salesManagerRolesData) {
+  //   if (isSalesManager) {
   //     setLeadData(salesManagerRolesData);
-  //   } else if (!isSalesManager && salesSuppRolesData) {
-  //     setLeadData(salesSuppRolesData);
-  //   } else if (!isSalesManager && salesSupportRolesData) {
-  //     setLeadData(salesSupportRolesData);
   //   } else {
-  //     setLeadData([]);
+  //     setLeadData(salesSupportRolesData);
   //   }
-  // }, [
-  //   salesSuppRolesData,
-  //   isSalesManager,
-  //   salesSupportRolesData,
-  //   salesManagerRolesData,
-  // ]);
+  // }, [salesManagerRolesData, salesSupportRolesData, isSalesManager]);
+
+  useEffect(() => {
+    if (isSalesManager && salesManagerRolesData) {
+      setLeadData(salesManagerRolesData);
+    } else if (!isSalesManager && salesSuppRolesData) {
+      setLeadData(salesSuppRolesData);
+    } else if (!isSalesManager && salesSupportRolesData) {
+      setLeadData(salesSupportRolesData);
+    } else {
+      setLeadData([]);
+    }
+  }, [
+    salesSuppRolesData,
+    isSalesManager,
+    salesSupportRolesData,
+    salesManagerRolesData,
+  ]);
 
   // useEffect(() => {
   //   if (isSalesManager) {

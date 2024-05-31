@@ -1023,10 +1023,10 @@ function EditLead({ id, mode }) {
           : null
       );
 
-      setValue(
-        "custrecord_lms_lead_value",
-        lineValues?.recmachcustrecord_lms_leadnurt[0]?.custrecord_lms_lead_value
-      );
+      // setValue(
+      //   "custrecord_lms_lead_value",
+      //   lineValues?.recmachcustrecord_lms_leadnurt[0]?.custrecord_lms_lead_value
+      // );
 
       setValue(
         `custrecord_lms_statusoflead`,
@@ -1532,6 +1532,7 @@ function EditLead({ id, mode }) {
 
   const onSubmit = (formData) => {
     if (!editMode) return;
+    console.log("formData",formData)
 
     const apiData = {
       resttype: "Update",
@@ -1654,11 +1655,11 @@ function EditLead({ id, mode }) {
           {
             custrecord_lms_region: {
               value: formData.custrecord_lms_region?.value,
-              text: formData.custrecord_lms_region?.text,
+              text: formData.custrecord_lms_region?.label,
             },
             custrecord_lms_sales_team_name: {
-              value: formData.custrecord_lms_sales_team_name?.value,
-              text: formData.custrecord_lms_sales_team_name?.text,
+              value: formData.custrecord_lms_sales_team_name.value,
+              text: formData.custrecord_lms_sales_team_name.label,
             },
           },
         ],
@@ -1672,9 +1673,9 @@ function EditLead({ id, mode }) {
             custrecord_lms_datetime: formatDateForAPI(
               formData.custrecord_lms_datetime
             ),
-            custrecord_lms_lead_value: Number(
-              formData.custrecord_lms_lead_value
-            ),
+            // custrecord_lms_lead_value: Number(
+            //   formData.custrecord_lms_lead_value
+            // ),
             custrecord_lms_statusoflead: {
               value: formData.custrecord_lms_statusoflead?.value,
               text: formData.custrecord_lms_statusoflead?.text,
@@ -1767,7 +1768,6 @@ function EditLead({ id, mode }) {
       },
     };
     console.log("apiData", apiData);
-    console.log("requirementDetailsId", requirementDetailsId);
     leadPost.mutate(apiData, {
       onSuccess: (data) => {
         // setRows(data.updatedRequirementDetails);
@@ -4261,7 +4261,7 @@ function EditLead({ id, mode }) {
                                         />
                                       </TkCol>
 
-                                      <TkCol lg={3}>
+                                      {/* <TkCol lg={3}>
                                         <TkInput
                                           {...register(
                                             "custrecord_lms_lead_value"
@@ -4281,7 +4281,7 @@ function EditLead({ id, mode }) {
                                             }
                                           </FormErrorText>
                                         )}
-                                      </TkCol>
+                                      </TkCol> */}
                                       <TkCol lg={3}>
                                         <Controller
                                           name="custrecord_lms_statusoflead"
