@@ -21,9 +21,10 @@ function NavData(user, sessionData) {
 
   function handleLeadClick(e) {
     e.preventDefault();
-    setIsLead(!isLead);
-    setIscurrentState("lead");
-    updateIconSidebar(e);
+    // setIsLead(!isLead);
+    // setIscurrentState("lead");
+    // updateIconSidebar(e);
+    setIsLead(prevState => !prevState);
   }
 
   useEffect(() => {

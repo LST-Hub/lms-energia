@@ -23,15 +23,26 @@ export default async function handler(req, res) {
         ],
       };
 
-      const taskData = await getLeadByIdRestletScriptDeploymentId(body);
+      try {
+        const taskData = await getLeadByIdRestletScriptDeploymentId(body);
 
-      response({
-        res,
-        success: true,
-        status_code: 200,
-        data: [taskData?.list.length],
-        message: "All Lead Fetched successfully",
-      });
+        response({
+          res,
+          success: true,
+          status_code: 200,
+          data: [taskData?.list.length],
+          message: "All Lead Fetched successfully",
+        });
+      } catch (error) {
+        console.error("Error fetching calls data", error);
+        response({
+          res,
+          success: false,
+          status_code: 200,
+          data: [0],
+          message: "Error fetching lead data, returning count as 0",
+        });
+      }
     } else {
       response({ res, success: false, status_code: 405, message: "Method not allowed" });
       return;

@@ -5,14 +5,26 @@ export default async function handler(req, res) {
   try {
     if (req.method === "GET") {
       const query = `SELECT COUNT(*) FROM customer WHERE searchstage='Lead' AND id > 29824`;
-      const allLeadData = await getAllLeadRestletScriptDeploymentId(query);
-      response({
-        res,
-        success: true,
-        status_code: 200,
-        data: allLeadData,
-        message: "All Lead Fetched successfully",
-      });
+
+      try {
+        const allLeadData = await getAllLeadRestletScriptDeploymentId(query);
+        response({
+          res,
+          success: true,
+          status_code: 200,
+          data: allLeadData,
+          message: "All Lead Fetched successfully",
+        });
+      } catch (error) {
+        console.error("Error fetching lead data", error);
+        response({
+          res,
+          success: false,
+          status_code: 200,
+          data: [0],
+          message: "Error fetching lead data, returning count as 0",
+        });
+      }
     } else {
       response({ res, success: false, status_code: 405, message: "Method not allowed" });
       return;
