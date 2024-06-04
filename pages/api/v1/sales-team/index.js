@@ -4,7 +4,10 @@ import { getSalesTeamRestletScriptDeploymentId } from "../../../../src/utils/NsA
 export default async function handler(req, res) {
   try {
     if (req.method === "GET") {
-      const query = `SELECT id, entityid, firstname, email FROM employee WHERE isinactive='F'`;
+      const { locationId } = req.query;
+
+      console.log("locationId", locationId);
+      const query = `SELECT id, entityid, firstname, email FROM employee WHERE isinactive='F' AND location=${locationId}`;
       // const query = `SELECT entityid, firstName, lastname, id, email, hireDate, releasedate, BUILTIN.DF( employeetype ) AS employeetype, BUILTIN.DF( employeestatus ) AS employeestatus, BUILTIN.DF( department ) AS department, BUILTIN.DF( location ) AS location, BUILTIN.DF( supervisor ) AS supervisor FROM employee`;
       const salesTeamData = await getSalesTeamRestletScriptDeploymentId(query);
       response({

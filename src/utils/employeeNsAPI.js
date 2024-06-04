@@ -14,42 +14,17 @@ const consumerKey = process.env.CONSUMERKEY;
 const consumerSecretKey = process.env.CONSUMERSECRETKEY;
 const accessToken = process.env.ACCESSTOKEN;
 const accessSecretToken = process.env.ACCESSTOKENSECRETTOKEN;
-const getAllEmployeeData = async () => {
+const getAllEmployeeData = async (userId) => {
   try {
     const body = {
       resttype: "Search",
       recordtype: "employee",
-      filters: [],
+      filters: [ ["internalid", "anyof", userId]],
       columns: [
         "internalid",
         "entityid",
-        "altname",
-        "firstname",
-        "middlename",
-        "lastname",
         "title",
-        "supervisor",
-        "comments",
-        "email",
-        "phone",
-        "altphone",
-        "mobilephone",
-        "homephone",
-        "fax",
-        "billaddress",
-        "department",
-        "class",
-        "location",
-        "subsidiary",
-        "employeetype",
-        "employeestatus",
-        "jobdescr",
-        "workcalendar",
-        "hiredate",
-        "gender",
-        "giveaccess",
-        "isinactive",
-        "custentity_lms_roles",
+        "custentity_lms_roles"
       ],
     };
     const authentication = {

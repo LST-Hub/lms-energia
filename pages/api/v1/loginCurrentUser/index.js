@@ -5,14 +5,16 @@ export default async function handler(req, res) {
   try {
     if (req.method === "GET") {
       const { userId } = req.query;
-      const employeeData = await getAllEmployeeData(userId);
+
+      const currentUserLogin = await getAllEmployeeData(userId);
+      console.log("currentUserLogin", currentUserLogin);
 
       response({
         res,
         success: true,
         status_code: 200,
-        data: employeeData,
-        message: "Employee Fetched successfully",
+        data: currentUserLogin,
+        message: "Current User Fetched successfully",
       });
     }
   } catch (err) {

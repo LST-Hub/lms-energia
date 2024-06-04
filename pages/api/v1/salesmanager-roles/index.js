@@ -14,6 +14,8 @@ export default async function handler(req, res) {
         id: item.id,
         custentity_lms_channel_lead:
           item.values.custentity_lms_channel_lead[0].text || "",
+          // custentity_lms_channel_lead_name:
+          // item.values.custentity_lms_channel_lead_name[0].text || "",
         custentity_lms_createdby:
           item.values.custentity_lms_createdby[0].text || "",
         companyname: item.values.companyname || "",

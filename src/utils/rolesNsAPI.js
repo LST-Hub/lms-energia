@@ -219,10 +219,19 @@ const getSalesSupportRoleRestletScriptDeploymentId = async (userId) => {
     const body = {
       resttype: "Search",
       recordtype: "lead",
+      // filters: [
+      //   ["stage", "anyof", "LEAD"],
+      //   "AND",
+      //   ["custentity_lms_createdby", "anyof", userId],
+      // ],
       filters: [
         ["stage", "anyof", "LEAD"],
         "AND",
-        ["custentity_lms_createdby", "anyof", userId],
+        [
+          ["custentity_lms_createdby", "anyof", userId],
+          "OR",
+          ["custentity_lms_createdby.custentity_lms_roles", "anyof", '4'],
+        ],
       ],
       columns: [
         "internalid",

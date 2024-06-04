@@ -33,6 +33,7 @@ const ProfileDropdown = () => {
   const toggleProfileDropdown = () => {
     setIsProfileDropdown(!isProfileDropdown);
   };
+  const [userId, setUserId] = useState(null);
 
   const router = useRouter();
 
@@ -41,12 +42,23 @@ const ProfileDropdown = () => {
   //   queryFn: tkFetch.get(`${API_BASE_URL}/profile?email=${email}`),
   // });
 
-  const { data, isLoading, isError, error } = useQuery({
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.localStorage) {
+      const storedId = window.localStorage.getItem("internalid");
+      setUserId(storedId);
+    }
+  }, []);
+
+  const { data, isFetched, isLoading, isError, error } = useQuery({
     queryKey: [RQ.profileData],
-    queryFn: tkFetch.get(`${API_BASE_URL}/profile`),
+    queryFn: tkFetch.get(`${API_BASE_URL}/profile?userId=${userId}`),
+    enabled: !!userId,
   });
+  // if(isFetched){
+  //   console.log("data", data);
+  // }
 
-
+  // console.log("data", data.list[0]);
 
   // useEffect(() => {
   //   if (Array.isArray(data) && data.length > 0) {
@@ -109,33 +121,27 @@ const ProfileDropdown = () => {
 
         <TkDropdownToggle tag="button" type="button" className="btn">
           <span className="d-flex align-items-center">
-            {/* {user?.image ? ( */}
-            <Image
-              src="/images/users/avatar-3.jpg"
-              alt="user avatar"
-              height={22}
-              width={22}
-              className="rounded-circle header-profile-user"
-              // placeholder="blur"
-              layout="responsive"
-            />
-            {/* ) : ( */}
-            {/* <div className="header-avatar text-uppercase border rounded-circle bg-light text-primary">
-                  {String(user?.firstName ?? "").charAt(0) + String(user?.lastName ?? "").charAt(0)}
-                </div> */}
-            {/* )} */}
             <span className="text-start ms-xl-2">
               <span className="d-none d-xl-inline-block ms-1 fw-medium user-name-text">
-                John Doe
+                {/* {data?.list[0]?.values?.entityid}  */}
+                {data &&
+                  data.list &&
+                  data.list.length > 0 &&
+                  data.list[0].values &&
+                  data.list[0].values.entityid}
               </span>
               <span className="d-none d-xl-block ms-1 fs-12 text-muted user-name-sub-text">
-                Sales Head
+                {/* { data?.list[0]?.values?.custentity_lms_roles[0].text} */}
+                {data &&
+                  data.list &&
+                  data.list.length > 0 &&
+                  data.list[0].values &&
+                  data.list[0].values.custentity_lms_roles[0].text}
               </span>
             </span>
           </span>
         </TkDropdownToggle>
         <TkDropdownMenu className="dropdown-menu-end">
-          {/* <h6 className="dropdown-header">Welcome Nancy !</h6> */}
           <Link href={`${urls.profileView}`}>
             <a>
               <TkDropdownItem>
