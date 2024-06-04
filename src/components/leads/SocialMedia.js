@@ -36,7 +36,6 @@ import { TkCardBody, TkCardHeader } from "../../../src/components/TkCard";
 import TkRow, { TkCol } from "../../../src/components/TkRow";
 import TkSelect from "../../../src/components/forms/TkSelect";
 import TkInput from "../../../src/components/forms/TkInput";
-// import { Controller, useForm } from "react-hook-form";
 import TkButton from "../TkButton";
 import TkDate from "../forms/TkDate";
 import TkForm from "../forms/TkForm";
@@ -45,9 +44,9 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import TkContainer from "../TkContainer";
 import ActivityPopup from "./ActivityPopup";
 import FormErrorText, { FormErrorBox } from "../forms/ErrorText";
-import { convertTimeToSec, convertToTime, convertToTimeFotTimeSheet } from "../../utils/time";
+import { convertToTime } from "../../utils/time";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
-import { useMutation, useQueries } from "@tanstack/react-query";
+import { useMutation, useQueries , useQuery, useQueryClient} from "@tanstack/react-query";
 import tkFetch from "../../utils/fetch";
 import { formatDateForAPI } from "../../utils/date";
 import { TkToastError, TkToastSuccess } from "../TkToastContainer";
@@ -55,6 +54,7 @@ import TkIcon from "../TkIcon";
 import LeadEventPopup from "./LeadEventPopup";
 import LeadTaskPopup from "./LeadTaskPopup";
 import { MaxCrNoLength } from "../../../lib/constants";
+
 const tabs = {
   directCall: "primary",
   email: "email",
@@ -224,6 +224,8 @@ function SocialMedia({ selectedButton }) {
     resolver: yupResolver(schema),
   });
   const router = useRouter();
+  const queryClient = useQueryClient()
+
   const [activityModal, setActivityModal] = useState(false);
   const [leadTaskModal, setLeadTaskModal] = useState(false);
   const [leadEventModal, setLeadEventModal] = useState(false);
@@ -257,6 +259,8 @@ function SocialMedia({ selectedButton }) {
   const [selectedEnquiryBy, setSelectedEnquiryBy] = useState(false);
   const [allNurturStatusData, setAllNurturStatusData] = useState([{}]);
   const [userId, setUserId] = useState(0);
+  const [regionId,setRegionId] = useState(null)
+
 
 
   const results = useQueries({
@@ -1097,6 +1101,24 @@ function SocialMedia({ selectedButton }) {
       setUserId(storedId);
     }
   }, []);
+
+  const { data, isFetched, isLoading, isError, error } = useQuery({
+    queryKey: [RQ.currentUserLogin],
+    queryFn: tkFetch.get(`${API_BASE_URL}/loginCurrentUser?userId=${userId}`),
+    enabled: !!userId
+  });
+
+
+  if (data) {
+    setValue(
+      "custentity_lms_createdby",
+      data?.list[0]?.values.entityid +
+        " " +
+        data?.list[0]?.values.firstname +
+        " " +
+        data?.list[0]?.values.lastname
+    );
+  }
 
   const leadSocialMediaPost = useMutation({
     mutationFn: tkFetch.post(`${API_BASE_URL}/lead`),
@@ -3086,6 +3108,14 @@ function SocialMedia({ selectedButton }) {
                                   placeholder="Select Region"
                                   options={allRegionData}
                                   loading={regionLoading}
+                                  onChange={(e) => {
+                                    field.onChange(e);
+                                    queryClient.invalidateQueries({
+                                      queryKey: [RQ.allSalesTeam, regionId]
+                                    })
+                                    setRegionId(e ? e.value : null)
+                                    setValue("custrecord_lms_sales_team_name", null)
+                                  }}
                                 />
                               )}
                             />
@@ -3108,7 +3138,7 @@ function SocialMedia({ selectedButton }) {
                                   labelName="Sales Team Name"
                                   placeholder="Select Sales Team"
                                   options={allSalesTeamData}
-                                  loading={salesTeamLoading}
+                                  loading={regionId && salesTeamLoading}
                                 />
                               )}
                             />

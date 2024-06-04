@@ -24,19 +24,15 @@ import {
   MinNameLength,
   RQ,
   bigInpuMaxLength,
-  createdByNameTypes,
-  leadActivityTypes,
   smallInputMaxLength,
   urls,
 } from "../../../src/utils/Constants";
 import TkTableContainer from "../TkTableContainer";
-import TkModal, { TkModalHeader } from "../TkModal";
 import { useRouter } from "next/router";
 import { TkCardBody, TkCardHeader } from "../../../src/components/TkCard";
 import TkRow, { TkCol } from "../../../src/components/TkRow";
 import TkSelect from "../../../src/components/forms/TkSelect";
 import TkInput from "../../../src/components/forms/TkInput";
-// import { Controller, useForm } from "react-hook-form";
 import TkButton from "../TkButton";
 import TkDate from "../forms/TkDate";
 import TkForm from "../forms/TkForm";
@@ -44,16 +40,18 @@ import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import TkContainer from "../TkContainer";
 import TkIcon from "../TkIcon";
-import ActivityPopup from "./ActivityPopup";
 import FormErrorText, { FormErrorBox } from "../forms/ErrorText";
-import { convertToTime, convertToTimeFotTimeSheet } from "../../utils/time";
+import { convertToTime } from "../../utils/time";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
-import { useMutation, useQueries, useQuery } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQueries,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import tkFetch from "../../utils/fetch";
 import { TkToastError, TkToastSuccess } from "../TkToastContainer";
 import { formatDateForAPI } from "../../utils/date";
-import LeadTaskPopup from "./LeadTaskPopup";
-import LeadEventPopup from "./LeadEventPopup";
 import { MaxCrNoLength } from "../../../lib/constants";
 
 const tabs = {
@@ -215,6 +213,7 @@ function DirectCall({ selectedButton }) {
     resolver: yupResolver(schema),
   });
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [activityModal, setActivityModal] = useState(false);
   const [leadTaskModal, setLeadTaskModal] = useState(false);
   const [leadEventModal, setLeadEventModal] = useState(false);
@@ -224,7 +223,6 @@ function DirectCall({ selectedButton }) {
   const [allPrimarySubsidiaryData, setAllPrimarySubsidiaryData] = useState([
     {},
   ]);
-  const [directCallId, setDirectCallId] = useState(null);
   const [allEnquiryByData, setAllEnquiryByData] = useState([{}]);
   const [allClientTypeData, setAllClientTypeData] = useState([{}]);
   const [allSegmentData, setAllSegmentData] = useState([{}]);
@@ -243,9 +241,9 @@ function DirectCall({ selectedButton }) {
   const [fullAddress, setFullAddress] = useState(false);
   const [allNurturStatusData, setAllNurturStatusData] = useState([{}]);
   const [selectedEnquiryBy, setSelectedEnquiryBy] = useState(false);
-  const[selectedLeadStatus, setSelectedLeadStatus] = useState(false);
+  const [selectedLeadStatus, setSelectedLeadStatus] = useState(false);
   const [userId, setUserId] = useState(0);
-
+  const [regionId, setRegionId] = useState(null);
 
   const results = useQueries({
     queries: [
@@ -281,8 +279,11 @@ function DirectCall({ selectedButton }) {
       },
 
       {
-        queryKey: [RQ.allSalesTeam],
-        queryFn: tkFetch.get(`${API_BASE_URL}/sales-team`),
+        queryKey: [RQ.allSalesTeam, regionId],
+        queryFn: tkFetch.get(
+          `${API_BASE_URL}/sales-team?locationId=${regionId}`
+        ),
+        enabled: !!regionId,
       },
 
       {
@@ -309,8 +310,39 @@ function DirectCall({ selectedButton }) {
         queryKey: [RQ.allNurturingStatus],
         queryFn: tkFetch.get(`${API_BASE_URL}/nurtur-status`),
       },
+
+      {
+        queryKey: [RQ.allNurturingStatus],
+        queryFn: tkFetch.get(`${API_BASE_URL}/requirement-items`),
+      },
     ],
   });
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.localStorage) {
+      const storedId = window.localStorage.getItem("internalid");
+      setUserId(storedId);
+      console.log("storedId", storedId);
+    }
+  }, []);
+
+  const { data, isFetched, isLoading, isError, error } = useQuery({
+    queryKey: [RQ.currentUserLogin],
+    queryFn: tkFetch.get(`${API_BASE_URL}/loginCurrentUser?userId=${userId}`),
+    enabled: !!userId
+  });
+
+
+  if (data) {
+    setValue(
+      "custentity_lms_createdby",
+      data?.list[0]?.values.entityid +
+        " " +
+        data?.list[0]?.values.firstname +
+        " " +
+        data?.list[0]?.values.lastname
+    );
+  }
 
   const [
     primarySubisdiary,
@@ -326,6 +358,7 @@ function DirectCall({ selectedButton }) {
     leadSource,
     country,
     status,
+    requiremetItems,
   ] = results;
 
   const {
@@ -419,6 +452,13 @@ function DirectCall({ selectedButton }) {
     error: statusNurturError,
   } = status;
 
+  // const {
+  //   data: requiremetItemsData,
+  //   isLoading: requiremetItemsLoading,
+  //   isError: requiremetItemsIsError,
+  //   error: requiremetItemsError,
+  // } = requiremetItems;
+
   useEffect(() => {
     if (primarySubisdiaryIsError) {
       console.log("primarySubisdiaryIsError", primarySubisdiaryError);
@@ -484,6 +524,11 @@ function DirectCall({ selectedButton }) {
       console.log("statusNurturIsError", statusNurturError);
       TkToastError(statusNurturError.message);
     }
+
+    // if (requiremetItemsIsError) {
+    //   console.log("requiremetItemsIsError", requiremetItemsError);
+    //   TkToastError(requiremetItemsError.message);
+    // }
   }, [
     primarySubisdiaryIsError,
     primarySubisdiaryError,
@@ -511,6 +556,8 @@ function DirectCall({ selectedButton }) {
     countryError,
     statusNurturIsError,
     statusNurturError,
+    // requiremetItemsIsError,
+    // requiremetItemsError
   ]);
 
   useEffect(() => {
@@ -582,6 +629,7 @@ function DirectCall({ selectedButton }) {
         salesTeamData?.items?.map((salesTeamType) => ({
           label: salesTeamType.firstname,
           value: salesTeamType.entityid,
+          email: salesTeamType.email,
         }))
       );
     }
@@ -630,6 +678,15 @@ function DirectCall({ selectedButton }) {
         }))
       );
     }
+
+    // if(requiremetItemsData) {
+    //   setAllRequirementItemsData(
+    //     requiremetItemsData.list?.map((requirementItems) => ({
+    //       label: requirementItems?.values?.displayname,
+    //       value: requirementItems.id,
+    //     }))
+    //   );
+    // }
   }, [
     primarySubisdiaryData,
     enquiryByData,
@@ -644,6 +701,7 @@ function DirectCall({ selectedButton }) {
     leadSourceData,
     countryData,
     statusNurturData,
+    // requiremetItemsData,
   ]);
 
   const [rows, setRows] = useState([
@@ -695,17 +753,6 @@ function DirectCall({ selectedButton }) {
       endtime: "",
     },
   ]);
-  // const [addressRows, setAddressRows] = useState([
-  //   {
-  //     addr1: "",
-  //     addr2: "",
-  //     city: "",
-  //     state: "",
-  //     zip: "",
-  //     country: "",
-  //     custentity_lms_address: "",
-  //   },
-  // ]);
 
   const leadActivityToggle = useCallback(() => {
     if (activityModal) {
@@ -826,21 +873,6 @@ function DirectCall({ selectedButton }) {
     ]);
   };
 
-  // const handleAddAddressRow = () => {
-  //   setAddressRows([
-  //     ...addressRows,
-  //     {
-  //       addr1: "",
-  //       addr2: "",
-  //       city: "",
-  //       state: "",
-  //       zip: "",
-  //       country: "",
-  //       addrtext: "",
-  //     },
-  //   ]);
-  // };
-
   const { remove: removeDivision } = useFieldArray({
     control,
     name: "custrecord_lms_division",
@@ -950,31 +982,6 @@ function DirectCall({ selectedButton }) {
     name: "endtime",
   });
 
-  // const { remove: removeAddr1 } = useFieldArray({
-  //   control,
-  //   name: "addr1",
-  // });
-  // const { remove: removeAddr2 } = useFieldArray({
-  //   control,
-  //   name: "addr2",
-  // });
-  // const { remove: removeCity } = useFieldArray({
-  //   control,
-  //   name: "city",
-  // });
-  // const { remove: removeZip } = useFieldArray({
-  //   control,
-  //   name: "zip",
-  // });
-  // const { remove: removeCountry } = useFieldArray({
-  //   control,
-  //   name: "country",
-  // });
-  // const { remove: removeAddrtext1 } = useFieldArray({
-  //   control,
-  //   name: "addrtext",
-  // });
-
   const handleRemoveRow = (index) => {
     removeDivision(index);
     removeRequirement(index);
@@ -1039,19 +1046,6 @@ function DirectCall({ selectedButton }) {
     setPhoneCallRows(newEventRows);
   };
 
-  // const handleRemoveAddressRow = (index) => {
-  //   removeAddr1(index);
-  //   removeAddr2(index);
-  //   removeCity(index);
-  //   removeZip(index);
-  //   removeCountry(index);
-  //   removeAddrtext1(index);
-
-  //   const newAddressRows = [...addressRows];
-  //   newAddressRows.splice(index, 1);
-  //   setAddressRows(newAddressRows);
-  // };
-
   const leadPost = useMutation({
     mutationFn: tkFetch.post(`${API_BASE_URL}/lead`),
   });
@@ -1097,7 +1091,22 @@ function DirectCall({ selectedButton }) {
       Cell: (cellProps) => {
         return (
           <>
-            <TkInput
+            <Controller
+              control={control}
+              name={`custrecord_lms_requirement[${cellProps.row.index}]`}
+              // rules={{ required: "Division is required" }}
+              render={({ field }) => (
+                <TkSelect
+                  {...field}
+                  id={"custrecord_lms_requirement"}
+                  // options={allRequirementItemsData}
+                  requiredStarOnLabel={true}
+                  style={{ width: "200px" }}
+                  // loading={requiremetItemsLoading}
+                />
+              )}
+            />
+            {/* <TkInput
               type="text"
               id="custrecord_lms_requirement"
               placeholder="Enter Requirement"
@@ -1105,7 +1114,7 @@ function DirectCall({ selectedButton }) {
                 `custrecord_lms_requirement[${cellProps.row.index}]`
               )}
               rules={{ required: "Requirement is required" }}
-            />
+            /> */}
             {errors?.custrecord_lms_requirement?.[cellProps.row.index] && (
               <FormErrorText>
                 {
@@ -2005,13 +2014,7 @@ function DirectCall({ selectedButton }) {
   //     },
   //   },
   // ];
-  useEffect(() => {
-  if (typeof window !== "undefined" && window.localStorage) {
-    const storedId = window.localStorage.getItem("internalid");
-    setUserId(storedId);
-  }
-}, []);
-    
+
   const onSubmit = (formData) => {
     const apiData = {
       resttype: "Add",
@@ -2152,11 +2155,11 @@ function DirectCall({ selectedButton }) {
           {
             custrecord_lms_region: {
               value: formData.custrecord_lms_region?.value,
-              label: formData.custrecord_lms_region?.text,
+              text: formData.custrecord_lms_region?.label,
             },
             custrecord_lms_sales_team_name: {
-              value: formData.custrecord_lms_sales_team_name?.value,
-              label: formData.custrecord_lms_sales_team_name?.text,
+              value: formData.custrecord_lms_sales_team_name.value,
+              // text: formData.custrecord_lms_sales_team_name.label,
             },
           },
         ],
@@ -2226,8 +2229,6 @@ function DirectCall({ selectedButton }) {
         //     : [],
       },
     };
-    
-
 
     leadPost.mutate(apiData, {
       onSuccess: (data) => {
@@ -2239,8 +2240,6 @@ function DirectCall({ selectedButton }) {
       },
     });
   };
-
-  
 
   const concatenateAddress = () => {
     const addr1 = getValues("addr1") || "";
@@ -2301,6 +2300,7 @@ function DirectCall({ selectedButton }) {
                           type="text"
                           labelName="Created By"
                           placeholder="Enter Created By"
+                          // profileUserData={profileUserData}
                           disabled={true}
                         />
                         {errors.custentity_lms_createdby && (
@@ -2878,6 +2878,17 @@ function DirectCall({ selectedButton }) {
                                   placeholder="Select Region"
                                   options={allRegionData}
                                   loading={regionLoading}
+                                  onChange={(e) => {
+                                    field.onChange(e);
+                                    queryClient.invalidateQueries({
+                                      queryKey: [RQ.allSalesTeam, regionId],
+                                    });
+                                    setRegionId(e ? e.value : null);
+                                    setValue(
+                                      "custrecord_lms_sales_team_name",
+                                      null
+                                    );
+                                  }}
                                 />
                               )}
                             />
@@ -2900,7 +2911,7 @@ function DirectCall({ selectedButton }) {
                                   labelName="Sales Team Name"
                                   placeholder="Select Sales Team"
                                   options={allSalesTeamData}
-                                  loading={salesTeamLoading}
+                                  loading={regionId && salesTeamLoading}
                                 />
                               )}
                             />
@@ -3001,19 +3012,17 @@ function DirectCall({ selectedButton }) {
 
                           <TkCol lg={4}>
                             <TkInput
-                               {...register(
-                                "custrecord_lms_lead_unqualifie", {
-                                  required: selectedLeadStatus
+                              {...register("custrecord_lms_lead_unqualifie", {
+                                required: selectedLeadStatus
                                   ? "Reason is required"
-                                  : false
-                                }
-                              )}
+                                  : false,
+                              })}
                               id="custrecord_lms_lead_unqualifie"
                               name="custrecord_lms_lead_unqualifie"
                               labelName="Reason if unqualified lead"
                               type="textarea"
                               placeholder="Enter Reason"
-                              requiredStarOnLabel = {selectedLeadStatus}
+                              requiredStarOnLabel={selectedLeadStatus}
                             />
                             {errors.custrecord_lms_lead_unqualifie && (
                               <FormErrorText>

@@ -293,7 +293,7 @@ function EditLead({ id, mode }) {
   const [allPortalData, setAllPortalData] = useState([{}]);
   const [allNurturStatusData, setAllNurturStatusData] = useState([{}]);
   const [userId, setUserId] = useState(0);
-
+  const [regionId,setRegionId] = useState(null)
 
   const results = useQueries({
     queries: [
@@ -329,8 +329,9 @@ function EditLead({ id, mode }) {
       },
 
       {
-        queryKey: [RQ.allSalesTeam],
-        queryFn: tkFetch.get(`${API_BASE_URL}/sales-team`),
+        queryKey: [RQ.allSalesTeam, regionId],
+        queryFn: tkFetch.get(`${API_BASE_URL}/sales-team?locationId=${regionId}`),
+        enabled: !!regionId
       },
 
       {
@@ -1530,6 +1531,25 @@ function EditLead({ id, mode }) {
     }
   }, []);
 
+  const { loginUserData, isloginUserDataLoading, isloginUserDataError, loginUserDataError } = useQuery({
+    queryKey: [RQ.currentUserLogin],
+    queryFn: tkFetch.get(`${API_BASE_URL}/loginCurrentUser?userId=${userId}`),
+    enabled: !!userId
+  });
+
+
+  if (loginUserData) {
+    setValue(
+      "custentity_lms_createdby",
+      loginUserData?.list[0]?.values.entityid +
+        " " +
+        loginUserData?.list[0]?.values.firstname +
+        " " +
+        loginUserData?.list[0]?.values.lastname
+    );
+  }
+
+
   const onSubmit = (formData) => {
     if (!editMode) return;
     console.log("formData",formData)
@@ -1658,8 +1678,8 @@ function EditLead({ id, mode }) {
               text: formData.custrecord_lms_region?.label,
             },
             custrecord_lms_sales_team_name: {
-              value: formData.custrecord_lms_sales_team_name.value,
-              text: formData.custrecord_lms_sales_team_name.label,
+              value: formData.custrecord_lms_sales_team_name?.value,
+              text: formData.custrecord_lms_sales_team_name?.label,
             },
           },
         ],
@@ -4172,6 +4192,14 @@ function EditLead({ id, mode }) {
                                               placeholder="Select Region"
                                               options={allRegionData}
                                               loading={regionLoading}
+                                              onChange={(e) => {
+                                                field.onChange(e);
+                                                queryClient.invalidateQueries({
+                                                  queryKey: [RQ.allSalesTeam, regionId]
+                                                })
+                                                setRegionId(e ? e.value : null)
+                                                setValue("custrecord_lms_sales_team_name", null)
+                                              }}
                                               disabled={viewMode}
                                             />
                                           )}
@@ -4198,7 +4226,7 @@ function EditLead({ id, mode }) {
                                               labelName="Sales Team Name"
                                               placeholder="Select Sales Team"
                                               options={allSalesTeamData}
-                                              loading={salesTeamLoading}
+                                              loading={regionId && salesTeamLoading}
                                               disabled={viewMode}
                                             />
                                           )}

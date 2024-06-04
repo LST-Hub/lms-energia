@@ -52,7 +52,7 @@ const schema = Yup.object({
   company: Yup.object().required("Lead name is required").nullable(),
 
   status: Yup.object().required("Status is required").nullable(),
-  assigned: Yup.object().required("Organizer is required").nullable(),
+  // assigned: Yup.object().required("Organizer is required").nullable(),
   startDate: Yup.date().required("Date is required").nullable(),
   message: Yup.string()
     .nullable()
@@ -76,6 +76,34 @@ const AddPhoneCallActivty = ({ value }) => {
   });
   const [allSalesTeamData, setAllSalesTeamData] = useState([{}]);
   const [allLeadNameListData, setAllLeadNameListData] = useState([{}]);
+  const [userId, setUserId] = useState(0);
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.localStorage) {
+      const storedId = window.localStorage.getItem("internalid");
+      setUserId(storedId);
+      console.log("storedId", storedId);
+    }
+  }, []);
+
+  const { data, isFetched, isLoading, isError, error } = useQuery({
+    queryKey: [RQ.currentUserLogin],
+    queryFn: tkFetch.get(`${API_BASE_URL}/loginCurrentUser?userId=${userId}`),
+    enabled: !!userId
+  });
+
+
+  if (data) {
+    setValue(
+      "assigned",
+      data?.list[0]?.values.entityid +
+        " " +
+        data?.list[0]?.values.firstname +
+        " " +
+        data?.list[0]?.values.lastname
+    );
+  }
+
+
   const results = useQueries({
     queries: [
       {
@@ -157,10 +185,10 @@ const AddPhoneCallActivty = ({ value }) => {
           value: formData.status.value,
           text: formData.status.label,
         },
-        assigned: {
-          value: formData.assigned.value,
-          text: formData.assigned.label,
-        },
+        // assigned: {
+        //   value: formData.assigned.value,
+        //   text: formData.assigned.label,
+        // },
         startdate: formatDateForAPI(formData.startdate),
         message: formData.message,
       },
@@ -282,7 +310,15 @@ const AddPhoneCallActivty = ({ value }) => {
                             </TkCol>
 
                             <TkCol lg={4}>
-                              <Controller
+                            <TkInput
+                                {...register("assigned")}
+                                id="assigned"
+                                name="assigned"
+                                type="text"
+                                labelName="Organizer"
+                                placeholder="Enter Organizer"
+                              />
+                              {/* <Controller
                                 name="assigned"
                                 control={control}
                                 render={({ field }) => (
@@ -291,13 +327,13 @@ const AddPhoneCallActivty = ({ value }) => {
                                     labelName="Organizer"
                                     labelId={"assigned"}
                                     id="assigned"
-                                    options={allSalesTeamData}
+                                    // options={allSalesTeamData}
                                     placeholder="Select Organizer"
                                     requiredStarOnLabel={true}
                                     loading={salesTeamLoading}
                                   />
                                 )}
-                              />
+                              /> */}
                               {errors.assigned && (
                                 <FormErrorText>
                                   {errors.assigned.message}

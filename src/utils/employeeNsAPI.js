@@ -23,6 +23,9 @@ const getAllEmployeeData = async (userId) => {
       columns: [
         "internalid",
         "entityid",
+        "firstname",
+        "middlename",
+        "lastname",
         "title",
         "custentity_lms_roles"
       ],

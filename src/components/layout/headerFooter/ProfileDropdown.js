@@ -128,7 +128,7 @@ const ProfileDropdown = () => {
                   data.list &&
                   data.list.length > 0 &&
                   data.list[0].values &&
-                  data.list[0].values.entityid}
+                  data.list[0].values.entityid + " " + data.list[0].values.firstname + " " + data.list[0].values.middlename + " " + data.list[0].values.lastname}
               </span>
               <span className="d-none d-xl-block ms-1 fs-12 text-muted user-name-sub-text">
                 {/* { data?.list[0]?.values?.custentity_lms_roles[0].text} */}
@@ -173,14 +173,14 @@ const ProfileDropdown = () => {
             <i className="mdi mdi-calendar-check-outline text-muted fs-16 align-middle me-1"></i>{" "}
             <span className="align-middle">Taskboard</span>
           </DropdownItem> */}
-          <Link href={`${urls.help}`}>
+          {/* <Link href={`${urls.help}`}>
             <a>
               <TkDropdownItem>
                 <i className="mdi mdi-lifebuoy text-muted fs-16 align-middle me-1"></i>{" "}
                 <span className="align-middle">Help</span>
               </TkDropdownItem>
             </a>
-          </Link>
+          </Link> */}
           {/* <div className="dropdown-divider"></div> */}
           {/* <DropdownItem href="/pages-profile">
             <i className="mdi mdi-wallet text-muted fs-16 align-middle me-1"></i>{" "}

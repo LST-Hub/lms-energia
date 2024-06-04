@@ -2,12 +2,6 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import TkPageHead from "../../../src/components/TkPageHead";
 import BreadCrumb from "../../../src/utils/BreadCrumb";
 import {
-  Button,
-  ButtonGroup,
-  Form,
-  FormGroup,
-  Input,
-  Label,
   Nav,
   NavItem,
   NavLink,
@@ -24,19 +18,15 @@ import {
   MinNameLength,
   RQ,
   bigInpuMaxLength,
-  createdByNameTypes,
-  leadActivityTypes,
   smallInputMaxLength,
   urls,
 } from "../../../src/utils/Constants";
 import TkTableContainer from "../TkTableContainer";
-import TkModal, { TkModalHeader } from "../TkModal";
 import { useRouter } from "next/router";
 import { TkCardBody, TkCardHeader } from "../../../src/components/TkCard";
 import TkRow, { TkCol } from "../../../src/components/TkRow";
 import TkSelect from "../../../src/components/forms/TkSelect";
 import TkInput from "../../../src/components/forms/TkInput";
-// import { Controller, useForm } from "react-hook-form";
 import TkButton from "../TkButton";
 import TkDate from "../forms/TkDate";
 import TkForm from "../forms/TkForm";
@@ -44,15 +34,12 @@ import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import TkContainer from "../TkContainer";
 import TkIcon from "../TkIcon";
-import ActivityPopup from "./ActivityPopup";
 import FormErrorText, { FormErrorBox } from "../forms/ErrorText";
-import { convertTimeToSec, convertToTime, convertToTimeFotTimeSheet } from "../../utils/time";
+import {  convertToTime } from "../../utils/time";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
-import { useMutation, useQueries } from "@tanstack/react-query";
+import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 import tkFetch from "../../utils/fetch";
 import { TkToastError, TkToastSuccess } from "../TkToastContainer";
-import LeadTaskPopup from "./LeadTaskPopup";
-import LeadEventPopup from "./LeadEventPopup";
 import { formatDateForAPI } from "../../utils/date";
 import { MaxCrNoLength } from "../../../lib/constants";
 const tabs = {
@@ -143,11 +130,6 @@ const schema = Yup.object({
       MaxEmailLength,
       `Company Email should have at most ${MaxEmailLength} characters.`
     ),
-  // custentity_lms_cr_no: Yup.string()
-  //   .nullable()
-  //   .required("CR Number is required"),
-
-  // custentity3: Yup.string().nullable().required("VAT Number is required"),
 
   custentity_lms_cr_no: Yup.string()
   .nullable()
@@ -221,18 +203,15 @@ function LeadPortals({ selectedButton }) {
     resolver: yupResolver(schema),
   });
   const router = useRouter();
+  const queryClient = useQueryClient()
+
   const [activityModal, setActivityModal] = useState(false);
   const [leadTaskModal, setLeadTaskModal] = useState(false);
   const [leadEventModal, setLeadEventModal] = useState(false);
-
   const [isLead, setIsLead] = useState(false);
-  const [rSelected, setRSelected] = useState(0);
   const [activeTab, setActiveTab] = useState(tabs.directCall);
   const [activeSubTab, setActiveSubTab] = useState(tabs.requirementDetails);
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [showForm, setShowForm] = useState(false);
-  const [buttonsDisabled, setButtonsDisabled] = useState(false);
-  const [taskDropdown, setTaskDropdown] = useState([]);
   const [allPrimarySubsidiaryData, setAllPrimarySubsidiaryData] = useState([
     {},
   ]);
@@ -249,13 +228,12 @@ function LeadPortals({ selectedButton }) {
   ]);
   const [allleadSourceData, setAllleadSourceData] = useState([{}]);
   const [allPortalData, setAllPortalData] = useState([{}]);
-  const [directCallId, setDirectCallId] = useState(null);
-  const [newAddress, setNewAddress] = useState(null);
   const [fullAddress, setFullAddress] = useState(false);
   const [allCountryData, setAllCountryData] = useState([{}]);
   const [selectedEnquiryBy, setSelectedEnquiryBy] = useState(false);
   const [allNurturStatusData, setAllNurturStatusData] = useState([{}]);
   const [userId, setUserId] = useState(0);
+  const [regionId,setRegionId] = useState(null)
 
 
 
@@ -1999,6 +1977,24 @@ function LeadPortals({ selectedButton }) {
     }
   }, []);
 
+  const { data, isFetched, isLoading, isError, error } = useQuery({
+    queryKey: [RQ.currentUserLogin],
+    queryFn: tkFetch.get(`${API_BASE_URL}/loginCurrentUser?userId=${userId}`),
+    enabled: !!userId
+  });
+
+
+  if (data) {
+    setValue(
+      "custentity_lms_createdby",
+      data?.list[0]?.values.entityid +
+        " " +
+        data?.list[0]?.values.firstname +
+        " " +
+        data?.list[0]?.values.lastname
+    );
+  }
+
 
   const onSubmit = (formData) => {
     const apiData = {
@@ -2867,6 +2863,14 @@ function LeadPortals({ selectedButton }) {
                                   placeholder="Select Region"
                                   options={allRegionData}
                                   loading={regionLoading}
+                                  onChange={(e) => {
+                                    field.onChange(e);
+                                    queryClient.invalidateQueries({
+                                      queryKey: [RQ.allSalesTeam, regionId]
+                                    })
+                                    setRegionId(e ? e.value : null)
+                                    setValue("custrecord_lms_sales_team_name", null)
+                                  }}
                                 />
                               )}
                             />
@@ -2889,7 +2893,7 @@ function LeadPortals({ selectedButton }) {
                                   labelName="Sales Team Name"
                                   placeholder="Select Sales Team"
                                   options={allSalesTeamData}
-                                  loading={salesTeamLoading}
+                                  loading={regionId && salesTeamLoading}
                                 />
                               )}
                             />
