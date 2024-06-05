@@ -1272,7 +1272,11 @@ function DirectMarketing({ selectedButton }) {
 
         recmachcustrecord_parent_record: formData.custrecordlms_location.map(
           (loc, i) => ({
-            custrecordlms_location: loc,
+            custrecordlms_location: {
+              value: formData.custrecordlms_location[i]?.value,
+              text: formData.custrecordlms_location[i]?.text,
+            },
+            // custrecordlms_location: loc,
             custrecord_lms_contactperson_name:
               formData.custrecord_lms_contactperson_name[i],
             custrecord_lms_phonenumber: formData.custrecord_lms_phonenumber[i],
@@ -1627,12 +1631,26 @@ function DirectMarketing({ selectedButton }) {
       Cell: (cellProps) => {
         return (
           <>
-            <TkInput
+          <Controller
+              control={control}
+              name={`custrecordlms_location[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <TkSelect
+                  {...field}
+                  id={"custrecordlms_location"}
+                  options={allRegionData}
+                  requiredStarOnLabel={true}
+                  style={{ width: "200px" }}
+                  loading={regionLoading}
+                />
+              )}
+            />
+            {/* <TkInput
               type="text"
               placeholder="Enter Location"
               id="custrecordlms_location"
               {...register(`custrecordlms_location[${cellProps.row.index}]`)}
-            />
+            /> */}
             {errors?.custrecordlms_location?.[cellProps.row.index] && (
               <FormErrorText>
                 {errors?.custrecordlms_location?.[cellProps.row.index]?.message}

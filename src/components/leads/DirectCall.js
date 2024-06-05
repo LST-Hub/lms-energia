@@ -244,6 +244,7 @@ function DirectCall({ selectedButton }) {
   const [selectedLeadStatus, setSelectedLeadStatus] = useState(false);
   const [userId, setUserId] = useState(0);
   const [regionId, setRegionId] = useState(null);
+  const [allRequirementItems, setAllRequirementItems] = useState([{}]);
 
   const results = useQueries({
     queries: [
@@ -332,6 +333,7 @@ function DirectCall({ selectedButton }) {
     enabled: !!userId
   });
 
+  
 
   if (data) {
     setValue(
@@ -452,12 +454,12 @@ function DirectCall({ selectedButton }) {
     error: statusNurturError,
   } = status;
 
-  // const {
-  //   data: requiremetItemsData,
-  //   isLoading: requiremetItemsLoading,
-  //   isError: requiremetItemsIsError,
-  //   error: requiremetItemsError,
-  // } = requiremetItems;
+  const {
+    data: requiremetItemsData,
+    isLoading: requiremetItemsLoading,
+    isError: requiremetItemsIsError,
+    error: requiremetItemsError,
+  } = requiremetItems;
 
   useEffect(() => {
     if (primarySubisdiaryIsError) {
@@ -525,10 +527,10 @@ function DirectCall({ selectedButton }) {
       TkToastError(statusNurturError.message);
     }
 
-    // if (requiremetItemsIsError) {
-    //   console.log("requiremetItemsIsError", requiremetItemsError);
-    //   TkToastError(requiremetItemsError.message);
-    // }
+    if (requiremetItemsIsError) {
+      console.log("requiremetItemsIsError", requiremetItemsError);
+      TkToastError(requiremetItemsError.message);
+    }
   }, [
     primarySubisdiaryIsError,
     primarySubisdiaryError,
@@ -556,8 +558,8 @@ function DirectCall({ selectedButton }) {
     countryError,
     statusNurturIsError,
     statusNurturError,
-    // requiremetItemsIsError,
-    // requiremetItemsError
+    requiremetItemsIsError,
+    requiremetItemsError
   ]);
 
   useEffect(() => {
@@ -679,14 +681,14 @@ function DirectCall({ selectedButton }) {
       );
     }
 
-    // if(requiremetItemsData) {
-    //   setAllRequirementItemsData(
-    //     requiremetItemsData.list?.map((requirementItems) => ({
-    //       label: requirementItems?.values?.displayname,
-    //       value: requirementItems.id,
-    //     }))
-    //   );
-    // }
+    if(requiremetItemsData) {
+      setAllRequirementItems(
+        requiremetItemsData.list?.map((requirementItems) => ({
+          label: requirementItems?.values?.displayname,
+          value: requirementItems.id,
+        }))
+      );
+    }
   }, [
     primarySubisdiaryData,
     enquiryByData,
@@ -701,7 +703,7 @@ function DirectCall({ selectedButton }) {
     leadSourceData,
     countryData,
     statusNurturData,
-    // requiremetItemsData,
+    requiremetItemsData,
   ]);
 
   const [rows, setRows] = useState([
@@ -1099,7 +1101,7 @@ function DirectCall({ selectedButton }) {
                 <TkSelect
                   {...field}
                   id={"custrecord_lms_requirement"}
-                  // options={allRequirementItemsData}
+                  options={allRequirementItems}
                   requiredStarOnLabel={true}
                   style={{ width: "200px" }}
                   // loading={requiremetItemsLoading}
@@ -1313,12 +1315,21 @@ function DirectCall({ selectedButton }) {
       Cell: (cellProps) => {
         return (
           <>
-            <TkInput
-              type="text"
-              placeholder="Enter Location"
-              id="custrecordlms_location"
-              {...register(`custrecordlms_location[${cellProps.row.index}]`)}
+          <Controller
+              control={control}
+              name={`custrecordlms_location[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <TkSelect
+                  {...field}
+                  id={"custrecordlms_location"}
+                  options={allRegionData}
+                  requiredStarOnLabel={true}
+                  style={{ width: "200px" }}
+                  loading={regionLoading}
+                />
+              )}
             />
+           
             {errors?.custrecordlms_location?.[cellProps.row.index] && (
               <FormErrorText>
                 {errors?.custrecordlms_location?.[cellProps.row.index]?.message}
@@ -2105,7 +2116,11 @@ function DirectCall({ selectedButton }) {
 
         recmachcustrecord_parent_record: formData.custrecordlms_location.map(
           (loc, i) => ({
-            custrecordlms_location: loc,
+            custrecordlms_location: {
+              value: formData.custrecordlms_location[i]?.value,
+              text: formData.custrecordlms_location[i]?.text,
+            },
+            // custrecordlms_location: loc,
             custrecord_lms_contactperson_name:
               formData.custrecord_lms_contactperson_name[i],
             custrecord_lms_phonenumber: formData.custrecord_lms_phonenumber[i],
@@ -2158,7 +2173,7 @@ function DirectCall({ selectedButton }) {
               text: formData.custrecord_lms_region?.label,
             },
             custrecord_lms_sales_team_name: {
-              value: formData.custrecord_lms_sales_team_name.value,
+              value: formData.custrecord_lms_sales_team_name?.value,
               // text: formData.custrecord_lms_sales_team_name.label,
             },
           },

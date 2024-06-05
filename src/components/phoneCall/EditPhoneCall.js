@@ -76,7 +76,7 @@ const schema = Yup.object({
   company: Yup.object().required("Lead name is required").nullable(),
 
   status: Yup.object().required("Status is required").nullable(),
-  assigned: Yup.object().required("Organizer is required").nullable(),
+  // assigned: Yup.object().required("Organizer is required").nullable(),
   startDate: Yup.date().required("Date is required").nullable(),
   message: Yup.string()
     .nullable()
@@ -107,8 +107,15 @@ const EditPhoneCall = ({ id, mode }) => {
   const [allSalesTeamData, setAllSalesTeamData] = useState([{}]);
   const [allLeadNameListData, setAllLeadNameListData] = useState([{}]);
   const [deleteModal, setDeleteModal] = useState(false);
-
   const queryClient = useQueryClient();
+  const [userId, setUserId] = useState(0);
+  const [alluserLoginData, setAlluserLoginData] = useState([{}]);
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.localStorage) {
+      const storedId = window.localStorage.getItem("internalid");
+      setUserId(storedId);
+    }
+  }, []);
 
   const results = useQueries({
     queries: [
@@ -121,9 +128,17 @@ const EditPhoneCall = ({ id, mode }) => {
         queryKey: [RQ.allLeadName],
         queryFn: tkFetch.get(`${API_BASE_URL}/lead-name`),
       },
+
+      {
+        queryKey: [RQ.currentUserLogin],
+        queryFn: tkFetch.get(
+          `${API_BASE_URL}/loginCurrentUser?userId=${userId}`
+        ),
+        enabled: !!userId,
+      },
     ],
   });
-  const [salesTeam, leadList] = results;
+  const [salesTeam, leadList, userLogin] = results;
   const {
     data: salesTeamData,
     isLoading: salesTeamLoading,
@@ -137,6 +152,13 @@ const EditPhoneCall = ({ id, mode }) => {
     isError: leadListIsError,
     error: leadListError,
   } = leadList;
+
+  const {
+    data: userLoginData,
+    isLoading: userLoginLoading,
+    isError: userLoginIsError,
+    error: userLoginError,
+  } = userLogin;
 
   useEffect(() => {
     if (salesTeamIsError) {
@@ -168,7 +190,21 @@ const EditPhoneCall = ({ id, mode }) => {
         }))
       );
     }
-  }, [salesTeamData, leadListData]);
+
+    if (userLoginData) {
+      setAlluserLoginData(
+        userLoginData?.list?.map((userLoginType) => ({
+          label:
+            userLoginType?.values?.entityid +
+            " " +
+            userLoginType?.values?.firstname +
+            " " +
+            userLoginType?.values?.lastname,
+          value: userLoginType?.entityid,
+        }))
+      );
+    }
+  }, [salesTeamData, leadListData, userLoginData]);
 
   const { data, isLoading, isFetched, isError, error } = useQuery({
     queryKey: [RQ.lead, cid],
@@ -177,10 +213,23 @@ const EditPhoneCall = ({ id, mode }) => {
   });
 
   useEffect(() => {
+    if (userLoginData) {
+      setValue(
+        "assigned",
+        userLoginData?.list[0]?.values.entityid +
+          " " +
+          userLoginData?.list[0]?.values.firstname +
+          " " +
+          userLoginData?.list[0]?.values.lastname
+      );
+    }
+  }, [userLoginData, setValue, isFetched]);
+
+  useEffect(() => {
     if (isFetched && Array.isArray(data) && data.length > 0) {
       const { bodyValues } = data[0];
       setValue("title", bodyValues?.title);
-      setValue("phone", bodyValues.phone);
+      setValue("phone", bodyValues?.phone);
       setValue("company", {
         value: bodyValues?.company[0]?.value,
         label: bodyValues?.company[0]?.text,
@@ -189,10 +238,15 @@ const EditPhoneCall = ({ id, mode }) => {
         // value: bodyValues?.status[0].text,
         label: bodyValues?.status[0].value,
       });
-      setValue("assigned", {
-        value: bodyValues?.assigned[0].text,
-        label: bodyValues?.assigned[0].text,
-      });
+      // setValue(
+      //   "assigned",
+      //   bodyValues?.loginUserData?.list[0]?.values.entityid +
+      //     " " +
+      //     bodyValues?.loginUserData?.list[0]?.values.firstname +
+      //     " " +
+      //     bodyValues?.loginUserData?.list[0]?.values.lastname
+      // );
+
       setValue("startDate", bodyValues?.startdate);
       setValue("message", bodyValues?.message);
     }
@@ -217,20 +271,18 @@ const EditPhoneCall = ({ id, mode }) => {
           value: formData.status.value,
           text: formData.status.label,
         },
-        assigned: {
-          value: formData.assigned.value,
-          text: formData.assigned.label,
-        },
+        // assigned: {
+        //   value: formData.assigned.value,
+        //   text: formData.assigned.label,
+        // },
         startdate: formatDateForAPI(formData.startdate),
         // completeddate: formatDateForAPI(formData.completeddate),
         message: formData.message,
-        
       },
       filters: {
-        bodyfilters: [["internalid", "anyof", cid]]
-      }
+        bodyfilters: [["internalid", "anyof", cid]],
+      },
     };
-    console.log("apiData",apiData)
     phoneCallActivityPost.mutate(apiData, {
       onSuccess: (data) => {
         TkToastSuccess("Phone Call Updated Successfully");
@@ -328,12 +380,6 @@ const EditPhoneCall = ({ id, mode }) => {
                                       labelName="Lead Name"
                                       labelId={"company"}
                                       id="company"
-                                      // options={[
-                                      //     { label: "Email", value: "Email" },
-                                      //     { label: "Direct Call", value: "Direct Call" },
-                                      //     { label: "Social Media", value: "Social Media" },
-                                      //     { label: "Portals", value: "Portals" },
-                                      //   ]}
                                       options={allLeadNameListData}
                                       loading={leadListLoading}
                                       placeholder="Select Lead Name"
@@ -401,7 +447,16 @@ const EditPhoneCall = ({ id, mode }) => {
                               </TkCol>
 
                               <TkCol lg={4}>
-                                <Controller
+                                <TkInput
+                                  {...register("assigned")}
+                                  id="assigned"
+                                  name="assigned"
+                                  type="text"
+                                  labelName="Organizer"
+                                  placeholder="Enter Organizer"
+                                  disabled={viewMode}
+                                />
+                                {/* <Controller
                                   name="assigned"
                                   control={control}
                                   render={({ field }) => (
@@ -415,8 +470,8 @@ const EditPhoneCall = ({ id, mode }) => {
                                       requiredStarOnLabel={editMode}
                                       disabled={viewMode}
                                     />
-                                  )}
-                                />
+                                  )} */}
+                                {/* /> */}
                                 {errors.assigned && (
                                   <FormErrorText>
                                     {errors.assigned.message}
