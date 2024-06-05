@@ -37,25 +37,32 @@ import {
   remindersTypes,
 } from "../../utils/Constants";
 import tkFetch from "../../utils/fetch";
-import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQueries,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import useUserAccessLevel from "../../utils/hooks/useUserAccessLevel";
 import { perAccessIds, permissionTypeIds } from "../../../DBConstants";
 import axios from "axios";
 import TkDate from "../forms/TkDate";
-import { convertTimeToSec, convertToTime, convertToTimeFotTimeSheet } from "../../utils/time";
+import {
+  convertTimeToSec,
+  convertToTime,
+  convertToTimeFotTimeSheet,
+} from "../../utils/time";
 import DeleteModal from "../../utils/DeleteModal";
 import TkLoader from "../TkLoader";
 import TkEditCardHeader from "../TkEditCardHeader";
 import { formatDateForAPI } from "../../utils/date";
 
 const schema = Yup.object({
-  title: Yup.string().required("Subject is required")
-  .max(
-    MaxNameLength,
-    `Subject must be at most ${MaxNameLength} characters.`
-  )
-  .nullable(),
+  title: Yup.string()
+    .required("Subject is required")
+    .max(MaxNameLength, `Subject must be at most ${MaxNameLength} characters.`)
+    .nullable(),
   company: Yup.object().required("Lead name is required").nullable(),
   status: Yup.object().required("Status is required").nullable(),
   startDate: Yup.string().required("Date is required").nullable(),
@@ -69,8 +76,6 @@ const schema = Yup.object({
     ),
 }).required();
 
-
-
 const EditEvent = ({ id, userData, mode }) => {
   const router = useRouter();
   const viewMode = mode === modes.view;
@@ -79,7 +84,6 @@ const EditEvent = ({ id, userData, mode }) => {
   const accessLevel = useUserAccessLevel(permissionTypeIds.users);
   const [deleteModal, setDeleteModal] = useState(false);
   const [allLeadNameListData, setAllLeadNameListData] = useState([{}]);
-
 
   const {
     control,
@@ -109,7 +113,7 @@ const EditEvent = ({ id, userData, mode }) => {
     ],
   });
 
-  const [salesTeam,leadList] = results;
+  const [salesTeam, leadList] = results;
   const {
     data: salesTeamData,
     isLoading: salesTeamLoading,
@@ -134,7 +138,7 @@ const EditEvent = ({ id, userData, mode }) => {
       console.log("leadListIsError", leadListError);
       TkToastError(leadListError.message);
     }
-  }, [salesTeamIsError, salesTeamError,leadListIsError,leadListError]);
+  }, [salesTeamIsError, salesTeamError, leadListIsError, leadListError]);
 
   useEffect(() => {
     if (salesTeamData) {
@@ -150,11 +154,11 @@ const EditEvent = ({ id, userData, mode }) => {
       setAllLeadNameListData(
         leadNameListData?.list?.map((leadListType) => ({
           label: leadListType?.values?.companyname,
-          // value: leadListType.id,
+          value: leadListType?.id,
         }))
       );
     }
-  }, [salesTeamData,leadNameListData]);
+  }, [salesTeamData, leadNameListData]);
 
   const { data, isLoading, isFetched, isError, error } = useQuery({
     queryKey: [RQ.lead, eid],
@@ -168,12 +172,12 @@ const EditEvent = ({ id, userData, mode }) => {
       setValue("title", bodyValues?.title);
       setValue("location", bodyValues?.location);
       setValue("company", {
-        value: bodyValues?.company?.text,
-        label: bodyValues?.company?.value,
+        value: bodyValues?.company[0]?.value,
+        label: bodyValues?.company[0]?.text,
       });
       setValue("status", {
-        value: bodyValues?.status?.text,
-        label: bodyValues?.status?.value,
+        value: bodyValues?.status[0].text,
+        label: bodyValues?.status[0].value,
       });
       setValue("startDate", bodyValues?.startdate);
       setValue("starttime", bodyValues?.starttime);
@@ -195,12 +199,12 @@ const EditEvent = ({ id, userData, mode }) => {
         title: formData.title,
         company: {
           value: formData.company.value,
-          label: formData.company.text,
+          text: formData.company.label,
         },
         location: formData.location,
         status: {
           value: formData.status.value,
-          label: formData.status.text,
+          text: formData.status.label,
         },
         // accesslevel: {
         //   value: formData.accesslevel.value,
@@ -220,16 +224,15 @@ const EditEvent = ({ id, userData, mode }) => {
         bodyfilters: [["internalid", "anyof", eid]],
       },
     };
-    eventActivityPost.mutate(apiData,
-      {
-        onSuccess: (data) => {
-          TkToastSuccess("Event Updated  Successfully");
-          router.push(`${urls.event}`);
-        },
-        onError: (error) => {
-          TkToastError("error while creating Lead", error);
-        },
-      });
+    eventActivityPost.mutate(apiData, {
+      onSuccess: (data) => {
+        TkToastSuccess("Event Updated  Successfully");
+        router.push(`${urls.event}`);
+      },
+      onError: (error) => {
+        TkToastError("error while creating Lead", error);
+      },
+    });
   };
 
   const deleteEvent = useMutation({
@@ -241,19 +244,18 @@ const EditEvent = ({ id, userData, mode }) => {
     const apiData = {
       id: eid,
     };
-    deleteEvent.mutate(apiData,
-      {
-        onSuccess: (data) => {
-          TkToastSuccess("Event Deleted Successfully");
-          queryClient.invalidateQueries({
-            queryKey: [RQ.allEvent, eid],
-          });
-          router.push(`${urls.event}`);
-        },
-        onError: (error) => {
-          TkToastError("error while deleting Phone Call", error);
-        },
-      });
+    deleteEvent.mutate(apiData, {
+      onSuccess: (data) => {
+        TkToastSuccess("Event Deleted Successfully");
+        queryClient.invalidateQueries({
+          queryKey: [RQ.allEvent, eid],
+        });
+        router.push(`${urls.event}`);
+      },
+      onError: (error) => {
+        TkToastError("error while deleting Phone Call", error);
+      },
+    });
   };
 
   const toggleDeleteModelPopup = () => {
@@ -262,7 +264,7 @@ const EditEvent = ({ id, userData, mode }) => {
 
   return (
     <>
-     {isLoading ? (
+      {isLoading ? (
         <TkLoader />
       ) : (
         <>
@@ -270,72 +272,73 @@ const EditEvent = ({ id, userData, mode }) => {
             show={deleteModal}
             onDeleteClick={() => {
               handleDeleteEvent();
-              setDeleteModal(false);  
+              setDeleteModal(false);
             }}
             onCloseClick={() => setDeleteModal(false)}
           />
           <div>
-          <TkRow className="justify-content-center">
-            <TkCol lg={12}>
-            <TkEditCardHeader
+            <TkRow className="justify-content-center">
+              <TkCol lg={12}>
+                <TkEditCardHeader
                   title={viewMode ? "Event Details" : "Edit Event"}
                   viewMode={viewMode}
                   editLink={`${urls.eventEdit}/${eid}`}
                   onDeleteClick={handleDeleteEvent}
+                  disableDelete={viewMode}
                   toggleDeleteModel={toggleDeleteModelPopup}
+                  isEditAccess={viewMode}
                 />
-              <TkCardBody className="mt-4">
-                <TkForm onSubmit={handleSubmit(onSubmit)}>
-                  <div>
-                    <TkRow className="mt-3">
-                      <TkCol>
-                        <div>
-                          <TkRow className="g-3">
-                            <TkCol lg={4}>
-                              <TkInput
-                                {...register("title")}
-                                id="title"
-                                name="title"
-                                type="text"
-                                labelName="Title"
-                                placeholder="Enter Title"
-                                requiredStarOnLabel={editMode}
-                                disabled={viewMode}
-                              />
-                              {errors.title && (
-                                <FormErrorText>
-                                  {errors.title.message}
-                                </FormErrorText>
-                              )}
-                            </TkCol>
-
-                            <TkCol lg={4}>
-                              <Controller
-                                name="company"
-                                control={control}
-                                render={({ field }) => (
-                                  <TkSelect
-                                    {...field}
-                                    labelName="Lead Name"
-                                    labelId={"_status"}
-                                    id="company"
-                                    options={allLeadNameListData}
-                                    placeholder="Select Lead Name"
-                                    requiredStarOnLabel={editMode}
-                                    disabled={viewMode}
-                                    loading={leadListLoading}
-
-                                  />
+                <TkCardBody className="mt-4">
+                  <TkForm onSubmit={handleSubmit(onSubmit)}>
+                    <div>
+                      <TkRow className="mt-3">
+                        <TkCol>
+                          <div>
+                            <TkRow className="g-3">
+                              <TkCol lg={4}>
+                                <TkInput
+                                  {...register("title")}
+                                  id="title"
+                                  name="title"
+                                  type="text"
+                                  labelName="Title"
+                                  placeholder="Enter Title"
+                                  requiredStarOnLabel={editMode}
+                                  disabled={viewMode}
+                                />
+                                {errors.title && (
+                                  <FormErrorText>
+                                    {errors.title.message}
+                                  </FormErrorText>
                                 )}
-                              />
-                              {errors.company && (
-                                <FormErrorText>
-                                  {errors.company.message}
-                                </FormErrorText>
-                              )}
-                            </TkCol>
+                              </TkCol>
 
-                            {/* <TkCol lg={4}>
+                              <TkCol lg={4}>
+                                <Controller
+                                  name="company"
+                                  control={control}
+                                  render={({ field }) => (
+                                    <TkSelect
+                                      {...field}
+                                      labelName="Lead Name"
+                                      labelId={"_status"}
+                                      id="company"
+                                      options={allLeadNameListData}
+                                      placeholder="Select Lead Name"
+                                      requiredStarOnLabel={editMode}
+                                      disabled={viewMode}
+                                      loading={leadListLoading}
+                                    />
+                                  )}
+                                />
+                                {errors.company && (
+                                  <FormErrorText>
+                                    {errors.company.message}
+                                  </FormErrorText>
+                                )}
+                              </TkCol>
+
+                              {/* <TkCol lg={4}>
                               <TkInput
                                 {...register("company")}
                                 id="company"
@@ -352,57 +355,61 @@ const EditEvent = ({ id, userData, mode }) => {
                               )}
                             </TkCol> */}
 
-                            <TkCol lg={4}>
-                              <TkInput
-                                {...register("location")}
-                                id="location"
-                                name="location"
-                                type="text"
-                                labelName="Location"
-                                placeholder="Enter Location"
-                                disabled={viewMode}
-                              />
-                              {errors.location && (
-                                <FormErrorText>
-                                  {errors.location.message}
-                                </FormErrorText>
-                              )}
-                            </TkCol>
-
-                            <TkCol lg={4}>
-                              <Controller
-                                name="status"
-                                control={control}
-                                render={({ field }) => (
-                                  <TkSelect
-                                    {...field}
-                                    labelName="Status"
-                                    labelId={"_status"}
-                                    id="status"
-                                    options={[
-                                      {
-                                        label: "Completed",
-                                        value: "Completed",
-                                      },
-                                      {
-                                        label: "Scheduled",
-                                        value: "Scheduled",
-                                      },
-                                    ]}
-                                    placeholder="Select Type"
-                                    requiredStarOnLabel={editMode}
-                                    disabled={viewMode}
-                                  />
+                              <TkCol lg={4}>
+                                <TkInput
+                                  {...register("location")}
+                                  id="location"
+                                  name="location"
+                                  type="text"
+                                  labelName="Location"
+                                  placeholder="Enter Location"
+                                  disabled={viewMode}
+                                />
+                                {errors.location && (
+                                  <FormErrorText>
+                                    {errors.location.message}
+                                  </FormErrorText>
                                 )}
-                              />
-                              {errors.status && (
-                                <FormErrorText>
-                                  {errors.status.message}
-                                </FormErrorText>
-                              )}
-                            </TkCol>
+                              </TkCol>
 
-                            {/* <TkCol lg={4}>
+                              <TkCol lg={4}>
+                                <Controller
+                                  name="status"
+                                  control={control}
+                                  render={({ field }) => (
+                                    <TkSelect
+                                      {...field}
+                                      labelName="Status"
+                                      labelId={"_status"}
+                                      id="status"
+                                      options={[
+                                        {
+                                          label: "Completed",
+                                          value: "COMPLETED",
+                                        },
+                                        {
+                                          label: "Confirmed",
+                                          value: "CONFIRMED",
+                                        },
+                                        {
+                                          label: "Tentative",
+                                          value: "TENTATIVE",
+                                        },
+                                      ]}
+                                      placeholder="Select Type"
+                                      requiredStarOnLabel={editMode}
+                                      disabled={viewMode}
+                                    />
+                                  )}
+                                />
+                                {errors.status && (
+                                  <FormErrorText>
+                                    {errors.status.message}
+                                  </FormErrorText>
+                                )}
+                              </TkCol>
+
+                              {/* <TkCol lg={4}>
                               <Controller
                                 name="accesslevel"
                                 control={control}
@@ -432,7 +439,7 @@ const EditEvent = ({ id, userData, mode }) => {
                               )}
                             </TkCol> */}
 
-                            {/* <TkCol lg={4}>
+                              {/* <TkCol lg={4}>
                               <Controller
                                 name="organizer"
                                 control={control}
@@ -455,164 +462,168 @@ const EditEvent = ({ id, userData, mode }) => {
                               )}
                             </TkCol> */}
 
-                            <TkCol lg={4}>
-                              <Controller
-                                name="startDate"
-                                control={control}
-                                rules={{
-                                  required: "Date is required",
-                                }}
-                                render={({ field }) => (
-                                  <TkDate
-                                    {...field}
-                                    labelName="Date"
-                                    id={"startDate"}
-                                    placeholder="Select Date"
-                                    options={{
-                                      altInput: true,
-                                      dateFormat: "d M, Y",
-                                    }}
-                                    requiredStarOnLabel={editMode}
-                                    disabled={viewMode}
-                                  />
-                                )}
-                              />
-                              {errors.startDate && (
-                                <FormErrorText>
-                                  {errors.startDate.message}
-                                </FormErrorText>
-                              )}
-                            </TkCol>
-
-                            <TkCol lg={4}>
-                              <TkInput
-                                {...register(`starttime`, {
-                                  required: "Start Time is required",
-                                  validate: (value) => {
-                                    if (
-                                      value &&
-                                      !/^[0-9]*([.:][0-9]+)?$/.test(value)
-                                    ) {
-                                      return "Invalid Start Time";
-                                    }
-                                    // if (
-                                    //   convertTimeToSec(value) > 86400 ||
-                                    //   value > 24
-                                    // ) {
-                                    //   return "Start Time should be less than 24 hours";
-                                    // }
-                                  },
-                                })}
-                                onBlur={(e) => {
-                                  setValue(
-                                    `starttime`,
-                                    convertToTime(e.target.value)
-                                    (e.target.value)
-                                  );
-                                }}
-                                labelName="Start Time (HH:MM)"
-                                id={"starttime"}
-                                name="starttime"
-                                type="text"
-                                placeholder="Enter Start Time"
-                                requiredStarOnLabel={editMode}
-                                disabled={viewMode}
-                              />
-                              {errors.starttime && (
-                                <FormErrorText>
-                                  {errors.starttime.message}
-                                </FormErrorText>
-                              )}
-                            </TkCol>
-
-                            <TkCol lg={4}>
-                              <TkInput
-                                {...register(`endtime`, {
-                                  required: "End Time is required",
-                                  validate: (value) => {
-                                    if (
-                                      value &&
-                                      !/^[0-9]*([.:][0-9]+)?$/.test(value)
-                                    ) {
-                                      return "Invalid End Time";
-                                    }
-                                    // if (
-                                    //   convertTimeToSec(value) > 86400 ||
-                                    //   value > 24
-                                    // ) {
-                                    //   return "End Time should be less than 24 hours";
-                                    // }
-                                  },
-                                })}
-                                onBlur={(e) => {
-                                  setValue(
-                                    `endtime`,
-                                    convertToTime(e.target.value)
-                                  );
-                                }}
-                                labelName="End Time (HH:MM)"
-                                id={"endtime"}
-                                name="endtime"
-                                type="text"
-                                placeholder="Enter End Time"
-                                requiredStarOnLabel={editMode}
-                                disabled={viewMode}
-                              />
-                              {errors.endtime && (
-                                <FormErrorText>
-                                  {errors.endtime.message}
-                                </FormErrorText>
-                              )}
-                            </TkCol>
-
-                            <TkCol lg={8}>
-                              <TkInput
-                                {...register("message")}
-                                id="message"
-                                type="textarea"
-                                labelName="Message"
-                                placeholder="Enter Message"
-                                disabled={viewMode}
-                              />
-                              {errors.message && (
-                                <FormErrorText>
-                                  {errors.message.message}
-                                </FormErrorText>
-                              )}
-                            </TkCol>
-                            <div className="d-flex mt-4 space-childern">
-                            {editMode ? (
-                              <div className="ms-auto" id="update-form-btns">
-                                <TkButton
-                                  color="secondary"
-                                  onClick={() => {
-                                    router.push(`${urls.event}`);
+                              <TkCol lg={4}>
+                                <Controller
+                                  name="startDate"
+                                  control={control}
+                                  rules={{
+                                    required: "Date is required",
                                   }}
-                                  type="button"
-                                  disabled={eventActivityPost.isLoading}
-                                >
-                                  Cancel
-                                </TkButton>{" "}
-                                <TkButton
-                                  type="submit"
-                                  color="primary"
-                                  loading={eventActivityPost.isLoading}
-                                >
-                                  Update
-                                </TkButton>
+                                  render={({ field }) => (
+                                    <TkDate
+                                      {...field}
+                                      labelName="Date"
+                                      id={"startDate"}
+                                      placeholder="Select Date"
+                                      options={{
+                                        altInput: true,
+                                        dateFormat: "d M, Y",
+                                      }}
+                                      requiredStarOnLabel={editMode}
+                                      disabled={viewMode}
+                                    />
+                                  )}
+                                />
+                                {errors.startDate && (
+                                  <FormErrorText>
+                                    {errors.startDate.message}
+                                  </FormErrorText>
+                                )}
+                              </TkCol>
+
+                              <TkCol lg={4}>
+                                <TkInput
+                                  {...register(`starttime`, {
+                                    required: "Start Time is required",
+                                    validate: (value) => {
+                                      if (
+                                        value &&
+                                        !/^[0-9]*([.:][0-9]+)?$/.test(value)
+                                      ) {
+                                        return "Invalid Start Time";
+                                      }
+                                      // if (
+                                      //   convertTimeToSec(value) > 86400 ||
+                                      //   value > 24
+                                      // ) {
+                                      //   return "Start Time should be less than 24 hours";
+                                      // }
+                                    },
+                                  })}
+                                  onBlur={(e) => {
+                                    setValue(
+                                      `starttime`,
+                                      convertToTime(e.target.value)(
+                                        e.target.value
+                                      )
+                                    );
+                                  }}
+                                  labelName="Start Time (HH:MM)"
+                                  id={"starttime"}
+                                  name="starttime"
+                                  type="text"
+                                  placeholder="Enter Start Time"
+                                  requiredStarOnLabel={editMode}
+                                  disabled={viewMode}
+                                />
+                                {errors.starttime && (
+                                  <FormErrorText>
+                                    {errors.starttime.message}
+                                  </FormErrorText>
+                                )}
+                              </TkCol>
+
+                              <TkCol lg={4}>
+                                <TkInput
+                                  {...register(`endtime`, {
+                                    required: "End Time is required",
+                                    validate: (value) => {
+                                      if (
+                                        value &&
+                                        !/^[0-9]*([.:][0-9]+)?$/.test(value)
+                                      ) {
+                                        return "Invalid End Time";
+                                      }
+                                      // if (
+                                      //   convertTimeToSec(value) > 86400 ||
+                                      //   value > 24
+                                      // ) {
+                                      //   return "End Time should be less than 24 hours";
+                                      // }
+                                    },
+                                  })}
+                                  onBlur={(e) => {
+                                    setValue(
+                                      `endtime`,
+                                      convertToTime(e.target.value)
+                                    );
+                                  }}
+                                  labelName="End Time (HH:MM)"
+                                  id={"endtime"}
+                                  name="endtime"
+                                  type="text"
+                                  placeholder="Enter End Time"
+                                  requiredStarOnLabel={editMode}
+                                  disabled={viewMode}
+                                />
+                                {errors.endtime && (
+                                  <FormErrorText>
+                                    {errors.endtime.message}
+                                  </FormErrorText>
+                                )}
+                              </TkCol>
+
+                              <TkCol lg={8}>
+                                <TkInput
+                                  {...register("message")}
+                                  id="message"
+                                  type="textarea"
+                                  labelName="Message"
+                                  placeholder="Enter Message"
+                                  disabled={viewMode}
+                                />
+                                {errors.message && (
+                                  <FormErrorText>
+                                    {errors.message.message}
+                                  </FormErrorText>
+                                )}
+                              </TkCol>
+                              <div className="d-flex mt-4 space-childern">
+                                {editMode ? (
+                                  <div
+                                    className="ms-auto"
+                                    id="update-form-btns"
+                                  >
+                                    <TkButton
+                                      color="secondary"
+                                      onClick={() => {
+                                        router.push(`${urls.event}`);
+                                      }}
+                                      type="button"
+                                      disabled={eventActivityPost.isLoading}
+                                    >
+                                      Cancel
+                                    </TkButton>{" "}
+                                    <TkButton
+                                      type="submit"
+                                      color="primary"
+                                      loading={eventActivityPost.isLoading}
+                                    >
+                                      Update
+                                    </TkButton>
+                                  </div>
+                                ) : null}
                               </div>
-                                 ) : null}
-                            </div>
-                          </TkRow>
-                        </div>
-                      </TkCol>
-                    </TkRow>
-                  </div>
-                </TkForm>
-              </TkCardBody>
-            </TkCol>
-          </TkRow>
-        </div>
+                            </TkRow>
+                          </div>
+                        </TkCol>
+                      </TkRow>
+                    </div>
+                  </TkForm>
+                </TkCardBody>
+              </TkCol>
+            </TkRow>
+          </div>
         </>
       )}
     </>

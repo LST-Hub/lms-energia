@@ -9,11 +9,15 @@ export default async function handler(req, res) {
       // const query = `SELECT * FROM customer INNER JOIN employee ON ( employee.id = customer.custentity_lms_createdby ) WHERE ((searchstage='Lead') AND (custentity_lms_createdby IN (${id}) OR employee.custentity_lms_roles IN ('3')))`;
       const salesManagerRoles =
         await getSalesManagerRoleRestletScriptDeploymentId(userId, roleId);
-        
+
       const formatted = salesManagerRoles?.list?.map((item) => ({
         id: item.id,
         custentity_lms_channel_lead:
           item.values.custentity_lms_channel_lead[0].text || "",
+          // custentity_lms_channel_lead_name:
+          // item.values.custentity_lms_channel_lead_name[0].text || "",
+        custentity_lms_createdby:
+          item.values.custentity_lms_createdby[0].text || "",
         companyname: item.values.companyname || "",
         phone: item.values.phone || "",
         email: item.values.email || "",

@@ -14,12 +14,16 @@ export default async function handler(req, res) {
         //   (item) => item.values
         // );
         console.log(allEventActivityData);
+        const formattedData = allEventActivityData.list.map(
+          (item) => item.values
+        );
+  
 
       response({
         res,
         success: true,
         status_code: 200,
-        data: allEventActivityData,
+        data: formattedData,
         message: "All Event Fetched successfully",
       });
     }

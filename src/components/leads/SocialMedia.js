@@ -36,7 +36,6 @@ import { TkCardBody, TkCardHeader } from "../../../src/components/TkCard";
 import TkRow, { TkCol } from "../../../src/components/TkRow";
 import TkSelect from "../../../src/components/forms/TkSelect";
 import TkInput from "../../../src/components/forms/TkInput";
-// import { Controller, useForm } from "react-hook-form";
 import TkButton from "../TkButton";
 import TkDate from "../forms/TkDate";
 import TkForm from "../forms/TkForm";
@@ -45,9 +44,14 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import TkContainer from "../TkContainer";
 import ActivityPopup from "./ActivityPopup";
 import FormErrorText, { FormErrorBox } from "../forms/ErrorText";
-import { convertTimeToSec, convertToTime, convertToTimeFotTimeSheet } from "../../utils/time";
+import { convertToTime } from "../../utils/time";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
-import { useMutation, useQueries } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQueries,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import tkFetch from "../../utils/fetch";
 import { formatDateForAPI } from "../../utils/date";
 import { TkToastError, TkToastSuccess } from "../TkToastContainer";
@@ -55,6 +59,7 @@ import TkIcon from "../TkIcon";
 import LeadEventPopup from "./LeadEventPopup";
 import LeadTaskPopup from "./LeadTaskPopup";
 import { MaxCrNoLength } from "../../../lib/constants";
+
 const tabs = {
   directCall: "primary",
   email: "email",
@@ -155,21 +160,22 @@ const schema = Yup.object({
   // custentity3: Yup.string().nullable().required("VAT Number is required"),
 
   custentity_lms_cr_no: Yup.string()
-  .nullable()
-  .required("CR Number is required")
-  .matches(/^[a-zA-Z0-9]*$/, 'CR Number must be alphanumeric')
+    .nullable()
+    .required("CR Number is required")
+    .matches(/^[a-zA-Z0-9]*$/, "CR Number must be alphanumeric")
     .max(
       MaxCrNoLength,
       `CR Number should have at most ${MaxCrNoLength} characters.`
     ),
 
-custentity3: Yup.string().nullable()
-.required("VAT Number is required")
-.matches(/^[a-zA-Z0-9]*$/, 'VAT Number must be alphanumeric')
-.max(
-  MaxCrNoLength,
-  `VAT Number should have at most ${MaxCrNoLength} characters.`
-),
+  custentity3: Yup.string()
+    .nullable()
+    .required("VAT Number is required")
+    .matches(/^[a-zA-Z0-9]*$/, "VAT Number must be alphanumeric")
+    .max(
+      MaxCrNoLength,
+      `VAT Number should have at most ${MaxCrNoLength} characters.`
+    ),
 
   custentity_lms_client_type: Yup.object()
     .nullable()
@@ -179,22 +185,24 @@ custentity3: Yup.string().nullable()
     .nullable()
     .required("Segment is required"),
 
-  addr1: Yup.string().max(
-    smallInputMaxLength,
-    `Address 1 should have at most ${smallInputMaxLength} characters.`
-  )
-  .nullable(),
+  addr1: Yup.string()
+    .max(
+      smallInputMaxLength,
+      `Address 1 should have at most ${smallInputMaxLength} characters.`
+    )
+    .nullable(),
   addr2: Yup.string()
     .max(
       smallInputMaxLength,
       `Address 2 should have at most ${smallInputMaxLength} characters.`
     )
     .nullable(),
-  city: Yup.string().max(
-    smallInputMaxLength,
-    `City should have at most ${smallInputMaxLength} characters.`
-  )
-  .nullable(),
+  city: Yup.string()
+    .max(
+      smallInputMaxLength,
+      `City should have at most ${smallInputMaxLength} characters.`
+    )
+    .nullable(),
 
   state: Yup.string().nullable(),
 
@@ -224,6 +232,8 @@ function SocialMedia({ selectedButton }) {
     resolver: yupResolver(schema),
   });
   const router = useRouter();
+  const queryClient = useQueryClient();
+
   const [activityModal, setActivityModal] = useState(false);
   const [leadTaskModal, setLeadTaskModal] = useState(false);
   const [leadEventModal, setLeadEventModal] = useState(false);
@@ -256,6 +266,8 @@ function SocialMedia({ selectedButton }) {
   const [fullAddress, setFullAddress] = useState(false);
   const [selectedEnquiryBy, setSelectedEnquiryBy] = useState(false);
   const [allNurturStatusData, setAllNurturStatusData] = useState([{}]);
+  const [userId, setUserId] = useState(0);
+  const [regionId, setRegionId] = useState(null);
 
   const results = useQueries({
     queries: [
@@ -1025,7 +1037,6 @@ function SocialMedia({ selectedButton }) {
     name: "endtime",
   });
 
-
   const handleRemoveRow = (index) => {
     removeDivision(index);
     removeRequirement(index);
@@ -1088,6 +1099,30 @@ function SocialMedia({ selectedButton }) {
     newEventRows.splice(i, 1);
     setPhoneCallRows(newEventRows);
   };
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.localStorage) {
+      const storedId = window.localStorage.getItem("internalid");
+      setUserId(storedId);
+    }
+  }, []);
+
+  const { data, isFetched, isLoading, isError, error } = useQuery({
+    queryKey: [RQ.currentUserLogin],
+    queryFn: tkFetch.get(`${API_BASE_URL}/loginCurrentUser?userId=${userId}`),
+    enabled: !!userId,
+  });
+
+  if (data) {
+    setValue(
+      "custentity_lms_createdby",
+      data?.list[0]?.values.entityid +
+        " " +
+        data?.list[0]?.values.firstname +
+        " " +
+        data?.list[0]?.values.lastname
+    );
+  }
 
   const leadSocialMediaPost = useMutation({
     mutationFn: tkFetch.post(`${API_BASE_URL}/lead`),
@@ -1229,7 +1264,9 @@ function SocialMedia({ selectedButton }) {
           value: formData.custentity_lms_visit_update.value,
           text: formData.custentity_lms_visit_update.text,
         },
-        custentity_lms_createdby: formData.custentity_lms_createdby,
+        custentity_lms_createdby: {
+          value: userId,
+        },
         custentity_lms_createddate: formData.custentity_lms_createddate,
         subsidiary: {
           value: formData.subsidiary.value,
@@ -1314,7 +1351,11 @@ function SocialMedia({ selectedButton }) {
 
         recmachcustrecord_parent_record: formData.custrecordlms_location.map(
           (loc, i) => ({
-            custrecordlms_location: loc,
+            custrecordlms_location: {
+              value: formData.custrecordlms_location[i]?.value,
+              text: formData.custrecordlms_location[i]?.text,
+            },
+            // custrecordlms_location: loc,
             custrecord_lms_contactperson_name:
               formData.custrecord_lms_contactperson_name[i],
             custrecord_lms_phonenumber: formData.custrecord_lms_phonenumber[i],
@@ -1346,9 +1387,9 @@ function SocialMedia({ selectedButton }) {
             custrecord_lms_datetime: formatDateForAPI(
               formData.custrecord_lms_datetime
             ),
-            custrecord_lms_lead_value: Number(
-              formData.custrecord_lms_lead_value
-            ),
+            // custrecord_lms_lead_value: Number(
+            //   formData.custrecord_lms_lead_value
+            // ),
             custrecord_lms_statusoflead: {
               value: formData.custrecord_lms_statusoflead?.value,
               text: formData.custrecord_lms_statusoflead?.text,
@@ -1660,12 +1701,26 @@ function SocialMedia({ selectedButton }) {
       Cell: (cellProps) => {
         return (
           <>
-            <TkInput
+            <Controller
+              control={control}
+              name={`custrecordlms_location[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <TkSelect
+                  {...field}
+                  id={"custrecordlms_location"}
+                  options={allRegionData}
+                  requiredStarOnLabel={true}
+                  style={{ width: "200px" }}
+                  loading={regionLoading}
+                />
+              )}
+            />
+            {/* <TkInput
               type="text"
               placeholder="Enter Location"
               id="custrecordlms_location"
               {...register(`custrecordlms_location[${cellProps.row.index}]`)}
-            />
+            /> */}
             {errors?.custrecordlms_location?.[cellProps.row.index] && (
               <FormErrorText>
                 {errors?.custrecordlms_location?.[cellProps.row.index]?.message}
@@ -2677,7 +2732,6 @@ function SocialMedia({ selectedButton }) {
                 </TkCol>
               </TkRow>
 
-             
               <TkRow className="mt-5">
                 <TkCol>
                   <TkCardHeader tag="h5" className="mb-4">
@@ -2711,7 +2765,9 @@ function SocialMedia({ selectedButton }) {
                           requiredStarOnLabel="true"
                         />
                         {errors.phoneNo && (
-                          <FormErrorText>{errors.phoneNo.message}</FormErrorText>
+                          <FormErrorText>
+                            {errors.phoneNo.message}
+                          </FormErrorText>
                         )}
                       </TkCol>
                       <TkCol lg={4}>
@@ -2924,8 +2980,6 @@ function SocialMedia({ selectedButton }) {
                           </FormErrorText>
                         )}
                       </TkCol>
-
-                      
                     </TkRow>
                   </div>
                   <div className="d-flex mt-4 space-childern">
@@ -3075,6 +3129,17 @@ function SocialMedia({ selectedButton }) {
                                   placeholder="Select Region"
                                   options={allRegionData}
                                   loading={regionLoading}
+                                  onChange={(e) => {
+                                    field.onChange(e);
+                                    queryClient.invalidateQueries({
+                                      queryKey: [RQ.allSalesTeam, regionId],
+                                    });
+                                    setRegionId(e ? e.value : null);
+                                    setValue(
+                                      "custrecord_lms_sales_team_name",
+                                      null
+                                    );
+                                  }}
                                 />
                               )}
                             />
@@ -3097,7 +3162,7 @@ function SocialMedia({ selectedButton }) {
                                   labelName="Sales Team Name"
                                   placeholder="Select Sales Team"
                                   options={allSalesTeamData}
-                                  loading={salesTeamLoading}
+                                  loading={regionId && salesTeamLoading}
                                 />
                               )}
                             />
@@ -3148,7 +3213,7 @@ function SocialMedia({ selectedButton }) {
                             />
                           </TkCol>
 
-                          <TkCol lg={3}>
+                          {/* <TkCol lg={3}>
                             <TkInput
                               {...register("custrecord_lms_lead_value")}
                               id="custrecord_lms_lead_value"
@@ -3162,7 +3227,7 @@ function SocialMedia({ selectedButton }) {
                                 {errors.custrecord_lms_lead_value.message}
                               </FormErrorText>
                             )}
-                          </TkCol>
+                          </TkCol> */}
                           <TkCol lg={3}>
                             <Controller
                               name="custrecord_lms_statusoflead"
@@ -3219,10 +3284,7 @@ function SocialMedia({ selectedButton }) {
                             />
                             {errors.custrecord_lms_prospect_nurtur && (
                               <FormErrorText>
-                                {
-                                  errors.custrecord_lms_prospect_nurtur
-                                    .message
-                                }
+                                {errors.custrecord_lms_prospect_nurtur.message}
                               </FormErrorText>
                             )}
                           </TkCol>

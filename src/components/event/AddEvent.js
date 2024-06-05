@@ -33,7 +33,11 @@ import useUserAccessLevel from "../../utils/hooks/useUserAccessLevel";
 import { permissionTypeIds } from "../../../DBConstants";
 import TkDate from "../forms/TkDate";
 import { formatDateForAPI } from "../../utils/date";
-import { convertTimeToSec, convertToTime, convertToTimeFotTimeSheet } from "../../utils/time";
+import {
+  convertTimeToSec,
+  convertToTime,
+  convertToTimeFotTimeSheet,
+} from "../../utils/time";
 
 const schema = Yup.object({
   title: Yup.string().required("Subject is required").nullable(),
@@ -77,7 +81,7 @@ const AddEvent = ({ value }) => {
     ],
   });
 
-  const [salesTeam,leadList] = results;
+  const [salesTeam, leadList] = results;
   const {
     data: salesTeamData,
     isLoading: salesTeamLoading,
@@ -91,7 +95,6 @@ const AddEvent = ({ value }) => {
     error: leadListError,
   } = leadList;
 
-
   useEffect(() => {
     if (salesTeamIsError) {
       console.log("salesTeamIsError", salesTeamError);
@@ -102,7 +105,7 @@ const AddEvent = ({ value }) => {
       console.log("leadListIsError", leadListError);
       TkToastError(leadListError.message);
     }
-  }, [salesTeamIsError, salesTeamError,leadListIsError,leadListError]);
+  }, [salesTeamIsError, salesTeamError, leadListIsError, leadListError]);
 
   useEffect(() => {
     if (salesTeamData) {
@@ -118,11 +121,11 @@ const AddEvent = ({ value }) => {
       setAllLeadNameListData(
         leadNameListData?.list?.map((leadListType) => ({
           label: leadListType?.values?.companyname,
-          // value: leadListType.id,
+          value: leadListType?.id,
         }))
       );
     }
-  }, [salesTeamData,leadNameListData]);
+  }, [salesTeamData, leadNameListData]);
 
   const eventActivityPost = useMutation({
     mutationFn: tkFetch.post(`${API_BASE_URL}/eventActivity`),
@@ -136,12 +139,12 @@ const AddEvent = ({ value }) => {
         title: formData.title,
         company: {
           value: formData.company.value,
-          label: formData.company.text,
+          text: formData.company.label,
         },
         location: formData.location,
         status: {
-          value: formData.status.value,
-          label: formData.status.text,
+          value: formData.status.label,
+          text: formData.status.value,
         },
         // accesslevel: {
         //   value: formData.accesslevel.value,
@@ -158,16 +161,15 @@ const AddEvent = ({ value }) => {
         message: formData.message,
       },
     };
-    eventActivityPost.mutate(apiData,
-      {
-        onSuccess: (data) => {
-          TkToastSuccess("Event Created Successfully");
-          router.push(`${urls.event}`);
-        },
-        onError: (error) => {
-          TkToastError("error while creating Lead", error);
-        },
-      });
+    eventActivityPost.mutate(apiData, {
+      onSuccess: (data) => {
+        TkToastSuccess("Event Created Successfully");
+        router.push(`${urls.event}`);
+      },
+      onError: (error) => {
+        TkToastError("error while creating Lead", error);
+      },
+    });
   };
 
   return (
@@ -220,7 +222,6 @@ const AddEvent = ({ value }) => {
                                     placeholder="Select Lead Name"
                                     requiredStarOnLabel={true}
                                     loading={leadListLoading}
-
                                   />
                                 )}
                               />
@@ -277,12 +278,16 @@ const AddEvent = ({ value }) => {
                                     options={[
                                       {
                                         label: "Completed",
-                                        value: "Completed",
+                                        value: "COMPLETED",
                                       },
                                       {
-                                        label: "Scheduled",
-                                        value: "Scheduled",
+                                        label: "Confirmed",
+                                        value: "CONFIRMED",
                                       },
+                                      {
+                                        label: "Tentative",
+                                        value: "TENTATIVE",
+                                      }
                                     ]}
                                     placeholder="Select Type"
                                     requiredStarOnLabel={true}

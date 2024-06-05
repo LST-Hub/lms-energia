@@ -731,6 +731,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 const PUBLIC_BUCKET_BASE_URL = process.env.NEXT_PUBLIC_BUCKET_BASE_URL; // for public files
 
 const RQ = {
+  currentUserLogin: "currentUserLogin",
   user: "user",
   salesManager: "salesManager",
   salesSupport: "salesSupport",

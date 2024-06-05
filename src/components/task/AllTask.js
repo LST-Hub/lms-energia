@@ -20,31 +20,31 @@ import TkIcon from "../TkIcon";
 import { useQuery } from "@tanstack/react-query";
 import tkFetch from "../../utils/fetch";
 
-function TableToolBar() {
-  return (
-    <>
-      <TkCardBody className="table-toolbar mt-3">
-        <TkRow className="mb-3">
-          <TkCol lg={4}>
-            <TkInput
-              // onChange={onSearchChange}
-              placeholder="Search by name/Mobile No/ Company Name"
-              isSearchField={true}
-            />
-          </TkCol>
+// function TableToolBar() {
+//   return (
+//     <>
+//       <TkCardBody className="table-toolbar mt-3">
+//         <TkRow className="mb-3">
+//           <TkCol lg={4}>
+//             <TkInput
+//               // onChange={onSearchChange}
+//               placeholder="Search by name/Mobile No/ Company Name"
+//               isSearchField={true}
+//             />
+//           </TkCol>
 
-          {/* <TkCol lg={2}>
-            <TkSelect
-              placeholder="Active/Inactive"
-              options={[]}
-              // onChange={onActiveChange}
-            />
-          </TkCol> */}
-        </TkRow>
-      </TkCardBody>
-    </>
-  );
-}
+//           {/* <TkCol lg={2}>
+//             <TkSelect
+//               placeholder="Active/Inactive"
+//               options={[]}
+//               // onChange={onActiveChange}
+//             />
+//           </TkCol> */}
+//         </TkRow>
+//       </TkCardBody>
+//     </>
+//   );
+// }
 
 const AllTask = () => {
   const searchOnUI = isSearchonUI([]);
@@ -177,32 +177,32 @@ const AllTask = () => {
                 <TkTableContainer
                   columns={columns}
                   data={taskActivityData?.list || []}
-                  Toolbar={
-                    <TableToolBar
-                      onSearchChange={searchDebounce(
-                        updateSearchText,
-                        searchOnUI
-                      )}
-                      // accessLevel={accessLevel}
-                      onSupervisorChange={(item) => {
-                        updateFilters({
-                          [filterFields.users.supervisor]: item
-                            ? item.value
-                            : null,
-                        });
-                      }}
-                      onRoleChange={(item) => {
-                        updateFilters({
-                          [filterFields.users.role]: item ? item.value : null,
-                        });
-                      }}
-                      onActiveChange={(item) => {
-                        updateFilters({
-                          [filterFields.users.active]: item ? item.value : null,
-                        });
-                      }}
-                    />
-                  }
+                  // Toolbar={
+                  //   <TableToolBar
+                  //     onSearchChange={searchDebounce(
+                  //       updateSearchText,
+                  //       searchOnUI
+                  //     )}
+                  //     // accessLevel={accessLevel}
+                  //     onSupervisorChange={(item) => {
+                  //       updateFilters({
+                  //         [filterFields.users.supervisor]: item
+                  //           ? item.value
+                  //           : null,
+                  //       });
+                  //     }}
+                  //     onRoleChange={(item) => {
+                  //       updateFilters({
+                  //         [filterFields.users.role]: item ? item.value : null,
+                  //       });
+                  //     }}
+                  //     onActiveChange={(item) => {
+                  //       updateFilters({
+                  //         [filterFields.users.active]: item ? item.value : null,
+                  //       });
+                  //     }}
+                  //   />
+                  // }
                   defaultPageSize={10}
                   customPageSize={true}
                   showPagination={true}

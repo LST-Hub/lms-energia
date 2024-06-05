@@ -115,7 +115,16 @@ const AddTask = ({ value }) => {
         }))
       );
     }
-  }, [salesTeamData]);
+
+    if (leadNameListData) {
+      setAllLeadNameListData(
+        leadNameListData?.list?.map((leadListType) => ({
+          label: leadListType?.values?.companyname,
+          value: leadListType?.id,
+        }))
+      );
+    }
+  }, [salesTeamData, leadNameListData]);
 
   const taskActivityPost = useMutation({
     mutationFn: tkFetch.post(`${API_BASE_URL}/taskActivity`),
@@ -129,7 +138,7 @@ const AddTask = ({ value }) => {
         title: formData.title,
         company: {
           value: formData.company.value,
-          label: formData.company.text,
+          text: formData.company.label,
         },
         // assigned: {
         //   value: formData.assigned.value,
@@ -137,11 +146,11 @@ const AddTask = ({ value }) => {
         // },
         priority: {
           value: formData.priority.value,
-          label: formData.priority.text,
+          text: formData.priority.label,
         },
         status: {
           value: formData.status.value,
-          label: formData.status.text,
+          text: formData.status.label,
         },
         // startdate: formatDateForAPI(formData.startdate),
         dueDate: formatDateForAPI(formData.dueDate),
@@ -264,9 +273,9 @@ const AddTask = ({ value }) => {
                                     labelId={"priority"}
                                     id="priority"
                                     options={[
-                                      { label: "High", value: "1" },
-                                      { label: "Medium", value: "2" },
-                                      { label: "Low", value: "3" },
+                                      { label: "High", value: "HIGH" },
+                                      { label: "Medium", value: "MEDIUM" },
+                                      { label: "Low", value: "LOW" },
                                     ]}
                                     placeholder="Select Proirity"
                                     requiredStarOnLabel={true}
@@ -291,15 +300,20 @@ const AddTask = ({ value }) => {
                                     labelId={"_status"}
                                     id="status"
                                     options={[
-                                        {
-                                          label: "Completed",
-                                          value: "Completed",
-                                        },
-                                        {
-                                          label: "Scheduled",
-                                          value: "Scheduled",
-                                        },
-                                      ]}
+                                      {
+                                        label: "Completed",
+                                        value: "COMPLETED",
+                                      },
+                                      {
+                                        label: "In Progress",
+                                        value: "IN PROGRESS",
+                                      },
+                                      {
+                                        label: "Not Started",
+                                        value: "NOT STARTED",
+                                      },
+
+                                    ]}
                                     placeholder="Select Type"
                                     requiredStarOnLabel={true}
                                   />

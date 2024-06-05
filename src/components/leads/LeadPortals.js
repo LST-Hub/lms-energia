@@ -2,12 +2,6 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import TkPageHead from "../../../src/components/TkPageHead";
 import BreadCrumb from "../../../src/utils/BreadCrumb";
 import {
-  Button,
-  ButtonGroup,
-  Form,
-  FormGroup,
-  Input,
-  Label,
   Nav,
   NavItem,
   NavLink,
@@ -24,19 +18,15 @@ import {
   MinNameLength,
   RQ,
   bigInpuMaxLength,
-  createdByNameTypes,
-  leadActivityTypes,
   smallInputMaxLength,
   urls,
 } from "../../../src/utils/Constants";
 import TkTableContainer from "../TkTableContainer";
-import TkModal, { TkModalHeader } from "../TkModal";
 import { useRouter } from "next/router";
 import { TkCardBody, TkCardHeader } from "../../../src/components/TkCard";
 import TkRow, { TkCol } from "../../../src/components/TkRow";
 import TkSelect from "../../../src/components/forms/TkSelect";
 import TkInput from "../../../src/components/forms/TkInput";
-// import { Controller, useForm } from "react-hook-form";
 import TkButton from "../TkButton";
 import TkDate from "../forms/TkDate";
 import TkForm from "../forms/TkForm";
@@ -44,15 +34,12 @@ import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import TkContainer from "../TkContainer";
 import TkIcon from "../TkIcon";
-import ActivityPopup from "./ActivityPopup";
 import FormErrorText, { FormErrorBox } from "../forms/ErrorText";
-import { convertTimeToSec, convertToTime, convertToTimeFotTimeSheet } from "../../utils/time";
+import {  convertToTime } from "../../utils/time";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
-import { useMutation, useQueries } from "@tanstack/react-query";
+import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 import tkFetch from "../../utils/fetch";
 import { TkToastError, TkToastSuccess } from "../TkToastContainer";
-import LeadTaskPopup from "./LeadTaskPopup";
-import LeadEventPopup from "./LeadEventPopup";
 import { formatDateForAPI } from "../../utils/date";
 import { MaxCrNoLength } from "../../../lib/constants";
 const tabs = {
@@ -143,11 +130,6 @@ const schema = Yup.object({
       MaxEmailLength,
       `Company Email should have at most ${MaxEmailLength} characters.`
     ),
-  // custentity_lms_cr_no: Yup.string()
-  //   .nullable()
-  //   .required("CR Number is required"),
-
-  // custentity3: Yup.string().nullable().required("VAT Number is required"),
 
   custentity_lms_cr_no: Yup.string()
   .nullable()
@@ -221,18 +203,15 @@ function LeadPortals({ selectedButton }) {
     resolver: yupResolver(schema),
   });
   const router = useRouter();
+  const queryClient = useQueryClient()
+
   const [activityModal, setActivityModal] = useState(false);
   const [leadTaskModal, setLeadTaskModal] = useState(false);
   const [leadEventModal, setLeadEventModal] = useState(false);
-
   const [isLead, setIsLead] = useState(false);
-  const [rSelected, setRSelected] = useState(0);
   const [activeTab, setActiveTab] = useState(tabs.directCall);
   const [activeSubTab, setActiveSubTab] = useState(tabs.requirementDetails);
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [showForm, setShowForm] = useState(false);
-  const [buttonsDisabled, setButtonsDisabled] = useState(false);
-  const [taskDropdown, setTaskDropdown] = useState([]);
   const [allPrimarySubsidiaryData, setAllPrimarySubsidiaryData] = useState([
     {},
   ]);
@@ -249,12 +228,14 @@ function LeadPortals({ selectedButton }) {
   ]);
   const [allleadSourceData, setAllleadSourceData] = useState([{}]);
   const [allPortalData, setAllPortalData] = useState([{}]);
-  const [directCallId, setDirectCallId] = useState(null);
-  const [newAddress, setNewAddress] = useState(null);
   const [fullAddress, setFullAddress] = useState(false);
   const [allCountryData, setAllCountryData] = useState([{}]);
   const [selectedEnquiryBy, setSelectedEnquiryBy] = useState(false);
   const [allNurturStatusData, setAllNurturStatusData] = useState([{}]);
+  const [userId, setUserId] = useState(0);
+  const [regionId,setRegionId] = useState(null)
+
+
 
   const results = useQueries({
     queries: [
@@ -1287,12 +1268,26 @@ function LeadPortals({ selectedButton }) {
       Cell: (cellProps) => {
         return (
           <>
-            <TkInput
+           <Controller
+              control={control}
+              name={`custrecordlms_location[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <TkSelect
+                  {...field}
+                  id={"custrecordlms_location"}
+                  options={allRegionData}
+                  requiredStarOnLabel={true}
+                  style={{ width: "200px" }}
+                  loading={regionLoading}
+                />
+              )}
+            />
+            {/* <TkInput
               type="text"
               placeholder="Enter Location"
               id="custrecordlms_location"
               {...register(`custrecordlms_location[${cellProps.row.index}]`)}
-            />
+            /> */}
             {errors?.custrecordlms_location?.[cellProps.row.index] && (
               <FormErrorText>
                 {errors?.custrecordlms_location?.[cellProps.row.index]?.message}
@@ -1988,110 +1983,34 @@ function LeadPortals({ selectedButton }) {
       },
     },
   ];
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.localStorage) {
+      const storedId = window.localStorage.getItem("internalid");
+      setUserId(storedId);
+    }
+  }, []);
+
+  const { data, isFetched, isLoading, isError, error } = useQuery({
+    queryKey: [RQ.currentUserLogin],
+    queryFn: tkFetch.get(`${API_BASE_URL}/loginCurrentUser?userId=${userId}`),
+    enabled: !!userId
+  });
+
+
+  if (data) {
+    setValue(
+      "custentity_lms_createdby",
+      data?.list[0]?.values.entityid +
+        " " +
+        data?.list[0]?.values.firstname +
+        " " +
+        data?.list[0]?.values.lastname
+    );
+  }
+
+
   const onSubmit = (formData) => {
-    // const apiData = {
-    //   customForm: {
-    //     id: "135",
-    //     refName: "LMS CRM FORM",
-    //   },
-    //   entitystatus: {
-    //     id: "7",
-    //     refName: "LEAD-Qualified",
-    //   },
-    //   custentity_lms_channel_lead: {
-    //     id: selectedButton.id,
-    //   },
-    //   custentity_lms_leadsource: {
-    //     id: formData.custentity_lms_leadsource.value,
-    //   },
-
-    //   custentity_lms_name_of_the_portal_dd: {
-    //     id: formData.custentity_lms_name_of_the_portal_dd.value,
-    //   },
-    //   custentity_lms_createdby: formData.custentity_lms_createdby,
-    //   custentity_lms_createddate: formData.custentity_lms_createddate,
-    //   subsidiary: {
-    //     id: formData.subsidiary.value,
-    //   },
-    //   custentity_lms_name: formData.custentity_lms_name,
-    //   custentity_lms_personal_phonenumber:
-    //     formData.custentity_lms_personal_phonenumber,
-    //   custentity_lms_personal_email: formData.custentity_lms_personal_email,
-    //   custentity_lms_enquiryby: {
-    //     id: formData.custentity_lms_enquiryby.value,
-    //   },
-    //   custentity_lms_noteother: formData.custentity_lms_noteother,
-    //   //   companyName: formData.companyName,
-    //   //   phone: formData.phone,
-    //   //   email: formData.email,
-    //   //   custentity_lms_cr_no: formData.custentity_lms_cr_no,
-    //   //   custentity3: formData.custentity3,
-    //   //   custentity_lms_client_type: {
-    //   //     id: formData.custentity_lms_client_type.value,
-    //   //   },
-    //   //   custentity_market_segment: {
-    //   //     id: formData.custentity_market_segment.value,
-    //   //   },
-    //   //   addressBook: {
-    //   //     items: [
-    //   //       {
-    //   //         addressBookAddress: {
-    //   //           addr1: formData.addr1,
-    //   //           addr2: formData.addr2,
-    //   //           city: formData.city,
-    //   //           state: formData.state,
-    //   //           zip: formData.zip,
-    //   //           country: {
-    //   //             id: formData.country.value,
-    //   //           },
-    //   //           defaultBilling: true,
-    //   //           defaultShipping: true,
-    //   //           addrtext: formData.addrtext,
-    //   //         },
-    //   //       },
-    //   //     ],
-    //   //   },
-    //   // };
-    //   companyName: formData.companyName ?? "", // Use empty string if companyName is null or undefined
-    //   phone: formData.phone ?? "", // Use empty string if phone is null or undefined
-    //   email: formData.email ?? "", // Use empty string if email is null or undefined
-    //   custentity_lms_cr_no: formData.custentity_lms_cr_no ?? "", // Use empty string if custentity_lms_cr_no is null or undefined
-    //   custentity3: formData.custentity3 ?? "", // Use empty string if custentity3 is null or undefined
-    //   custentity_lms_client_type: formData.custentity_lms_client_type?.value
-    //     ? { id: formData.custentity_lms_client_type.value }
-    //     : null, // Use null if custentity_lms_client_type is null or undefined
-    //   custentity_market_segment: formData.custentity_market_segment?.value
-    //     ? { id: formData.custentity_market_segment.value }
-    //     : null, // Use null if custentity_market_segment is null or undefined
-    //   addressBook:
-    //     formData.addr1 ||
-    //     formData.addr2 ||
-    //     formData.city ||
-    //     formData.state ||
-    //     formData.zip ||
-    //     formData.country
-    //       ? {
-    //           items: [
-    //             {
-    //               addressBookAddress: {
-    //                 addr1: formData.addr1 ?? "",
-    //                 addr2: formData.addr2 ?? "",
-    //                 city: formData.city ?? "",
-    //                 state: formData.state ?? "",
-    //                 zip: formData.zip ?? "",
-    //                 country: formData.country?.value
-    //                   ? { id: formData.country.value }
-    //                   : null,
-    //                 defaultBilling: true,
-    //                 defaultShipping: true,
-    //                 addrtext: formData.addrtext ?? "",
-    //               },
-    //             },
-    //           ],
-    //         }
-    //       : null, // Use null if all address fields are null or undefined
-    // };
-
     const apiData = {
       resttype: "Add",
       recordtype: "lead",
@@ -2109,7 +2028,9 @@ function LeadPortals({ selectedButton }) {
           text: formData.custentity_lms_name_of_the_portal_dd.text,
         },
 
-        custentity_lms_createdby: formData.custentity_lms_createdby,
+        custentity_lms_createdby: {
+          value: userId,
+        },
         custentity_lms_createddate: formData.custentity_lms_createddate,
         subsidiary: {
           value: formData.subsidiary.value,
@@ -2194,7 +2115,11 @@ function LeadPortals({ selectedButton }) {
 
         recmachcustrecord_parent_record: formData.custrecordlms_location.map(
           (loc, i) => ({
-            custrecordlms_location: loc,
+            custrecordlms_location: {
+              value: formData.custrecordlms_location[i]?.value,
+              text: formData.custrecordlms_location[i]?.text,
+            },
+            // custrecordlms_location: loc,
             custrecord_lms_contactperson_name:
               formData.custrecord_lms_contactperson_name[i],
             custrecord_lms_phonenumber: formData.custrecord_lms_phonenumber[i],
@@ -2226,9 +2151,9 @@ function LeadPortals({ selectedButton }) {
             custrecord_lms_datetime: formatDateForAPI(
               formData.custrecord_lms_datetime
             ),
-            custrecord_lms_lead_value: Number(
-              formData.custrecord_lms_lead_value
-            ),
+            // custrecord_lms_lead_value: Number(
+            //   formData.custrecord_lms_lead_value
+            // ),
             custrecord_lms_statusoflead: {
               value: formData.custrecord_lms_statusoflead?.value,
               text: formData.custrecord_lms_statusoflead?.text,
@@ -2956,6 +2881,14 @@ function LeadPortals({ selectedButton }) {
                                   placeholder="Select Region"
                                   options={allRegionData}
                                   loading={regionLoading}
+                                  onChange={(e) => {
+                                    field.onChange(e);
+                                    queryClient.invalidateQueries({
+                                      queryKey: [RQ.allSalesTeam, regionId]
+                                    })
+                                    setRegionId(e ? e.value : null)
+                                    setValue("custrecord_lms_sales_team_name", null)
+                                  }}
                                 />
                               )}
                             />
@@ -2978,7 +2911,7 @@ function LeadPortals({ selectedButton }) {
                                   labelName="Sales Team Name"
                                   placeholder="Select Sales Team"
                                   options={allSalesTeamData}
-                                  loading={salesTeamLoading}
+                                  loading={regionId && salesTeamLoading}
                                 />
                               )}
                             />
@@ -3029,7 +2962,7 @@ function LeadPortals({ selectedButton }) {
                             />
                           </TkCol>
 
-                          <TkCol lg={3}>
+                          {/* <TkCol lg={3}>
                             <TkInput
                               {...register("custrecord_lms_lead_value")}
                               id="custrecord_lms_lead_value"
@@ -3043,7 +2976,7 @@ function LeadPortals({ selectedButton }) {
                                 {errors.custrecord_lms_lead_value.message}
                               </FormErrorText>
                             )}
-                          </TkCol>
+                          </TkCol> */}
                           <TkCol lg={3}>
                             <Controller
                               name="custrecord_lms_statusoflead"

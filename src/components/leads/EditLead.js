@@ -72,47 +72,13 @@ const tabs = {
   eventActivity: "eventActivity",
 };
 
-// const activityTabs= {
-//   phoneCall: "phoneCall",
-//   task: "task",
-//   event: "event"
-// }
+
 
 const schema = Yup.object({
   custentity_lms_leadsource: Yup.object()
     .nullable()
     .required("Lead Source is required"),
-  //   custentity_lms_name_of_the_platform_dd: Yup.object().required(
-  //     "Name Of Platform is required"
-  //   ),
-
-  //   custentity_lms_campaign_name: Yup.object().required(
-  //     "Campaign Name is required"
-  //   ),
-
-  //   custentity_lms_visit_update: Yup.object().required(
-  //     "Visit Update is required"
-  //   ),
-
-  //   custentity_lms_name_of_the_portal_dd: Yup.object()
-  //   .nullable()
-  //   .required("Lead Portal is required"),
-
-  //   custentity_lms_date_of_visit: Yup.string()
-  //   .nullable()
-  //   .required("Date Of Visit is required"),
-
-  // custentity_lms_time_of_visit: Yup.string()
-  //   .nullable()
-  //   .matches(/^[0-9]*([.:][0-9]+)?$/, "Invalid Time")
-  //   .test(
-  //     "custentity_lms_time_of_visit",
-  //     "Time Of Visit should be less than 24 hours",
-  //     (value) => {
-  //       return convertTimeToSec(value) <= 86400;
-  //     }
-  //   )
-  //   .required("Time Of Visit is required"),
+ 
 
   subsidiary: Yup.object()
     .nullable()
@@ -252,11 +218,6 @@ function EditLead({ id, mode }) {
   const viewMode = mode === modes.view;
   const editMode = mode === modes.edit;
   const lid = Number(id);
-  const [activityModal, setActivityModal] = useState(false);
-  const [leadTaskModal, setLeadTaskModal] = useState(false);
-  const [leadEventModal, setLeadEventModal] = useState(false);
-  // const [activeActivityTab, setActiveActivityTab] = useState(activityTabs.phoneCall);
-
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [allDurations, setAllDurations] = useState({});
   const [activeSubTab, setActiveSubTab] = useState(tabs.requirementDetails);
@@ -277,9 +238,6 @@ function EditLead({ id, mode }) {
   const [allleadSourceData, setAllleadSourceData] = useState([{}]);
   const [allCountryData, setAllCountryData] = useState([{}]);
   const [fullAddress, setFullAddress] = useState(false);
-  const [editLeadId, setEditLeadId] = useState(null);
-  const [directCallId, setDirectCallId] = useState(null);
-  const [newAddress, setNewAddress] = useState(null);
   const [selectedEnquiryBy, setSelectedEnquiryBy] = useState(false);
   const [selectedLeadStatus, setSelectedLeadStatus] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
@@ -292,6 +250,16 @@ function EditLead({ id, mode }) {
   const [allVisitUpdateData, setAlllVisitUpdateData] = useState([{}]);
   const [allPortalData, setAllPortalData] = useState([{}]);
   const [allNurturStatusData, setAllNurturStatusData] = useState([{}]);
+  const [userId, setUserId] = useState(0);
+  const [regionId,setRegionId] = useState(null)
+  const [alluserLoginData, setAlluserLoginData] = useState([{}]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.localStorage) {
+      const storedId = window.localStorage.getItem("internalid");
+      setUserId(storedId);
+    }
+  }, []);
 
   const results = useQueries({
     queries: [
@@ -327,8 +295,9 @@ function EditLead({ id, mode }) {
       },
 
       {
-        queryKey: [RQ.allSalesTeam],
-        queryFn: tkFetch.get(`${API_BASE_URL}/sales-team`),
+        queryKey: [RQ.allSalesTeam, regionId],
+        queryFn: tkFetch.get(`${API_BASE_URL}/sales-team?locationId=${regionId}`),
+        enabled: !!regionId
       },
 
       {
@@ -373,6 +342,14 @@ function EditLead({ id, mode }) {
         queryKey: [RQ.allNurturingStatus],
         queryFn: tkFetch.get(`${API_BASE_URL}/nurtur-status`),
       },
+
+      {
+        queryKey: [RQ.currentUserLogin],
+        queryFn: tkFetch.get(
+          `${API_BASE_URL}/loginCurrentUser?userId=${userId}`
+        ),
+        enabled: !!userId,
+      },
     ],
   });
 
@@ -394,6 +371,7 @@ function EditLead({ id, mode }) {
     leadPortal,
     leadVisitUpdate,
     status,
+    userLogin
   ] = results;
   const {
     data: primarySubisdiaryData,
@@ -513,6 +491,14 @@ function EditLead({ id, mode }) {
     isError: statusNurturIsError,
     error: statusNurturError,
   } = status;
+
+  const {
+    data: userLoginData,
+    isLoading: userLoginLoading,
+    isError: userLoginIsError,
+    error: userLoginError,
+  } = userLogin;
+
 
   useEffect(() => {
     if (primarySubisdiaryIsError) {
@@ -789,6 +775,20 @@ function EditLead({ id, mode }) {
         }))
       );
     }
+
+    if (userLoginData) {
+      setAlluserLoginData(
+        userLoginData?.list?.map((userLoginType) => ({
+          label:
+            userLoginType?.values?.entityid +
+            " " +
+            userLoginType?.values?.firstname +
+            " " +
+            userLoginType?.values?.lastname,
+          value: userLoginType?.entityid,
+        }))
+      );
+    }
   }, [
     primarySubisdiaryData,
     enquiryByData,
@@ -807,6 +807,7 @@ function EditLead({ id, mode }) {
     leadPortalData,
     leadVisitUpdateData,
     statusNurturData,
+    userLoginData,
   ]);
 
   // const leadActivityToggle = useCallback(() => {
@@ -863,6 +864,19 @@ function EditLead({ id, mode }) {
       setValue("custentity_lms_address", fullAddress);
     }
   }, [fullAddress, setValue]);
+
+  useEffect(() => {
+    if (userLoginData) {
+      setValue(
+        "custentity_lms_createdby",
+        userLoginData?.list[0]?.values.entityid +
+          " " +
+          userLoginData?.list[0]?.values.firstname +
+          " " +
+          userLoginData?.list[0]?.values.lastname
+      );
+    }
+  }, [userLoginData, setValue, isFetched]);
 
   useEffect(() => {
     if (isFetched && Array.isArray(data) && data.length > 0) {
@@ -943,40 +957,8 @@ function EditLead({ id, mode }) {
           : null
       );
 
-      // setValue("addr1", bodyValues?.addr1),
-      //   setValue("addr2", bodyValues?.addr2),
-      //   setValue("city", bodyValues?.city),
-      //   setValue("state", bodyValues?.state),
-      //   setValue("zip", bodyValues?.zip),
-      //   setValue(
-      //     "country",
-      //     country
-      //       ? {
-      //           label: bodyValues?.country?.text,
-      //           value: bodyValues?.country?.value,
-      //         }
-      //       : null
-      //   );
       setValue("custentity_lms_address", bodyValues?.custentity_lms_address),
         // set the line level fields
-
-        // lineValues?.calls?.forEach((detail, index) => {
-        //   setValue(`subject[${index}]`, detail.title);
-        //   setValue(`phone[${index}]`, detail.phone);
-
-        //   setValue(`status[${index}]`, {
-        //     label: detail.status?.text,
-        //     value: detail.status?.value,
-        //   });
-
-        //   setValue(`organizer[${index}]`, {
-        //     label: detail.organizer?.text,
-        //     value: detail.organizer?.value,
-        //   });
-
-        //   setValue(`startdate[${index}]`, detail.startdate);
-        // });
-
         setValue(
           `custrecord_lms_region`,
           lineValues?.recmachcustrecord_lms_lead_assigning[0]
@@ -1021,10 +1003,10 @@ function EditLead({ id, mode }) {
           : null
       );
 
-      setValue(
-        "custrecord_lms_lead_value",
-        lineValues?.recmachcustrecord_lms_leadnurt[0]?.custrecord_lms_lead_value
-      );
+      // setValue(
+      //   "custrecord_lms_lead_value",
+      //   lineValues?.recmachcustrecord_lms_leadnurt[0]?.custrecord_lms_lead_value
+      // );
 
       setValue(
         `custrecord_lms_statusoflead`,
@@ -1066,9 +1048,19 @@ function EditLead({ id, mode }) {
     if (isFetched && Array.isArray(data) && data.length > 0) {
       const { lineValues } = data[0];
       lineValues?.recmachcustrecord_parent_record.forEach((detail, index) => {
+        // setValue(
+        //   `custrecordlms_location[${index}]`,
+        //   detail.custrecordlms_location
+        // );
+
         setValue(
           `custrecordlms_location[${index}]`,
           detail.custrecordlms_location
+            ? {
+                label: detail.custrecordlms_location[0]?.text,
+                value: detail.custrecordlms_location[0]?.value,
+              }
+            : null
         );
 
         setValue(
@@ -1521,8 +1513,30 @@ function EditLead({ id, mode }) {
     }
   }, [data]);
 
+ 
+
+  // const { loginUserData, isloginUserDataLoading, isloginUserDataError, loginUserDataError } = useQuery({
+  //   queryKey: [RQ.currentUserLogin],
+  //   queryFn: tkFetch.get(`${API_BASE_URL}/loginCurrentUser?userId=${userId}`),
+  //   enabled: !!userId
+  // });
+
+
+  // if (loginUserData) {
+  //   setValue(
+  //     "custentity_lms_createdby",
+  //     loginUserData?.list[0]?.values.entityid +
+  //       " " +
+  //       loginUserData?.list[0]?.values.firstname +
+  //       " " +
+  //       loginUserData?.list[0]?.values.lastname
+  //   );
+  // }
+
+
   const onSubmit = (formData) => {
     if (!editMode) return;
+    console.log("formData",formData)
 
     const apiData = {
       resttype: "Update",
@@ -1532,7 +1546,9 @@ function EditLead({ id, mode }) {
           value: formData.custentity_lms_leadsource?.value,
           label: formData.custentity_lms_leadsource?.text,
         },
-        custentity_lms_createdby: formData.custentity_lms_createdby,
+        custentity_lms_createdby: {
+          value: userId,
+        },
         custentity_lms_createddate: formData.custentity_lms_createddate,
         custentity_lms_name_of_the_platform_dd: {
           value: formData.custentity_lms_name_of_the_platform_dd?.value,
@@ -1629,7 +1645,11 @@ function EditLead({ id, mode }) {
 
         recmachcustrecord_parent_record: formData.custrecordlms_location.map(
           (loc, i) => ({
-            custrecordlms_location: loc,
+            // custrecordlms_location: loc,
+            custrecordlms_location: {
+              value: formData.custrecordlms_location[i]?.value,
+              text: formData.custrecordlms_location[i]?.text,
+            },
             custrecord_lms_contactperson_name:
               formData.custrecord_lms_contactperson_name[i],
             custrecord_lms_phonenumber: formData.custrecord_lms_phonenumber[i],
@@ -1643,11 +1663,11 @@ function EditLead({ id, mode }) {
           {
             custrecord_lms_region: {
               value: formData.custrecord_lms_region?.value,
-              text: formData.custrecord_lms_region?.text,
+              text: formData.custrecord_lms_region?.label,
             },
             custrecord_lms_sales_team_name: {
               value: formData.custrecord_lms_sales_team_name?.value,
-              text: formData.custrecord_lms_sales_team_name?.text,
+              text: formData.custrecord_lms_sales_team_name?.label,
             },
           },
         ],
@@ -1661,9 +1681,9 @@ function EditLead({ id, mode }) {
             custrecord_lms_datetime: formatDateForAPI(
               formData.custrecord_lms_datetime
             ),
-            custrecord_lms_lead_value: Number(
-              formData.custrecord_lms_lead_value
-            ),
+            // custrecord_lms_lead_value: Number(
+            //   formData.custrecord_lms_lead_value
+            // ),
             custrecord_lms_statusoflead: {
               value: formData.custrecord_lms_statusoflead?.value,
               text: formData.custrecord_lms_statusoflead?.text,
@@ -1756,7 +1776,6 @@ function EditLead({ id, mode }) {
       },
     };
     console.log("apiData", apiData);
-    console.log("requirementDetailsId", requirementDetailsId);
     leadPost.mutate(apiData, {
       onSuccess: (data) => {
         // setRows(data.updatedRequirementDetails);
@@ -2028,13 +2047,28 @@ function EditLead({ id, mode }) {
       Cell: (cellProps) => {
         return (
           <>
-            <TkInput
+          <Controller
+              control={control}
+              name={`custrecordlms_location[${cellProps.row.index}]`}
+              render={({ field }) => (
+                <TkSelect
+                  {...field}
+                  id={"custrecordlms_location"}
+                  options={allRegionData}
+                  requiredStarOnLabel={true}
+                  style={{ width: "200px" }}
+                  loading={regionLoading}
+                  disabled={viewMode}
+                />
+              )}
+            />
+            {/* <TkInput
               type="text"
               placeholder="Enter Location"
               id="custrecordlms_location"
               disabled={viewMode}
               {...register(`custrecordlms_location[${cellProps.row.index}]`)}
-            />
+            /> */}
             {errors?.custrecordlms_location?.[cellProps.row.index] && (
               <FormErrorText>
                 {errors?.custrecordlms_location?.[cellProps.row.index]?.message}
@@ -3198,6 +3232,8 @@ function EditLead({ id, mode }) {
                       editLink={`${urls.leadEdit}/${lid}`}
                       onDeleteClick={handleDeleteLead}
                       toggleDeleteModel={toggleDeleteModelPopup}
+                      disableDelete={viewMode}
+                      isEditAccess={viewMode}
                     />
                     <TkCardBody className="mt-4">
                       <TkForm onSubmit={handleSubmit(onSubmit)}>
@@ -3304,6 +3340,7 @@ function EditLead({ id, mode }) {
                                               labelName="Name Of Platform"
                                               placeholder="Select Platform"
                                               requiredStarOnLabel={editMode}
+                                              disabled={viewMode}
                                               // options={allPlatformData}
                                               // loading={leadPlatformLoading}
                                             />
@@ -3336,6 +3373,7 @@ function EditLead({ id, mode }) {
                                               labelName="Campaign Name"
                                               placeholder="Enter Campaign Name"
                                               requiredStarOnLabel={editMode}
+                                              disabled={viewMode}
                                               // options={allCampaignData}
                                               // loading={leadCampaignLoading}
                                             />
@@ -3370,6 +3408,7 @@ function EditLead({ id, mode }) {
                                               placeholder="Select Visit Update"
                                               requiredStarOnLabel={editMode}
                                               loading={leadVisitUpdateLoading}
+                                              disabled={viewMode}
                                             />
                                           )}
                                         />
@@ -3407,6 +3446,7 @@ function EditLead({ id, mode }) {
                                               requiredStarOnLabel={editMode}
                                               options={allPortalData}
                                               loading={leadPortalLoading}
+                                              disabled={viewMode}
                                             />
                                           )}
                                         />
@@ -3453,6 +3493,7 @@ function EditLead({ id, mode }) {
                                                 setAllDurations({});
                                               }}
                                               requiredStarOnLabel={editMode}
+                                              disabled={viewMode}
                                             />
                                           )}
                                         />
@@ -3510,6 +3551,7 @@ function EditLead({ id, mode }) {
                                           type="text"
                                           placeholder="Select Visit Time"
                                           requiredStarOnLabel={editMode}
+                                          disabled={viewMode}
                                         />
                                         {errors.custentity_lms_time_of_visit && (
                                           <FormErrorText>
@@ -3540,6 +3582,7 @@ function EditLead({ id, mode }) {
                                               placeholder="Select Visit Update"
                                               requiredStarOnLabel={editMode}
                                               loading={leadVisitUpdateLoading}
+                                              disabled={viewMode}
                                             />
                                           )}
                                         />
@@ -4152,6 +4195,14 @@ function EditLead({ id, mode }) {
                                               placeholder="Select Region"
                                               options={allRegionData}
                                               loading={regionLoading}
+                                              onChange={(e) => {
+                                                field.onChange(e);
+                                                queryClient.invalidateQueries({
+                                                  queryKey: [RQ.allSalesTeam, regionId]
+                                                })
+                                                setRegionId(e ? e.value : null)
+                                                setValue("custrecord_lms_sales_team_name", null)
+                                              }}
                                               disabled={viewMode}
                                             />
                                           )}
@@ -4178,7 +4229,7 @@ function EditLead({ id, mode }) {
                                               labelName="Sales Team Name"
                                               placeholder="Select Sales Team"
                                               options={allSalesTeamData}
-                                              loading={salesTeamLoading}
+                                              loading={regionId && salesTeamLoading}
                                               disabled={viewMode}
                                             />
                                           )}
@@ -4241,7 +4292,7 @@ function EditLead({ id, mode }) {
                                         />
                                       </TkCol>
 
-                                      <TkCol lg={3}>
+                                      {/* <TkCol lg={3}>
                                         <TkInput
                                           {...register(
                                             "custrecord_lms_lead_value"
@@ -4261,7 +4312,7 @@ function EditLead({ id, mode }) {
                                             }
                                           </FormErrorText>
                                         )}
-                                      </TkCol>
+                                      </TkCol> */}
                                       <TkCol lg={3}>
                                         <Controller
                                           name="custrecord_lms_statusoflead"
