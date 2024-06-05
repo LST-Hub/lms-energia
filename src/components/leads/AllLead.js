@@ -87,7 +87,7 @@ const AllLead = ({ mounted }) => {
   } = useQuery({
     queryKey: [RQ.salesSupport],
     queryFn: tkFetch.get(
-      `${API_BASE_URL}/salesrepresentative-salessupportrole?userId=${userId}}`
+      `${API_BASE_URL}/salesrepresentative-salessupportrole?userId=${userId}`
     ),
     enabled: !!role && !isSalesManager,
   });

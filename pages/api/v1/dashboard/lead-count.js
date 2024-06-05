@@ -1,20 +1,47 @@
 import response from "../../../../lib/response";
 import { getAllLeadRestletScriptDeploymentId } from "../../../../src/utils/NsAPIcal";
+import { getLeadByIdRestletScriptDeploymentId } from "../../../../src/utils/createNsAPIcal";
 
 export default async function handler(req, res) {
   try {
     if (req.method === "GET") {
       const query = `SELECT COUNT(*) FROM customer WHERE searchstage='Lead' AND id > 29824`;
 
-      try {
-        const allLeadData = await getAllLeadRestletScriptDeploymentId(query);
+      const body = {
+        resttype: "Search",
+        recordtype: "lead",
+        filters: [
+          ["stage", "anyof", "LEAD"],
+          "AND",
+          ["custentity_lms_createdby", "anyof", `8077`],
+          "AND",
+          ["systemnotes.date", "onorafter", "01/05/2024 12:00 am"],
+        ],
+        columns: [
+          "internalid",
+          "entityid",
+          "custentity_lms_channel_lead",
+          "altname",
+          "firstname",
+          "middlename",
+          "lastname",
+          "custentity_lms_enquiryby",
+          "custentity_lms_client_type",
+          "custentity_lms_createdby",
+          "companyname",
+          "phone",
+          "email",
+        ],
+      };
 
-        console.log("All Lead Data", allLeadData?.items[0]?.expr1);
+      try {
+        const allLeadData = await getLeadByIdRestletScriptDeploymentId(body);
+
         response({
           res,
           success: true,
           status_code: 200,
-          data: [allLeadData?.items[0]?.expr1],
+          data: [allLeadData.total],
           message: "All Lead Fetched successfully",
         });
       } catch (error) {

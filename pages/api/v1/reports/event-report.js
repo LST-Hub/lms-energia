@@ -27,11 +27,11 @@ export default async function handler(req, res) {
       const formatted = eventData?.list?.map((item) => ({
         id: item.id,
         title: item.values.title || "",
-        status: item.values.status[0].text || "",
+        status: item.values.status[0] ? item.values.status[0].text : "",
         startdate: item.values.startdate || "",
         starttime: item.values.starttime || "",
         endtime: item.values.endtime || "",
-        owner: item.values.owner[0].text || "",
+        owner: item.values.owner[0] ? item.values.owner[0].text : "",
         markdone: item.values.markdone || "",
       }));
 

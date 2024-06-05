@@ -576,10 +576,10 @@ a {
 
 .fade-in {
   opacity: 0;
-  transition: opacity 3s ease-in-out;
+  transition: opacity 1.5s ease-in-out;
 }
 
 .fade-in.loaded {
   opacity: 1;
-  transition: opacity 3s ease-in-out;
+  transition: opacity 1.5s ease-in-out;
 }
